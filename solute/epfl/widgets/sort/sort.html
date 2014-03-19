@@ -1,0 +1,20 @@
+
+{% macro main(ds) %}
+<ul class="sort-widget {{ ds.class_ }}"
+    style="{{ ds.style }}"
+    id="{{ ds.name }}">
+    {% for item in ds.all_items %}
+        <li class="ui-state-default" idx="{{ item.idx }}"><span>{{ item.label }}</span></li>
+    {% endfor %}
+</ul>
+{% endmacro %}
+
+
+{% macro init_js(ds) %}
+	epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "SortWidget", {name:"{{ds.name}}",
+																		   on_change:{{ds.params.on_change|tojson}},
+																		   on_click:{{ds.params.on_click|tojson}}
+	});                           
+{% endmacro %}
+
+

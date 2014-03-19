@@ -1,0 +1,81 @@
+
+button {
+    padding: 2px 15px 2px 15px;
+    margin: 0px 2px;
+    font-size:12px;
+}
+
+input, textarea {
+    border: 1px solid #D6D6D6;
+    color: #333333;
+    font-size: 9pt;
+    margin: 0;
+    padding: 2px;
+}
+
+textarea:focus, input:focus {
+    border: 1px solid #900;
+}
+
+
+.ui-tooltip {
+    background-color:#000;
+    border:1px solid #fff;
+    padding:10px 15px;
+    width:200px;
+    color:#888;
+    text-align:left;
+    font-size:12px;
+
+    /* outline radius for mozilla/firefox only */
+    -moz-box-shadow:0 0 10px #000;
+    -webkit-box-shadow:0 0 10px #000;
+}
+
+.epfl-form-tooltip {
+    margin-left: 1px;
+    margin-top: 2px;
+    width: 13px;
+    height: 16px;
+    background: url(/epfl/static/img/icon_help.gif);
+}
+
+.epfl-form-buttons {
+    width: 100%;
+    text-align: right;
+}
+
+.epfl-form-button {
+    display: inline;
+}
+
+.epfl-form-field-label {
+    width: 150px;
+    font-size:12px;
+}
+
+.epfl-form-field-vlabel {
+    font-size:12px;
+}
+
+.epfl-form-field-entry {
+    font-size:14px;
+}
+
+.epfl-form-field-ventry {
+    font-size:14px;
+}
+
+.epfl-form-field-error {
+    font-size:12px;
+    text-align: left;
+    vertical-align: middle;
+    color: red;
+}
+
+.epfl-form-field-verror {
+    font-size:12px;
+    text-align: left;
+    vertical-align: middle;
+    color: red;
+}

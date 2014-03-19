@@ -1,0 +1,45 @@
+{% macro main(ds) %}
+    <input class="{{ ds.class_ }}" style="{{ ds.style }}" type="text" id="{{ ds.name }}__label" name="{{ ds.name }}" value="{{ ds.field_value }}">
+{% endmacro %}
+
+{% macro init_js(ds) %}
+    function format_date(date) {
+        try {
+            day = date.getDate();
+            month = date.getMonth() + 1;
+            year = date.getFullYear();
+
+            return day + "." + month + "." + year;
+        }
+        catch(err) {
+            alert("JS-ERROR datepicker widget: could not format date");
+            return null;
+        }
+    }
+
+    var init_params = {};
+
+    init_params.cid = "{{ds.cid}}";
+    init_params.name = "{{ds.name}}";
+
+    {% if "field_value" in ds and ds.field_value  %}
+        init_params.default_date = "{{ ds.field_value }}";
+    {% else %}
+        {% if ds.params["default_date"] %}
+            var date = new Date("{{ ds.params.default_date }}");
+            init_params.default_date = format_date(date);
+        {% endif %}
+    {% endif %}
+
+    {% if ds.params.get("min_date") %}
+        var date = new Date("{{ ds.params.min_date }}");
+        init_params.min_date = format_date(date);
+    {% endif %}
+
+    {% if ds.params.get("max_date") %}
+        var date = new Date("{{ ds.params.max_date }}");
+        init_params.max_date = format_date(date);
+    {% endif %}
+
+    epfl.init_datepicker_widget(init_params);
+{% endmacro %}

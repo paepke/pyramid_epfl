@@ -1,0 +1,93 @@
+
+<!-- the main template -->
+{% compodef () %}
+
+    <form id="{{ self.cid }}" method="POST" action="{{ self.action }}" epflid="{{self.cid}}" >
+ 
+		{{ caller() }}
+
+	</form>
+
+{% endcompodef %}
+
+<!-- "rows" render all form-fields one under the other -->
+{% macro rows(field) %}
+
+    <table class="epfl-form-rows">
+        {{ caller() }}
+    </table>
+
+{% endmacro %}
+
+<!-- "row" renders the field in "rows" aligning label, field and error horizontally -->
+{% macro row(field, row_class = "", colspan = 1) %}
+
+    {% if field.is_visible() %}
+        <tr class="{{row_class}}">
+            <td class="epfl-form-field-label">
+                {{ field.label }}{{ field.validator_visual }}
+            </td>
+            <td class="epfl-form-field-entry" colspan="{{colspan}}">
+                {{ field(**kwargs) }}
+            </td>
+            <td class="epfl-form-field-error error">
+                {{ field.tooltip() }}
+                {{ field.errors | join(' ') }}
+            </td>
+        </tr>
+    {% endif %}
+
+{% endmacro %}
+
+<!-- "vrow" renders the field in "rows" aligning label, field and error vertically -->
+{% macro vrow(field, row_class = "", colspan = 1) %}
+
+    {% if field.is_visible() %}
+        <tr class="{{row_class}}">
+            <td class="epfl-form-field-vlabel" colspan="{{colspan + 1}}">
+                {{ field.label }}{{ field.validator_visual }}
+            </td>
+        </tr>
+        <tr class="{{row_class}}">
+            <td class="epfl-form-field-ventry" colspan="{{colspan}}">
+                {{ field(**kwargs) }}
+            </td>
+            <td class="epfl-form-field-verror error">
+                {{ field.tooltip() }}
+                {{ field.errors | join(' ') }}
+            </td>
+        </tr>
+    {% endif %}
+
+{% endmacro %}
+
+<!-- "buttons" renders the buttons side by side right aligned -->
+{% macro buttons(field) %}
+
+    <div class="epfl-form-buttons">
+        {{ caller() }}
+    </div>
+
+{% endmacro %}
+
+<!-- "button" renders the button in "buttons" -->
+{% macro button(field) %}
+
+    {% if field.is_visible() %}
+       <div class="epfl-form-button">
+           {{ field(**kwargs) }}
+           {{ field.tooltip() }}
+       </div>
+    {% endif %}
+
+{% endmacro %}
+
+
+<!-- the javascript part of the form -->
+{% compopart js () %}
+   <script>
+
+    epfl.init_component("{{self.cid}}", "FormComponent", {});
+
+   </script>
+{% endcompopart %}

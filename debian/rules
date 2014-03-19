@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+### DEPHELPER OPTIONS ###
+### dh_clean deletes *.deb, *.changes and *.build in all dirs.
+export DEBCLEAN_CLEANDEBS=yes
+
+### check dir_name and package_name
+#export DEVSCRIPTS_CHECK_DIRNAME_LEVEL=0
+
+### exclude version control files
+export DH_ALWAYS_EXCLUDE=CVS:.svn:.git
+
+# common options for all debhelper commands
+export DH_OPTIONS=-O--buildsystem=python_distutils
+
+
+%:
+	dh $@
+
+override_dh_clean:
+	dh_clean
+	rm -rf $(CURDIR)/*.egg-info
+

@@ -1,0 +1,6 @@
+- User-Handling:
+	User Objects?
+	ACL?
+- i18n
+	via encoding-trick?
+
