@@ -1,0 +1,15 @@
+
+
+
+{% macro main(ds) %}
+    <textarea id="{{ds.name}}" name="{{ds.name}}">{{ds.value}}</textarea>
+{% endmacro %}
+
+
+{% macro init_js(ds) %}
+        epfl.init_ckeditor_widget({cid:"{{ds.cid}}",
+                                   name:"{{ds.name}}",
+                                   opts:{{ds.editor_opts|tojson}}
+                                  });
+{% endmacro %}
+

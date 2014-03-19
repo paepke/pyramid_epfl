@@ -1,0 +1,28 @@
+
+.epfl_hover_image_selected {
+	border: 3px solid blue;
+}
+.epfl_hover_image {
+	border: 3px solid transparent;
+}
+
+#epfl_please_wait {
+	display:none;
+	padding:5px;
+	position:absolute;
+	width:65px;
+	height:65px;
+	background:#eee;
+	border:1px solid #a0a0a0;
+}
+
+#epfl_message {
+	padding:20px;
+	position:absolute;
+    background:#eee;
+	border:1px solid #a0a0a0;
+}
+
+.clickable {
+	cursor: pointer !important;
+}

@@ -1,0 +1,27 @@
+
+
+{% macro button(ds) %}
+	<button type="button" id="{{ds.wid}}" name="{{ ds.name }}">{{ ds.label }}</button>
+{% endmacro %}
+
+
+{% macro entry(ds) %}
+	<input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" {{- ds.maxlength_attr -}} />
+{% endmacro %}
+
+{% macro textarea(ds) %}
+	<textarea id="{{ds.wid}}" name="{{ ds.name }}">{{ ds.value|e }}</textarea>
+{% endmacro %}
+
+{% macro select(ds) %}
+	<select id="{{ds.wid}}" name="{{ ds.name }}">
+		{% for choice in ds.params.choices %}
+		    <option value="{{ choice[0]|nony|e }}" {{ choice[0]|selected_if_equal(ds.value) }} >{{ choice[1] }}</option>
+		{% endfor %}
+	</select>
+{% endmacro %}
+
+
+{% macro basic_js(ds) %}
+	epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "BasicWidget", {typ:"{{ds.widget.name}}", name:"{{ds.name}}", params: {{ds.params|tojson}}});
+{% endmacro %}
