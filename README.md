@@ -12,7 +12,7 @@ To install:
 	pcreate -s pyramid_epfl_starter barebone
 	cd barebone
 	python setup.py develop
-	pserver development.ini
+	pserve development.ini
 
 
 
