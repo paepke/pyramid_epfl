@@ -6,8 +6,11 @@
 
 import types, copy
 
+from pyramid import security
+
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflutil
+
 
 
 class Menu(epflcomponentbase.ComponentBase):
@@ -25,10 +28,10 @@ class Menu(epflcomponentbase.ComponentBase):
 
     # menu config:
 
-    menu_def = {'items':[]} # [{"label": "Dashboard", "route_name": "home"},
-                            #  {"label": "Publikationen", "route_name": "publikationen",
-                            #        "items": [{"label": u"Übersicht", "route_name": "publikationen"},
-                            #                  {"label": "neue Publikationen", "route_name": "publikationen_formular"}
+    menu_def = {'items':[]} # [{"label": "Dashboard", "route": "home"},
+                            #  {"label": "Publikationen", "route": "publikationen",
+                            #        "items": [{"label": u"Übersicht", "route": "publikationen"},
+                            #                  {"label": "neue Publikationen", "route": "publikationen_formular", "route_params": ("new",)}
                             #                  ]
                             #   },
                             #   ...
@@ -36,24 +39,20 @@ class Menu(epflcomponentbase.ComponentBase):
 
 
     def is_selected(self, item):
+        return self.request.matched_route.name == item.get("route")
 
-## todo        href = item.get("href")
-##       if href:
-##            if self.request.url.path == href:
-##                return True
-
-        return False
 
     def pre_render(self):
         super(Menu, self).pre_render()
 
+
         def filter_access(item):
-            route_name = item.get("route_name")
+            route_name = item.get("route")
 
             if not route_name:
                 item["visible"] = True
             else:
-                item["visible"] = True # todo user.has_page_access(__svc__.epfl.get_page(page_name))
+                item["visible"] = epflutil.has_permission_for_route(self.request, route_name, "access")
 
             for subitem in item.get("items", []):
                 filter_access(subitem)
@@ -76,4 +75,12 @@ class Menu(epflcomponentbase.ComponentBase):
 
         filter_access(self.menu_def)
         add_class(self.menu_def)
+
+    def get_href(self, menu_item):
+
+        if menu_item["route"]:
+            return self.request.route_path(menu_item["route"], **menu_item.get("route_params", {}))
+
+
+        return "#"
 

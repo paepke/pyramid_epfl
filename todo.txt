@@ -1,6 +1,18 @@
-- User-Handling:
-	User Objects?
-	ACL?
+
+Todo-List:
+==========
+
+(not ordered in any way)
+
 - i18n
-	via encoding-trick?
+    check the pyramid way
+- nice menu component
+- tree component
+- create nicer starter-application
+- create component showcase scaffold template
+- better ckeditor integration
+- ACL for form-fields
+- support windows and overlays
+
+	
 

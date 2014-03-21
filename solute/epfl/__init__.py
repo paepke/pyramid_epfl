@@ -163,6 +163,9 @@ def mark_template_as_not_found(request, template_name):
 
 
 def includeme(config):
+    """
+    The main configuration of the EPFL
+    """
 
     config.include('pyramid_jinja2')
 
@@ -178,6 +181,7 @@ def includeme(config):
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
 
+    config.add_jinja2_search_path("solute.epfl:templates")
     config.add_jinja2_search_path("solute.epfl.components:")
     config.add_jinja2_search_path("solute.epfl.widgets:")
 

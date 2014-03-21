@@ -1,5 +1,6 @@
 #* encoding: utf-8
 
+import pyramid
 from pyramid.view import view_config
 from pyramid import security
 from solute import epfl
@@ -98,10 +99,10 @@ class Menu(epfl.components.Menu):
 
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
-    menu_def = {'items':[{"label": "Dashboard", "route_name": "home"},
-                         {"label": "Publikationen", "route_name": "publikationen",
-                               "items": [{"label": u"Übersicht", "route_name": "publikationen"},
-                                         {"label": "neue Publikationen", "route_name": "publikationen_formular"}
+    menu_def = {'items':[{"label": "Dashboard", "route": "home"},
+                         {"label": "Publikationen", "route": "publikationen",
+                               "items": [{"label": u"Übersicht", "route": "publikationen"},
+                                         {"label": "neue Publikationen", "route": "publikationen_formular"}
                                          ]
                           },
 
@@ -185,10 +186,22 @@ class FilterForm(epfl.components.Form):
         self.page.report_table1.redraw()
 
 
+@view_config(route_name = "publikationen")
+class PublicationsPage(epfl.Page):
+
+    __acl__ = [(security.Allow, security.Everyone, 'access')]
+
+
+@view_config(route_name = "publikationen_formular")
+class PublicationEditPage(epfl.Page):
+
+    __acl__ = [(security.Allow, security.Everyone, 'access')]
 
 
 @view_config(route_name='home')
 class HomePage(epfl.Page):
+
+    __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template = "home.html"
 
