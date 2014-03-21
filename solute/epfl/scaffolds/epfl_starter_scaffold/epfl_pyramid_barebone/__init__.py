@@ -18,6 +18,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')    
     config.add_route('publikationen', '/publikationen')    
     config.add_route('publikationen_formular', '/neue_publikation')    
+    config.add_route('home', '/')
     
     session_factory = session_factory_from_settings(settings)    
     config.set_session_factory(session_factory)

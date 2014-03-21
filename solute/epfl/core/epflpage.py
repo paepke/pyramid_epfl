@@ -51,7 +51,6 @@ class Page(object):
     name = None # the logical name of this page
     template = "dummy_page.html" # the name of the template used to render this page
 
-
     def __init__(self, request):
 
         self.request = request
@@ -90,7 +89,6 @@ class Page(object):
 
         if not self.has_access():
             raise HTTPUnauthorized()
-
 
         self.setup_components()
 
@@ -145,8 +143,6 @@ class Page(object):
         [request-processing-flow]
         """
         pass
-
-
 
     def get_jinja_template_extra_data(self):
         """ Returns the data accumulated by the jinja-epfl-component-extension (jinja_extensions.py).

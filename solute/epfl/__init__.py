@@ -163,6 +163,7 @@ def mark_template_as_not_found(request, template_name):
 
 
 def includeme(config):
+<<<<<<< HEAD
     """
     The main configuration of the EPFL
     """

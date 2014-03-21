@@ -6,12 +6,11 @@
 
 import types, copy
 
+<<<<<<< HEAD
 from pyramid import security
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflutil
-
-
 
 class Menu(epflcomponentbase.ComponentBase):
 
@@ -41,10 +40,8 @@ class Menu(epflcomponentbase.ComponentBase):
     def is_selected(self, item):
         return self.request.matched_route.name == item.get("route")
 
-
     def pre_render(self):
         super(Menu, self).pre_render()
-
 
         def filter_access(item):
             route_name = item.get("route")
@@ -83,4 +80,3 @@ class Menu(epflcomponentbase.ComponentBase):
 
 
         return "#"
-
