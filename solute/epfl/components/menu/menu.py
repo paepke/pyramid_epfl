@@ -6,7 +6,6 @@
 
 import types, copy
 
-<<<<<<< HEAD
 from pyramid import security
 
 from solute.epfl.core import epflcomponentbase
