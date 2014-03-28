@@ -11,6 +11,7 @@ epfl_module = function() {
 	epfl.event_id = 0;
 	epfl.components = {};
 	epfl.show_please_wait_counter = 0;
+	epfl.overlays = {};
 
 	epfl.init_page = function(opts) {
 		$(".epfl_hover_image").bind_hover_border_events();
@@ -235,6 +236,49 @@ epfl_module = function() {
 					$(this).remove();
 			});
 		}, 2000);
+	};
+
+	epfl.open_overlay = function(name, url, title, opts) {
+		if (!epfl.overlays[name]) {
+			var overlay_id = "epfl_overlay_" + epfl.overlays.length;
+			epfl.overlays[name] = overlay_id;
+			$(document.body).append("<div id='" + overlay_id + "'></div>");
+			$("#" + overlay_id).append("<iframe id='" + overlay_id + "_iframe' src='about:blank' class='epfl-overlay-iframe'></iframe>")
+			$("#" + overlay_id).dialog({
+				
+				"title": title || "Dialog",
+                "resizable": opts["resizeable"],
+                "modal": opts["modal"],
+                "draggable": opts["draggable"],
+                "height": opts["height"] || "auto",
+                "width": opts["width"] || "auto",
+                "position": opts["position"] || "center",
+
+				close:function (event, ui) {
+					epfl.overlays[name] = null;
+					$("#" + overlay_id).remove();
+				}
+			});
+
+			var ifrm = document.getElementById(overlay_id + "_iframe");
+			ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+			ifrm.document.open();
+			ifrm.document.close();
+			$("body", ifrm.document).append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
+			$("#epfl_please_wait", ifrm.document).css({"position": "absolute",
+				                                       "top": "50%",
+				                                       "left": "50%",
+				                                       "margin-left": "-30px", 
+		                                               "margin-top": "-30px"})
+
+		} else {
+			var overlay_id = epfl.overlays[name];
+		}
+
+
+		setTimeout(function() {
+			$("#" + overlay_id + "_iframe").attr("src", url);
+		}, 100);
 	};
 
 };
