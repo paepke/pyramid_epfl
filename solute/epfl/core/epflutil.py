@@ -1,6 +1,6 @@
 # coding: utf-8
 
-import os
+import os, urllib, urlparse
 
 from pyramid import security
 
@@ -64,26 +64,41 @@ def add_extra_contents(response, obj):
     if obj.js_name:
         for js_name in obj.js_name:
             asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = js_name)
-            url = obj.request.static_url(asset_spec)
+            url = obj.global_request.static_url(asset_spec)
             js_script_src = core.epflclient.JSLink(url)
             response.add_extra_content(js_script_src)
 
     if obj.css_name:
         for css_name in obj.css_name:
             asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = css_name)
-            url = obj.request.static_url(asset_spec)
+            url = obj.global_request.static_url(asset_spec)
             js_script_src = core.epflclient.CSSLink(url)
             response.add_extra_content(js_script_src)
 
 
-def get_page_objs_from_route(request, route_name):
+def get_page_class_by_name(global_request, page_name):
+    """ 
+    Given a page-name (the page.get_name()-result), it returns this page - or raises an error.
+    todo: This needs some caching!
+    """
+    introspector = global_request.registry.introspector
+
+    for intr in introspector.get_category("views"):
+        view_callable = intr["introspectable"]["callable"]
+        if type(view_callable) is type and issubclass(view_callable, core.epflpage.Page):
+            if view_callable.get_name() == page_name:
+                return view_callable
+
+    raise ValueError, "Page '" + page_name + "' not found!"
+
+def get_page_classes_from_route(global_request, route_name):
     """
     Given the request and a route-name, it collects all Page-Objects that are bound to this route.
     It returns a list of the page-classes.
 
     todo: This needs some caching!
     """
-    introspector = request.registry.introspector
+    introspector = global_request.registry.introspector
 
     candidates = []
     for intr in introspector.get_category("views"):
@@ -95,17 +110,34 @@ def get_page_objs_from_route(request, route_name):
     return candidates
 
 
-def has_permission_for_route(request, route_name, permission):
+def has_permission_for_route(global_request, route_name, permission):
     """
     Given a request, a route-name and a permission, it checks, if the current user has this permission for at least
     one of the page-objects that are bound to this route.
     """
 
-    page_objs = get_page_objs_from_route(request, route_name)
+    page_objs = get_page_classes_from_route(global_request, route_name)
 
     for resource in page_objs:
-        if not security.has_permission("access", resource, request):
+        if not security.has_permission("access", resource, global_request):
             return False
 
     return True
 
+
+class URL(object):
+
+    def __init__(self, url):
+        self.parsed_url = urlparse.urlsplit(url)
+
+    def update_query(self, **kwargs):
+        qsl = urlparse.parse_qsl(self.parsed_url.query)
+        for key, value in kwargs.items():
+            qsl.append((key, value))
+        new_url = urlparse.SplitResult(scheme = self.parsed_url.scheme,
+                                       netloc = self.parsed_url.netloc,
+                                       path = self.parsed_url.path,
+                                       query = urllib.urlencode(qsl),
+                                       fragment = self.parsed_url.fragment)
+
+        return new_url.geturl()

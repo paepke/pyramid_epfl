@@ -23,7 +23,7 @@ epfl.FormComponent.prototype.add_tooltip = function(dom_id, msg) {
 
 epfl.FormComponent.prototype.submit_form = function(submitting_element_id) {
 	this.add_hidden("__submitting_element_id__", submitting_element_id);
-	this.add_hidden("__tid__", epfl.tid);
+	this.add_hidden("tid", epfl.tid);
 	this.remove_all_value_change_events();
 	this.get_form_el().submit();
 };

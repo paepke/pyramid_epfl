@@ -8,13 +8,9 @@ import datetime
 
 import jinja2
 
-from solute.epfl.core import epflclient, epflutil
+from solute.epfl.core import epflclient, epflutil, epflexceptions
 
 from wtforms.widgets.core import HTMLString
-
-class ConfigurationError(Exception):
-    pass
-
 
 
 class WidgetBase(object):
@@ -83,6 +79,10 @@ class WidgetBase(object):
         return self.form.request
 
     @property
+    def global_request(self):
+        return self.form.global_request
+
+    @property
     def response(self):
         return self.form.response
 
@@ -130,7 +130,7 @@ class WidgetBase(object):
             html_macro_name = "main"
             js_macro_name = "init_js"
 
-        env = self.request.get_epfl_jinja2_environment()
+        env = self.global_request.get_epfl_jinja2_environment()
         template = env.get_template(template_name)
 
         main_macro = getattr(template.module, html_macro_name)
@@ -205,10 +205,10 @@ class WidgetBase(object):
                 if info["type"].check_type(info["raw_value"]):
                     value = info["type"].eval(info["raw_value"], self.form) # evaluate the param
                 else:
-                    raise ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
+                    raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
 
             elif type(info["raw_value"]) is not info["type"]:
-                raise ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"])
+                raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"])
 
             else:
                 value = copy.deepcopy(info["raw_value"])

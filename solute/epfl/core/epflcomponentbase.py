@@ -6,7 +6,7 @@ import types, copy, string
 
 from pyramid import security
 
-from solute.epfl.core import epflclient, epflutil
+from solute.epfl.core import epflclient, epflutil, epflexceptions
 from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl import json
@@ -104,10 +104,16 @@ class ComponentBase(object):
         """
         self.page = page_obj
         self.request = page_obj.request
+        self.global_request = page_obj.global_request
         self.response = page_obj.response
 
         # setup template
-        env = self.request.get_epfl_jinja2_environment()
+
+        if not self.template_name:
+            raise epflexceptions.ConfigurationError, "You did not setup the 'self.template_name' in " + repr(self)
+
+
+        env = self.global_request.get_epfl_jinja2_environment()
         self.template = env.get_template(self.template_name)
         self.macros = jinja_helpers.MacroAccessor(self.template)
         self.parts = ComponentPartAccessor(self) # this one does all the inline-compo/compo-part-inheritance magic!
@@ -127,7 +133,7 @@ class ComponentBase(object):
         Normally called by a condition in the jinja-template.
         """
 
-        if security.has_permission("access", self, self.request):
+        if security.has_permission("access", self, self.global_request):
             return True
         else:
             return False
@@ -271,7 +277,7 @@ class ComponentBase(object):
 
 
     def _get_compo_state_attribute(self, attr_name):
-        transaction = self.request.get_transaction()
+        transaction = self.page.transaction
         if self.cid + "$" + attr_name in transaction:
             value = transaction[self.cid + "$" + attr_name]
             return value
@@ -315,8 +321,7 @@ class ComponentBase(object):
             value = getattr(self, attr_name)
             values[self.cid + "$" + attr_name] = value
 
-        transaction = self.request.get_transaction()
-        transaction.update(values)
+        self.page.transaction.update(values)
 
 
     def get_component_id(self):
@@ -368,12 +373,6 @@ class ComponentBase(object):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
         """
-
-#        # register the widget-js-tags
-#        self.add_js_link(self.js_name)
-
-#        # register the widget-css-tags
-#        self.add_css_link(self.css_name)
 
         epflutil.add_extra_contents(self.response, obj = self)
 
@@ -527,7 +526,7 @@ class ComponentPartAccessor(object):
     def __init__(self, compo_obj):
         self.compo_obj = compo_obj
         self.compo_template = compo_obj.template
-        self.debug = compo_obj.request.registry.settings["epfl.debug"]
+        self.debug = compo_obj.global_request.registry.settings["epfl.debug"]
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -559,14 +558,14 @@ class ComponentPartAccessor(object):
 
     def get_redraw_template(self):
         template_name = self.compo_obj.page.template + " redraw:" + self.compo_obj.cid
-        if self.compo_obj.request.is_template_marked_as_not_found(template_name):
+        if self.compo_obj.global_request.is_template_marked_as_not_found(template_name):
             return None
 
         try:
-            env = self.compo_obj.request.get_epfl_jinja2_environment()
+            env = self.compo_obj.global_request.get_epfl_jinja2_environment()
             template = env.get_template(template_name)
         except TemplateNotFound:
-            self.compo_obj.request.mark_template_as_not_found(template_name)
+            self.compo_obj.global_request.mark_template_as_not_found(template_name)
             return None
         else:
             return template

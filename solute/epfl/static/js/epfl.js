@@ -18,24 +18,31 @@ epfl_module = function() {
 		$("body").append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
 		$("#loader").remove(); // remove the std-mcp2 ajax-loader image
 
-		var scroll_pos = $(".epfl_scroll_pos").val(); // Restoring Scroll-Pos
+/*		var scroll_pos = $(".epfl_scroll_pos").val(); // Restoring Scroll-Pos
 		if (scroll_pos) {
 			var tmp = scroll_pos.split("x");
 			$(document).scrollLeft(parseInt(tmp[0]));
 			$(document).scrollTop(parseInt(tmp[1]));
 		};
 
+
 		$(window).scroll(function() { // Capturing Scroll-Pos
 			var scroll_pos = $(document).scrollLeft() + "x" + $(document).scrollTop();
 			$(".epfl_scroll_pos").val(scroll_pos)
 		});
+*/
 
 		epfl.tid = opts["tid"];
+		epfl.ptid = opts["ptid"];
 
 	};
 
 	epfl.init_component = function(cid, class_name, params) {
 		var constructor = epfl[class_name];
+		if (!constructor) {
+			alert("JS-ERROR: The component '" + class_name + "' does not exist!")
+			return;
+		}
 		var compo_obj = new constructor(cid, params);
 		epfl.components[cid] = compo_obj;
 	};
@@ -147,24 +154,24 @@ epfl_module = function() {
 		epfl.queue = new_queue;
 	};
 
-/*	epfl.ack_event = function(event_id) {
-		for (var i = 0; i < epfl.queue.length; i++) {
-			if (epfl.queue[i]["id"] == event_id) {
-				epfl.queue.splice(i, 1);
-				break;
-			};
-		};
-	};
-*/
 
 	epfl.make_component_event = function(component_id, event_name, params) {
-//		if (typeof needs_ack == "undefined") {
-//			needs_ack = false;
-//		};
+
+		if (!params) params = {};
+		
 		return {"id": epfl.make_event_id(),
-//		        "na": needs_ack,
 		        "t": "ce", 
 		        "cid": component_id, 
+		        "e": event_name, 
+		        "p": params};
+	};
+
+	epfl.make_page_event = function(event_name, params) {
+
+		if (!params) params = {};
+
+		return {"id": epfl.make_event_id(),
+		        "t": "pe", 
 		        "e": event_name, 
 		        "p": params};
 	};
@@ -238,7 +245,21 @@ epfl_module = function() {
 		}, 2000);
 	};
 
-	epfl.open_overlay = function(name, url, title, opts) {
+	epfl.reload_page = function() {
+		var frm = $('<form id="__epfl_submit_form__" method="POST" action="#"></form>');
+		frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '">');
+		$(document.body).append(frm);
+		$("#__epfl_submit_form__").submit();
+	};
+
+	epfl.go_next = function(target_url) {
+		var frm = $('<form id="__epfl_submit_form__" method="POST" action="' + urlencode(target_url) + '"></form>');
+		frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '"');
+		$(document.body).append(frm);
+		$("#__epfl_submit_form__").submit();
+	};
+
+	epfl.open_overlay = function(name, url, title, opts, show_please_wait) {
 		if (!epfl.overlays[name]) {
 			var overlay_id = "epfl_overlay_" + epfl.overlays.length;
 			epfl.overlays[name] = overlay_id;
@@ -249,14 +270,22 @@ epfl_module = function() {
 				"title": title || "Dialog",
                 "resizable": opts["resizeable"],
                 "modal": opts["modal"],
+                "closeOnEscape": true,
                 "draggable": opts["draggable"],
                 "height": opts["height"] || "auto",
                 "width": opts["width"] || "auto",
                 "position": opts["position"] || "center",
 
+                open: function() {
+                	$('.ui-widget-overlay').css('position', 'fixed'); // fix a jquery-ui-bug
+                },                
+
 				close:function (event, ui) {
 					epfl.overlays[name] = null;
 					$("#" + overlay_id).remove();
+					$('.ui-widget-overlay').css('position', 'absolute'); // fix a jquery-ui-bug
+					var ev = epfl.make_page_event("CloseOverlay");
+					epfl.send(ev);
 				}
 			});
 
@@ -264,7 +293,9 @@ epfl_module = function() {
 			ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
 			ifrm.document.open();
 			ifrm.document.close();
-			$("body", ifrm.document).append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
+			if (show_please_wait) {
+				$("body", ifrm.document).append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
+			};
 			$("#epfl_please_wait", ifrm.document).css({"position": "absolute",
 				                                       "top": "50%",
 				                                       "left": "50%",
@@ -275,11 +306,26 @@ epfl_module = function() {
 			var overlay_id = epfl.overlays[name];
 		}
 
-
 		setTimeout(function() {
 			$("#" + overlay_id + "_iframe").attr("src", url);
 		}, 100);
 	};
+
+	epfl.exec_in_page = function(tid, js_src, search_downwards) {
+		if (epfl.tid == tid) {
+			eval(js_src);
+		} else if (search_downwards) {
+			for (var i = 0; i < epfl.overlays.length; i++) {
+				var overlay_id = epfl.overlays[i];
+				var overlay_ifrm = $(overlay_id + "_iframe");
+				overlay_ifrm.get(0).epfl.exec_in_page(tid, js_src, true);
+			}
+		} else {
+			window.top.epfl.exec_in_page(tid, js_src, true);
+		}
+	};
+
+
 
 };
 

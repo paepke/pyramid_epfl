@@ -219,7 +219,7 @@ class ReflectionInfo(object):
         """ Provide the EPFLPage and the fully qualified name (dotted) of the element you want to get the reflection-info.
         These are e.g. components and widgets.
         """
-        page_name = page_obj.name
+        page_name = page_obj.get_name()
         if page_name not in self.page_obj_cache:
             self._generate_page_obj_cache(page_obj)
 
@@ -268,7 +268,7 @@ class ReflectionInfo(object):
         "compo_obj" is the name of the component that we are interested in!
 
         """
-        page_name = page_obj.name
+        page_name = page_obj.get_name()
         cache = {} # this will map compo_name to it's RIUsage or RIScope
         self._generate_page_obj_cache_walk_scope(self.root, page_obj, cache, None)
         self.page_obj_cache[page_name] = cache

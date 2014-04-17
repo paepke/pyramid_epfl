@@ -96,7 +96,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         super(Form, self).setup_component_state()
 
         # late-init of wtform
-        formdata = FormDataProvider(self.request, self.form_data_store)
+        formdata = FormDataProvider(self.request, self.form_data_store, self.page.transaction, self.page)
         self.process(formdata)
 
         for field in self:
@@ -254,9 +254,9 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         {"name": NAME OF THE UPLOAD
          "data": THE DATA AS 8 BIT STRING}
         """
-        if field_obj.name not in self.request.params.uploads:
+        if field_obj.name not in self.request.uploads:
             return {"uploaded": False}
-        upload = request.param.uploads[field_obj.name]
+        upload = request.uploads[field_obj.name]
         data = upload.file.read(config.epfl.max_upload_size)
         upload.file.close()
         return {"uploaded": True,
@@ -273,10 +273,10 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         submit_handler = self.get_submit_handler(params)
 
-        if self.request.method == "GET":
-            self.do_get()
-        elif self.request.method == "POST":
-            self.do_post()
+#        if self.request.method == "GET":
+#            self.do_get()
+#        elif self.request.method == "POST":
+#            self.do_post()
 
 
         if submit_handler:
@@ -405,12 +405,13 @@ class PostData(dict):
     The form wants the getlist method - no problem.
     """
 
-    def __init__(self, request, data):
+    def __init__(self, request, page_obj, data):
         self.request = request
+        self.page = page_obj
         super(PostData, self).__init__(data)
 
     def getlist(self, key):
-        v = self.request.param.getall(key)
+        v = self.request.getall(key)
         return list(v)
 
 
@@ -419,8 +420,8 @@ class FormDataProvider(object):
     This handles the server-side-state-magic
     """
 
-    def __init__(self, request, form_data_store):
-        self.transaction = request.get_transaction()
+    def __init__(self, request, form_data_store, transaction, page_obj):
+        self.transaction = transaction
         self.in_params = request.params
         self.form_data_store = form_data_store
 

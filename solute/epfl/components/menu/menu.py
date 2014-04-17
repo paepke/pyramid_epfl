@@ -37,7 +37,7 @@ class Menu(epflcomponentbase.ComponentBase):
 
 
     def is_selected(self, item):
-        return self.request.matched_route.name == item.get("route")
+        return self.global_request.matched_route.name == item.get("route")
 
     def pre_render(self):
         super(Menu, self).pre_render()
@@ -48,7 +48,7 @@ class Menu(epflcomponentbase.ComponentBase):
             if not route_name:
                 item["visible"] = True
             else:
-                item["visible"] = epflutil.has_permission_for_route(self.request, route_name, "access")
+                item["visible"] = epflutil.has_permission_for_route(self.global_request, route_name, "access")
 
             for subitem in item.get("items", []):
                 filter_access(subitem)
@@ -75,7 +75,7 @@ class Menu(epflcomponentbase.ComponentBase):
     def get_href(self, menu_item):
 
         if menu_item["route"]:
-            return self.request.route_path(menu_item["route"], **menu_item.get("route_params", {}))
+            return self.global_request.route_path(menu_item["route"], **menu_item.get("route_params", {}))
 
 
         return "#"
