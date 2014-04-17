@@ -14,7 +14,8 @@ class Canvas(epflcomponentbase.ComponentBase):
 
     template_name = None
 
-    js_name = []
+    asset_spec = "solute.epfl.components:canvas/static"
+    js_name = ["canvas.js"]
 
     css_name = []
 
@@ -22,5 +23,10 @@ class Canvas(epflcomponentbase.ComponentBase):
 
     compo_config = []
 
+
+
+    def pre_render(self):
+        """ Overwrite me and set some template attributes to self """
+        super(Canvas, self).pre_render()
 
 

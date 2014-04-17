@@ -20,4 +20,5 @@ def add_static_routes(config):
     config.add_static_view(name = "epfl/components/containers", path = "solute.epfl.components:containers/static")
     config.add_static_view(name = "epfl/components/menu", path = "solute.epfl.components:menu/static")
     config.add_static_view(name = "epfl/components/table", path = "solute.epfl.components:table/static")
+    config.add_static_view(name = "epfl/components/canvas", path = "solute.epfl.components:canvas/static")
 
