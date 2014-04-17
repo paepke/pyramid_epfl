@@ -13,5 +13,15 @@ Todo-List:
 - better ckeditor integration
 - ACL for form-fields
 - support windows and overlays
+- global has-changed/is-saved support for components
+- overlay-support
+    transaction-gc
+    transaction rename to pagestate
+    request rename to page_request
+    global_request to request
+    lost data on stop
+    close_overlay
+    page_jump_back
+    
 
 	

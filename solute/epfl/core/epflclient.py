@@ -14,8 +14,35 @@ def quote_escape_html(html):
     html = html.replace("\"", "\\\"")
     return '"%s"' % html
 
+def quote_escape_js(html):
+    html = html.replace("\"", "\\\"")
+    html = html.replace("\'", "\\\'")
+    html = html.replace("\r", "\\r")
+    html = html.replace("\n", "\\n")
+    return '"%s"' % html
+
 def replace_html(id, html):
     return "$('#%s').html(%s)" % (id, quote_escape_html(html))
+
+
+def make_js_call(call, *args):
+    """ returns a js-snipped calling a method with the given parameters.
+    The parameters are escaped and quoted as necessary """
+
+    js = [call]
+
+    js.append("(")
+    first = True
+    for arg in args:
+        if first:
+            first = False
+        else:
+            js.append(",")
+        js.append(json.encode(arg))
+    js.append(")")
+
+    return string.join(js, "")
+
 
 class ExtraContent(object):
 
@@ -105,11 +132,19 @@ class CSSLink(CSSContent):
         """ we are a css-link """
         return '<link rel="stylesheet" type="text/css" href="%s"/>\r\n'  % self.data
 
-class Response(object):
+class EPFLResponse(object):
+
+    """ Collects side-effect responses. 
+    It is always bound to a single page and therefore only contains the output of a single page. 
+    The self.render_ajax_response, self.get_exclusive_extra_content and self.render_extra_content-functions
+
+    """
 
 
-    def __init__(self, request):
-        self.request = request
+    def __init__(self, page_obj):
+        self.page_obj = page_obj
+        self.request = page_obj.request
+        self.global_request = page_obj.global_request
         self.ajax_response = []
         self.extra_content = []
         self.content_type = "text/html; charset=utf-8"
@@ -142,6 +177,11 @@ class Response(object):
             else:
                 out.append(el)
 
+        # collect the other-pages js
+        for page_obj in self.request.get_handeled_pages():
+            other_js = page_obj.response.render_ajax_response()
+            out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(), other_js = quote_escape_js(other_js)))
+
         return string.join(out, "")
 
     def add_extra_content(self, extra_content):
@@ -159,7 +199,7 @@ class Response(object):
 
     def render_jinja(self, template, **kwargs):
         if type(template) is str:
-            env = self.request.get_epfl_jinja2_environment()
+            env = self.global_request.get_epfl_jinja2_environment()
             tpl = env.get_template(template)
         else:
             tpl = template
