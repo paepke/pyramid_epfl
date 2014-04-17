@@ -4,6 +4,8 @@ import os
 
 import ujson as json # package abstraction
 
+from jinja2 import StrictUndefined
+
 from solute.epfl.core.epflpage import Page # shortcut
 from solute.epfl import fields # shortcut
 
@@ -16,7 +18,7 @@ from solute.epfl.jinja import jinja_helpers
 
 from zope.interface import Interface
 
-from solute.epfl.core import epfltransaction, epflutil
+from solute.epfl.core import epfltransaction, epflutil, epflpage
 
 
 class IEPFLJinja2Environment(Interface):
@@ -28,7 +30,8 @@ class IEPFLGlobalData(Interface):
 
 # handling extra data in different scopes:
 
-def get_epfl_request_param(request, param_name, default = None):
+
+def get_epfl_request_aux(request, param_name, default = None):
     if not hasattr(request, "__epfl_params"):
         setattr(request, "__epfl_params", {})
 
@@ -36,14 +39,14 @@ def get_epfl_request_param(request, param_name, default = None):
 
     return params.get(param_name, default)
 
-def set_epfl_request_param(request, param_name, value):
+def set_epfl_request_aux(request, param_name, value):
     if not hasattr(request, "__epfl_params"):
         setattr(request, "__epfl_params", {})
 
     params = getattr(request, "__epfl_params")
     params[param_name] = value
 
-def get_epfl_global_param(request, param_name, default = None):
+def get_epfl_global_aux(request, param_name, default = None):
 
     gd = request.registry.queryUtility(IEPFLGlobalData)
 
@@ -52,7 +55,7 @@ def get_epfl_global_param(request, param_name, default = None):
 
     return gd.get(param_name, default)
 
-def set_epfl_global_param(request, param_name, value):
+def set_epfl_global_aux(request, param_name, value):
 
     gd = request.registry.queryUtility(IEPFLGlobalData)
 
@@ -66,35 +69,6 @@ def set_epfl_global_param(request, param_name, value):
 
 
 # other stuff
-
-def register_template_usage(request, template_name, page_obj):
-    """
-    The framework needs to know the page object and it's used template for this request.
-    """
-    pass # todo
-
-
-#synchronized
-def get_transaction(request):
-    transaction = request.get_epfl_request_param("transaction")
-
-    if not transaction:
-        transaction = epfltransaction.Transaction(request)
-        request.set_epfl_request_param("transaction", transaction)
-
-    return transaction
-
-def get_transaction_id(request):
-
-    if request.is_xhr:
-        return request.json_body["tid"]
-    elif "__tid__" in request.params:
-        return request.params["__tid__"]
-    else:
-        return request.get_epfl_request_param("tid")
-
-def set_transaction_id(request, tid):
-    request.set_epfl_request_param("tid", tid)
 
 
 def get_epfl_jinja2_environment(request):
@@ -150,16 +124,16 @@ def get_epfl_jinja2_environment(request):
 
 def is_template_marked_as_not_found(request, template_name):
 
-    nfts = get_epfl_global_param(request, "not_found_templates", set())
+    nfts = get_epfl_global_aux(request, "not_found_templates", set())
 
     return template_name in nfts
 
 
 def mark_template_as_not_found(request, template_name):
 
-    nfts = get_epfl_global_param(request, "not_found_templates", set())
+    nfts = get_epfl_global_aux(request, "not_found_templates", set())
     nfts.add(template_name)
-    set_epfl_global_param(request, "not_found_templates", nfts)
+    set_epfl_global_aux(request, "not_found_templates", nfts)
 
 
 def includeme(config):
@@ -172,12 +146,8 @@ def includeme(config):
     config.add_renderer('.html', 'pyramid_jinja2.renderer_factory')
     config.add_request_method(config.get_jinja2_environment)
     config.add_request_method(get_epfl_jinja2_environment)
-    config.add_request_method(register_template_usage)
-    config.add_request_method(get_transaction)
-    config.add_request_method(get_transaction_id)
-    config.add_request_method(set_transaction_id)
-    config.add_request_method(set_epfl_request_param)
-    config.add_request_method(get_epfl_request_param)
+    config.add_request_method(set_epfl_request_aux)
+    config.add_request_method(get_epfl_request_aux)
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
 
@@ -189,7 +159,3 @@ def includeme(config):
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
     components.add_static_routes(config)
     widgets.add_static_routes(config)
-
-    
-    
-
