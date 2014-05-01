@@ -96,7 +96,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         super(Form, self).setup_component_state()
 
         # late-init of wtform
-        formdata = FormDataProvider(self.request, self.form_data_store, self.page.transaction, self.page)
+        formdata = FormDataProvider(self.page_request, self.form_data_store, self.page.transaction)
         self.process(formdata)
 
         for field in self:
@@ -254,9 +254,9 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         {"name": NAME OF THE UPLOAD
          "data": THE DATA AS 8 BIT STRING}
         """
-        if field_obj.name not in self.request.uploads:
+        if field_obj.name not in self.page_request.uploads:
             return {"uploaded": False}
-        upload = request.uploads[field_obj.name]
+        upload = self.page_request.uploads[field_obj.name]
         data = upload.file.read(config.epfl.max_upload_size)
         upload.file.close()
         return {"uploaded": True,
@@ -405,13 +405,12 @@ class PostData(dict):
     The form wants the getlist method - no problem.
     """
 
-    def __init__(self, request, page_obj, data):
-        self.request = request
-        self.page = page_obj
+    def __init__(self, page_request, data):
+        self.page_request = page_request
         super(PostData, self).__init__(data)
 
     def getlist(self, key):
-        v = self.request.getall(key)
+        v = self.page_request.getall(key)
         return list(v)
 
 
@@ -420,9 +419,9 @@ class FormDataProvider(object):
     This handles the server-side-state-magic
     """
 
-    def __init__(self, request, form_data_store, transaction, page_obj):
+    def __init__(self, page_request, form_data_store, transaction):
         self.transaction = transaction
-        self.in_params = request.params
+        self.in_params = page_request.params
         self.form_data_store = form_data_store
 
 

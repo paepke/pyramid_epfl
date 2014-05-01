@@ -68,8 +68,8 @@ class Page(object):
         So the transaction is not the same as the requests one.
         """
 
-        self.global_request = request
-        self.request = PageRequest(request, self)
+        self.request = request
+        self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
 
         self.__parent = None
@@ -104,7 +104,7 @@ class Page(object):
         MAIN-ENTRY-POINT
 
         The method that gets called from the outside framework to diplay this page.
-        This is the main-handler for the global_request.
+        This is the main-handler for the (framework's) request.
         The output of other handeled pages (overlays) are allready collected in place (epflclient.EPFLResponse)
         [request-processing-flow]
         """
@@ -121,7 +121,7 @@ class Page(object):
             self.handle_submit_request()
             out = self.render()
 
-        self.done_global_request()
+        self.done_request()
 
         return pyramid.response.Response(body = out.encode("utf-8"), 
                                          content_type = "text/html; charset=utf-8", 
@@ -131,7 +131,7 @@ class Page(object):
     def parent(self):
         """ Gets the parent-page (connected by the parent-transaction) - if any!
         It "spawns" a new page-obj-live-cycle with setup_component and via the PageRequest (get_handeled_pages) the
-        hook for the teardown (done_global_request).
+        hook for the teardown (done_request).
         """
         if self.__parent:
             return self.__parent
@@ -140,14 +140,14 @@ class Page(object):
         if not ptid:
             raise ValueError, "No parent page connected to this page"
 
-        parent_transaction = epfltransaction.Transaction(self.global_request, ptid)
+        parent_transaction = epfltransaction.Transaction(self.request, ptid)
         parent_page_name = parent_transaction.get_page_name()
-        parent_page_class = epflutil.get_page_class_by_name(self.global_request, parent_page_name)
+        parent_page_class = epflutil.get_page_class_by_name(self.request, parent_page_name)
 
-        parent_page_obj = parent_page_class(self.global_request, parent_transaction)
+        parent_page_obj = parent_page_class(self.request, parent_transaction)
         parent_page_obj.setup_components()
 
-        self.request.add_handeled_page(parent_page_obj)
+        self.page_request.add_handeled_page(parent_page_obj)
 
         self.__parent = parent_page_obj
 
@@ -155,16 +155,16 @@ class Page(object):
 
 
 
-    def done_global_request(self):
+    def done_request(self):
 
         for compo_obj in self.components.values():
             compo_obj.finalize()
 
-        other_pages = self.request.get_handeled_pages()
+        other_pages = self.page_request.get_handeled_pages()
         for page_obj in other_pages:
-            page_obj.done_global_request()
+            page_obj.done_request()
 
-        epfltransaction.kill_deleted_transactions(self.global_request)
+        epfltransaction.kill_deleted_transactions(self.request)
 
 
     @classmethod
@@ -191,15 +191,15 @@ class Page(object):
         """ Checks if the current user has sufficient rights to see/access this page.
         """
 
-        if security.has_permission("access", self, self.global_request):
+        if security.has_permission("access", self, self.request):
             return True
         else:
             return False
 
     def __get_transaction_from_request(self):
 
-        tid = self.request.get("tid")
-        transaction = epfltransaction.Transaction(self.global_request, tid)
+        tid = self.page_request.get("tid")
+        transaction = epfltransaction.Transaction(self.request, tid)
 
         if transaction.created:
             transaction.set_page_obj(self)
@@ -250,7 +250,7 @@ class Page(object):
     def get_template_reflection_info(self):
         """ Returns the reflection info for the template of this page. Duh.
         """
-        env = self.global_request.get_epfl_jinja2_environment()
+        env = self.request.get_epfl_jinja2_environment()
         return env.get_reflection_info(self.jinja_template)
 
     def render(self):
@@ -307,12 +307,12 @@ class Page(object):
         [request-processing-flow]
         """
 
-        if not self.global_request.is_xhr:
+        if not self.request.is_xhr:
             return False
 
         self.handle_transaction()
 
-        ajax_queue = self.request["q"]
+        ajax_queue = self.page_request["q"]
         for event in ajax_queue:
 
             event_type = event["t"]
@@ -373,7 +373,7 @@ class Page(object):
         self.handle_transaction()
 
         for component_name, component_obj in self.components.items():
-            component_obj.handle_submit(dict(self.request.params))
+            component_obj.handle_submit(dict(self.page_request.params))
 
         for cid, compo in self.components.items():
             compo.after_event_handling()
@@ -381,7 +381,7 @@ class Page(object):
     def add_js_response(self, js_string):
         """ Adds the js either to the ajax-response or to the bottom of the page - depending of the type of the request """
         js_string += ";"
-        if self.global_request.is_xhr:
+        if self.request.is_xhr:
             self.response.add_ajax_response(js_string)
         else:
             self.response.add_extra_content(epflclient.JSBlockContent(js_string))
@@ -442,7 +442,7 @@ class Page(object):
         """
 
         if route:
-            target_url = self.request.route_url(route, **(route_params or {}))
+            target_url = self.page_request.route_url(route, **(route_params or {}))
 
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)
@@ -455,7 +455,7 @@ class Page(object):
         """
 
         if route:
-            target_url = self.request.route_url(route, **(route_params or {}))
+            target_url = self.page_request.route_url(route, **(route_params or {}))
 
         js = "epfl.go_next('" + target_url + "');"
         self.add_js_response(js)
@@ -484,11 +484,14 @@ class Page(object):
 
         # getting the target_url and the target-page-obj
         if route:
-            page_classes = epflutil.get_page_classes_from_route(self.global_request, route)
+            page_classes = epflutil.get_page_classes_from_route(self.request, route)
             if page_classes:
                 page_class = page_classes[0] # if we have multiple page_objs, just take the first one...
 
-            target_url = self.global_request.route_url(route, **(route_params or {}))
+            target_url = self.request.route_url(route, **(route_params or {}))
+
+        if not page_class:
+            raise ValueError, "view-controller not found for route '" + route + "'"
 
         # getting the overlay-opts
         overlay_name = page_class.__name__ # the name is the page-class-name: to be discussed (e.g. multi-window)
@@ -496,7 +499,7 @@ class Page(object):
         overlay_title = page_class.overlay_title
 
         # creating the new transaction
-        new_transaction = epfltransaction.Transaction(self.global_request)
+        new_transaction = epfltransaction.Transaction(self.request)
         new_transaction.set_pid(self.transaction.get_id())
         new_transaction.set_page_obj(page_class)
         target_url = epflutil.URL(target_url).update_query(tid = new_transaction.get_id()) # adjust the url and add the TID
@@ -522,8 +525,8 @@ class Page(object):
 
         for overlay in overlays:
 
-            transaction = epfltransaction.Transaction(self.global_request, overlay["tid"])
-            page_class = epflutil.get_page_class_by_name(self.global_request, transaction.get_page_name())
+            transaction = epfltransaction.Transaction(self.request, overlay["tid"])
+            page_class = epflutil.get_page_class_by_name(self.request, transaction.get_page_name())
             overlay_opts = page_class.get_overlay_options()
             overlay_title = page_class.overlay_title
 
@@ -546,7 +549,7 @@ class Page(object):
 
         # delete all opened overlays
         for overlay in overlays:
-            transaction = epfltransaction.Transaction(self.global_request, overlay["tid"])
+            transaction = epfltransaction.Transaction(self.request, overlay["tid"])
             self.transaction.delete()
 
         print "MACH ES WEG"
@@ -555,7 +558,12 @@ class Page(object):
 
 class PageRequest(object):
     """ 
-    A Class containing the request-data specific to a specific page. 
+    A Class containing the request-data specific to a specific page.
+    This is an abstraction of the "request"-object provided by the framework.
+    The framework's request-object is global, so creating subrequests (needed when handling events
+    in page-objects other than the page-object created by the framework's request) can be hard.
+    Since all classes of EPFL only rely on this abstraction (page_request) it can be created on the fly 
+    everytime such a page-object needs one specific to it. 
     """
 
     def __init__(self, request, page_obj):
