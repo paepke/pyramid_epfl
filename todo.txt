@@ -12,16 +12,11 @@ Todo-List:
 - create component showcase scaffold template
 - better ckeditor integration
 - ACL for form-fields
-- support windows and overlays
 - global has-changed/is-saved support for components
 - overlay-support
-    transaction-gc
-    transaction rename to pagestate
-    request rename to page_request
-    global_request to request
-    lost data on stop
-    close_overlay
+    transaction-gc is buggy
+    transaction rename to pagestate?
     page_jump_back
-    
+- forms: file-upload (with preview)    
 
 	
