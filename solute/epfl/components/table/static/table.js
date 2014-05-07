@@ -16,6 +16,17 @@ epfl.TableComponent = function(cid, params) {
 
     if (!params["opts"]["pgtext"]) { delete params["opts"]["pgtext"] };
 
+    params["opts"]["onSelectRow"] = function(row_idx) {
+        var row_id = compo_obj.get_rowid_by_idx.call(compo_obj, row_idx);
+        var ev = epfl.make_component_event(compo_obj.cid, "setTargetRowId", {"row_id": row_id});
+        epfl.enqueue(ev);
+        if (compo_obj.params["on_row_click"]) {
+            var cmd = compo_obj.params["on_row_click"];
+            var ev = epfl.make_component_event(compo_obj.cid, cmd, {});
+            epfl.send(ev);
+        };
+    }
+
     // draw it!
     $("#" + cid + "_table").jqGrid(params["opts"]);
 
@@ -151,10 +162,11 @@ epfl.TableComponent.prototype.get_rowid_by_object = function(dom_obj) {
     return row_data[this.params["opts"]["keyIndex"]];
 };
 
-
-
-
-
+epfl.TableComponent.prototype.get_rowid_by_idx = function(idx) {
+    var thegrid = $("#" + this.cid + "_table");
+    var row_data = thegrid.jqGrid("getRowData", idx);
+    return id = row_data[this.params["opts"]["keyIndex"]];
+};
 
 
 // formatters

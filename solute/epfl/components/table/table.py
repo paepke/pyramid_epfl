@@ -116,6 +116,8 @@ class Table(epflcomponentbase.ComponentBase):
     scroll_pos = 0, 0                               # top and left-scroll-pos of the table
     table_shown = True                              # indicates if the table is fold out or not
 
+    on_row_click = None                             # the name of the event fired, when clicked on a row
+
     # internal
     target_row_id = None
 
@@ -328,3 +330,4 @@ class Table(epflcomponentbase.ComponentBase):
 
     def handle_setTargetRowId(self, row_id):
         self.target_row_id = row_id
+

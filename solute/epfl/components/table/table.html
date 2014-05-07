@@ -36,7 +36,9 @@
                                                         multisort: {{ self.multisort|format_bool }}
                                                     },
 
-                                              "scroll_pos": {{self.scroll_pos|tojson}}
+                                              "scroll_pos": {{self.scroll_pos|tojson}},
+                                              "on_row_click": {{self.on_row_click|tojson}}
+
     });
     </script>
 {% endcompopart %}
