@@ -249,7 +249,7 @@ class Table(epflcomponentbase.ComponentBase):
                 for row in data:
                     src = row[col_name].get("src")
                     if src and src[:4] != "http":
-                        src = self.global_request.static_url(src)
+                        src = self.request.static_url(src)
                         row[col_name]["src"] = src
                     tip = row[col_name].get("tip")
                     if tip:
