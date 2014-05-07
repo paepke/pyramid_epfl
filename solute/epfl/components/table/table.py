@@ -79,6 +79,8 @@ class Table(epflcomponentbase.ComponentBase):
                                                     #
                                                     # name, label, sortable, resizable, default
                                                     #
+                                                    # if you omit the "label" then "hidden" will be set to true.
+                                                    #
                                                     # For a complete list of possible keys in the dict look here:
                                                     # http://www.trirand.com/jqgridwiki/doku.php?id=wiki:colmodel_options
                                                     #
@@ -164,6 +166,11 @@ class Table(epflcomponentbase.ComponentBase):
             elif column_def.get("width"):
                 column_def["fixed"] = True
             column_def["index"] = column_def["name"]
+
+            if "label" not in column_def:
+                column_def["hidden"] = True
+
+
 
 ##            # i18n
 ##            if "label" in column_def:

@@ -5,7 +5,7 @@ epfl.FormComponent = function(cid, params) {
     this.widgets = {};
 
     this.get_el().bind('keypress keydown keyup', function(e){
-       if(e.keyCode == 13) { e.preventDefault(); }
+       if ((e.keyCode == 13) && (e.target.tagName != "TEXTAREA")) { e.preventDefault(); } // to prevent accidential page reloads!
     });
 }; 
 epfl.FormComponent.inherits_from(epfl.ComponentBase);
