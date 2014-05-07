@@ -64,24 +64,24 @@ def add_extra_contents(response, obj):
     if obj.js_name:
         for js_name in obj.js_name:
             asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = js_name)
-            url = obj.global_request.static_url(asset_spec)
+            url = obj.request.static_url(asset_spec)
             js_script_src = core.epflclient.JSLink(url)
             response.add_extra_content(js_script_src)
 
     if obj.css_name:
         for css_name in obj.css_name:
             asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = css_name)
-            url = obj.global_request.static_url(asset_spec)
+            url = obj.request.static_url(asset_spec)
             js_script_src = core.epflclient.CSSLink(url)
             response.add_extra_content(js_script_src)
 
 
-def get_page_class_by_name(global_request, page_name):
+def get_page_class_by_name(request, page_name):
     """ 
     Given a page-name (the page.get_name()-result), it returns this page - or raises an error.
     todo: This needs some caching!
     """
-    introspector = global_request.registry.introspector
+    introspector = request.registry.introspector
 
     for intr in introspector.get_category("views"):
         view_callable = intr["introspectable"]["callable"]
@@ -91,14 +91,14 @@ def get_page_class_by_name(global_request, page_name):
 
     raise ValueError, "Page '" + page_name + "' not found!"
 
-def get_page_classes_from_route(global_request, route_name):
+def get_page_classes_from_route(request, route_name):
     """
     Given the request and a route-name, it collects all Page-Objects that are bound to this route.
     It returns a list of the page-classes.
 
     todo: This needs some caching!
     """
-    introspector = global_request.registry.introspector
+    introspector = request.registry.introspector
 
     candidates = []
     for intr in introspector.get_category("views"):
@@ -110,16 +110,16 @@ def get_page_classes_from_route(global_request, route_name):
     return candidates
 
 
-def has_permission_for_route(global_request, route_name, permission):
+def has_permission_for_route(request, route_name, permission):
     """
     Given a request, a route-name and a permission, it checks, if the current user has this permission for at least
     one of the page-objects that are bound to this route.
     """
 
-    page_objs = get_page_classes_from_route(global_request, route_name)
+    page_objs = get_page_classes_from_route(request, route_name)
 
     for resource in page_objs:
-        if not security.has_permission("access", resource, global_request):
+        if not security.has_permission("access", resource, request):
             return False
 
     return True

@@ -74,15 +74,15 @@ class WidgetBase(object):
 
         self.params = {} # will be filled with persistable params and unpersistable params
 
-    @property
+    @property # some kind of late binding
+    def page_request(self):
+        return self.form.page_request
+
+    @property # some kind of late binding
     def request(self):
         return self.form.request
 
-    @property
-    def global_request(self):
-        return self.form.global_request
-
-    @property
+    @property # some kind of late binding
     def response(self):
         return self.form.response
 
@@ -130,7 +130,7 @@ class WidgetBase(object):
             html_macro_name = "main"
             js_macro_name = "init_js"
 
-        env = self.global_request.get_epfl_jinja2_environment()
+        env = self.request.get_epfl_jinja2_environment()
         template = env.get_template(template_name)
 
         main_macro = getattr(template.module, html_macro_name)

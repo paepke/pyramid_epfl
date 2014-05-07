@@ -94,9 +94,9 @@ class FieldBase(wtforms.Field):
         if self.name == "submit":
             raise ValueError, "'submit' is really a bad name for a field!"
 
-    @property
-    def request(self):
-        return self.form.request
+    @property # some kind of late binding...
+    def page_request(self):
+        return self.form.page_request
 
     def init_state(self):
         """ Called once a transaction """

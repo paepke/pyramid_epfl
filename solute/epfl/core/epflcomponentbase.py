@@ -103,8 +103,8 @@ class ComponentBase(object):
         correctly setup AFTER is was assined to its page.
         """
         self.page = page_obj
+        self.page_request = page_obj.page_request
         self.request = page_obj.request
-        self.global_request = page_obj.global_request
         self.response = page_obj.response
 
         # setup template
@@ -113,7 +113,7 @@ class ComponentBase(object):
             raise epflexceptions.ConfigurationError, "You did not setup the 'self.template_name' in " + repr(self)
 
 
-        env = self.global_request.get_epfl_jinja2_environment()
+        env = self.request.get_epfl_jinja2_environment()
         self.template = env.get_template(self.template_name)
         self.macros = jinja_helpers.MacroAccessor(self.template)
         self.parts = ComponentPartAccessor(self) # this one does all the inline-compo/compo-part-inheritance magic!
@@ -133,7 +133,7 @@ class ComponentBase(object):
         Normally called by a condition in the jinja-template.
         """
 
-        if security.has_permission("access", self, self.global_request):
+        if security.has_permission("access", self, self.request):
             return True
         else:
             return False
@@ -526,7 +526,7 @@ class ComponentPartAccessor(object):
     def __init__(self, compo_obj):
         self.compo_obj = compo_obj
         self.compo_template = compo_obj.template
-        self.debug = compo_obj.global_request.registry.settings["epfl.debug"]
+        self.debug = compo_obj.request.registry.settings["epfl.debug"]
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -558,14 +558,14 @@ class ComponentPartAccessor(object):
 
     def get_redraw_template(self):
         template_name = self.compo_obj.page.template + " redraw:" + self.compo_obj.cid
-        if self.compo_obj.global_request.is_template_marked_as_not_found(template_name):
+        if self.compo_obj.request.is_template_marked_as_not_found(template_name):
             return None
 
         try:
-            env = self.compo_obj.global_request.get_epfl_jinja2_environment()
+            env = self.compo_obj.request.get_epfl_jinja2_environment()
             template = env.get_template(template_name)
         except TemplateNotFound:
-            self.compo_obj.global_request.mark_template_as_not_found(template_name)
+            self.compo_obj.request.mark_template_as_not_found(template_name)
             return None
         else:
             return template

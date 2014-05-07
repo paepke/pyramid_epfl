@@ -143,8 +143,8 @@ class EPFLResponse(object):
 
     def __init__(self, page_obj):
         self.page_obj = page_obj
+        self.page_request = page_obj.page_request
         self.request = page_obj.request
-        self.global_request = page_obj.global_request
         self.ajax_response = []
         self.extra_content = []
         self.content_type = "text/html; charset=utf-8"
@@ -178,7 +178,7 @@ class EPFLResponse(object):
                 out.append(el)
 
         # collect the other-pages js
-        for page_obj in self.request.get_handeled_pages():
+        for page_obj in self.page_request.get_handeled_pages():
             other_js = page_obj.response.render_ajax_response()
             out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(), other_js = quote_escape_js(other_js)))
 
@@ -199,7 +199,7 @@ class EPFLResponse(object):
 
     def render_jinja(self, template, **kwargs):
         if type(template) is str:
-            env = self.global_request.get_epfl_jinja2_environment()
+            env = self.request.get_epfl_jinja2_environment()
             tpl = env.get_template(template)
         else:
             tpl = template

@@ -22,7 +22,7 @@ class SortWidget(epflwidgetbase.WidgetBase):
     def setup_state(self):
         super(SortWidget, self).setup_state()
 
-        idx_list = [int(idx) for idx in self.request.getall("_idx_" + self.field.name)]
+        idx_list = [int(idx) for idx in self.page_request.getall("_idx_" + self.field.name)]
 
         if idx_list:
             # update by query-params

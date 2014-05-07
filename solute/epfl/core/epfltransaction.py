@@ -19,11 +19,11 @@ class Transaction(object):
     A transaction is always bound to a page-obj.
     """
 
-    def __init__(self, global_request, tid = None):
+    def __init__(self, request, tid = None):
         """ Give tid = None to create a new one """
 
-        self.global_request = global_request
-        self.session = global_request.session
+        self.request = request
+        self.session = request.session
         self.tid = tid
 
         if not self.tid:
@@ -107,22 +107,22 @@ class Transaction(object):
         Marks this transaction for deletion and all child-transactions.
         """
 
-        tids = self.global_request.get_epfl_request_aux("deleted_tas", default = [])
+        tids = self.request.get_epfl_request_aux("deleted_tas", default = [])
         if self.tid not in tids:
             tids.append(self.tid)
-        self.global_request.set_epfl_request_aux("deleted_tas", tids)
+        self.request.set_epfl_request_aux("deleted_tas", tids)
 
         child_tids = self.__get_child_tids()
 
         for tid in child_tids:
-            trans = Transaction(self.global_request, tid)
+            trans = Transaction(self.request, tid)
             trans.delete()
 
 
-def kill_deleted_transactions(global_request):
+def kill_deleted_transactions(request):
 
-    tids = global_request.get_epfl_request_aux("deleted_tas", default = [])
+    tids = request.get_epfl_request_aux("deleted_tas", default = [])
 
     for tid in tids:
-        del global_request.session["TA_" + tid]
+        del request.session["TA_" + tid]
 
