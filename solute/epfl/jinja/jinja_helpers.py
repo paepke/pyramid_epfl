@@ -22,10 +22,12 @@ class MacroAccessor(object):
             module = self.template_obj.module
             return getattr(module, key)
         except AttributeError, e:
-            import __svc__
+##            import __svc__
             info = parseAttributeError(e)
+            print "DEBUG HINT:"
+            print info
             # this dirty trick stores usefull debugging-information in a "global" variable...
-            __svc__.jinja.exception_debug_hint = "Template '%s' has no macro named '%s'" % (self.template_obj.filename, info["missing_attribute"])
+##            __svc__.jinja.exception_debug_hint = "Template '%s' has no macro named '%s'" % (self.template_obj.filename, info["missing_attribute"])
             # ... and re-raises the exception to let the jinja-stack rewrite the error-message
             # (this finally calls GlobalJinja._exception_formatter )
             # there is no other way to modify the error-message and keep the jinja-error-rewriting mechanism
