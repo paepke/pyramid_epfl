@@ -26,7 +26,7 @@ class AutocompleteWidget(epflwidgetbase.WidgetBase):
 
     param_def = {"on_change": epflwidgetbase.EventType,
                  "get_data": epflwidgetbase.MethodType,        # the function that gets the current input as parameter and
-                                                               # returns the matching possible values (list of tuples (value, visual))
+                                                               # returns the matching possible values (list of tuples [(value, visual), ...])
 
                  "match_required": (epflwidgetbase.BooleanType, False), # if true, the entered value must be from the "get_data"-method, so
                                                                         # this ensures that the value is from the defined domain, but

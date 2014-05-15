@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block title %} Home {% endblock %}
+
+
+{% block content %}
+
+    {{ notes_table.render() }}
+
+    {% compo note_form() %}
+
+        {% call self.macros.rows() %}
+            {{ self.macros.row(self.title) }}
+            {{ self.macros.row(self.note) }}
+            {{ self.macros.row_and_button(self.tags, self.add_tag) }}
+        {% endcall %}
+        {% call self.macros.buttons() %}
+            {{ self.macros.button(self.delete) }}
+            {{ self.macros.button(self.new) }}
+            {{ self.macros.button(self.save) }}
+        {% endcall %}
+
+    {% endcompo %}
+
+
+{% endblock %}
+

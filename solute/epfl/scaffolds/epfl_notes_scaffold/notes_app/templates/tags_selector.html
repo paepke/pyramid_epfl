@@ -1,0 +1,21 @@
+{% extends "overlay_base.html" %}
+
+
+{% block content %}
+
+    {{ tags_table.render() }}
+
+    {% compo tags_form() %}
+
+        {% call self.macros.rows() %}
+            {{ self.macros.row(self.new_tag) }}
+        {% endcall %}
+        {% call self.macros.buttons() %}
+            {{ self.macros.button(self.add_tag) }}
+        {% endcall %}
+
+    {% endcompo %}
+
+
+{% endblock %}
+
