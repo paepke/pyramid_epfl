@@ -110,13 +110,15 @@ epfl.TableComponent.prototype.data_type_func = function(postdata) {
 
         // register click-events
         $("#" + compo_obj.cid + "_table").find(".epfl_clickevent").each( function() {
-            $(this).click(function() {
+            $(this).click(function(event) {
+                event.stopPropagation(); // if you click on icons in rows, you get no row-event
                 var row_id = compo_obj.get_rowid_by_object.call(compo_obj, this);
                 var cmd = $(this).attr("cmd");
                 var ev = epfl.make_component_event(compo_obj.cid, "setTargetRowId", {"row_id": row_id});
                 epfl.enqueue(ev);
                 var ev = epfl.make_component_event(compo_obj.cid, cmd, {});
                 epfl.send(ev);
+
             });
         });
 

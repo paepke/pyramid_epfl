@@ -308,6 +308,10 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
             if field.widget:
                 field.widget.pre_render()
 
+    def render(self, *args, **kwargs):
+
+        return super(Form, self).render(*args, **kwargs)
+
     def _get_template_element(self, part_accessor):
         if part_accessor[0] == "macros":
             return None # macros are not template-elements
@@ -330,6 +334,20 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 ##                form_js.append(self.js_call("this.add_tooltip", field.name, field.description))
 
         return "".join(form_js)
+
+    def get_fields_by_type(self, typ):
+        """ Returns a list of all buttons or fields, depending on the type "typ" """
+
+        out = []
+
+        if typ == "button":
+            return [field for field in self if field.widget.name == "button"]
+
+        elif typ == "field":
+            return [field for field in self if field.widget.name != "button"]
+
+        return out
+
 
 
     def get_fields_by_tag(self, tag):
