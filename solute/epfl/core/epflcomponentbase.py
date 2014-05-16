@@ -47,9 +47,10 @@ class ComponentBase(object):
 
     """
 
-    __acl__ = [] # a pyramid acl that defines the permissions for this component
-                 # it only affects the has_access()-method.
-                 # The base-component only defines the "access"-permission. If not given the component is not rendered.
+    __acl__ = [(security.Allow, security.Everyone, 'access')] # a pyramid acl that defines the permissions for this component
+                                                              # it only affects the has_access()-method.
+                                                              # The base-component only defines the "access"-permission. 
+                                                              # If not given the component is not rendered.
 
     template_name = "" # filename of the template for this component (if any)
     js_name = [] # filenames of the js-files for this component (if any)

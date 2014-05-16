@@ -82,6 +82,27 @@
 
 {% endmacro %}
 
+<!-- to be used in "rows". It renders a form field and a button besides it -->
+{% macro row_and_button(field, button_field, row_class = "", colspan = 1) %}
+
+    {% if field.is_visible() %}
+        <tr class="{{row_class}}">
+            <td class="epfl-form-field-label">
+                {{ field.label }}{{ field.validator_visual }}
+            </td>
+            <td class="epfl-form-field-entry" colspan="{{colspan}}">
+                {{ field(**kwargs) }}
+                {{ button(button_field) }}
+            </td>
+            <td class="epfl-form-field-error error">
+                {{ field.tooltip() }}
+                {{ field.errors | join(' ') }}
+            </td>
+        </tr>
+    {% endif %}
+
+{% endmacro %}
+
 
 <!-- the javascript part of the form -->
 {% compopart js () %}
@@ -91,3 +112,4 @@
 
    </script>
 {% endcompopart %}
+

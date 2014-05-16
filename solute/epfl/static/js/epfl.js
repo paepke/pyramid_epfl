@@ -12,6 +12,7 @@ epfl_module = function() {
 	epfl.components = {};
 	epfl.show_please_wait_counter = 0;
 	epfl.overlays = {};
+	epfl.overlays_id = 0;
 
 	epfl.init_page = function(opts) {
 		$(".epfl_hover_image").bind_hover_border_events();
@@ -34,6 +35,7 @@ epfl_module = function() {
 
 		epfl.tid = opts["tid"];
 		epfl.ptid = opts["ptid"];
+		$(document).attr("data:tid", epfl.tid);
 
 	};
 
@@ -261,7 +263,8 @@ epfl_module = function() {
 
 	epfl.open_overlay = function(name, url, title, opts, show_please_wait) {
 		if (!epfl.overlays[name]) {
-			var overlay_id = "epfl_overlay_" + epfl.overlays.length;
+			var overlay_id = "epfl_overlay_" + epfl.overlays_id;
+			epfl.overlays_id += 1;
 			epfl.overlays[name] = overlay_id;
 			$(document.body).append("<div id='" + overlay_id + "'></div>");
 			$("#" + overlay_id).append("<iframe id='" + overlay_id + "_iframe' src='about:blank' class='epfl-overlay-iframe'></iframe>")
@@ -281,11 +284,20 @@ epfl_module = function() {
                 },                
 
 				close:function (event, ui) {
+					// getting the overlays tid
+					var ifrm = document.getElementById(overlay_id + "_iframe"); 
+					ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+					var overlay_tid = $(ifrm.document).attr("data:tid");
+
+					// telling the server-state to clean up
+					var ev = epfl.make_page_event("CloseOverlay", {"overlay_tid": overlay_tid});
+					epfl.send(ev);
+
+					// remove the overlay
 					epfl.overlays[name] = null;
 					$("#" + overlay_id).remove();
 					$('.ui-widget-overlay').css('position', 'absolute'); // fix a jquery-ui-bug
-					var ev = epfl.make_page_event("CloseOverlay");
-					epfl.send(ev);
+
 				}
 			});
 
@@ -309,6 +321,18 @@ epfl_module = function() {
 		setTimeout(function() {
 			$("#" + overlay_id + "_iframe").attr("src", url);
 		}, 100);
+	};
+
+	epfl.close_overlay = function(overlay_name) {
+		setTimeout(function() {
+			// delayed to allow other events to execute first.
+		    window.parent.epfl.__close_overlay_by_name(overlay_name); // go up one window
+		}, 0); 
+	};
+
+	epfl.__close_overlay_by_name = function(overlay_name) {
+		var overlay_id = epfl.overlays[overlay_name];
+		$("#" + overlay_id).dialog("close"); // close it by JS, let the "close" event do the server side stuff
 	};
 
 	epfl.exec_in_page = function(tid, js_src, search_downwards) {

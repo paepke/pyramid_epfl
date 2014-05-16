@@ -14,12 +14,8 @@ def quote_escape_html(html):
     html = html.replace("\"", "\\\"")
     return '"%s"' % html
 
-def quote_escape_js(html):
-    html = html.replace("\"", "\\\"")
-    html = html.replace("\'", "\\\'")
-    html = html.replace("\r", "\\r")
-    html = html.replace("\n", "\\n")
-    return '"%s"' % html
+def quote_escape_js(js):
+    return json.encode(js)
 
 def replace_html(id, html):
     return "$('#%s').html(%s)" % (id, quote_escape_html(html))
@@ -180,7 +176,9 @@ class EPFLResponse(object):
         # collect the other-pages js
         for page_obj in self.page_request.get_handeled_pages():
             other_js = page_obj.response.render_ajax_response()
-            out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(), other_js = quote_escape_js(other_js)))
+            if other_js:
+                out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(), 
+                                                                           other_js = quote_escape_js(other_js)))
 
         return string.join(out, "")
 

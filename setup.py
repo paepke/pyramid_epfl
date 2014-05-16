@@ -38,6 +38,7 @@ setup(
     entry_points = """\
     [pyramid.scaffold]
     pyramid_epfl_starter=solute.epfl.scaffolds:EPFLStarterTemplate
+    pyramid_epfl_notes=solute.epfl.scaffolds:EPFLNotesTemplate
     """
 )
 

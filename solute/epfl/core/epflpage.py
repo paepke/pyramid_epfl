@@ -241,7 +241,9 @@ class Page(object):
 
 
         ctx = {"epfl": {},
-               "page": self}
+               "page": self,
+               "components": self.components}
+
         ctx.update(self.components)
         ctx.update(self.data)
 
@@ -341,15 +343,20 @@ class Page(object):
             compo.after_event_handling()
 
 
-        for cid, compo_obj in self.components.items():
+        other_pages = self.page_request.get_handeled_pages()
+        all_compos = [(self, cid, compo_obj) for cid, compo_obj in self.components.items()]
+        for other_page in other_pages:
+            all_compos.extend([(other_page, cid, compo_obj) for cid, compo_obj in other_page.components.items()])
+
+        for page_obj, cid, compo_obj in all_compos:
             if compo_obj.is_visible(check_parents = True):
                 redraw_parts = compo_obj.get_redraw_parts()
                 if redraw_parts:
                     js = "epfl.replace_component('{cid}', {parts})".format(cid = cid,
                                                                            parts = json.encode(redraw_parts))
-                    self.add_js_response(js)
+                    page_obj.add_js_response(js)
             else:
-                self.add_js_response("epfl.hide_component('{cid}')".format(cid = cid))
+                page_obj.add_js_response("epfl.hide_component('{cid}')".format(cid = cid))
 
 
         return True
@@ -518,6 +525,13 @@ class Page(object):
                                              "name": page_class.get_name(),
                                              "target_url": target_url}) # the url with the TID
 
+    def close_overlay(self):
+        """ Closes the current overlay. To be called from the overlay-page it self. """
+        overlay_name = self.__class__.__name__ # the name is the page-class-name: to be discussed (e.g. multi-window)
+        js = epflclient.make_js_call("epfl.close_overlay", overlay_name)
+        self.add_js_response(js)
+
+
     def __reopen_overlays(self):
         """ If this page is reloaded (completely) this function reopens its overlays. """
 
@@ -538,21 +552,21 @@ class Page(object):
 
             self.add_js_response(js)
 
-    def handle_CloseOverlay(self):
+    def handle_CloseOverlay(self, overlay_tid):
         """ Is called by the EPFL, whenever an overlay is closed. 
+        It is called from the opening page and gives the tid of the overlay to close.
         """
 
-        overlays = self.transaction["overlays"]
+        transaction = epfltransaction.Transaction(self.request, overlay_tid)
 
         # delete the page itself
-        self.transaction.delete()
+        transaction.delete()
 
         # delete all opened overlays
+        overlays = transaction["overlays"]
         for overlay in overlays:
             transaction = epfltransaction.Transaction(self.request, overlay["tid"])
-            self.transaction.delete()
-
-        print "MACH ES WEG"
+            transaction.delete()
 
 
 

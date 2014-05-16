@@ -160,7 +160,8 @@ class FilterForm(epfl.components.Form):
             print "Postie Errors!"
 
     def get_categories_like(self, value):
-        domain = get_like_categories_as_domain(value, leaves_only=True, try_id_fetch=True)
+##        domain = get_like_categories_as_domain(value, leaves_only=True, try_id_fetch=True)
+        domain = [("buh", "buh"), ("bah", "bah"), ("bum", "bum")]
         return domain
 
 
