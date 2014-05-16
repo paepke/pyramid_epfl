@@ -218,7 +218,7 @@ class ComponentBase(object):
         This is needed if you make the request with epfl.send() and use a callback to process the returned data.
         Only with this function you can be sure, that nothing else from other components is sent back.
         """
-        self.page.answer_json_request(resp_string)
+        self.response.answer_json_request(resp_string)
 
     def add_js_response(self, js_string):
         """ Shortcut to epflpage """

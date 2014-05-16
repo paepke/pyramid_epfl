@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from solute.epfl.core import epflwidgetbase
+import datetime
+from solute.epfl.core import epflwidgetbase, epflfieldbase
 
 
 DATE_FORMAT = "%d.%m.%Y"
@@ -24,17 +25,26 @@ class DatepickerWidget(epflwidgetbase.WidgetBase):
 
     input_type = "Text"
 
+    def handle_ValueChange(self, value):
+        self.field.process_formdata([value])
+
     def update_data_source(self, data_source):
-        widget_name = data_source.name
+        for key in self.param_def:
+            param = data_source.params.get(key, None)
+            if param and type(param) is datetime.date:
+                try:
+                    data_source.params[key] = param.strftime(DATE_FORMAT)
+                except:
+                    data_source.params[key] = None
 
-        field_value = data_source.form.raw_data.get(widget_name, None)
-
+        field_value = data_source.value
         if not field_value:
             try:
                 field_value = data_source.field.data.strftime(DATE_FORMAT)
             except:
                 field_value = ''
 
-        data_source.field_value = field_value
-        data_source.style = data_source.kwargs.get('style', '')
-        data_source.class_ = data_source.kwargs.get('class_', '')
+        data_source.value = field_value
+
+class Datepicker(epflfieldbase.FieldBase):
+    widget_class = DatepickerWidget
