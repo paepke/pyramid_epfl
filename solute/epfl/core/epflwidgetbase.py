@@ -182,10 +182,8 @@ class WidgetBase(object):
         """
 
         info = self.get_param_info(param_name)
-        if inspect.isclass(info["type"]) and issubclass(info["type"], ParamType):
-            value = info["type"].eval(info["raw_value"], self.form) # evaluate the param
-        else:
-            value = copy.deepcopy(info["raw_value"])
+        info_type = wrap_param_type(info["type"])
+        value = info["type"].eval(info["raw_value"], self.form) # evaluate the param
 
         return value
 
@@ -197,21 +195,15 @@ class WidgetBase(object):
         for param_name in self.param_def.keys():
 
             info = self.get_param_info(param_name)
+            info_type = wrap_param_type(info["type"])
 
-            if info["type"].persist != persistable:
+            if info_type.persist != persistable:
                 continue
 
-            if inspect.isclass(info["type"]) and issubclass(info["type"], ParamType):
-                if info["type"].check_type(info["raw_value"]):
-                    value = info["type"].eval(info["raw_value"], self.form) # evaluate the param
-                else:
-                    raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
-
-            elif type(info["raw_value"]) is not info["type"]:
-                raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define " + param_name + " of type " + repr(info["type"])
-
+            if info_type.check_type(info["raw_value"]):
+                value = info_type.eval(info["raw_value"], self.form) # evaluate the param
             else:
-                value = copy.deepcopy(info["raw_value"])
+                raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define param '" + param_name + "' of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
 
             params[param_name] = value
 
@@ -236,8 +228,9 @@ class WidgetBase(object):
         client_side_params = {}
         for param_name in self.param_def.keys():
             info = self.get_param_info(param_name)
+            info_type = wrap_param_type(info["type"])
 
-            if info["type"].client_param:
+            if info_type.client_param:
                 client_side_params[param_name] = self.params[param_name]
 
 
@@ -460,3 +453,25 @@ class OptionalStringType(ParamType):
         else:
             return type(obj) in [str, unicode]
 
+
+
+def wrap_param_type(info_type):
+    if inspect.isclass(info_type) and issubclass(info_type, ParamType):
+        return info_type
+    else:
+        return ParamTypeWrapper(info_type)
+
+
+class ParamTypeWrapper(ParamType):
+    """ If a none-"ParamType"-Object is given as widget-param-type this class wraps it
+    to something the epflwidgetbase can handle as "ParamType".
+    """
+
+    def __init__(self, param_type):
+        self.param_type = param_type
+
+    def eval(self, raw_value, form_obj):
+        return copy.deepcopy(raw_value)
+
+    def check_type(self, raw_value):
+        return type(raw_value) is self.param_type
