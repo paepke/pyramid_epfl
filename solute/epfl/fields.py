@@ -1,6 +1,7 @@
 #* encoding: utf-8
 
 from widgets.autocomplete.autocomplete import AutoComplete
+from widgets.suggest.suggest import Suggest
 from widgets.datepicker.datepicker import Datepicker
 from widgets.sort.sort import Sort
 from widgets.accordion.accordion import Accordion

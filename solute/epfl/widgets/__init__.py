@@ -1,4 +1,5 @@
 from autocomplete.autocomplete import AutoComplete, AutocompleteWidget
+from suggest.suggest import Suggest, SuggestWidget
 from accordion.accordion import Accordion, AccordionWidget
 from datepicker.datepicker import DatepickerWidget
 from slider.slider import SliderWidget
@@ -13,6 +14,7 @@ from basic.basic import Button, Entry, TextArea, Select, RadioButton, ButtonSet,
 
 def add_static_routes(config):
     for path in ["autocomplete",
+                 "suggest",
                  "datepicker",
                  "slider",
                  "image_selector",

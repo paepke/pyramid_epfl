@@ -1,0 +1,10 @@
+{% macro main(ds) %}
+   <input class="suggest-widget {{ ds.class_ }}" style="{{ ds.style }}" type="text" id="{{ ds.wid }}__entry" name="{{ ds.wid }}__entry" value="{{ ds.entry_data }}">
+    <input type="hidden" id="{{ ds.wid }}" name="{{ ds.wid }}" value="{{ ds.value }}">
+{% endmacro %}
+
+
+
+{% macro init_js(ds) %}
+    epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "SuggestWidget", {name: "{{ds.name}}", params: {{ds.params|tojson}}});
+{% endmacro %}
