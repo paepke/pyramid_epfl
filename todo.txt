@@ -8,14 +8,12 @@ Todo-List:
     check the pyramid way
 - nice menu component
 - tree component
-- create nicer starter-application
 - create component showcase scaffold template
 - better ckeditor integration
+    - remove flicker on redraw/reload
 - ACL for form-fields
 - global has-changed/is-saved support for components
 - overlay-support
-    transaction-gc is buggy
-    transaction rename to pagestate?
     page_jump_back
 - forms: file-upload (with preview)    
 

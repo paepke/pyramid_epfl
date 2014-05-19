@@ -93,7 +93,7 @@ class NoteForm(epfl.components.Form):
                               default = "A note", 
                               description = u"This this is note title!",
                               mandatory = True)
-    note = epfl.fields.TextArea("Note", mandatory = True)
+    note = epfl.fields.CKEditor("Note", mandatory = True, opts = epfl.widgets.CKEditorWidget.OPTS_MINIMAL_FORMATTING2)
     tags = epfl.fields.Entry("Tags",
                              type = "char(128)",
                              description = "A comma separated list of tags for this note")

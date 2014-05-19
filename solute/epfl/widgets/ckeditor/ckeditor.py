@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import string
-from solute.epfl.core import epflwidgetbase
+from solute.epfl.core import epflwidgetbase, epflfieldbase
 
 class CKEditorWidget(epflwidgetbase.WidgetBase):
 
@@ -33,6 +33,36 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
     # maximize: True
 
     # heights and width of the editor can be passed as kwarg-call-parameter in the jinja-template
+
+    # Some example opts you can use:
+    # note = epfl.fields.CKEditor("Note", mandatory = True, opts = epfl.widgets.CKEditorWidget.OPTS_MINIMAL_FORMATTING1)
+
+    OPTS_MINIMAL_FORMATTING1 = {"insert_tables": False,
+                                "insert_images": False,
+                                "insert_links": False,
+                                "insert_hr": False,
+                                "insert_special": False,
+                                "show_source": False,
+                                "maximize": False,
+                                "style": False,
+                                "format": False,
+                                "paragraph": False,
+                                "single_row_toolbar": True,
+                                }
+
+    OPTS_MINIMAL_FORMATTING2 = {"insert_tables": False,
+                                "insert_images": False,
+                                "insert_links": False,
+                                "insert_hr": False,
+                                "insert_special": False,
+                                "show_source": False,
+                                "maximize": False,
+                                "style": False,
+                                "format": False,
+                                "paragraph": True,
+                                "single_row_toolbar": True,
+                                }
+
 
 
     def update_data_source(self, data_source):
@@ -70,6 +100,23 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
             remove_buttons.append("Styles")
         if not opts.get("format", True):
             remove_buttons.append("Format")
+        if not opts.get("paragraph", True):
+            remove_buttons.extend(["NumberedList", "BulletedList", "Outdent", "Indent", "Blockquote"])
+
+        if opts.get("single_row_toolbar", "True"):
+            editor_opts["toolbarGroups"] = [{ "name": 'document',    "groups": [ 'mode', 'document', 'doctools' ] },
+                                            { "name": 'clipboard',   "groups": [ 'clipboard', 'undo' ] },
+                                            { "name": 'editing',     "groups": [ 'find', 'selection', 'spellchecker' ] },
+                                            { "name": 'forms' },
+                                            { "name": 'basicstyles', "groups": [ 'basicstyles', 'cleanup' ] },
+                                            { "name": 'paragraph',   "groups": [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+                                            { "name": 'links' },
+                                            { "name": 'insert' },
+                                            { "name": 'styles' },
+                                            { "name": 'colors' },
+                                            { "name": 'tools' },
+                                            { "name": 'others' },
+                                            { "name": 'about' }]
 
         editor_opts["removePlugins"] = string.join(remove_plugins, ",")
         editor_opts["removeButtons"] = string.join(remove_buttons, ",")
@@ -80,9 +127,16 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
         if "height" in data_source.kwargs:
             editor_opts["height"] = data_source.kwargs["height"]
 
+        editor_opts["autoParagraph"] = False
+
         data_source.editor_opts = editor_opts
 
         if not data_source.value:
             data_source.value = u""
 
+    def handle_ValueChange(self, value):
+        self.field.process_formdata([value])
 
+
+class CKEditor(epflfieldbase.FieldBase): 
+    widget_class = CKEditorWidget
