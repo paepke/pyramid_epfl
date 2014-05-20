@@ -1,0 +1,18 @@
+{% macro main(ds) %}
+  <div id="{{ ds.wid }}" style="display: none" name="{{ ds.name }}">
+    {% for section in ds.params.sections %}
+      <h3 data-section-id="{{ds.wid}}_{{section["id"]}}">{{ section['label'] }}</h3>
+      <div class="epfl_accordion_section_content">
+        {% for content_item in section.contents %}
+            <div data-content-id="{{ds.wid}}_{{section['id']}}_{{content_item['id']}}">
+                {{ content_item['label'] }}
+            </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro init_js(ds) %}
+    epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "AccordionWidget", {typ:"{{ds.widget.name}}", name:"{{ds.name}}", value:"{{ds.value|e}}", params: {{ds.params|tojson}}});
+{% endmacro %}

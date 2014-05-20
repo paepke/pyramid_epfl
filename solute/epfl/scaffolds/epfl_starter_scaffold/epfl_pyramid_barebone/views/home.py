@@ -7,6 +7,7 @@ from solute import epfl
 import wtforms
 import time
 
+
 DATA = []
 
 for i in range(100):
@@ -127,6 +128,14 @@ class FilterForm(epfl.components.Form):
     test_value6 = epfl.fields.AutoComplete("Autocomplete", type = "int", get_data = "self.get_categories_like")
     test_value7 = epfl.fields.TextArea("Area of Text!")
     test_value8 = epfl.fields.Select("The select", type = "int", choices = "self.get_choices()")
+
+    tv_1 = epfl.fields.Checkbox("Check")
+    tv_2 = epfl.fields.Buttonset("Buttonset", choices = "self.get_choices()")
+    tv_3 = epfl.fields.Accordion("Test", sections = "self.get_sections()")
+    tv_4 = epfl.fields.Sort(u"Sortieren")
+    tv_5 = epfl.fields.Datepicker("Test Time", default_date = datetime.date(2014, 05, 16), min_date = datetime.date(2014, 05, 13), max_date = datetime.date(2014, 05, 20))
+    tv_6 = epfl.fields.RadioButton("Radiotest", choices = "self.get_choices()")
+    #tv_7 = epfl.fields.UploadButton("", on_click="upload")
 
     click = epfl.fields.Button(on_click = "click")
     reset = epfl.fields.Button(on_click = "reset")

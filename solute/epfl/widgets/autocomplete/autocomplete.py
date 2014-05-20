@@ -50,7 +50,7 @@ class AutocompleteWidget(epflwidgetbase.WidgetBase):
 
     def handle_GetData(self, query):
         domain = self.params["get_data"](query)
-        self.form.page.answer_json_request(json.encode(domain))
+        self.form.return_ajax_response(domain)
 
 
 
@@ -64,7 +64,7 @@ class AutocompleteWidget(epflwidgetbase.WidgetBase):
 
 
 
-class AutoComplete(epflfieldbase.FieldBase): 
+class AutoComplete(epflfieldbase.FieldBase):
 
     widget_class = AutocompleteWidget
 
@@ -97,7 +97,7 @@ class AutoComplete(epflfieldbase.FieldBase):
 
     def set_entry_data(self, data):
         """ This is the data which is displayed/entered into the actual autocomplete-field.
-        Whereas the self.data is the corresponding "value". 
+        Whereas the self.data is the corresponding "value".
         For example: You type in the name of a category and the self.data is then the corresponding
         category-id. Of course the self.data may be None if nothing matching is found in the
         data returned by the "get_data"-function.

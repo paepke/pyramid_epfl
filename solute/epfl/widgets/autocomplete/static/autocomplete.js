@@ -12,11 +12,18 @@ epfl.AutoCompleteWidget = function(wid, cid, params) {
 
     		var event = widget_obj.make_event("GetData", {"query": request.term});
     		epfl.send(event, function(data) {
-    			if (data.length == 1) {
-    				$('#' + wid + "__entry").val(data[0].label);
-    				$('#' + wid).val(data[0].value);
+                console.log(data)
+                var ac_data = [];
+                for (var i = 0; i < data.length; i++){
+                    ac_data.push({label: data[i][1],
+                                  value: data[i][0]})
+                }
+
+    			if (ac_data.length == 1) {
+    				$('#' + wid + "__entry").val(ac_data[0].label);
+    				$('#' + wid).val(ac_data[0].value);
     			};
-    			response(data);
+    			response(ac_data);
     		});
 
     	},
@@ -41,7 +48,24 @@ epfl.AutoCompleteWidget = function(wid, cid, params) {
         widget_obj.notify_value_change();
     });
 
+    if (this.get_param("on_select")) {
+        $("#" + wid + "__entry").on("autocompleteselect", function(e) {
+            widget_obj.notify_value_change();
+            var ev = widget_obj.make_widget_event("Select", {});
+            epfl.send(ev);
+        });
+    }
+
+    if (this.get_param("on_return")) {
+        $("#" + wid + "__entry").keyup(function(e) {
+            if(e.keyCode == 13) {
+                var ev = widget_obj.make_event("onReturn", {});
+                epfl.send(ev);
+            }
+        });
+    }
 };
+
 epfl.AutoCompleteWidget.inherits_from(epfl.WidgetBase);
 
 
