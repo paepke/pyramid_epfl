@@ -5,8 +5,7 @@ from pyramid.view import view_config
 from pyramid import security
 from solute import epfl
 import wtforms
-import time
-
+import time, datetime
 
 DATA = []
 
@@ -40,10 +39,13 @@ def get_like_categories_as_domain(prefix, leaves_only=False, try_id_fetch=False)
             pass
 
     category_list = []
+
     datadict_items = CategoryLikeCollection.beginswith(prefix, is_leaf=leaves_only)
+
     for id, name in datadict_items.iteritems():
         category_list.append({'label': name,
                               'value': id})
+
     return category_list
 
 class ReportTable(epfl.components.Table):
@@ -130,12 +132,13 @@ class FilterForm(epfl.components.Form):
     test_value8 = epfl.fields.Select("The select", type = "int", choices = "self.get_choices()")
 
     tv_1 = epfl.fields.Checkbox("Check")
-    tv_2 = epfl.fields.Buttonset("Buttonset", choices = "self.get_choices()")
+    tv_2 = epfl.fields.ButtonSet("Buttonset", choices = "self.get_choices()")
     tv_3 = epfl.fields.Accordion("Test", sections = "self.get_sections()")
     tv_4 = epfl.fields.Sort(u"Sortieren")
-    tv_5 = epfl.fields.Datepicker("Test Time", default_date = datetime.date(2014, 05, 16), min_date = datetime.date(2014, 05, 13), max_date = datetime.date(2014, 05, 20))
+    tv_5 = epfl.fields.Datepicker("Datepicker", default_date = datetime.date(2014, 05, 16), min_date = datetime.date(2014, 05, 13), max_date = datetime.date(2014, 05, 20))
     tv_6 = epfl.fields.RadioButton("Radiotest", choices = "self.get_choices()")
-    #tv_7 = epfl.fields.UploadButton("", on_click="upload")
+    tv_7 = epfl.fields.Suggest("Suggest", type = "int", get_data = "self.get_categories_like")
+    tv_8 = epfl.fields.Timepicker("Timepicker")
 
     click = epfl.fields.Button(on_click = "click")
     reset = epfl.fields.Button(on_click = "reset")
@@ -146,6 +149,8 @@ class FilterForm(epfl.components.Form):
     def init_transaction(self):
 
         self.status.data = [(1, "huhu (first)"), (5, "haha (second)"), (10, "hihi (last)")]
+
+        self.tv_4.data = [(1, "huhu (first)"), (5, "haha (second)"), (10, "hihi (last)")]
 
         self.set_data({"test_value4": 3.14,
                        "other_value1": time.ctime()})
@@ -160,10 +165,16 @@ class FilterForm(epfl.components.Form):
             print "Postie Errors!"
 
     def get_categories_like(self, value):
-##        domain = get_like_categories_as_domain(value, leaves_only=True, try_id_fetch=True)
-        domain = [("buh", "buh"), ("bah", "bah"), ("bum", "bum")]
+        #domain = get_like_categories_as_domain(value, leaves_only=True, try_id_fetch=True)
+        domain = [(1, "Auto"), (2, "Motorad"), (3, "Flugzeug"), (4, "Fahrrad")]
+
         return domain
 
+    def get_sections(self):
+        return [{"id": 123, "label": "test", "contents": [{"label": "bub", "id": "lalalal"}]},
+                {"id": 124, "label": "test", "contents": [{"label": "bub", "id": "lalalal"}]},
+                {"id": 125, "label": "test", "contents": [{"label": "bub", "id": "lalalal"}]}
+                ]
 
     def handle_click(self):
 
