@@ -12,5 +12,6 @@ from widgets.basic.basic import ButtonSet
 from widgets.basic.basic import RadioButton
 from widgets.basic.basic import Select
 from widgets.basic.basic import Checkbox
-from widgets.timepicker.timepicker import Timepicker
+from widgets.spinner.spinner import Spinner
+from widgets.datetimepicker.datetimepicker import Datetimepicker
 

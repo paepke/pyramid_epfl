@@ -15,7 +15,7 @@ class AccordionWidget(epflwidgetbase.WidgetBase):
     js_name = ["accordion.js"]
 
 
-    param_def = {"sections": epflwidgetbase.DomainType,
+    param_def = {"sections": epflwidgetbase.OptionalDomainType,
                  "on_section_click": epflwidgetbase.EventType,
                  "on_content_click": epflwidgetbase.EventType}
 

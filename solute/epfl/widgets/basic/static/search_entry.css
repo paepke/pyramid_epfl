@@ -1,0 +1,13 @@
+.search_entry .ui-button {
+    display: inline-block;
+    position: relative;
+    padding: 0;
+    margin-left: .1em;
+    margin-right: .1em;
+    text-decoration: none !important;
+    cursor: pointer;
+    text-align: center;
+    zoom: 1;
+    overflow: visible;
+    height: 1.35em;
+    }

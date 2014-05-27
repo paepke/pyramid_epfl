@@ -2,6 +2,10 @@
 	<button type="button" id="{{ds.wid}}" name="{{ ds.name }}">{{ ds.label }}</button>
 {% endmacro %}
 
+{% macro spinner(ds) %}
+    <input id="{{ds.wid}}" name="{{ ds.name }}">
+{% endmacro %}
+
 {% macro entry(ds) %}
 	<input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" {{- ds.maxlength_attr -}} />
 {% endmacro %}

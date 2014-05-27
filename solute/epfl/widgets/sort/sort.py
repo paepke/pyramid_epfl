@@ -14,6 +14,7 @@ class SortWidget(epflwidgetbase.WidgetBase):
 
     js_name = ["sort.js"]
     css_name = ["sort.css"]
+
     param_def = {"on_change": (epflwidgetbase.EventType, None),
                  "on_click": (epflwidgetbase.EventType, None),
                  }
@@ -67,5 +68,5 @@ class SortWidget(epflwidgetbase.WidgetBase):
 
 
 
-class Sort(epflfieldbase.FieldBase): 
+class Sort(epflfieldbase.FieldBase):
     widget_class = SortWidget
