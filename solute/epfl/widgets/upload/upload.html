@@ -1,0 +1,20 @@
+
+{% macro main(ds) %}
+   <div id="{{ds.wid}}_preview">
+    {% if ds.preview_url %}
+         {{ preview_image(ds) }}
+    {% endif %}
+   </div>
+    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" multiple>
+{% endmacro %}
+
+{% macro preview_image(ds) %}
+    <a target="_blank" href="{{ ds.preview_url }}"><img src="{{ ds.preview_url }}" width="300"></a>
+{% endmacro %}
+
+{% macro init_js(ds) %}
+    epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "UploadWidget", {name:"{{ds.name}}"
+                                                                             }
+    );                           
+{% endmacro %}
+
