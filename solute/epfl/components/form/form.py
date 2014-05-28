@@ -29,7 +29,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     asset_spec = "solute.epfl.components:form/static"
 
     css_name = ["form.css"]
-    js_name = ["form.js", 
+    js_name = ["form.js",
                "epflwidgetbase.js"]
 
     compo_state = ["field_state", "form_data_store", "additional_data"]
@@ -81,7 +81,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
 
     def get_field_state(self, field_name):
-        """ Returns and creates the state for a field and widget. This is called during the binding of a field and its widget to the form. 
+        """ Returns and creates the state for a field and widget. This is called during the binding of a field and its widget to the form.
         This state is shared between field and widget.
         """
 
@@ -121,10 +121,10 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
             self.form_data_store[field.name] = field.data
 
         super(Form, self).finalize_component_state()
-        
+
 
     def get_data(self, key = None, default = NO_DEFAULT, validate = False):
-        """ Returns all values of this form as a dictionary. 
+        """ Returns all values of this form as a dictionary.
         Or if "key" is given, only that value is returned.
         This is the way to get only one additional_data-key back!
         "default" only works in combination with "key"
@@ -133,7 +133,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         if validate:
             if not self.validate():
                 return None
-                
+
         if key is None:
             data = self.data.copy()
             data.update(self.additional_data)
@@ -283,7 +283,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         return super(Form, self).render(*args, **kwargs)
 
     def _get_template_element(self, part_accessor):
-        if part_accessor[0] == "macros":
+        if len(part_accessor) > 0 and part_accessor[0] == "macros":
             return None # macros are not template-elements
         elif len(part_accessor) == 1: # this is very static, but lets start simple!
             return getattr(self, part_accessor[0], None)
@@ -356,11 +356,11 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         self.handle_event(cmd, event_params = params)
 
     def handle_onChange(self, widget_name = None, **params):
-        """ 
-        OnChange != ValueChange! 
+        """
+        OnChange != ValueChange!
         OnChange is the additional event which can take place and normally will be fired directly.
         ValueChange is the event which the form-component needs to keep the server-side state up to date.
-        It normally is enqueued and not fired directly. 
+        It normally is enqueued and not fired directly.
         This event is not routed to the widget - it is handeled by the form itself.
         """
         self.target_widget = widget_name

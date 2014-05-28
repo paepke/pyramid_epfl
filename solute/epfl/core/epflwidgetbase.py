@@ -359,14 +359,16 @@ class ParamType(object):
     def eval(cls, obj, form):
         return obj
 
-class DomainType(ParamType):
+class OptionalDomainType(ParamType):
 
     client_param = True
 
     @classmethod
     def check_type(cls, obj):
         typ = type(obj)
-        if typ in types.StringTypes and obj.startswith("self."):
+        if not obj:
+            return True
+        elif typ in types.StringTypes and obj.startswith("self."):
             return True # method-names starting with "self." are OK!
         else:
             return (typ is types.FunctionType) or (typ is list)
@@ -432,10 +434,29 @@ class NumberType(ParamType):
     def check_type(cls, obj):
         return type(obj) in [int, float]
 
+class OptionalNumberType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) in [int, float]
+
 class BooleanType(ParamType):
     @classmethod
     def check_type(cls, obj):
         return type(obj) is bool
+
+class OptionalBooleanType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+
+            return True
+        else:
+            return type(obj) is bool
 
 
 class DateType(ParamType):
@@ -455,6 +476,27 @@ class OptionalDateType(ParamType):
         else:
             return type(obj) is datetime.date
 
+class TimeType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        return type(obj) is datetime.time
+
+class OptionalTimeType(ParamType):
+    """ A simple time object of the datetime lib """
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) is datetime.time
+
+class StringType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        return type(obj) in [str, unicode]
 
 class OptionalStringType(ParamType):
     """ A String or nothing """
