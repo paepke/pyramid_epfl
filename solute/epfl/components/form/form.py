@@ -14,6 +14,7 @@ import types, os.path, string
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflfieldbase
 from solute.epfl.core import epfltransaction
+from solute.epfl.core import epflconfig
 
 import jinja2
 import wtforms
@@ -248,22 +249,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         return None
 
-    def get_upload(self, field_obj):
-        """ Returns the upload on an wtforms-field_obj.
-        The return value is a dict as:
-        {"name": NAME OF THE UPLOAD
-         "data": THE DATA AS 8 BIT STRING}
-        """
-        if field_obj.name not in self.page_request.uploads:
-            return {"uploaded": False}
-        upload = self.page_request.uploads[field_obj.name]
-        data = upload.file.read(config.epfl.max_upload_size)
-        upload.file.close()
-        return {"uploaded": True,
-                "name": upload.filename,
-                "ext": os.path.splitext(upload.filename)[-1],
-                "mime-type": upload.type,
-                "data": data}
 
     def handle_submit(self, params):
         """
@@ -272,11 +257,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         """
 
         submit_handler = self.get_submit_handler(params)
-
-#        if self.request.method == "GET":
-#            self.do_get()
-#        elif self.request.method == "POST":
-#            self.do_post()
 
 
         if submit_handler:
@@ -287,16 +267,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         """
         return self.submit_button_name
 
-#    def get_domain(self, field_name):
-#        """ Shortcut-Function to all domain-supporting widgets """
-#        field = self[field_name]
-#        return field.widget.get_domain(field)
-#
-#    def get_selected_domain(self, field_name):
-#        """ Shortcut-Function to all domain-supporting widgets """
-#        field = self[field_name]
-#        #field.widget.setup_widget_state(self, field)
-#        return field.widget.get_selected_domain(field)
 
     def pre_render(self):
         """ Called just before jina-rendering occures. """
@@ -410,6 +380,10 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     def handle_GetData(self, widget_name = None, query = None):
         self.target_widget = widget_name
         self[widget_name].widget.handle_GetData(query)
+
+    def handle_UploadFile(self, widget_name = None):
+        self.target_widget = widget_name
+        self[widget_name].widget.handle_UploadFile()
 
 
 

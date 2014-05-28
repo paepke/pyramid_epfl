@@ -34,6 +34,8 @@ setup(
         "WTForms >= 1.0.5",
         "pyramid_jinja2 >= 1.10",
         "ujson >= 1.33",
+        "python-memcached",
+        "python-magic >= 0.4.6"
     ],
     entry_points = """\
     [pyramid.scaffold]

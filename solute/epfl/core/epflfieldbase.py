@@ -184,9 +184,13 @@ class FieldBase(wtforms.Field):
         elif not unicode(self.data).strip():
             return
 
+        if not self.coerce_func:
+            return
+
         try:
             dummy = self.coerce_func(self.data) # just call the coerceion to see if it fails
         except (ValueError, TypeError) as e:
+            raise
             raise ValueError(self.gettext(self.coerce_error_msg))
 
 

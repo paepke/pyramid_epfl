@@ -30,6 +30,15 @@ class IEPFLGlobalData(Interface):
 
 # handling extra data in different scopes:
 
+BLOBS = {}
+def get_epfl_temp_blob(request, key):
+    global BLOBS
+    return BLOBS[key]
+
+def set_epfl_temp_blob(request, key, value):
+    global BLOBS
+    BLOBS[key] = value
+
 
 def get_epfl_request_aux(request, param_name, default = None):
     if not hasattr(request, "__epfl_params"):
@@ -148,6 +157,8 @@ def includeme(config):
     config.add_request_method(get_epfl_jinja2_environment)
     config.add_request_method(set_epfl_request_aux)
     config.add_request_method(get_epfl_request_aux)
+    config.add_request_method(set_epfl_temp_blob)
+    config.add_request_method(get_epfl_temp_blob)
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
 
@@ -157,5 +168,5 @@ def includeme(config):
 
     # static routes
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
-    components.add_static_routes(config)
-    widgets.add_static_routes(config)
+    components.add_routes(config)
+    widgets.add_routes(config)

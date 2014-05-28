@@ -156,6 +156,9 @@ class Page(object):
 
 
     def done_request(self):
+        """ [request-processing-flow]
+        The main request teardown.
+        """
 
         for compo_obj in self.components.values():
             compo_obj.finalize()
@@ -198,7 +201,7 @@ class Page(object):
 
     def __get_transaction_from_request(self):
 
-        tid = self.page_request.get("tid")
+        tid = self.page_request.get_tid()
         transaction = epfltransaction.Transaction(self.request, tid)
 
         if transaction.created:
@@ -314,7 +317,7 @@ class Page(object):
 
         self.handle_transaction()
 
-        ajax_queue = self.page_request["q"]
+        ajax_queue = self.page_request.get_queue()
         for event in ajax_queue:
 
             event_type = event["t"]
@@ -335,6 +338,12 @@ class Page(object):
 
                 event_handler = getattr(self, "handle_" + event_name)
                 event_handler(**event_params)
+
+            elif event_type == "upl":
+                event_id = event["id"]
+                cid = event["cid"]
+                component_obj = self.components[cid]
+                component_obj.handle_event("UploadFile", {"widget_name": event["widget_name"]})
 
             else:
                 raise Exception, "Unknown ajax-event: " + repr(event)
@@ -584,11 +593,27 @@ class PageRequest(object):
         self.request = request
         self.page_obj = page_obj
         self.handeled_pages = []
+        self.upload_mode = False
 
-        if self.request.is_xhr:
+        if self.request.content_type.startswith("multipart/"):
+            self.upload_mode = True
+            self.params = request.params
+        elif self.request.is_xhr:
             self.params = request.json_body
         else:
             self.params = request.params
+
+    def is_upload_mode(self):
+        return self.upload_mode
+
+    def get_tid(self):
+        return self.params.get("tid")
+
+    def get_queue(self):
+        if self.upload_mode:
+            return [self.params]
+        else:
+            return self.params["q"]
 
 
     def get(self, key, default = None):
@@ -606,6 +631,12 @@ class PageRequest(object):
 
     def get_handeled_pages(self):
         return self.handeled_pages
+
+    def get_uploads(self):
+        if not self.is_upload_mode:
+            return {}
+        else:
+            return {self.params["widget_name"]: self.request.POST[self.params["widget_name"] + "[]"]}
 
 
 
