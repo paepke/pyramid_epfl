@@ -2,7 +2,7 @@
 
 from pprint import pprint
 
-import types, copy, string
+import types, copy, string, inspect
 
 from pyramid import security
 
@@ -89,6 +89,16 @@ class ComponentBase(object):
                 config_value = config[attr_name]
                 setattr(self, attr_name, copy.deepcopy(config_value))
 
+    @classmethod
+    def add_pyramid_routes(cls, config):
+        """ Adds the routes needed by this component """
+        fn = inspect.getfile(cls)
+        pos = fn.index("/epfl/components/")
+        epos = fn.index("/", pos + 17)
+        compo_path_part = fn[pos + 17 : epos]
+
+        config.add_static_view(name = "epfl/components/" + compo_path_part, 
+                               path = "solute.epfl.components:" + compo_path_part + "/static")
 
 
     def set_component_id(self, id):
@@ -174,41 +184,11 @@ class ComponentBase(object):
         else:
             return self.has_access()
 
-    # def add_js_link(self, js_name):
-    #     """ Accepts a string or a list as js_name and adds this javascript-file to the page-template """
-
-    #     if not js_name:
-    #         return
-
-    #     if type(js_name) is list:
-    #         for el in js_name:
-    #             self.add_js_link(el)
-    #     else:
-    #         asset_spec = self.asset_spec + "/" + js_name
-    #         url = self.request.static_url(asset_spec)
-    #         js_script_src = epflclient.JSLink(url)
-    #         self.response.add_extra_content(js_script_src)
-
-
-    # def add_css_link(self, css_name):
-    #     """ Accepts a string or a list as css_name """
-
-    #     if not css_name:
-    #         return
-
-    #     if type(css_name) is list:
-    #         for el in css_name:
-    #             self.add_css_link(el)
-    #     else:
-    #         asset_spec = self.asset_spec + "/" + css_name
-    #         url = self.request.static_url(asset_spec)
-    #         css_script_src = epflclient.CSSLink(url)
-    #         self.response.add_extra_content(css_script_src)
 
     def add_ajax_response(self, resp_string):
         """ Adds to the response some string (ajax or js or whatever the clients expects here).
-        Not to be confused with self.add_js_link (which adds a js-file).
-        In conjunction with callback-functions to a epfl.send(event, cb_func) call consider using "answer_json_request".
+        Not to be confused with self.add_js_link (which adds a js-file to the page at full-page-request-time).
+        In conjunction with callback-functions to a epfl.send(event, cb_func) call consider using "return_ajax_response".
         The Callback-Function then gets the ajax-response as first argument. Do not forget to json.encode(...) the data.
         Use only if sure that this was an ajax-request. If not so sure, use "add_js_response".
         """

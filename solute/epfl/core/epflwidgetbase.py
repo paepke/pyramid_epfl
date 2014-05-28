@@ -65,6 +65,19 @@ class WidgetBase(object):
 
         return field_kwargs, widget_kwargs
 
+
+    @classmethod
+    def add_pyramid_routes(cls, config):
+        fn = inspect.getfile(cls)
+        pos = fn.index("/epfl/widgets/")
+        epos = fn.index("/", pos + 14)
+        widget_path_part = fn[pos + 14 : epos]
+
+        config.add_static_view(name = "epfl/widgets/" + widget_path_part, 
+                               path = "solute.epfl.widgets:" + widget_path_part + "/static")
+
+
+
     def __init__(self, **params):
         self.raw_params = params
         self.form = None

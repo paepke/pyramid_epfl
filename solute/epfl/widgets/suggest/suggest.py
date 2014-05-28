@@ -22,7 +22,7 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
     asset_spec = "solute.epfl.widgets:suggest/static"
 
     js_name = ["suggest.js"]
-    css_name = ["suggest.css"]
+    css_name = []
 
     param_def = {"on_change": epflwidgetbase.EventType,
                  "get_data": epflwidgetbase.MethodType,        # the function that gets the current input as parameter and
