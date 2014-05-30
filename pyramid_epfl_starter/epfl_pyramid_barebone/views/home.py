@@ -138,7 +138,7 @@ class FilterForm(epfl.components.Form):
     tv_5 = epfl.fields.Datepicker("Datepicker", default_date = datetime.date(2014, 05, 16), min_date = datetime.date(2014, 05, 13), max_date = datetime.date(2014, 05, 20))
     tv_6 = epfl.fields.RadioButton("Radiotest", choices = "self.get_choices()")
     tv_7 = epfl.fields.Suggest("Suggest", type = "int", get_data = "self.get_categories_like")
-    tv_8 = epfl.fields.Upload("Fileupload", preview_height = 50)
+    tv_8 = epfl.fields.Upload("Fileupload", preview_height = 50, preview_width = None)
 
     click = epfl.fields.Button(on_click = "click")
     reset = epfl.fields.Button(on_click = "reset")

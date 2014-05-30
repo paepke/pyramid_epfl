@@ -27,7 +27,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
     css_name = ""
 
     param_def = {"multiple": (bool, False),                                         # multiple = true, you can upload multiple files at once
-                 "preview_width": (int, 300),                                       # width of the preview, if file is an image
+                 "preview_width": (epflwidgetbase.OptionalIntType, 300),            # width of the preview, if file is an image
                  "preview_height": (epflwidgetbase.OptionalIntType, None)}          # height of preview, if file is an image
 
     @classmethod

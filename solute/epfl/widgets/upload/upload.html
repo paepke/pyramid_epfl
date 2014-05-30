@@ -6,8 +6,6 @@
     {% endif %}
    </div>
     <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" {% if ds.params.multiple %} multiple {% endif %}>
-    {{ ds.params.preview_width }}
-    {{ ds.params.preview_height }}
 {% endmacro %}
 
 {% macro preview_image(ds) %}
