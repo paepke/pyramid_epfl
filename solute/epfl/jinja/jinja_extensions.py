@@ -37,7 +37,12 @@ def checked_if_equal(value, comparison):
 def selected_if_equal(value, comparison):
     return "SELECTED" if value == comparison else ""
 
-
+def optional_html_attr(value, attr_name):
+    if not value:
+        return ""
+    else:
+        value = unicode(value).replace("\"", "\\\"")
+        return "{attr_name}={value}".format(attr_name = attr_name, value = value)
 
 
 class EpflComponentExtension(Extension):
@@ -174,6 +179,7 @@ def extend_environment(env):
     env.filters["nony"] = nony
     env.filters["checked_if_equal"] = checked_if_equal
     env.filters["selected_if_equal"] = selected_if_equal
+    env.filters["optional_html_attr"] = optional_html_attr
 
     env.globals["ping"] = ping
 
