@@ -42,7 +42,7 @@ def optional_html_attr(value, attr_name):
         return ""
     else:
         value = unicode(value).replace("\"", "\\\"")
-        return "{attr_name}={value}".format(attr_name = attr_name, value = value)
+        return jinja2.Markup("{attr_name}={value}".format(attr_name = attr_name, value = jinja2.escape(value)))
 
 
 class EpflComponentExtension(Extension):
