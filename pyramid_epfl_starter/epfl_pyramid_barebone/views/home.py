@@ -9,6 +9,9 @@ import time, datetime, pkg_resources
 
 DATA = []
 
+CKEDITOR_OPTS = epfl.widgets.CKEditorWidget.OPTS_MINIMAL_FORMATTING1.copy()
+CKEDITOR_OPTS["charcount"] = True
+
 for i in range(100):
     DATA.append({
         "icon_edit": {"link": "/redakteure/testberichte_formular/%s" % i},
@@ -145,6 +148,7 @@ class FilterForm(epfl.components.Form):
     tv_6 = epfl.fields.RadioButton("Radiotest", choices = "self.get_choices()")
     tv_7 = epfl.fields.Suggest("Suggest", type = "int", get_data = "self.get_categories_like")
     tv_8 = epfl.fields.Upload("Fileupload", preview_height = 50, preview_width = None)
+    tv_9 = epfl.fields.CKEditor(opts = CKEDITOR_OPTS)
 
     click = epfl.fields.Button(on_click = "click")
     reset = epfl.fields.Button(on_click = "reset")
