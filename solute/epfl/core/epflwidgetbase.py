@@ -246,7 +246,6 @@ class WidgetBase(object):
             if info_type.client_param:
                 client_side_params[param_name] = self.params[param_name]
 
-
         data_source = DataSource(form = self.form,
                                  widget = self,
                                  field = self.field,
@@ -311,9 +310,9 @@ class DataSource(object):
     """ The instance-variables are exposed to the template of the widget.
     e.g. access the
 
-    name of the widget as {{ widget.name }}
-    min_value of the SliderWidget (configured in the Form-Instance) as {{ widget.params.min_value }}
-    some kwarg passed from the jinja-template while calling the widget by {{ widget.kwargs.some_name }}
+    name of the widget as {{ ds.name }}
+    min_value of the SliderWidget (configured in the Form-Instance as param_def) as {{ ds.params.min_value }}
+    some kwarg passed from the jinja-template while calling the widget by {{ ds.kwargs.some_name }}
 
     This object may be modified by the update_data_source-method of the concrete widget
     """
@@ -507,6 +506,17 @@ class OptionalStringType(ParamType):
             return True
         else:
             return type(obj) in [str, unicode]
+
+
+class OptionalIntType(ParamType):
+    """ An integer or nothing """
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) is int
 
 
 
