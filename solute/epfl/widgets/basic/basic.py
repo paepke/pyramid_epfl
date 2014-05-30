@@ -46,6 +46,7 @@ class EntryWidget(BasicWidget):
 
     param_def = {"on_change": epflwidgetbase.EventType,
                  "on_return": epflwidgetbase.EventType,
+                 "char_count": (bool, False),
                 }
 
     template_name = {"template": "basic/basic.html",

@@ -123,7 +123,10 @@ class FilterForm(epfl.components.Form):
     save = epfl.fields.Button(on_click = "submit")
 
     test_value1 = epfl.fields.Entry("Click Time", default = "Click-a-me!", description = u"This one will be populated by clicking on 'Click'!")
-    test_value2 = epfl.fields.Entry("Text Field (16)", type = "char(16)", validators = [wtforms.validators.Email()])
+    test_value2 = epfl.fields.Entry("Text Field (16)", 
+                                    type = "char(16)", 
+                                    validators = [wtforms.validators.Email()],
+                                    char_count = True)
     test_value3 = epfl.fields.Entry("Integer Field", type = "int", default = 4711)
     test_value5 = epfl.fields.Entry("Mandatory Integer", type = "int", mandatory = True)
     test_value4 = epfl.fields.Entry("Float Field", type = "float")
@@ -135,7 +138,10 @@ class FilterForm(epfl.components.Form):
     tv_2 = epfl.fields.ButtonSet("Buttonset", choices = "self.get_choices()")
     tv_3 = epfl.fields.Accordion("Test", sections = "self.get_sections()")
     tv_4 = epfl.fields.Sort(u"Sortieren")
-    tv_5 = epfl.fields.Datepicker("Datepicker", default_date = datetime.date(2014, 05, 16), min_date = datetime.date(2014, 05, 13), max_date = datetime.date(2014, 05, 20))
+    tv_5 = epfl.fields.Datepicker("Datepicker", 
+                                  default_date = datetime.date(2014, 05, 16), 
+                                  min_date = datetime.date(2014, 05, 13), 
+                                  max_date = datetime.date(2014, 05, 20))
     tv_6 = epfl.fields.RadioButton("Radiotest", choices = "self.get_choices()")
     tv_7 = epfl.fields.Suggest("Suggest", type = "int", get_data = "self.get_categories_like")
     tv_8 = epfl.fields.Upload("Fileupload", preview_height = 50, preview_width = None)

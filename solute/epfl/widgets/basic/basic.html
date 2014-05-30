@@ -8,6 +8,9 @@
 
 {% macro entry(ds) %}
 	<input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" {{- ds.maxlength_attr -}} />
+    {% if ds.params.char_count %}
+        <div class="epfl-form-field-entry-ccnt" id="{{ds.wid}}_ccnt"></div>
+    {% endif %}
 {% endmacro %}
 
 {% macro radio(ds) %}

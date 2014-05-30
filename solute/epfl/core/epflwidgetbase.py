@@ -280,7 +280,7 @@ class WidgetBase(object):
 
     def make_html_attribute(self, attr_name, attr_value):
         """ returns a string to insert into a html-tag to define an html-attribue """
-        return "{attr_name}=\"{attr_value}\"".format(attr_name = attr_name, attr_value = jinja2.escape(attr_value))
+        return jinja2.Markup("{attr_name}=\"{attr_value}\"".format(attr_name = attr_name, attr_value = jinja2.escape(attr_value)))
 
     def js_call(self, method_name, *args):
         """ A JS-Snipped which calls a method of this widget """
