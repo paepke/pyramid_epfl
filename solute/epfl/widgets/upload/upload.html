@@ -5,11 +5,16 @@
          {{ preview_image(ds) }}
     {% endif %}
    </div>
-    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" multiple>
+    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" {% if ds.params.multiple %} multiple {% endif %}>
+    {{ ds.params.preview_width }}
+    {{ ds.params.preview_height }}
 {% endmacro %}
 
 {% macro preview_image(ds) %}
-    <a target="_blank" href="{{ ds.preview_url }}"><img src="{{ ds.preview_url }}" width="300"></a>
+    <a target="_blank" href="{{ ds.preview_url }}"><img src="{{ ds.preview_url }}" 
+        {{ ds.params.preview_width | optional_html_attr("width") }}
+        {{ ds.params.preview_height | optional_html_attr("height") }}
+    ></a>
 {% endmacro %}
 
 {% macro init_js(ds) %}

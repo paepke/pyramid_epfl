@@ -26,6 +26,10 @@ class UploadWidget(epflwidgetbase.WidgetBase):
     js_name = ["jquery.iframe-transport.js", "jquery.fileupload.js", "upload.js"]
     css_name = ""
 
+    param_def = {"multiple": (bool, False),                                         # multiple = true, you can upload multiple files at once
+                 "preview_width": (int, 300),                                       # width of the preview, if file is an image
+                 "preview_height": (epflwidgetbase.OptionalIntType, None)}          # height of preview, if file is an image
+
     @classmethod
     def add_pyramid_routes(cls, config):
         super(UploadWidget, cls).add_pyramid_routes(config)
@@ -61,7 +65,10 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         fuob = FileUploadObject().from_upload(self.request, self.field)
         self.field.data = fuob
 
-        upload_info = {"preview_url": fuob.get_preview_url(self.request)}
+        upload_info = {"preview_url": fuob.get_preview_url(self.request),
+                       "preview_height": self.params["preview_height"],
+                       "preview_width": self.params["preview_width"],
+                       }
 
         self.form.return_ajax_response(upload_info)
 
@@ -233,8 +240,6 @@ class Upload(epflfieldbase.FieldBase):
     FileUploadObject = FileUploadObject # to access the this class from a component
 
     def setup_type(self):
-        
-
         # do not touch coerce_func here
 
         self.coerce_error_msg = "txt_value_must_be_file_upload_object"
