@@ -11,6 +11,9 @@ class ITempDataProvider(Interface):
     It is only responsible for storing the data. The GC must be implemented
     at a higher level.
     """
+
+    def __init__(self, config):
+        pass
     
     def get(self, request, key, default = None):
         pass
@@ -27,7 +30,9 @@ class INodeGlobalDataProvider(Interface):
     for at least the life-time of the server process.
     No GC neccesary.
     """
-    pass
+
+    def __init__(self, config):
+        pass
 
 
 
@@ -38,7 +43,7 @@ class LocalMemoryProvider(object):
     As GlobalDataProvider you can use it in production.
     """
 
-    def __init__(self):
+    def __init__(self, config):
         self.blobs = {}
 
     def get(self, request, key, default = None):

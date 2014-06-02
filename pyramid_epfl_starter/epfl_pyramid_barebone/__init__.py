@@ -32,10 +32,10 @@ def main(global_config, **settings):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
-    temp_data_provider = epfltempdata.LocalMemoryProvider()
+    temp_data_provider = epfltempdata.LocalMemoryProvider(config)
     config.set_tempdata_provider(temp_data_provider)
 
-    nodeglobal_data_provider = epfltempdata.LocalMemoryProvider()
+    nodeglobal_data_provider = epfltempdata.LocalMemoryProvider(config)
     config.set_nodeglobaldata_provider(nodeglobal_data_provider)
     
     config.scan()
