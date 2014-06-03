@@ -135,7 +135,7 @@ class FileUploadObject(object):
         self.persisted_id = persisted_id
 
         try:
-            meta = json.loads(request.get_epfl_temp_blob(self.persisted_id + "_meta"))
+            meta = request.get_epfl_temp_blob_meta(self.persisted_id)
             self.mime_type = meta["mime_type"]
             self.file_extension = meta["ext"]
             self.file_name = meta["name"]
@@ -186,7 +186,7 @@ class FileUploadObject(object):
             # it's already temp-blob, fetch it
             try:
                 self.data = request.get_epfl_temp_blob(self.persisted_id)
-                meta = json.loads(request.get_epfl_temp_blob(self.persisted_id + "_meta"))
+                meta = request.get_epfl_temp_blob_meta(self.persisted_id)
                 self.mime_type = meta["mime_type"]
                 self.file_extension = meta["ext"]
                 self.file_name = meta["name"]
@@ -209,8 +209,10 @@ class FileUploadObject(object):
                      "ext": self.file_extension,
                      "name": self.file_name}
 
-        request.set_epfl_temp_blob(self.persisted_id, self.data)
-        request.set_epfl_temp_blob(self.persisted_id + "_meta", json.dumps(meta_data))
+        request.set_epfl_temp_blob(self.persisted_id, 
+                                   data = self.data, 
+                                   meta = meta_data)
+
 
     def get_data(self, request):
         self.to_data(request)

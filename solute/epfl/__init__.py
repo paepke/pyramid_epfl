@@ -132,6 +132,7 @@ def includeme(config):
     config.add_request_method(get_epfl_request_aux)
     config.add_request_method(epfltempdata.set_epfl_temp_blob)
     config.add_request_method(epfltempdata.get_epfl_temp_blob)
+    config.add_request_method(epfltempdata.get_epfl_temp_blob_meta)
     config.add_request_method(epfltempdata.get_epfl_nodeglobal_aux)
     config.add_request_method(epfltempdata.set_epfl_nodeglobal_aux)
     config.add_request_method(is_template_marked_as_not_found)
