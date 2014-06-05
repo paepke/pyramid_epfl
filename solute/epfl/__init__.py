@@ -68,7 +68,7 @@ def get_epfl_jinja2_environment(request):
     env = jinja_reflection.ReflectiveEnvironment(loader = loader,
                                                  auto_reload = oenv.auto_reload,
                                                  extensions = oenv.extensions,
-                                                 undefined = oenv.undefined,
+                                                 undefined = StrictUndefined, # oenv.undefined,
 
                                                  block_start_string = oenv.block_start_string,
                                                  block_end_string = oenv.block_end_string,
