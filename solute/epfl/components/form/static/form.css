@@ -79,3 +79,7 @@ textarea:focus, input:focus {
     vertical-align: middle;
     color: red;
 }
+
+.epfl-form-field-error-mark {
+    background: #ff8080;
+}

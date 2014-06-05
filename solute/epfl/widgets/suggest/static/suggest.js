@@ -20,20 +20,13 @@ epfl.SuggestWidget = function(wid, cid, params) {
                                   value: data[i][0]})
                 }
 
-                response($.ui.autocomplete.filter(ac_data, request.term));
+                response(ac_data);
             });
 
         },
 
 
         select: function(event, ui) {
-            var sel_obj = ui.item;
-            $('#' + wid + "__entry").val(sel_obj.label);
-            $('#' + wid).val(sel_obj.value);
-            widget_obj.notify_value_change();
-            return false;
-        },
-        focus: function(event, ui) {
             var sel_obj = ui.item;
             $('#' + wid + "__entry").val(sel_obj.label);
             $('#' + wid).val(sel_obj.value);

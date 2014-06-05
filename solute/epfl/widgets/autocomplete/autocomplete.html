@@ -1,5 +1,5 @@
 {% macro main(ds) %}
-    <input class="autocomplete-widget {{ ds.class_ }}" style="{{ ds.style }}" type="text" id="{{ ds.wid }}__entry" name="{{ ds.wid }}__entry" value="{{ ds.entry_data }}">
+    <input class="autocomplete-widget {{ ds.css_classes }}" style="{{ ds.style }}" type="text" id="{{ ds.wid }}__entry" name="{{ ds.wid }}__entry" value="{{ ds.entry_data }}">
     <input type="hidden" id="{{ ds.wid }}" name="{{ ds.wid }}" value="{{ ds.value }}">
 {% endmacro %}
 

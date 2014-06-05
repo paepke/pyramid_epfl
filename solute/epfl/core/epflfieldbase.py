@@ -147,7 +147,7 @@ class FieldBase(wtforms.Field):
         self.validator_visual = ""
 
         if self.state["mandatory"]:
-            self.validators.append(FieldMandatory(message = "txt_value_required"))
+            self.validators.append(FieldMandatory())
 
         for v in self.validators:
             visual = getattr(v, 'visual', None)
@@ -173,6 +173,13 @@ class FieldBase(wtforms.Field):
         """ called with the default value """
         super(FieldBase, self).process_data(data)
 
+    def create_new_value(self):
+        """ Called if form.validate was called with create_new_values=True for every field.
+        Here a field (e.g. Suggest) can check, if a new value must be created by the application-model
+        that the field can be validated correctly.
+        """
+        pass
+
 
     def pre_validate(self, form):
         """ This uses the self.coerce_func setup by setup_type. It's called when self.validate() is called. """
@@ -190,7 +197,6 @@ class FieldBase(wtforms.Field):
         try:
             dummy = self.coerce_func(self.data) # just call the coerceion to see if it fails
         except (ValueError, TypeError) as e:
-            raise
             raise ValueError(self.gettext(self.coerce_error_msg))
 
 
@@ -256,7 +262,7 @@ class FieldMandatory(object):
     field_flags = ('required', )
     visual = "*"
 
-    def __init__(self, message=None):
+    def __init__(self, message = "txt_value_required"):
         self.message = message
 
     def __call__(self, form, field):
@@ -268,11 +274,9 @@ class FieldMandatory(object):
         else:
             error = False
 
+        message = field.gettext(self.message)
 
         if error:
-            if self.message is None:
-                self.message = field.gettext('This field is required.')
-
             field.errors[:] = []
-            raise validators.StopValidation(self.message)
+            raise validators.StopValidation(message)
 

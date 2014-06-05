@@ -1,6 +1,6 @@
 
 {% macro main(ds) %}
-<ul class="sort-widget {{ ds.class_ }}"
+<ul class="sort-widget {{ ds.css_classes }}"
     style="{{ ds.style }}"
     id="{{ ds.name }}">
     {% for item in ds.all_items %}
