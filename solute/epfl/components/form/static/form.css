@@ -13,6 +13,10 @@ input, textarea {
     padding: 2px;
 }
 
+input[type=file] {
+    border: 1px transparent;
+}
+
 textarea:focus, input:focus {
     border: 1px solid #900;
 }

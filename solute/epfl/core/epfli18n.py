@@ -1,6 +1,8 @@
 #* encoding: utf-8
 
-TRANSLATIONS = {"txt_value_required": "Bitte Wert eingeben!"}
+TRANSLATIONS = {"txt_value_required": u"Bitte Wert eingeben!",
+                "txt_upload_file_ok": u"Upload erfolgreich abgeschlossen.",
+                "txt_upload_file_error": u"Fehler beim hochladen der Datei."}
 
 class BasicDB(object):
     

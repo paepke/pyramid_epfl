@@ -9,10 +9,14 @@
 {% endmacro %}
 
 {% macro preview_image(ds) %}
-    <a target="_blank" href="{{ ds.preview_url }}"><img src="{{ ds.preview_url }}" 
-        {{ ds.params.preview_width | optional_html_attr("width") }}
-        {{ ds.params.preview_height | optional_html_attr("height") }}
-    ></a>
+    <a target="_blank" href="{{ ds.preview_url }}">
+        <div class='epfl-form-upload-preview'>
+            <img src="{{ ds.preview_url }}" {{ ds.params.preview_width | optional_html_attr("width") }}
+                                            {{ ds.params.preview_height | optional_html_attr("height") }}>
+            <br>
+            {{ ds.preview_fn }} 
+        </div>
+    </a>
 {% endmacro %}
 
 {% macro init_js(ds) %}

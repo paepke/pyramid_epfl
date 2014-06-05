@@ -24,7 +24,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
     asset_spec = "solute.epfl.widgets:upload/static"
 
     js_name = ["jquery.iframe-transport.js", "jquery.fileupload.js", "upload.js"]
-    css_name = ""
+    css_name = ["upload.css"]
 
     param_def = {"multiple": (bool, False),                                         # multiple = true, you can upload multiple files at once
                  "preview_width": (epflwidgetbase.OptionalIntType, 300),            # width of the preview, if file is an image
@@ -56,8 +56,10 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         if self.field.data:
             fuob = self.field.data
             data_source.preview_url = fuob.get_preview_url(self.request)
+            data_source.preview_fn = "({fn})".format(fn = fuob.file_name)
         else:
             data_source.preview_url = None
+            data_source.preview_fn = None
 
     def handle_UploadFile(self):
         """ This is called whenever a user uploads a file. """
@@ -68,6 +70,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         upload_info = {"preview_url": fuob.get_preview_url(self.request),
                        "preview_height": self.params["preview_height"],
                        "preview_width": self.params["preview_width"],
+                       "preview_fn": "({fn})".format(fn = fuob.file_name)
                        }
 
         self.form.return_ajax_response(upload_info)

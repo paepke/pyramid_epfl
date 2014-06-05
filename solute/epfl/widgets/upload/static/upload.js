@@ -20,7 +20,7 @@ epfl.UploadWidget = function(wid, cid, params) {
             var ph = "";
             if (data.result["preview_height"]) { ph = "height=\"" + data.result["preview_height"]+ "\""; }
             if (data.result["preview_width"]) { pw = "width=\"" + data.result["preview_width"]+ "\""; }
-            $("#" + widget_obj.wid + "_preview").html("<a target=\"_blank\" href=\"" + url + "\"><img src=\"" + url + "\" " + pw + " " + ph + "></a>");
+            $("#" + widget_obj.wid + "_preview").html("<a target=\"_blank\" href=\"" + url + "\"><div class='epfl-form-upload-preview'><img src=\"" + url + "\" " + pw + " " + ph + "><br>" + data.result["preview_fn"] + "</div></a>");
             epfl.show_fading_message("txt_upload_file_ok", "ok");            
         },
         fail: function (e, data) {
