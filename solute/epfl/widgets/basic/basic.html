@@ -17,14 +17,14 @@
     <div id="{{ds.wid}}" name="{{ ds.name}}">
         {% for choice in ds.params.choices %}
             {% set field_id = "{wid}_{value}".format(wid = ds.wid, value = choice[0]) %}
-            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" value="{{ choice[0]|nony|e }}" />
+            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" value="{{ choice[0]|nony|e }}" {{ choice[0]|checked_if_equal(ds.value) }}/>
             <label for="{{ field_id }}">{{ choice[1] }}</label>
         {% endfor %}
     </div>
 {% endmacro %}
 
 {% macro checkbox(ds) %}
-    <input id="{{ds.wid}}" name="{{ ds.name }}" {{ ds.value|checked_if_equal(comparison=True) }} type="checkbox" />
+    <input id="{{ds.wid}}" name="{{ ds.name }}" type="checkbox" {{ ds.value|checked_if_equal(True) }} />
 {% endmacro %}
 
 {% macro textarea(ds) %}
