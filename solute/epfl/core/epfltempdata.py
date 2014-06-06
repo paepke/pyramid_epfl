@@ -1,7 +1,8 @@
 #* coding: utf-8
 
+from solute.epfl.core import epflconfig
 from zope.interface import Interface, implements
-
+from solute.epfl import json
 
 # the interfaces:
 
@@ -55,6 +56,14 @@ class LocalMemoryProvider(object):
 
 # the request-methods:
 
+def get_epfl_temp_blob_meta(request, key):
+    """ Store/Retrieve the meta-data of the below possibliy very large binary object temporarily but avaiable on all nodes. """
+    provider = request.registry.queryUtility(ITempDataProvider)
+    if not provider:
+        raise ValueError, "No ITempDataProvider configured!"
+    meta_key = "__meta__$" + key
+    return json.loads(provider.get(request, meta_key))
+
 def get_epfl_temp_blob(request, key):
     """ Store/Retrieve a possibliy very large binary object temporarily but avaiable on all nodes. """
     provider = request.registry.queryUtility(ITempDataProvider)
@@ -62,12 +71,23 @@ def get_epfl_temp_blob(request, key):
         raise ValueError, "No ITempDataProvider configured!"
     return provider.get(request, key)
 
-def set_epfl_temp_blob(request, key, value):
-    """ Store/Retrieve a possibliy very large binary object temporarily but avaiable on all nodes. """
+def set_epfl_temp_blob(request, key, data, meta = None, ttl = None):
+    """ 
+    Store/Retrieve a possibliy very large binary object temporarily but avaiable on all nodes. 
+    meta-data (a json-dumpable) can be supplied and a ttl (in seconds)
+    """
+    if ttl is None:
+        ttl = epflconfig.get(request, "epfl.tmp_data_ttl")        
+
     provider = request.registry.queryUtility(ITempDataProvider)
     if not provider:
         raise ValueError, "No ITempDataProvider configured!"
-    provider.set(request, key, value)
+
+    if meta:
+        provider.set(request, "__meta__$" + key, json.dumps(meta))
+
+    provider.set(request, "__ttl__$" + key, json.dumps(ttl))
+    provider.set(request, key, data)
 
 def get_epfl_nodeglobal_aux(request, key, default = None):
     provider = request.registry.queryUtility(INodeGlobalDataProvider)

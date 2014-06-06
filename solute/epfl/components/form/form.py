@@ -15,6 +15,7 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflfieldbase
 from solute.epfl.core import epfltransaction
 from solute.epfl.core import epflconfig
+from solute.epfl.core import epfli18n
 
 import jinja2
 import wtforms
@@ -37,6 +38,11 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     field_state = {}
     form_data_store = {}
     additional_data = {}
+
+    class Meta(object):
+        def get_translations(self, form):
+            return epfli18n.BasicDB()
+
 
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
@@ -121,6 +127,22 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
             self.form_data_store[field.name] = field.data
 
         super(Form, self).finalize_component_state()
+
+    def validate(self, create_new_values = False):
+        """
+        Additionally to the validation (done by the original-wtforms-class) it can create new values.
+        This will be done if create_new_values = True:
+        New values occur e.g. as the value-visuals the user types in at SuggestWidgets that have 
+        match_required=False and a new_value_func defined.
+        When some data was typed in that is not in the list the SuggestWidget's get_data-function returned,
+        the new_value_func is called with the new value.
+        """
+
+        if create_new_values:
+            for field in self:
+                field.create_new_value()
+
+        return super(Form, self).validate()
 
 
     def get_data(self, key = None, default = NO_DEFAULT, validate = False):

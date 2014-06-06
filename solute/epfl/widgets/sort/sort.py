@@ -45,7 +45,7 @@ class SortWidget(epflwidgetbase.WidgetBase):
         data_source.style = style
 
         class_ = data_source.kwargs.get('class_', '')
-        data_source.class_ = class_
+        data_source.css_classes.append(class_)
 
         idx = 0
         all_items = []

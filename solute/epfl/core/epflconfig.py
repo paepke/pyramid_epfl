@@ -1,9 +1,24 @@
 #* coding: utf-8
 
-CONFIG = {"max_upload_size": ("FileSizeType", "1 m", "The maximal size of a single file for user uploads.")}
+CONFIG = {"epfl.max_upload_size": ("FileSizeType", "1 m", "The maximal size of a single file for user uploads."),
+          "epfl.tmp_data_ttl": ("DurationType", "1 d", "The time to live of temp-data objects (e.g. uploads)")}
 
 class ConfigType(object):
     pass
+
+class DurationType(ConfigType):
+
+    def convert_value(self, value_str):
+        if value_str.endswith("m"):
+            value = long(value_str[:-1]) * 60
+        elif value_str.endswith("h"):
+            value = long(value_str[:-1]) * 60 * 60
+        elif value_str.endswith("d"):
+            value = long(value_str[:-1]) * 60 * 60 * 24
+        else:
+            value = long(value)
+
+        return value
 
 class FileSizeType(ConfigType):
 
@@ -20,7 +35,8 @@ class FileSizeType(ConfigType):
         return value
 
 
-CONFIG_TYPES = {"FileSizeType": FileSizeType}
+CONFIG_TYPES = {"FileSizeType": FileSizeType,
+                "DurationType": DurationType}
 
 def get_type(config_info):
     global CONFIG_TYPES

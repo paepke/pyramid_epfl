@@ -7,7 +7,7 @@ import copy
 import datetime
 
 import jinja2
-
+from solute.epfl.jinja import jinja_helpers
 from solute.epfl.core import epflclient, epflutil, epflexceptions
 
 from wtforms.widgets.core import HTMLString
@@ -84,6 +84,7 @@ class WidgetBase(object):
         self.state = None
         self.is_rendered = False # is this widget rendered
         self.js_part = None # after the rendering of the html-part this contains the js-part
+        self.mark_error = False # sould this field be marked errorneous.
 
         self.params = {} # will be filled with persistable params and unpersistable params
 
@@ -216,7 +217,7 @@ class WidgetBase(object):
             if info_type.check_type(info["raw_value"]):
                 value = info_type.eval(info["raw_value"], self.form) # evaluate the param
             else:
-                raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define param '" + param_name + "' of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
+                raise epflexceptions.ConfigurationError, "Field '" + self.field.name + "' must define param '" + param_name + "' of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
 
             params[param_name] = value
 
@@ -304,6 +305,27 @@ class WidgetBase(object):
 
         return string.join(js, "")
 
+    def has_errors(self):
+        """ Checks if the field has errors """
+        if self.field.errors or self.mark_error:
+            return True
+        else:
+            return False
+
+    def set_error(self, msg):
+        """ Sets the error message for the field. 
+        A latter call of "validate" will clear/override this message. """
+        self.field.errors.append(msg)
+
+    def mark_error(self):
+        """ Marks the field visually errornous. After a form.redraw the field appears red. 
+        The marker is not persisted in state. This means just like the self.errors
+        it is only displayed once.
+        """
+        self.mark_error = True
+
+
+
 
 class DataSource(object):
 
@@ -330,6 +352,11 @@ class DataSource(object):
         self.params = widget_params
         self.label = field.label
         self.wid = self.cid + "_" + self.name
+        self.css_classes = jinja_helpers.StringJoinerList(" ")
+
+
+        if widget.has_errors():
+            self.css_classes.append("epfl-form-field-error-mark")
 
         self.value = field.data # widget_kwargs.get("value", field.data)
         if self.value is None:
@@ -414,6 +441,15 @@ class MethodType(ParamType):
             domain_func_name = domain_func_name.rstrip("()")
             return getattr(form, domain_func_name)
 
+
+class OptionalMethodType(MethodType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if obj is None:
+            return True
+        else:
+            return super(cls, OptionalMethodType).check_type(obj)
 
 class EventType(ParamType):
     """ An event: None - no event given, or a string - the name of the

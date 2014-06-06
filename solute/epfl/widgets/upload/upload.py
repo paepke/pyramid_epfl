@@ -24,7 +24,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
     asset_spec = "solute.epfl.widgets:upload/static"
 
     js_name = ["jquery.iframe-transport.js", "jquery.fileupload.js", "upload.js"]
-    css_name = ""
+    css_name = ["upload.css"]
 
     param_def = {"multiple": (bool, False),                                         # multiple = true, you can upload multiple files at once
                  "preview_width": (epflwidgetbase.OptionalIntType, 300),            # width of the preview, if file is an image
@@ -56,8 +56,10 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         if self.field.data:
             fuob = self.field.data
             data_source.preview_url = fuob.get_preview_url(self.request)
+            data_source.preview_fn = "({fn})".format(fn = fuob.file_name)
         else:
             data_source.preview_url = None
+            data_source.preview_fn = None
 
     def handle_UploadFile(self):
         """ This is called whenever a user uploads a file. """
@@ -68,6 +70,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         upload_info = {"preview_url": fuob.get_preview_url(self.request),
                        "preview_height": self.params["preview_height"],
                        "preview_width": self.params["preview_width"],
+                       "preview_fn": "({fn})".format(fn = fuob.file_name)
                        }
 
         self.form.return_ajax_response(upload_info)
@@ -135,7 +138,7 @@ class FileUploadObject(object):
         self.persisted_id = persisted_id
 
         try:
-            meta = json.loads(request.get_epfl_temp_blob(self.persisted_id + "_meta"))
+            meta = request.get_epfl_temp_blob_meta(self.persisted_id)
             self.mime_type = meta["mime_type"]
             self.file_extension = meta["ext"]
             self.file_name = meta["name"]
@@ -186,7 +189,7 @@ class FileUploadObject(object):
             # it's already temp-blob, fetch it
             try:
                 self.data = request.get_epfl_temp_blob(self.persisted_id)
-                meta = json.loads(request.get_epfl_temp_blob(self.persisted_id + "_meta"))
+                meta = request.get_epfl_temp_blob_meta(self.persisted_id)
                 self.mime_type = meta["mime_type"]
                 self.file_extension = meta["ext"]
                 self.file_name = meta["name"]
@@ -209,8 +212,10 @@ class FileUploadObject(object):
                      "ext": self.file_extension,
                      "name": self.file_name}
 
-        request.set_epfl_temp_blob(self.persisted_id, self.data)
-        request.set_epfl_temp_blob(self.persisted_id + "_meta", json.dumps(meta_data))
+        request.set_epfl_temp_blob(self.persisted_id, 
+                                   data = self.data, 
+                                   meta = meta_data)
+
 
     def get_data(self, request):
         self.to_data(request)

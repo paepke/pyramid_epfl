@@ -39,7 +39,7 @@ class Transaction(object):
 
         if self.created:
             # setup new transaction
-            self["is_transaction"] = True
+            self["__is_transaction__"] = True
             self["__ct__"] = time.time()
             self["overlays"] = []
 
@@ -61,7 +61,7 @@ class Transaction(object):
         child_tids = []
 
         for key in self.session.keys():
-            if key.startswith("TA_") and type(self.session[key]) is dict and self.session[key].has_key("is_transaction"):
+            if key.startswith("TA_") and type(self.session[key]) is dict and self.session[key].has_key("__is_transaction__"):
                 ptid = self.session[key].get("__pid__")
                 if ptid == self.tid:
                     child_tids.append(key[3:])

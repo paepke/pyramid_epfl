@@ -1,5 +1,5 @@
 {% macro main(ds) %}
-    <input class="{{ ds.class }}" style="{{ ds.style }}" type="text" id="{{ ds.wid }}" name="{{ ds.name }}" value="{{ ds.value|e }}">
+    <input type="text" id="{{ ds.wid }}" name="{{ ds.name }}" value="{{ ds.value|e }}">
 {% endmacro %}
 
 {% macro init_js(ds) %}

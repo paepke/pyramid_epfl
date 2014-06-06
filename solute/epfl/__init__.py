@@ -68,7 +68,7 @@ def get_epfl_jinja2_environment(request):
     env = jinja_reflection.ReflectiveEnvironment(loader = loader,
                                                  auto_reload = oenv.auto_reload,
                                                  extensions = oenv.extensions,
-                                                 undefined = oenv.undefined,
+                                                 undefined = StrictUndefined, # oenv.undefined,
 
                                                  block_start_string = oenv.block_start_string,
                                                  block_end_string = oenv.block_end_string,
@@ -132,6 +132,7 @@ def includeme(config):
     config.add_request_method(get_epfl_request_aux)
     config.add_request_method(epfltempdata.set_epfl_temp_blob)
     config.add_request_method(epfltempdata.get_epfl_temp_blob)
+    config.add_request_method(epfltempdata.get_epfl_temp_blob_meta)
     config.add_request_method(epfltempdata.get_epfl_nodeglobal_aux)
     config.add_request_method(epfltempdata.set_epfl_nodeglobal_aux)
     config.add_request_method(is_template_marked_as_not_found)
