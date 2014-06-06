@@ -147,7 +147,7 @@ class FieldBase(wtforms.Field):
         self.validator_visual = ""
 
         if self.state["mandatory"]:
-            self.validators.append(FieldMandatory(message = "txt_value_required"))
+            self.validators.append(FieldMandatory(message = "txt_invalid."))
 
         for v in self.validators:
             visual = getattr(v, 'visual', None)

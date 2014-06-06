@@ -1,12 +1,17 @@
-.search_entry [type="text"]{width: 840px;}
+.search_entry [type="text"]{width: 830px;}
 
 .checkbox { padding - left:10px;}
 
-.entry_large [type="text"]{width:560px;}
+.entry_small [type="text"]{width:80px;}
+
+.entry_medium [type="text"]{width:110px;}
+
+.entry_large [type="text"]{width:580px;}
 
 .radio [type="radio"]{margin:0 5px;}
 
 .datetime [type="text"]{width:110px;}
+
 
 .epfl-form-field-entry-ccnt {
     width: 50px;
@@ -14,3 +19,4 @@
     float: right;
     margin: 3px 0px 3px 10px;
 }
+

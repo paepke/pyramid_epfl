@@ -153,5 +153,5 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
         self.field.process_formdata([value])
 
 
-class CKEditor(epflfieldbase.FieldBase): 
+class CKEditor(epflfieldbase.FieldBase):
     widget_class = CKEditorWidget
