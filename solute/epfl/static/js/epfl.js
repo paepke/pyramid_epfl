@@ -53,7 +53,7 @@ epfl_module = function() {
 		for (var part_name in parts) {
 			if (part_name == "js") continue;
 			var part_html = parts[part_name];
-	  		if (part_name == "main") { 
+	  		if (part_name == "main") {
 	  			var epflid = cid;
 	  		} else {
 	  			var epflid = cid + "$" + part_name;
@@ -65,7 +65,7 @@ epfl_module = function() {
 	  		};
 	  		el.replaceWith(part_html);
 		};
-		eval(parts["js"]);	
+		eval(parts["js"]);
 	};
 
 	epfl.hide_component = function(cid) {
@@ -160,11 +160,11 @@ epfl_module = function() {
 	epfl.make_component_event = function(component_id, event_name, params) {
 
 		if (!params) params = {};
-		
+
 		return {"id": epfl.make_event_id(),
-		        "t": "ce", 
-		        "cid": component_id, 
-		        "e": event_name, 
+		        "t": "ce",
+		        "cid": component_id,
+		        "e": event_name,
 		        "p": params};
 	};
 
@@ -173,8 +173,8 @@ epfl_module = function() {
 		if (!params) params = {};
 
 		return {"id": epfl.make_event_id(),
-		        "t": "pe", 
-		        "e": event_name, 
+		        "t": "pe",
+		        "e": event_name,
 		        "p": params};
 	};
 
@@ -194,7 +194,7 @@ epfl_module = function() {
 				    contentType: "application/json",
 				    dataType: "json",
 	                success: function(data) { callback_func(data) },
-	                error: function(httpRequest, message, errorThrown) { 
+	                error: function(httpRequest, message, errorThrown) {
 	                    epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
 	                }
 				   });
@@ -206,12 +206,12 @@ epfl_module = function() {
 		if (is_ajax) {
 			epfl.show_please_wait_counter += 1;
 		} else {
-			epfl.show_please_wait_counter = 1;			
+			epfl.show_please_wait_counter = 1;
 		}
 		if (epfl.show_please_wait_counter == 1) {
 			$('#epfl_please_wait').fadeIn();
 		} else {
-			$('#epfl_please_wait').stop(true);			
+			$('#epfl_please_wait').stop(true);
 			$('#epfl_please_wait').show();
 		}
 		$('#epfl_please_wait').center();
@@ -221,10 +221,10 @@ epfl_module = function() {
 		if (is_ajax) {
 			epfl.show_please_wait_counter -= 1;
 		} else {
-			epfl.show_please_wait_counter = 0;	
+			epfl.show_please_wait_counter = 0;
 		}
 		if (epfl.show_please_wait_counter == 0) {
-			$('#epfl_please_wait').stop(true);			
+			$('#epfl_please_wait').stop(true);
 			$('#epfl_please_wait').fadeOut();
 		};
 	};
@@ -255,8 +255,14 @@ epfl_module = function() {
 	};
 
 	epfl.go_next = function(target_url) {
-		var frm = $('<form id="__epfl_submit_form__" method="POST" action="' + urlencode(target_url) + '"></form>');
+		var frm = $('<form id="__epfl_submit_form__" method="POST" action="' + encodeURI(target_url) + '"></form>');
 		frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '"');
+		$(document.body).append(frm);
+		$("#__epfl_submit_form__").submit();
+	};
+
+	epfl.jump = function(target_url) {
+		var frm = $('<form id="__epfl_submit_form__" method="POST" action="' + encodeURI(target_url) + '"></form>');
 		$(document.body).append(frm);
 		$("#__epfl_submit_form__").submit();
 	};
@@ -269,7 +275,7 @@ epfl_module = function() {
 			$(document.body).append("<div id='" + overlay_id + "'></div>");
 			$("#" + overlay_id).append("<iframe id='" + overlay_id + "_iframe' src='about:blank' class='epfl-overlay-iframe'></iframe>")
 			$("#" + overlay_id).dialog({
-				
+
 				"title": title || "Dialog",
                 "resizable": opts["resizeable"],
                 "modal": opts["modal"],
@@ -281,11 +287,11 @@ epfl_module = function() {
 
                 open: function() {
                 	$('.ui-widget-overlay').css('position', 'fixed'); // fix a jquery-ui-bug
-                },                
+                },
 
 				close:function (event, ui) {
 					// getting the overlays tid
-					var ifrm = document.getElementById(overlay_id + "_iframe"); 
+					var ifrm = document.getElementById(overlay_id + "_iframe");
 					ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
 					var overlay_tid = $(ifrm.document).attr("data:tid");
 
@@ -311,7 +317,7 @@ epfl_module = function() {
 			$("#epfl_please_wait", ifrm.document).css({"position": "absolute",
 				                                       "top": "50%",
 				                                       "left": "50%",
-				                                       "margin-left": "-30px", 
+				                                       "margin-left": "-30px",
 		                                               "margin-top": "-30px"})
 
 		} else {
@@ -327,7 +333,7 @@ epfl_module = function() {
 		setTimeout(function() {
 			// delayed to allow other events to execute first.
 		    window.parent.epfl.__close_overlay_by_name(overlay_name); // go up one window
-		}, 0); 
+		}, 0);
 	};
 
 	epfl.__close_overlay_by_name = function(overlay_name) {

@@ -11,7 +11,7 @@ class BasicWidget(epflwidgetbase.WidgetBase):
     js_name = ["basic.js"]
 
     def handle_ValueChange(self, value):
-        print "HANDLE:", self.field.name, value
+        print "HANDLE:", self.field.name, repr(value)
         self.field.process_formdata([value])
 
 class ButtonWidget(BasicWidget):

@@ -458,7 +458,7 @@ class Page(object):
         """
 
         if route:
-            target_url = self.page_request.route_url(route, **(route_params or {}))
+            target_url = self.request.route_url(route, **(route_params or {}))
 
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)

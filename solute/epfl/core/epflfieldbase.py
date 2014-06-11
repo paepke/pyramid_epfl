@@ -42,6 +42,16 @@ def coerce_func_float(data):
     else:
         return float(data)
 
+def coerce_func_bool(data):
+    if data is None:
+        return None
+    elif not unicode(data).strip():
+        return None
+    elif data == "True" or data == True:
+        return True
+    else:
+        return False
+
 def bing():
     try:
         raise Exception
@@ -138,6 +148,10 @@ class FieldBase(wtforms.Field):
         elif self.field_type == "float":
             self.coerce_func = coerce_func_float
             self.coerce_error_msg = "txt_value_must_be_float"
+        elif self.field_type == "bool":
+            self.coerce_func = coerce_func_bool
+            self.coerce_error_msg = "txt_value_must_be_boolean"
+
         else:
             raise TypeError, "Unknown field type: " + repr(self.field_type)
 

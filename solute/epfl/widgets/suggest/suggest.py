@@ -102,7 +102,7 @@ class Suggest(epflfieldbase.FieldBase):
                     new_value = new_value_func(entry_data)
                 except ValueError, e:
                     msg = self.gettext(e.message)
-                    self.process_errors.append(msg) # this has to go here (self.process_errors), because the 
+                    self.process_errors.append(msg) # this has to go here (self.process_errors), because the
                                                     # following self.validate will empty self.errors and
                                                     # overwrite it with the contents of self.process_errors
                     return

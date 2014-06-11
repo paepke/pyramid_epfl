@@ -10,6 +10,7 @@ The python part
 from pprint import pprint
 
 import types, os.path, string
+from datetime import datetime
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflfieldbase
@@ -132,7 +133,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         """
         Additionally to the validation (done by the original-wtforms-class) it can create new values.
         This will be done if create_new_values = True:
-        New values occur e.g. as the value-visuals the user types in at SuggestWidgets that have 
+        New values occur e.g. as the value-visuals the user types in at SuggestWidgets that have
         match_required=False and a new_value_func defined.
         When some data was typed in that is not in the list the SuggestWidget's get_data-function returned,
         the new_value_func is called with the new value.
@@ -173,20 +174,32 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     def set_data(self, data):
         """ Sets multiple values of this form by passing a dictionary/dicionary like/object with attributes.
         Values not defined as attributes of the form are stored separately and returned unchanged by self.get_data() """
+        #pprint(data)
 
         if hasattr(data, "items"): # works for dict-like objects
+            time_fields=["end_time", "start_time", "createdate", "last_update"]
+            suggest_fields=["shop", "brand"]
+
             for field_name, field_value in data.items():
                 if field_name in self:
+                    if field_name in time_fields and field_value != None:
+                        iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f")
+                        self[field_name].data = datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
+
+                    if field_name in suggest_fields:
+                        self[field_name].set_entry_data(field_value["name"])
+
+
                     self[field_name].data = field_value
                 else:
                     self.additional_data[field_name] = field_value
-        else:
-            for field_name in self.data.keys(): # works for attributes of objects
-                if hasattr(data, field_name):
-                    if field_name in self:
-                        self[field_name].data = getattr(data, field_name)
-                    else:
-                        self.additional_data[field_name] = field_value
+
+        if hasattr(data, field_name): # works for attributes of objects
+            if field_name in self.data.keys():
+                self[field_name].data = getattr(data, field_name)
+            else:
+                self.additional_data[field_name] = field_value
+
 
     def reset_data(self, tag = None, additional_data = False):
         """ Sets the data of the form to the default values.
