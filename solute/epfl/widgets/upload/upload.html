@@ -5,7 +5,7 @@
          {{ preview_image(ds) }}
     {% endif %}
    </div>
-    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" {% if ds.params.multiple %} multiple {% endif %}>
+    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" {{- ds.field.state|field_states -}} {% if ds.params.multiple %} multiple {% endif %}>
 {% endmacro %}
 
 {% macro preview_image(ds) %}
@@ -14,7 +14,7 @@
             <img src="{{ ds.preview_url }}" {{ ds.params.preview_width | optional_html_attr("width") }}
                                             {{ ds.params.preview_height | optional_html_attr("height") }}>
             <br>
-            {{ ds.preview_fn }} 
+            {{ ds.preview_fn }}
         </div>
     </a>
 {% endmacro %}
@@ -22,6 +22,6 @@
 {% macro init_js(ds) %}
     epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "UploadWidget", {name:"{{ds.name}}"
                                                                              }
-    );                           
+    );
 {% endmacro %}
 

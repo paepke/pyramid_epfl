@@ -39,15 +39,15 @@ class UploadWidget(epflwidgetbase.WidgetBase):
             fuob = FileUploadObject().from_persisted_id(request, persisted_id)
             data = fuob.get_data(request)
             if data:
-                return Response(status = "200 OK", 
-                                body = data, 
+                return Response(status = "200 OK",
+                                body = data,
                                 content_type = str(fuob.mime_type))
             else:
-                return Response(status = "404 NOT FOUND", 
+                return Response(status = "404 NOT FOUND",
                                 body = "Preview not found.")
 
 
-        config.add_route(name = 'epfl/widgets/upload/preview', pattern = '/epfl/upload/preview/{id}') 
+        config.add_route(name = 'epfl/widgets/upload/preview', pattern = '/epfl/upload/preview/{id}')
         config.add_view(upload_preview, route_name = "epfl/widgets/upload/preview")
 
 
@@ -107,8 +107,8 @@ class FileUploadObject(object):
             state = "in data"
         elif self.file_obj is not None:
             state = "as file"
-        return "<FileUploadObject {name} ({mime_type}) at {id} {state}>".format(id = id(self), 
-                                                                                state = state, 
+        return "<FileUploadObject {name} ({mime_type}) at {id} {state}>".format(id = id(self),
+                                                                                state = state,
                                                                                 name = self.file_name,
                                                                                 mime_type = self.mime_type)
     def from_upload(self, request, field_obj):
@@ -212,8 +212,8 @@ class FileUploadObject(object):
                      "ext": self.file_extension,
                      "name": self.file_name}
 
-        request.set_epfl_temp_blob(self.persisted_id, 
-                                   data = self.data, 
+        request.set_epfl_temp_blob(self.persisted_id,
+                                   data = self.data,
                                    meta = meta_data)
 
 
@@ -239,7 +239,7 @@ class FileUploadObject(object):
         return self.__dict__
 
 
-class Upload(epflfieldbase.FieldBase): 
+class Upload(epflfieldbase.FieldBase):
     widget_class = UploadWidget
 
     FileUploadObject = FileUploadObject # to access the this class from a component
@@ -254,7 +254,7 @@ class Upload(epflfieldbase.FieldBase):
     def _coerce_func(self, value):
         # we have "real" FileUploadObject here
         if not isinstance(value, FileUploadObject):
-            raise TypeError, "FileUploadObject needed as value of Upload-Field, got " + repr(type(value))            
+            raise TypeError, "FileUploadObject needed as value of Upload-Field, got " + repr(type(value))
         return value
 
 

@@ -159,6 +159,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         if key is None:
             data = self.data.copy()
+            print data
             data.update(self.additional_data)
             return data
         else:
@@ -181,16 +182,24 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
             suggest_fields=["shop", "brand"]
 
             for field_name, field_value in data.items():
+                print field_name
                 if field_name in self:
-                    if field_name in time_fields and field_value != None:
-                        iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f")
-                        self[field_name].data = datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
-
                     if field_name in suggest_fields:
                         self[field_name].set_entry_data(field_value["name"])
 
-
                     self[field_name].data = field_value
+
+                    if field_name in time_fields and field_value != None:
+                        try:
+                            iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f")
+                        except:
+                            try:
+                                iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S")
+                            except ValueError:
+                                raise ValueError("Invalid datetime format")
+
+
+                        self[field_name].data = datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
                 else:
                     self.additional_data[field_name] = field_value
 

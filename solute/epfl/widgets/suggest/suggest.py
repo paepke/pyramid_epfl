@@ -69,10 +69,6 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
         self.field.set_entry_data(value["entry"])
 
 
-
-
-
-
 class Suggest(epflfieldbase.FieldBase):
 
     widget_class = SuggestWidget

@@ -72,14 +72,14 @@ class FieldBase(wtforms.Field):
     """
 
     is_template_element = True # Needed for template-reflection: this makes me a template-element (like a component)
-
+    default_field_type = "char"
 
     def __init__(self, *field_args, **kwargs):
 
         self.coerce_func = None
         self.max_length = None
 
-        self.field_type = kwargs.pop("type", "char")  # types: "char", "char(X)", "int", "float"
+        self.field_type = kwargs.pop("type", self.default_field_type)  # types: "char", "char(X)", "int", "float"
         self.default_validators = kwargs.pop("validators", [])
         self.default_mandatory = kwargs.pop("mandatory", False)
         self.default_visible = kwargs.pop("visible", True)
@@ -255,7 +255,13 @@ class FieldBase(wtforms.Field):
         """ The field now only displays it's value but is not editable """
         self.state["writeable"] = False
 
+    def set_mandatory(self):
+        """ The Field is now mandatory """
+        self.state["mandatory"] = True
 
+    def set_optional(self):
+        """ The Field is now optional """
+        self.state["mandatory"] = False
 
 
 class FieldMandatory(object):
