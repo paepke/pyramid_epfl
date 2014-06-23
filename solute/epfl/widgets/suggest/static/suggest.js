@@ -5,9 +5,10 @@ epfl.SuggestWidget = function(wid, cid, params) {
 
     epfl.WidgetBase.call(this, wid, cid, params);
 
+
+
     $("#" + wid + "__entry").autocomplete({
         source: function(request, response) {
-
             $("#" + wid).val("");
 
             var event = widget_obj.make_event("GetData", {"query": request.term});
@@ -24,9 +25,14 @@ epfl.SuggestWidget = function(wid, cid, params) {
             });
 
         },
-
-
         select: function(event, ui) {
+            var sel_obj = ui.item;
+            $('#' + wid + "__entry").val(sel_obj.label);
+            $('#' + wid).val(sel_obj.value);
+            widget_obj.notify_value_change();
+            return false;
+        },
+        focus: function(event, ui) {
             var sel_obj = ui.item;
             $('#' + wid + "__entry").val(sel_obj.label);
             $('#' + wid).val(sel_obj.value);
@@ -36,7 +42,6 @@ epfl.SuggestWidget = function(wid, cid, params) {
     });
 
     $("#" + wid + "__entry").change(function() {
-
         widget_obj.notify_value_change();
     });
 

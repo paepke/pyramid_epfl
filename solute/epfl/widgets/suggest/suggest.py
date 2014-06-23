@@ -4,7 +4,6 @@ from solute.epfl import json
 
 from solute.epfl.core import epflwidgetbase
 from solute.epfl.core import epflfieldbase
-
 from wtforms import validators
 
 # todo:
@@ -22,7 +21,7 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
     asset_spec = "solute.epfl.widgets:suggest/static"
 
     js_name = ["suggest.js"]
-    css_name = []
+    css_name = ["suggest.css"]
 
     param_def = {"on_change": epflwidgetbase.EventType,
                  "get_data": epflwidgetbase.MethodType,        # the function that gets the current input as parameter and
@@ -87,6 +86,7 @@ class Suggest(epflfieldbase.FieldBase):
         that the field can be validated correctly.
         """
         entry_data = self.state["entry_data"] # this is the visual the user typed into the field
+
         if entry_data:
             entry_data = entry_data.strip()
 
@@ -102,6 +102,7 @@ class Suggest(epflfieldbase.FieldBase):
                                                     # following self.validate will empty self.errors and
                                                     # overwrite it with the contents of self.process_errors
                     return
+
                 self.data = new_value # directly use the newly created value
 
     def setup_validators(self):
