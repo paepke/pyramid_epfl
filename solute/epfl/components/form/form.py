@@ -21,6 +21,7 @@ from solute.epfl.core import epfli18n
 import jinja2
 import wtforms
 
+
 NO_DEFAULT = lambda x:x # an atom
 
 
@@ -46,45 +47,29 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
 
 
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        """
-        :param formdata:
-            Used to pass data coming from the enduser, usually `request.POST` or
-            equivalent.
-        :param obj:
-            If `formdata` is empty or not provided, this object is checked for
-            attributes matching form field names, which will be used for field
-            values.
-        :param prefix:
-            If provided, all fields will have their name prefixed with the
-            value.
-        :param `**kwargs`:
-            If `formdata` is empty or not provided and `obj` does not contain
-            an attribute named the same as a field, form will assign the value
-            of a matching keyword argument to the field, if one exists.
-        """
+    def __init__(self):
 
-
-        if formdata:
-            formdata = PostData(request, formdata)
-        else:
-            formdata = None
-
-        self.raw_data = formdata
-
+        self.raw_data = None
         self.submit_button_name = None # name of the current submit-button which submitted this form
 
-        wtforms.Form.__init__(self,
-                              formdata=formdata,
-                              obj=obj,
-                              prefix='',
-                              **kwargs)
+        # this part is to init the wtforms-super-class
+        # the original is not usable, because it tries to process the formdata (normally coming from query-params).
+        # these are not available here, also the component is not set up at this time to survive a call to "process"
+        # so this is left out here!
+        meta_obj = self._wtforms_meta()
+        super(wtforms.Form, self).__init__(self._unbound_fields, meta=meta_obj, prefix="")
 
+        for name, field in wtforms.compat.iteritems(self._fields):
+            # Set all the fields to attributes so that they obscure the class
+            # attributes with the same names.
+            setattr(self, name, field)
+
+        # finally init the epfl-part
         epflcomponentbase.ComponentBase.__init__(self)
+
 
         self.action = ""
         self.target_widget = None # the widget that received the last cmd
-
 
 
     def get_field_state(self, field_name):
@@ -105,7 +90,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         # late-init of wtform
         formdata = FormDataProvider(self.page_request, self.form_data_store, self.page.transaction)
-        self.process(formdata)
 
         for field in self:
             if field.widget:
@@ -115,6 +99,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                 else:
                     raise TypeError, "only EPFL-Fields are supported: " + repr(field)
 
+        self.process(formdata)
 
     def finalize_component_state(self):
 
@@ -159,7 +144,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         if key is None:
             data = self.data.copy()
-            print data
             data.update(self.additional_data)
             return data
         else:
@@ -175,31 +159,11 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     def set_data(self, data):
         """ Sets multiple values of this form by passing a dictionary/dicionary like/object with attributes.
         Values not defined as attributes of the form are stored separately and returned unchanged by self.get_data() """
-        #pprint(data)
 
         if hasattr(data, "items"): # works for dict-like objects
-            time_fields=["end_time", "start_time", "createdate", "last_update"]
-            suggest_fields=["shop", "brand"]
-
             for field_name, field_value in data.items():
-                print field_name
                 if field_name in self:
-                    if field_name in suggest_fields:
-                        self[field_name].set_entry_data(field_value["name"])
-
                     self[field_name].data = field_value
-
-                    if field_name in time_fields and field_value != None:
-                        try:
-                            iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S.%f")
-                        except:
-                            try:
-                                iso_time = datetime.strptime(field_value, "%Y-%m-%dT%H:%M:%S")
-                            except ValueError:
-                                raise ValueError("Invalid datetime format")
-
-
-                        self[field_name].data = datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
                 else:
                     self.additional_data[field_name] = field_value
 

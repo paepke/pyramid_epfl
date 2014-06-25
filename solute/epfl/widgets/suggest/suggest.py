@@ -27,6 +27,13 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
                  "get_data": epflwidgetbase.MethodType,        # the function that gets the current input as parameter and
                                                                # returns the matching possible values (list of tuples [(value, visual), ...])
                                                                # This function must filter its results accordingly to the given input!
+                                                               # If None is given as input parameter, all existing data must be returned.
+                                                               # This is only the case if no get_visual-function is defined.
+
+                 "get_visual": epflwidgetbase.OptionalMethodType, # this optional function returns the visual to a single given data-id.
+                                                                  # you should provide this function if your data-set is possibly very large
+                                                                  # and a get_data(None) would return too much data. (is is what epfl does 
+                                                                  # if you do not declare a "get_visual"-function)
 
                  "match_required": (epflwidgetbase.BooleanType, False), # if true, the entered value must be from the "get_data"-method, so
                                                                         # this ensures that the value is from the defined domain, but
@@ -55,7 +62,6 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
         data_source.entry_data = self.state["entry_data"]
 
 
-
     def handle_GetData(self, query):
         domain = self.params["get_data"](query)
         self.form.return_ajax_response(domain)
@@ -63,7 +69,6 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
 
 
     def handle_ValueChange(self, value):
-
         self.field.process_formdata([value["value"]])
         self.field.set_entry_data(value["entry"])
 
@@ -124,7 +129,7 @@ class Suggest(epflfieldbase.FieldBase):
 
 
     def set_entry_data(self, data):
-        """ This is the data which is displayed/entered into the actual autocomplete-field.
+        """ This is the data which is displayed/entered (this visual) into the actual autocomplete-field.
         Whereas the self.data is the corresponding "value".
         For example: You type in the name of a category and the self.data is then the corresponding
         category-id. Of course the self.data may be None if nothing matching is found in the
@@ -133,6 +138,26 @@ class Suggest(epflfieldbase.FieldBase):
         self.state["entry_data"] = data
 
 
+    def get_entry_data(self):
+        """ Returns the text/value entered into the actual autocomplete-field """
+
+        entry_data = self.state["entry_data"] # this is the visual the user typed into the field
+        return entry_data
+
+
+    def pre_setting_data(self, value):
+
+        visual = ""
+
+        if self.widget.params["get_visual"]:
+            visual = self.widget.params["get_visual"](value)
+        else:
+            all_data = self.widget.params["get_data"](None)
+            for data, vis in all_data:
+                if data == value:
+                    visual = vis
+
+        self.set_entry_data(visual)
 
 
 class MatchRequired(object):

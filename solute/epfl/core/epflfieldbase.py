@@ -78,6 +78,7 @@ class FieldBase(wtforms.Field):
 
         self.coerce_func = None
         self.max_length = None
+        self._data = None
 
         self.field_type = kwargs.pop("type", self.default_field_type)  # types: "char", "char(X)", "int", "float"
         self.default_validators = kwargs.pop("validators", [])
@@ -103,6 +104,22 @@ class FieldBase(wtforms.Field):
 
         if self.name == "submit":
             raise ValueError, "'submit' is really a bad name for a field!"
+
+    """ The following methods are for adding more control over the self.data-value of a field.
+    self.pre_setting_data and self.pre_getting_data are hooks you can overwrite in subclasses """
+    @property
+    def data(self):
+        self.pre_getting_data()
+        return self._data
+    @data.setter
+    def data(self, value):
+        self.pre_setting_data(value)
+        self._data = value
+    def pre_getting_data(self):
+        pass
+    def pre_setting_data(self, value):
+        pass
+    
 
     @property # some kind of late binding...
     def page_request(self):
