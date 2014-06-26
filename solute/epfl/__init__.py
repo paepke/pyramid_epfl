@@ -18,7 +18,7 @@ from solute.epfl.jinja import jinja_helpers
 
 from zope.interface import Interface
 
-from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata
+from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel
 
 
 class IEPFLJinja2Environment(Interface):
@@ -117,7 +117,6 @@ def set_nodeglobaldata_provider(config, nodeglobaldata_provider):
     config.registry.registerUtility(nodeglobaldata_provider, epfltempdata.INodeGlobalDataProvider)
 
 
-
 def includeme(config):
     """
     The main configuration of the EPFL
@@ -137,9 +136,11 @@ def includeme(config):
     config.add_request_method(epfltempdata.set_epfl_nodeglobal_aux)
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
+    config.add_request_method(epflmodel.LazyModelAccessor, name = "epfl_model", reify = True)
 
     config.add_directive("set_tempdata_provider", set_tempdata_provider)
     config.add_directive("set_nodeglobaldata_provider", set_nodeglobaldata_provider)
+    config.add_directive("add_epfl_model", epflmodel.add_epfl_model)
 
     config.add_jinja2_search_path("solute.epfl:templates")
     config.add_jinja2_search_path("solute.epfl.components:")
