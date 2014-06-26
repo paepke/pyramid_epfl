@@ -1,3 +1,88 @@
+solute-python-epfl (0.2.0) squeeze; urgency=low
+
+  [ Tobias Paepke ]
+  * set new version in setup.py
+
+ -- Tobias Paepke <tpa@solute.de>  Thu, 26 Jun 2014 12:35:12 -0000
+
+solute-python-epfl (0.22) squeeze; urgency=low
+
+  [ Gunter Bach ]
+  * fix: suggest-widget now working
+  * fix: some layout-improvements for upload-widget
+  * fix: radio-buttons now working
+  * fix: smaller layout fixes for upload-widget
+  * new: Create-New-Value-Func for suggest-widget new: Basic I18N new: mark error-fields in form-compo
+  * fix: Epfl-Jinja-Environment was not StrictUndefined
+  * fix: temp-data reworked a little bit again...
+  * fix: added config as param for tempdata-provider interfaces
+  * fix: added missing epfltempdata.py
+  * new feature: added word/char-count for ckeditor widget
+  * fix: jinja2-escaping behavior
+  * new feature: added char-count for entry-widgets
+  * fix: removed debug output
+  * new feature: temp-data-provider as zope.interface
+  * new feature: preview now configurable for upload-widgets
+  * new feature: added jinja2-filter "optional_html_attr"
+  * feature: added new Widget-Param-Type: optional integer
+  * fix: (re)added epfl_pyramid_barebone
+  * upload-field/widget: version 2
+  * Merge remote-tracking branch 'maschbd/widget_sprint1' into widget_sprint1
+  * upload-field/widget: first version
+  * New static-routing registering for widgets and components
+  * Removed old ck-editor instance
+  * Merge pull request #3 from maschbd/widget_sprint1
+
+  [ Martin Schott ]
+  * Suggest Changes
+  * added mandatory and enabled function
+  * Changed functions for today cms
+  * ckeditor integration
+  * css changes
+  * added Home and Deals
+  * Scaffolds
+  * timepicker start
+  * Added Suggest Widget
+
+ -- Tobias Paepke <tpa@solute.de>  Thu, 26 Jun 2014 12:27:36 -0000
+
+solute-python-epfl (0.21) squeeze; urgency=low
+
+  [ Gunter Bach ]
+  * fix: updated ckeditor and made it work
+  * cleanup: reworked the widget-params-type-system a little bit
+  * fix: path in install documentation was wrong
+  * docs: modified install documentation
+  * new: added page.close_overlay functionality
+  * fix: minor fixes
+  * fix: missing scaffold registry
+  * new: added new scaffold: "notes"
+  * fix: starter-scaffold cleaned a little bit
+  * fix: removed some old WTF dependency
+  * change: components are now accessible by everybody by default
+  * linuxtag slides 2014 released
+  * table-compo: now supports row_click-events
+  * table-compo: Table-Columns now hidden, if no label specified fix in form-compo: textarea now supports multi-line value again
+  * Added slides for linxtag 2014
+  * modified todos
+  * refactor: renamed request to page_request and global_request to request bug: lost session data on break
+  * Added overlays
+  * new concept of transaction directly bound to page (pagestate) new concept of pagerequest renamed framework request to global_request
+  * Cleanup and func renaming
+  * canvas has now a client side
+  * Added overlays
+  * Fix: Merge errors removed
+  * Removed merge-marks
+  * Added todo.txt Added ACL-support for page-objects Modified menu-component to support ACL on pages and routing
+  * Initial public release
+  * Fix: Another fix in the readme.md
+  * Fix: Documentation of installation-procedure
+
+  [ Martin Schott ]
+  * Epfl Widgets Pyramid Conversion
+
+ -- Tobias Paepke <tpa@solute.de>  Thu, 26 Jun 2014 12:22:33 -0000
+
 solute-python-epfl (0.20) squeeze; urgency=low
 
   * Optional params for widgets allowed
