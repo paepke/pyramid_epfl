@@ -19,7 +19,7 @@ from setuptools import setup
 
 setup(
     name='EPFL Python Frontend Logic',
-    version='0.1.0',
+    version='0.2.0',
     author='Gunter Bach',
     author_email='gb@solute.de',
     packages=['solute.epfl', 'solute.epfl.test'],
