@@ -5,6 +5,8 @@ import string
 import uuid
 
 import magic
+import curl
+import urlparse
 
 from pyramid.view import view_config
 from pyramid.response import Response
@@ -98,6 +100,7 @@ class FileUploadObject(object):
         self.file_name = None
         self.file_extension = None
         self.mime_type = None
+        self.url = None
 
     def __repr__(self):
         state = "empty"
@@ -107,6 +110,8 @@ class FileUploadObject(object):
             state = "in data"
         elif self.file_obj is not None:
             state = "as file"
+        elif self.url is not None:
+            state = "from url"
         return "<FileUploadObject {name} ({mime_type}) at {id} {state}>".format(id = id(self),
                                                                                 state = state,
                                                                                 name = self.file_name,
@@ -150,15 +155,17 @@ class FileUploadObject(object):
     def from_file(self, request, file_name):
         """ called e.g. to set the data of an upload-field at form-data-filling-time """
 
-        f = open(file_name, "rb")
-        data = f.read()
-        f.close()
+        self.request = request
+        self.file_obj = open(file_name, "rb")
+        self.file_name = file_name
+        self.file_extension = os.path.splitext(file_name)[-1]
 
         return self.from_data(request, data, file_name)
 
     def from_data(self, request, data, file_name):
         """ called e.g. to set the data of an upload-field at form-data-filling-time """
 
+        self.request = request
         mime_guesser = magic.Magic(mime = True)
         file_name = file_name.replace("\\", "/")
         self.data = data
@@ -167,6 +174,21 @@ class FileUploadObject(object):
         self.file_name = file_name.split("/")[-1]
 
         return self
+
+    def from_url(self, request, url):
+
+        self.request = request
+
+        if url.startswith("//"):
+            url = "http:" + url
+
+        self.url = url
+        file_name = urlparse.urlparse(url).path
+        self.file_name = file_name.split("/")[-1]
+        self.file_extension = os.path.splitext(self.file_name)[-1]
+
+        return self
+
 
 
     def to_data(self, request):
@@ -199,6 +221,13 @@ class FileUploadObject(object):
                 self.data = None
             return
 
+        if self.url is not None:
+            cu = curl.Curl()
+            data = cu.get(self.url)
+            self.from_data(request, data, self.file_name)
+            return 
+
+
     def to_temp_blob(self, request):
         if self.persisted_id is not None:
             # already blobbed
@@ -222,18 +251,29 @@ class FileUploadObject(object):
         return self.data
 
     def get_preview_url(self, request):
-        self.to_temp_blob(request)
-        return request.route_url("epfl/widgets/upload/preview", id = self.persisted_id)
+        if self.url:
+            return self.url
+        else:
+            self.to_temp_blob(request)
+            return request.route_url("epfl/widgets/upload/preview", id = self.persisted_id)
 
 
     def __getstate__(self):
         """ called before pickeling """
-        if self.persisted_id is None:
+
+        # kick data from "file_obj" and "data"...
+        if self.persisted_id is None and (self.file_obj or self.data):
             self.to_data(self.request)
             self.to_temp_blob(self.request)
 
+        if self.file_obj:
+            try:
+                self.file_obj.close()
+            except:
+                pass
+            self.file_obj = None
+
         self.request = None
-        self.file_obj = None
         self.data = None
 
         return self.__dict__
@@ -249,6 +289,7 @@ class Upload(epflfieldbase.FieldBase):
 
         self.coerce_error_msg = "txt_value_must_be_file_upload_object"
         self.coerce_func = self._coerce_func
+        self.visualize_func = epflfieldbase.visualize_func_standard
 
 
     def _coerce_func(self, value):

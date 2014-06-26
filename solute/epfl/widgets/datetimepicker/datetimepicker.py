@@ -77,3 +77,63 @@ class DatetimepickerWidget(epflwidgetbase.WidgetBase):
 
 class Datetimepicker(epflfieldbase.FieldBase):
     widget_class = DatetimepickerWidget
+
+
+    def setup_type(self):
+        """ handles the different data-types for this field.
+        It manages the coerceion-function. """
+
+        if self.field_type == "char":
+            super(self, Datetimepicker).setup_type()
+        elif self.field_type.startswith("char("):
+            super(self, Datetimepicker).setup_type()
+        elif self.field_type == "int":
+            super(self, Datetimepicker).setup_type()
+        elif self.field_type == "float":
+            super(self, Datetimepicker).setup_type()
+        elif self.field_type == "isodate":
+            self.coerce_func = coerce_func_isodate
+            self.visualize_func = visualize_func_isodate
+            self.coerce_error_msg = "txt_incorrect_isodate"
+        else:
+            raise TypeError, "Field-Type " + repr(self.__class__.__name__) + " does not support type: " + repr(self.field_type)
+
+
+def coerce_func_isodate(data):
+    if data is None:
+        return None
+    elif not unicode(data).strip():
+        return None
+    else:
+
+        # first, check if it's already ISO-format!
+        iso_format = True
+        try:
+            iso_time = datetime.datetime.strptime(data, "%Y-%m-%dT%H:%M:%S.%f")
+        except ValueError:
+            try:
+                iso_time = datetime.datetime.strptime(data, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                iso_format = False
+
+        if iso_format:
+            return data
+        else:
+            time = datetime.datetime.strptime(data,  "%d.%m.%Y %H:%M")
+            iso_time = datetime.datetime.strftime(time, "%Y-%m-%dT%H:%M:00")
+            return iso_time
+
+def visualize_func_isodate(field):
+    time = field.data
+
+    if time:
+        try:
+            iso_time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%f")
+        except ValueError:
+            iso_time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
+
+        time_str = datetime.datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
+
+        return unicode(time_str)
+    else:
+        return u""

@@ -358,9 +358,7 @@ class DataSource(object):
         if widget.has_errors():
             self.css_classes.append("epfl-form-field-error-mark")
 
-        self.value = field.data # widget_kwargs.get("value", field.data)
-        if self.value is None:
-            self.value = ""
+        self.value = self.field.visualize_func(field) # widget_kwargs.get("value", field.data)
 
     def get_data(self):
         return self.data

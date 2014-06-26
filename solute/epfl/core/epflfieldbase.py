@@ -10,7 +10,10 @@ def get_response():
     """ Getting the response from the thread-local-service """
     return __svc__.epfl.ctx.response
 
-
+# the coerce funcs have two tasks:
+# 1. convert a value coming from the client (eventually a string) to the corresponding python-value
+# 2. raise an error if this is not possible
+# they are the flipside of the "visualize"-funcs
 def coerce_func_char(data, max_length = None):
     if data is None:
         data = ""
@@ -52,6 +55,18 @@ def coerce_func_bool(data):
     else:
         return False
 
+# the visualize-funcs have the taks to convert the python-server-side-value
+# to an apropriate client-side representation
+def visualize_func_standard(field):
+    data = field.data
+    if data is None:
+        data = ""
+    else:
+        data = str(data)
+
+    return data
+
+
 def bing():
     try:
         raise Exception
@@ -76,7 +91,10 @@ class FieldBase(wtforms.Field):
 
     def __init__(self, *field_args, **kwargs):
 
-        self.coerce_func = None
+        self.coerce_func = None # the function to coerce a value from the client to the server-type
+                                # due to the wtforms-design the func must also accept server-type values and
+                                # return them unmodified
+        self.visualize_func = None # the function to convert a value from server to client-representation
         self.max_length = None
         self._data = None
 
@@ -154,28 +172,37 @@ class FieldBase(wtforms.Field):
 
         if self.field_type == "char":
             self.coerce_func = coerce_func_char
+            self.visualize_func = visualize_func_standard
             self.coerce_error_msg = "txt_value_must_be_unicode"
         elif self.field_type.startswith("char("):
             self.max_length = int(self.field_type[5:-1])
+            self.visualize_func = visualize_func_standard
             self.coerce_func = lambda s, max_length = self.max_length: coerce_func_char(s, max_length)
             self.coerce_error_msg = "txt_value_too_long"
         elif self.field_type == "int":
             self.coerce_func = coerce_func_long
+            self.visualize_func = visualize_func_standard
             self.coerce_error_msg = "txt_value_must_be_integer"
         elif self.field_type == "float":
             self.coerce_func = coerce_func_float
+            self.visualize_func = visualize_func_standard
             self.coerce_error_msg = "txt_value_must_be_float"
         elif self.field_type == "bool":
             self.coerce_func = coerce_func_bool
+            self.visualize_func = visualize_func_standard
             self.coerce_error_msg = "txt_value_must_be_boolean"
-
         else:
-            raise TypeError, "Unknown field type: " + repr(self.field_type)
+            raise TypeError, "Field-Type " + repr(self.__class__.__name__) + " does not support type: " + repr(self.field_type)
 
     def setup_validators(self):
 
         self.validators = self.default_validators[:]
         self.validator_visual = ""
+
+##        if self.field_type == "int":
+##            self.validators.append(FieldMandatory())
+##        elif self.field_type == "float":
+##            self.validators.append(FieldMandatory())
 
         if self.state["mandatory"]:
             self.validators.append(FieldMandatory())
@@ -187,18 +214,26 @@ class FieldBase(wtforms.Field):
 
 
     def process_formdata(self, valuelist):
-        """ This one is called with the data comming from the transaction-state or from the query-params.
+        """ This one is called with the data comming from the transaction-state (server-side-data) or from the query-params (client-side-data).
         When comming from the transaction-state the value may be the old one (the one before the ValueChange-Event was handeled).
-        So additionally the self.pre_validate is adapted to fire the validation-errors when calling self.validate() (now with the updated values)
+        So self.process_errors must be cleared, if the type was coerced sucessfully.
 
         Also calling this is the handle_ValueChange (with the value as one-element-list). In this case the type of the value is already
-        correct (JSON is typed) but small adjustments in the representation may be done (e.g. floats get the decimal-point).
+        correct (JSON is typed) but the "format" still is the client-side representation. E.g. the type is "string" client and server. but
+        the server has ISO-date-formatted timestamp and the client human-readable-formatted timestamp.
+
+        Due to the wtforms-design the coerce-func must also accept server-type values and
+        return them unmodified
+
         """
         if valuelist:
             try:
                 self.data = self.coerce_func(valuelist[0])
+                self.process_errors = []
             except (ValueError, TypeError) as e:
                 self.data = valuelist[0]
+                if self.is_visible() and self.coerce_func:
+                    self.process_errors.append(self.coerce_error_msg)
 
     def process_data(self, data):
         """ called with the default value """
@@ -212,23 +247,23 @@ class FieldBase(wtforms.Field):
         pass
 
 
-    def pre_validate(self, form):
-        """ This uses the self.coerce_func setup by setup_type. It's called when self.validate() is called. """
+##    def pre_validate(self, form):
+##        """ This uses the self.coerce_func set up by setup_type. It's called when self.validate() is called. """
 
-        if not self.is_visible():
-            return
-        elif self.data is None:
-            return
-        elif not unicode(self.data).strip():
-            return
+##        if not self.is_visible():
+##            return
+##        elif self.data is None:
+##            return
+##        elif not unicode(self.data).strip():
+##            return
 
-        if not self.coerce_func:
-            return
+##        if not self.coerce_func:
+##            return
 
-        try:
-            dummy = self.coerce_func(self.data) # just call the coerceion to see if it fails
-        except (ValueError, TypeError) as e:
-            raise ValueError(self.gettext(self.coerce_error_msg))
+##        try:
+##            dummy = self.coerce_func(self.data) # just call the coerceion to see if it fails
+##        except (ValueError, TypeError) as e:
+##            raise ValueError(self.gettext(self.coerce_error_msg))
 
 
     def post_validate(self, form, stopped):
