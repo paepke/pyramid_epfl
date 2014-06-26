@@ -1,3 +1,44 @@
+solute-python-epfl (0.22) squeeze; urgency=low
+
+  [ Gunter Bach ]
+  * fix: suggest-widget now working
+  * fix: some layout-improvements for upload-widget
+  * fix: radio-buttons now working
+  * fix: smaller layout fixes for upload-widget
+  * new: Create-New-Value-Func for suggest-widget new: Basic I18N new: mark error-fields in form-compo
+  * fix: Epfl-Jinja-Environment was not StrictUndefined
+  * fix: temp-data reworked a little bit again...
+  * fix: added config as param for tempdata-provider interfaces
+  * fix: added missing epfltempdata.py
+  * new feature: added word/char-count for ckeditor widget
+  * fix: jinja2-escaping behavior
+  * new feature: added char-count for entry-widgets
+  * fix: removed debug output
+  * new feature: temp-data-provider as zope.interface
+  * new feature: preview now configurable for upload-widgets
+  * new feature: added jinja2-filter "optional_html_attr"
+  * feature: added new Widget-Param-Type: optional integer
+  * fix: (re)added epfl_pyramid_barebone
+  * upload-field/widget: version 2
+  * Merge remote-tracking branch 'maschbd/widget_sprint1' into widget_sprint1
+  * upload-field/widget: first version
+  * New static-routing registering for widgets and components
+  * Removed old ck-editor instance
+  * Merge pull request #3 from maschbd/widget_sprint1
+
+  [ Martin Schott ]
+  * Suggest Changes
+  * added mandatory and enabled function
+  * Changed functions for today cms
+  * ckeditor integration
+  * css changes
+  * added Home and Deals
+  * Scaffolds
+  * timepicker start
+  * Added Suggest Widget
+
+ -- Tobias Paepke <tpa@solute.de>  Thu, 26 Jun 2014 12:27:36 -0000
+
 solute-python-epfl (0.21) squeeze; urgency=low
 
   [ Gunter Bach ]
