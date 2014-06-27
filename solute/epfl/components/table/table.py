@@ -101,7 +101,7 @@ class Table(epflcomponentbase.ComponentBase):
                                                     #
     total_rows_known = True                         # Set this to "False" if your data-source can not calculate
                                                     # the total number of rows (first part of return-value)
-    num_rows = 30                                  # the number of rows initially displayed to the user
+    num_rows = 20                                   # the number of rows initially displayed to the user
     num_rows_domain = [10, 20, 50, 100, 'Alle']     # the user can choose to display these number of rows
     sort_column = None                              # the column-name sorted by (or None)
     sort_column_default = None
