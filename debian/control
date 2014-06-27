@@ -2,7 +2,7 @@ Source: solute-python-epfl
 Section: python
 Priority: optional
 Maintainer: Technik <technik@solute.de>
-Build-Depends: python (>= 2.6), python-support (>= 1), debhelper(>= 8), build-essential
+Build-Depends: python (>= 2.6), python-support (>= 1), debhelper(>= 8), build-essential, python-setuptools
 Standards-Version: 3.9.2
 
 Package: solute-python-epfl
