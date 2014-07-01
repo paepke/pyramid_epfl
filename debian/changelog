@@ -1,3 +1,9 @@
+solute-python-epfl (0.23) squeeze; urgency=low
+
+  * Release clean tag
+
+ -- Michael van Bracht <mvb@solute.de>  Tue, 01 Jul 2014 11:32:43 -0000
+
 solute-python-epfl (0.22) squeeze; urgency=low
 
   [ Tobias Paepke ]
