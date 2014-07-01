@@ -1,5 +1,5 @@
 {% macro button(ds) %}
-	<button type="button" id="{{ds.wid}}" name="{{ ds.name }}" {{- ds.field.state|field_states -}}>{{ ds.label }}</button>
+	<button type="button" id="{{ds.wid}}" name="{{ ds.name }}" {{ ds.field.state|field_states -}}>{{ ds.label }}</button>
 {% endmacro %}
 
 {% macro spinner(ds) %}
@@ -9,7 +9,7 @@
 {% macro entry(ds) %}
 
 
-    <input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" class="{{ ds.css_classes }}" {{ ds.maxlength_attr -}} {{- ds.field.state|field_states -}} />
+    <input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" class="{{ ds.css_classes }}" {{ ds.maxlength_attr }} {{ ds.field.state|field_states -}} />
     {% if ds.params.char_count %}
         <div class="epfl-form-field-entry-ccnt" id="{{ds.wid}}_ccnt"></div>
     {% endif %}
@@ -19,24 +19,24 @@
     <div id="{{ds.wid}}" name="{{ ds.name}}">
         {% for choice in ds.params.choices %}
             {% set field_id = "{wid}_{value}".format(wid = ds.wid, value = choice[0]) %}
-            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" value="{{ choice[0]|nony|e }}" {{ choice[0]|checked_if_equal(ds.value) }} {{- ds.field.state|field_states -}}/>
+            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" value="{{ choice[0]|nony|e }}" {{ choice[0]|checked_if_equal(ds.value) }} {{ ds.field.state|field_states -}}/>
             <label for="{{ field_id }}">{{ choice[1] }}</label>
         {% endfor %}
     </div>
 {% endmacro %}
 
 {% macro checkbox(ds) %}
-    <input id="{{ds.wid}}" name="{{ ds.name }}" type="checkbox" {{ ds.value|checked_if_equal(True) }} {{- ds.field.state|field_states -}} />
+    <input id="{{ds.wid}}" name="{{ ds.name }}" type="checkbox" {{ ds.value|checked_if_equal(True) }} {{ ds.field.state|field_states -}} /> 
 {% endmacro %}
 
 {% macro textarea(ds) %}
-	<textarea id="{{ds.wid}}" name="{{ ds.name }}">{{ ds.value|e }} {{- ds.field.state|field_states -}}</textarea>
+	<textarea id="{{ds.wid}}" name="{{ ds.name }}">{{ ds.value|e }} {{ ds.field.state|field_states -}}</textarea>
 {% endmacro %}
 
 {% macro select(ds) %}
 	<select id="{{ds.wid}}" name="{{ ds.name }}">
 		{% for choice in ds.params.choices %}
-		    <option value="{{ choice[0]|nony|e }}" {{ choice[0]|selected_if_equal(ds.value) }} >{{ choice[1] }} {{- ds.field.state|field_states -}}</option>
+		    <option value="{{ choice[0]|nony|e }}" {{ choice[0]|selected_if_equal(ds.value) }} >{{ choice[1] }} {{ ds.field.state|field_states -}}</option>
 		{% endfor %}
 	</select>
 {% endmacro %}
@@ -45,7 +45,7 @@
     <div id="{{ds.wid}}" name="{{ ds.name}}">
         {% for choice in ds.params.choices %}
             {% set field_id = "{wid}_{value}".format(wid = ds.wid, value = choice[0]) %}
-            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" {{ choice[0]|checked_if_equal(ds.value) }} {{- ds.field.state|field_states -}} />
+            <input id="{{ field_id }}" type="radio" name="{{ ds.wid }}" {{ choice[0]|checked_if_equal(ds.value) }} {{ ds.field.state|field_states -}} />
             <label for="{{ field_id }}">{{ choice[1] }}</label>
         {% endfor %}
     </div>
