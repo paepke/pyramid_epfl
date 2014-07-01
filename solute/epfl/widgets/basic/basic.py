@@ -141,11 +141,10 @@ class Select(epflfieldbase.FieldBase):
 
 class Checkbox(epflfieldbase.FieldBase):
     default_field_type = 'bool'
+    default_field_value = False
+    
     widget_class = CheckboxWidget
 
-    def init_state(self):
-        super(Checkbox, self).init_state()
 
-        if self.data is None:
-            self.data = False
+
 

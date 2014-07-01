@@ -61,8 +61,6 @@ def visualize_func_standard(field):
     data = field.data
     if data is None:
         data = ""
-    else:
-        data = str(data)
 
     return data
 
@@ -88,6 +86,7 @@ class FieldBase(wtforms.Field):
 
     is_template_element = True # Needed for template-reflection: this makes me a template-element (like a component)
     default_field_type = "char"
+    default_field_value = None # can be overridden by kwargs of the field
 
     def __init__(self, *field_args, **kwargs):
 
@@ -117,6 +116,9 @@ class FieldBase(wtforms.Field):
         self.widget.set_field(self)
 
         super(FieldBase, self).__init__(*field_args, **field_kwargs)
+
+        if "default" not in field_kwargs:
+            self.default = self.default_field_value
 
         self.setup_type()
 
