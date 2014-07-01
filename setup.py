@@ -15,14 +15,14 @@
 #
 ##############################################################################
 
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='EPFL Python Frontend Logic',
     version='0.1.0',
     author='Gunter Bach',
     author_email='gb@solute.de',
-    packages=['solute.epfl', 'solute.epfl.test'],
+    packages=setuptools.find_packages(),
     scripts=[],
     url='http://pypi.python.org/pypi/epfl/',
     license='LICENSE.txt',
