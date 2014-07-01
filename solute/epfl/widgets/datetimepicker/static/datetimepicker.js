@@ -46,6 +46,7 @@ epfl.DatetimepickerWidget = function(wid, cid, params) {
         datetimepicker_options.startDate = options.startDate;
     }
 
+    datetimepicker_options.dayOfWeekStart = 1;
 
     field.datetimepicker(datetimepicker_options);
 

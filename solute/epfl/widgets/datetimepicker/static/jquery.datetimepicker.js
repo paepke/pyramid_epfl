@@ -23,7 +23,7 @@
 					"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 				],
 				dayOfWeek: [
-					"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+					"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 				]
 			},
 			de:{ // German
@@ -31,7 +31,7 @@
 					'Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'
 				],
 				dayOfWeek:[
-					"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"
+					"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
 				]
 			},
 			nl:{ // Dutch
