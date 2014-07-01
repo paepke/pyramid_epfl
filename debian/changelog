@@ -1,3 +1,10 @@
+solute-python-epfl (0.24) squeeze; urgency=low
+
+  [ Michael van Bracht ]
+  * Import solute.init contents into namespace package
+
+ -- Michael van Bracht <mvb@solute.de>  Tue, 01 Jul 2014 11:41:30 -0000
+
 solute-python-epfl (0.23) squeeze; urgency=low
 
   * Release clean tag
