@@ -18,18 +18,14 @@ from solute.epfl.jinja import jinja_helpers
 
 from zope.interface import Interface
 
-from solute.epfl.core import epfltransaction, epflutil, epflpage
+from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel
 
 
 class IEPFLJinja2Environment(Interface):
     pass
 
-class IEPFLGlobalData(Interface):
-    pass
-
 
 # handling extra data in different scopes:
-
 
 def get_epfl_request_aux(request, param_name, default = None):
     if not hasattr(request, "__epfl_params"):
@@ -45,27 +41,6 @@ def set_epfl_request_aux(request, param_name, value):
 
     params = getattr(request, "__epfl_params")
     params[param_name] = value
-
-def get_epfl_global_aux(request, param_name, default = None):
-
-    gd = request.registry.queryUtility(IEPFLGlobalData)
-
-    if gd is None:    
-        return default
-
-    return gd.get(param_name, default)
-
-def set_epfl_global_aux(request, param_name, value):
-
-    gd = request.registry.queryUtility(IEPFLGlobalData)
-
-    if gd is None:    
-        gd = {}
-
-    gd[param_name] = value
-
-    request.registry.registerUtility(gd, IEPFLGlobalData)
-
 
 
 # other stuff
@@ -93,7 +68,7 @@ def get_epfl_jinja2_environment(request):
     env = jinja_reflection.ReflectiveEnvironment(loader = loader,
                                                  auto_reload = oenv.auto_reload,
                                                  extensions = oenv.extensions,
-                                                 undefined = oenv.undefined,
+                                                 undefined = StrictUndefined, # oenv.undefined,
 
                                                  block_start_string = oenv.block_start_string,
                                                  block_end_string = oenv.block_end_string,
@@ -124,16 +99,22 @@ def get_epfl_jinja2_environment(request):
 
 def is_template_marked_as_not_found(request, template_name):
 
-    nfts = get_epfl_global_aux(request, "not_found_templates", set())
+    nfts = request.get_epfl_nodeglobal_aux("not_found_templates", set())
 
     return template_name in nfts
 
 
 def mark_template_as_not_found(request, template_name):
 
-    nfts = get_epfl_global_aux(request, "not_found_templates", set())
+    nfts = request.get_epfl_nodeglobal_aux("not_found_templates", set())
     nfts.add(template_name)
-    set_epfl_global_aux(request, "not_found_templates", nfts)
+    request.set_epfl_nodeglobal_aux("not_found_templates", nfts)
+
+def set_tempdata_provider(config, tempdata_provider):
+    config.registry.registerUtility(tempdata_provider, epfltempdata.ITempDataProvider)
+
+def set_nodeglobaldata_provider(config, nodeglobaldata_provider):
+    config.registry.registerUtility(nodeglobaldata_provider, epfltempdata.INodeGlobalDataProvider)
 
 
 def includeme(config):
@@ -148,8 +129,18 @@ def includeme(config):
     config.add_request_method(get_epfl_jinja2_environment)
     config.add_request_method(set_epfl_request_aux)
     config.add_request_method(get_epfl_request_aux)
+    config.add_request_method(epfltempdata.set_epfl_temp_blob)
+    config.add_request_method(epfltempdata.get_epfl_temp_blob)
+    config.add_request_method(epfltempdata.get_epfl_temp_blob_meta)
+    config.add_request_method(epfltempdata.get_epfl_nodeglobal_aux)
+    config.add_request_method(epfltempdata.set_epfl_nodeglobal_aux)
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
+    config.add_request_method(epflmodel.LazyModelAccessor, name = "epfl_model", reify = True)
+
+    config.add_directive("set_tempdata_provider", set_tempdata_provider)
+    config.add_directive("set_nodeglobaldata_provider", set_nodeglobaldata_provider)
+    config.add_directive("add_epfl_model", epflmodel.add_epfl_model)
 
     config.add_jinja2_search_path("solute.epfl:templates")
     config.add_jinja2_search_path("solute.epfl.components:")
@@ -157,5 +148,5 @@ def includeme(config):
 
     # static routes
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
-    components.add_static_routes(config)
-    widgets.add_static_routes(config)
+    components.add_routes(config)
+    widgets.add_routes(config)

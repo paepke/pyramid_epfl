@@ -1,6 +1,6 @@
 #* coding: utf-8
 
-import re
+import re, string
 
 from jinja2.exceptions import TemplateNotFound
 from pyramid_jinja2 import SmartAssetSpecLoader
@@ -99,3 +99,12 @@ class PreprocessingFileSystemLoader(SmartAssetSpecLoader):
 
         return (source, filename, uptodate)
 
+
+class StringJoinerList(list):
+    """ A list, that renders in a template as string joined by a delimiter. """
+
+    def __init__(self, delimiter):
+        self.delimiter = delimiter
+
+    def __html__(self):
+        return string.join(self, self.delimiter)

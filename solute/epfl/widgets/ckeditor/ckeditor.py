@@ -31,6 +31,8 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
     # style: True
     # format: True
     # maximize: True
+    # wordcount: False
+    # charcount: False
 
     # heights and width of the editor can be passed as kwarg-call-parameter in the jinja-template
 
@@ -69,6 +71,7 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
 
         opts = data_source.params["opts"]
         remove_plugins = ["about"]
+        extra_plugins = set()
         remove_buttons = []
         editor_opts = {"language": "de",
                        "removePlugins": ""}
@@ -103,6 +106,17 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
         if not opts.get("paragraph", True):
             remove_buttons.extend(["NumberedList", "BulletedList", "Outdent", "Indent", "Blockquote"])
 
+        if opts.get("wordcount", False) or opts.get("charcount", False):
+            extra_plugins.add("wordcount")
+            editor_opts["wordcount"] = {"showWordCount": False,
+                                        "showCharCount": False}
+
+        if opts.get("wordcount", False):
+            editor_opts["wordcount"]["showWordCount"] = True
+        if opts.get("charcount", False):
+            editor_opts["wordcount"]["showCharCount"] = True
+
+
         if opts.get("single_row_toolbar", "True"):
             editor_opts["toolbarGroups"] = [{ "name": 'document',    "groups": [ 'mode', 'document', 'doctools' ] },
                                             { "name": 'clipboard',   "groups": [ 'clipboard', 'undo' ] },
@@ -128,6 +142,7 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
             editor_opts["height"] = data_source.kwargs["height"]
 
         editor_opts["autoParagraph"] = False
+        editor_opts["extraPlugins"] = string.join(list(extra_plugins), ",")
 
         data_source.editor_opts = editor_opts
 
@@ -138,5 +153,5 @@ class CKEditorWidget(epflwidgetbase.WidgetBase):
         self.field.process_formdata([value])
 
 
-class CKEditor(epflfieldbase.FieldBase): 
+class CKEditor(epflfieldbase.FieldBase):
     widget_class = CKEditorWidget

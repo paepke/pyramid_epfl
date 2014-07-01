@@ -130,8 +130,8 @@ class CSSLink(CSSContent):
 
 class EPFLResponse(object):
 
-    """ Collects side-effect responses. 
-    It is always bound to a single page and therefore only contains the output of a single page. 
+    """ Collects side-effect responses.
+    It is always bound to a single page and therefore only contains the output of a single page.
     The self.render_ajax_response, self.get_exclusive_extra_content and self.render_extra_content-functions
 
     """
@@ -149,6 +149,7 @@ class EPFLResponse(object):
         """ Adds something to the response - in case it's a ajax-request """
         if type(self.ajax_response) is list:
             self.ajax_response.append(resp_string)
+
 
     def answer_json_request(self, resp_obj):
         """ The response consists only of this object which will be json-encoded - in case it's an answer to a epfl.json_request.
@@ -177,7 +178,7 @@ class EPFLResponse(object):
         for page_obj in self.page_request.get_handeled_pages():
             other_js = page_obj.response.render_ajax_response()
             if other_js:
-                out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(), 
+                out.append('epfl.exec_in_page("{tid}", {other_js})'.format(tid = page_obj.transaction.get_id(),
                                                                            other_js = quote_escape_js(other_js)))
 
         return string.join(out, "")

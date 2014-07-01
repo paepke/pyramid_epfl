@@ -12,7 +12,7 @@ epfl.AutoCompleteWidget = function(wid, cid, params) {
 
     		var event = widget_obj.make_event("GetData", {"query": request.term});
     		epfl.send(event, function(data) {
-                console.log(data)
+
                 var ac_data = [];
                 for (var i = 0; i < data.length; i++){
                     ac_data.push({label: data[i][1],

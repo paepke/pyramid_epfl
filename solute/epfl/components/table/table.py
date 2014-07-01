@@ -104,9 +104,9 @@ class Table(epflcomponentbase.ComponentBase):
     num_rows = 20                                   # the number of rows initially displayed to the user
     num_rows_domain = [10, 20, 50, 100, 'Alle']     # the user can choose to display these number of rows
     sort_column = None                              # the column-name sorted by (or None)
-    sort_column_default = None    
+    sort_column_default = None
     sort_order = "asc"                              # the initial sort order ("asc" / "desc")
-    sort_order_default = None    
+    sort_order_default = None
     table_data_url = ""                             # the url called to read the data (should be "")
     width = "max"                                   # the width of the table: "max" or an integer (pixel)
     height = 150                                    # the heigth of the table: in integer (pixel)
@@ -234,7 +234,7 @@ class Table(epflcomponentbase.ComponentBase):
         if self.multisort and isinstance(sort_column, dict):
             sort_param = sorted([(key, val[0], val[1]) for key, val in sort_column.items()], key=lambda x: x[2])
         else:
-            sort_param = self.idx2colum_name(sort_column)    
+            sort_param = self.idx2colum_name(sort_column)
 
         self.sort_order = sort_order
 

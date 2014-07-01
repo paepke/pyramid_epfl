@@ -15,10 +15,10 @@ from containers.boxes import Box
 
 
 
-def add_static_routes(config):
-    config.add_static_view(name = "epfl/components/form", path = "solute.epfl.components:form/static")
-    config.add_static_view(name = "epfl/components/containers", path = "solute.epfl.components:containers/static")
-    config.add_static_view(name = "epfl/components/menu", path = "solute.epfl.components:menu/static")
-    config.add_static_view(name = "epfl/components/table", path = "solute.epfl.components:table/static")
-    config.add_static_view(name = "epfl/components/canvas", path = "solute.epfl.components:canvas/static")
+def add_routes(config):
+    Form.add_pyramid_routes(config)
+    Table.add_pyramid_routes(config)
+    Menu.add_pyramid_routes(config)
+    Canvas.add_pyramid_routes(config)
+    Box.add_pyramid_routes(config)
 

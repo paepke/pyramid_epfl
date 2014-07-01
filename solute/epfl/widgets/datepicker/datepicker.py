@@ -46,5 +46,6 @@ class DatepickerWidget(epflwidgetbase.WidgetBase):
 
         data_source.value = field_value
 
+
 class Datepicker(epflfieldbase.FieldBase):
     widget_class = DatepickerWidget

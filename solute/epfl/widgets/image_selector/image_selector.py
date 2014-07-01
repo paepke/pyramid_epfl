@@ -22,7 +22,7 @@ class ImageSelectorWidget(epflwidgetbase.WidgetBase):
     js_name = ["image_selector.js"]
     css_name = ["image_selector.css"]
 
-    param_def = {"domain": epflwidgetbase.DomainType,
+    param_def = {"domain": epflwidgetbase.OptionalDomainType,
                  "on_click": epflwidgetbase.EventType, # The name of the event or "submit" to submit the form
                  "default_image_src" : epflwidgetbase.OptionalStringType
                  }

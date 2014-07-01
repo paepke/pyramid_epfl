@@ -37,25 +37,42 @@ epfl.BasicWidget = function(wid, cid, params) {
 
     } else if (this.typ == "entry") {
 
+        var char_count_func = function() {
+            var value = widget_obj.get_value();
+            $("#" + widget_obj.wid + "_ccnt").html("(" + value.length + "/" + $("#" + widget_obj.wid).attr("maxlength") + ")");
+        };
+
         // Javascript for entry-fields
-        $("#" + this.wid).keyup(function(e) {  // keyup event with timeout to prevent requests
-            if (widget_obj.get_param("on_keyup")) {
-                var timer = $("#" + widget_obj.wid).data('timeout');
+        $("#" + this.wid).bind({
 
-                if(timer) {
-                    clearTimeout(timer);
-                    $("#" + widget_obj.wid).removeData('timeout');
-                }
+            keyup: function(e) {  // keyup event with timeout to prevent requests
+                if (widget_obj.get_param("on_keyup")) {
+                    var timer = $("#" + widget_obj.wid).data('timeout');
 
-                if (e.which == 8 || $(this).val().length > 2) {
-                    $("#" + widget_obj.wid).data('timeout', setTimeout(function(){
-                        widget_obj.notify_value_change.call(widget_obj);
-                        var ev = widget_obj.make_event("onKeyup");
-                        epfl.send(ev);
-                    }, 800));
+                    if(timer) {
+                        clearTimeout(timer);
+                        $("#" + widget_obj.wid).removeData('timeout');
+                    }
+
+                    if (e.which == 8 || $(this).val().length > 2) {
+                        $("#" + widget_obj.wid).data('timeout', setTimeout(function(){
+                            widget_obj.notify_value_change.call(widget_obj);
+                            var ev = widget_obj.make_event("onKeyup");
+                            epfl.send(ev);
+                        }, 800));
+                    }
                 }
-            }
-        });
+                // update char-count
+                if (widget_obj.get_param("char_count")) { char_count_func(); };
+            }});
+
+        if (widget_obj.get_param("char_count")) {
+            $("#" + this.wid).bind({
+                cut: char_count_func,
+                paste: char_count_func,
+                change: char_count_func
+            });
+        };
 
         $("#" + this.wid).change(function() {  // onchange event
             widget_obj.notify_value_change.call(widget_obj);
@@ -74,6 +91,8 @@ epfl.BasicWidget = function(wid, cid, params) {
                 }
             };
         });
+
+        char_count_func();
 
     } else if (this.typ == "textarea") {
 
@@ -124,12 +143,12 @@ epfl.BasicWidget.inherits_from(epfl.WidgetBase);
 
 
 epfl.BasicWidget.prototype.get_value = function() {
-    if(this.typ == "checkbox") {
+    if (this.typ == "checkbox") {
+            console.log(typeof($( "#" + this.wid).prop('checked')));
             return $( "#" + this.wid).prop('checked');
-        } else if(this.typ == "buttonset", this.typ == "radio") {
-            return $( "#" + this.wid + " input:checked").attr("id");
-        }
-    else {
+    } else if (this.typ == "buttonset" || this.typ == "radio") {
+            return $( "#" + this.wid + " input:checked").val();
+    } else {
         return $( "#" + this.wid).val();
     }
 };

@@ -37,7 +37,25 @@ def checked_if_equal(value, comparison):
 def selected_if_equal(value, comparison):
     return "SELECTED" if value == comparison else ""
 
+def optional_html_attr(value, attr_name):
+    if not value:
+        return ""
+    else:
+        value = unicode(value).replace("\"", "\\\"")
+        return jinja2.Markup("{attr_name}={value}".format(attr_name = attr_name, value = jinja2.escape(value)))
 
+def field_states(states):
+    if states:
+        state_list = []
+
+        if 'writeable' in states and states['writeable'] is False:
+           state_list.append(u'readonly="READONLY"')
+        if 'enabled' in states and states['enabled'] is False:
+           state_list.append(u'disabled="DISABLED"')
+        if 'mandatory' in states and states['mandatory'] is True:
+         state_list.append(u'required="REQUIRED"')
+
+        return u' '.join(state_list)
 
 
 class EpflComponentExtension(Extension):
@@ -174,6 +192,8 @@ def extend_environment(env):
     env.filters["nony"] = nony
     env.filters["checked_if_equal"] = checked_if_equal
     env.filters["selected_if_equal"] = selected_if_equal
+    env.filters["optional_html_attr"] = optional_html_attr
+    env.filters["field_states"] = field_states
 
     env.globals["ping"] = ping
 

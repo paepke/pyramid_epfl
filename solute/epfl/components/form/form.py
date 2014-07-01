@@ -10,13 +10,17 @@ The python part
 from pprint import pprint
 
 import types, os.path, string
+from datetime import datetime
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflfieldbase
 from solute.epfl.core import epfltransaction
+from solute.epfl.core import epflconfig
+from solute.epfl.core import epfli18n
 
 import jinja2
 import wtforms
+
 
 NO_DEFAULT = lambda x:x # an atom
 
@@ -28,7 +32,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     asset_spec = "solute.epfl.components:form/static"
 
     css_name = ["form.css"]
-    js_name = ["form.js", 
+    js_name = ["form.js",
                "epflwidgetbase.js"]
 
     compo_state = ["field_state", "form_data_store", "additional_data"]
@@ -37,50 +41,39 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     form_data_store = {}
     additional_data = {}
 
-
-    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
-        """
-        :param formdata:
-            Used to pass data coming from the enduser, usually `request.POST` or
-            equivalent.
-        :param obj:
-            If `formdata` is empty or not provided, this object is checked for
-            attributes matching form field names, which will be used for field
-            values.
-        :param prefix:
-            If provided, all fields will have their name prefixed with the
-            value.
-        :param `**kwargs`:
-            If `formdata` is empty or not provided and `obj` does not contain
-            an attribute named the same as a field, form will assign the value
-            of a matching keyword argument to the field, if one exists.
-        """
+    class Meta(object):
+        def get_translations(self, form):
+            return epfli18n.BasicDB()
 
 
-        if formdata:
-            formdata = PostData(request, formdata)
-        else:
-            formdata = None
 
-        self.raw_data = formdata
+    def __init__(self):
 
+        self.raw_data = None
         self.submit_button_name = None # name of the current submit-button which submitted this form
 
-        wtforms.Form.__init__(self,
-                              formdata=formdata,
-                              obj=obj,
-                              prefix='',
-                              **kwargs)
+        # this part is to init the wtforms-super-class
+        # the original is not usable, because it tries to process the formdata (normally coming from query-params).
+        # these are not available here, also the component is not set up at this time to survive a call to "process"
+        # so this is left out here!
+        meta_obj = self._wtforms_meta()
+        super(wtforms.Form, self).__init__(self._unbound_fields, meta=meta_obj, prefix="")
 
+        for name, field in wtforms.compat.iteritems(self._fields):
+            # Set all the fields to attributes so that they obscure the class
+            # attributes with the same names.
+            setattr(self, name, field)
+
+        # finally init the epfl-part
         epflcomponentbase.ComponentBase.__init__(self)
+
 
         self.action = ""
         self.target_widget = None # the widget that received the last cmd
 
 
-
     def get_field_state(self, field_name):
-        """ Returns and creates the state for a field and widget. This is called during the binding of a field and its widget to the form. 
+        """ Returns and creates the state for a field and widget. This is called during the binding of a field and its widget to the form.
         This state is shared between field and widget.
         """
 
@@ -97,7 +90,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         # late-init of wtform
         formdata = FormDataProvider(self.page_request, self.form_data_store, self.page.transaction)
-        self.process(formdata)
 
         for field in self:
             if field.widget:
@@ -107,6 +99,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                 else:
                     raise TypeError, "only EPFL-Fields are supported: " + repr(field)
 
+        self.process(formdata)
 
     def finalize_component_state(self):
 
@@ -120,10 +113,26 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
             self.form_data_store[field.name] = field.data
 
         super(Form, self).finalize_component_state()
-        
+
+    def validate(self, create_new_values = False):
+        """
+        Additionally to the validation (done by the original-wtforms-class) it can create new values.
+        This will be done if create_new_values = True:
+        New values occur e.g. as the value-visuals the user types in at SuggestWidgets that have
+        match_required=False and a new_value_func defined.
+        When some data was typed in that is not in the list the SuggestWidget's get_data-function returned,
+        the new_value_func is called with the new value.
+        """
+
+        if create_new_values:
+            for field in self:
+                field.create_new_value()
+
+        return super(Form, self).validate()
+
 
     def get_data(self, key = None, default = NO_DEFAULT, validate = False):
-        """ Returns all values of this form as a dictionary. 
+        """ Returns all values of this form as a dictionary.
         Or if "key" is given, only that value is returned.
         This is the way to get only one additional_data-key back!
         "default" only works in combination with "key"
@@ -132,7 +141,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         if validate:
             if not self.validate():
                 return None
-                
+
         if key is None:
             data = self.data.copy()
             data.update(self.additional_data)
@@ -157,13 +166,13 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                     self[field_name].data = field_value
                 else:
                     self.additional_data[field_name] = field_value
-        else:
-            for field_name in self.data.keys(): # works for attributes of objects
-                if hasattr(data, field_name):
-                    if field_name in self:
-                        self[field_name].data = getattr(data, field_name)
-                    else:
-                        self.additional_data[field_name] = field_value
+
+        if hasattr(data, field_name): # works for attributes of objects
+            if field_name in self.data.keys():
+                self[field_name].data = getattr(data, field_name)
+            else:
+                self.additional_data[field_name] = field_value
+
 
     def reset_data(self, tag = None, additional_data = False):
         """ Sets the data of the form to the default values.
@@ -248,22 +257,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         return None
 
-    def get_upload(self, field_obj):
-        """ Returns the upload on an wtforms-field_obj.
-        The return value is a dict as:
-        {"name": NAME OF THE UPLOAD
-         "data": THE DATA AS 8 BIT STRING}
-        """
-        if field_obj.name not in self.page_request.uploads:
-            return {"uploaded": False}
-        upload = self.page_request.uploads[field_obj.name]
-        data = upload.file.read(config.epfl.max_upload_size)
-        upload.file.close()
-        return {"uploaded": True,
-                "name": upload.filename,
-                "ext": os.path.splitext(upload.filename)[-1],
-                "mime-type": upload.type,
-                "data": data}
 
     def handle_submit(self, params):
         """
@@ -272,11 +265,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         """
 
         submit_handler = self.get_submit_handler(params)
-
-#        if self.request.method == "GET":
-#            self.do_get()
-#        elif self.request.method == "POST":
-#            self.do_post()
 
 
         if submit_handler:
@@ -287,16 +275,6 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         """
         return self.submit_button_name
 
-#    def get_domain(self, field_name):
-#        """ Shortcut-Function to all domain-supporting widgets """
-#        field = self[field_name]
-#        return field.widget.get_domain(field)
-#
-#    def get_selected_domain(self, field_name):
-#        """ Shortcut-Function to all domain-supporting widgets """
-#        field = self[field_name]
-#        #field.widget.setup_widget_state(self, field)
-#        return field.widget.get_selected_domain(field)
 
     def pre_render(self):
         """ Called just before jina-rendering occures. """
@@ -313,7 +291,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         return super(Form, self).render(*args, **kwargs)
 
     def _get_template_element(self, part_accessor):
-        if part_accessor[0] == "macros":
+        if len(part_accessor) > 0 and part_accessor[0] == "macros":
             return None # macros are not template-elements
         elif len(part_accessor) == 1: # this is very static, but lets start simple!
             return getattr(self, part_accessor[0], None)
@@ -386,11 +364,11 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         self.handle_event(cmd, event_params = params)
 
     def handle_onChange(self, widget_name = None, **params):
-        """ 
-        OnChange != ValueChange! 
+        """
+        OnChange != ValueChange!
         OnChange is the additional event which can take place and normally will be fired directly.
         ValueChange is the event which the form-component needs to keep the server-side state up to date.
-        It normally is enqueued and not fired directly. 
+        It normally is enqueued and not fired directly.
         This event is not routed to the widget - it is handeled by the form itself.
         """
         self.target_widget = widget_name
@@ -410,6 +388,10 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     def handle_GetData(self, widget_name = None, query = None):
         self.target_widget = widget_name
         self[widget_name].widget.handle_GetData(query)
+
+    def handle_UploadFile(self, widget_name = None):
+        self.target_widget = widget_name
+        self[widget_name].widget.handle_UploadFile()
 
 
 

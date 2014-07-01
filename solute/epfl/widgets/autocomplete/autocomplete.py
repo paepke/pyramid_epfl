@@ -42,7 +42,7 @@ class AutocompleteWidget(epflwidgetbase.WidgetBase):
         data_source.style = style
 
         class_ = data_source.kwargs.get('class_', '')
-        data_source.class_ = class_
+        data_source.css_classes.append(class_)
 
         data_source.entry_data = self.state["entry_data"]
 
@@ -126,7 +126,7 @@ class EntryDataRequired(object):
     field_flags = ('required', )
     visual = "*"
 
-    def __init__(self, message = "txt_required_field"):
+    def __init__(self, message = "txt_value_required"):
         self.message = message
 
     def __call__(self, form, field):
@@ -134,7 +134,8 @@ class EntryDataRequired(object):
         entry_data = field.state["entry_data"]
         if not entry_data or not entry_data.strip():
             field.errors[:] = []
-            raise validators.StopValidation(self.message)
+            message = self.field.gettext(self.message)
+            raise validators.StopValidation(message)
 
 
 

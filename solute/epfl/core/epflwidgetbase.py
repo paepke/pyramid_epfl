@@ -7,7 +7,7 @@ import copy
 import datetime
 
 import jinja2
-
+from solute.epfl.jinja import jinja_helpers
 from solute.epfl.core import epflclient, epflutil, epflexceptions
 
 from wtforms.widgets.core import HTMLString
@@ -65,12 +65,26 @@ class WidgetBase(object):
 
         return field_kwargs, widget_kwargs
 
+
+    @classmethod
+    def add_pyramid_routes(cls, config):
+        fn = inspect.getfile(cls)
+        pos = fn.index("/epfl/widgets/")
+        epos = fn.index("/", pos + 14)
+        widget_path_part = fn[pos + 14 : epos]
+
+        config.add_static_view(name = "epfl/widgets/" + widget_path_part, 
+                               path = "solute.epfl.widgets:" + widget_path_part + "/static")
+
+
+
     def __init__(self, **params):
         self.raw_params = params
         self.form = None
         self.state = None
         self.is_rendered = False # is this widget rendered
         self.js_part = None # after the rendering of the html-part this contains the js-part
+        self.mark_error = False # sould this field be marked errorneous.
 
         self.params = {} # will be filled with persistable params and unpersistable params
 
@@ -203,7 +217,7 @@ class WidgetBase(object):
             if info_type.check_type(info["raw_value"]):
                 value = info_type.eval(info["raw_value"], self.form) # evaluate the param
             else:
-                raise epflexceptions.ConfigurationError, "Widget " + self.__class__.__name__ + " must define param '" + param_name + "' of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
+                raise epflexceptions.ConfigurationError, "Field '" + self.field.name + "' must define param '" + param_name + "' of type " + repr(info["type"]) + " got " + repr(info["raw_value"])
 
             params[param_name] = value
 
@@ -232,7 +246,6 @@ class WidgetBase(object):
 
             if info_type.client_param:
                 client_side_params[param_name] = self.params[param_name]
-
 
         data_source = DataSource(form = self.form,
                                  widget = self,
@@ -268,7 +281,7 @@ class WidgetBase(object):
 
     def make_html_attribute(self, attr_name, attr_value):
         """ returns a string to insert into a html-tag to define an html-attribue """
-        return "{attr_name}=\"{attr_value}\"".format(attr_name = attr_name, attr_value = jinja2.escape(attr_value))
+        return jinja2.Markup("{attr_name}=\"{attr_value}\"".format(attr_name = attr_name, attr_value = jinja2.escape(attr_value)))
 
     def js_call(self, method_name, *args):
         """ A JS-Snipped which calls a method of this widget """
@@ -292,15 +305,36 @@ class WidgetBase(object):
 
         return string.join(js, "")
 
+    def has_errors(self):
+        """ Checks if the field has errors """
+        if self.field.errors or self.mark_error:
+            return True
+        else:
+            return False
+
+    def set_error(self, msg):
+        """ Sets the error message for the field. 
+        A latter call of "validate" will clear/override this message. """
+        self.field.errors.append(msg)
+
+    def mark_error(self):
+        """ Marks the field visually errornous. After a form.redraw the field appears red. 
+        The marker is not persisted in state. This means just like the self.errors
+        it is only displayed once.
+        """
+        self.mark_error = True
+
+
+
 
 class DataSource(object):
 
     """ The instance-variables are exposed to the template of the widget.
     e.g. access the
 
-    name of the widget as {{ widget.name }}
-    min_value of the SliderWidget (configured in the Form-Instance) as {{ widget.params.min_value }}
-    some kwarg passed from the jinja-template while calling the widget by {{ widget.kwargs.some_name }}
+    name of the widget as {{ ds.name }}
+    min_value of the SliderWidget (configured in the Form-Instance as param_def) as {{ ds.params.min_value }}
+    some kwarg passed from the jinja-template while calling the widget by {{ ds.kwargs.some_name }}
 
     This object may be modified by the update_data_source-method of the concrete widget
     """
@@ -318,10 +352,13 @@ class DataSource(object):
         self.params = widget_params
         self.label = field.label
         self.wid = self.cid + "_" + self.name
+        self.css_classes = jinja_helpers.StringJoinerList(" ")
 
-        self.value = field.data # widget_kwargs.get("value", field.data)
-        if self.value is None:
-            self.value = ""
+
+        if widget.has_errors():
+            self.css_classes.append("epfl-form-field-error-mark")
+
+        self.value = self.field.visualize_func(field) # widget_kwargs.get("value", field.data)
 
     def get_data(self):
         return self.data
@@ -346,14 +383,16 @@ class ParamType(object):
     def eval(cls, obj, form):
         return obj
 
-class DomainType(ParamType):
+class OptionalDomainType(ParamType):
 
     client_param = True
 
     @classmethod
     def check_type(cls, obj):
         typ = type(obj)
-        if typ in types.StringTypes and obj.startswith("self."):
+        if not obj:
+            return True
+        elif typ in types.StringTypes and obj.startswith("self."):
             return True # method-names starting with "self." are OK!
         else:
             return (typ is types.FunctionType) or (typ is list)
@@ -401,6 +440,15 @@ class MethodType(ParamType):
             return getattr(form, domain_func_name)
 
 
+class OptionalMethodType(MethodType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if obj is None:
+            return True
+        else:
+            return super(cls, OptionalMethodType).check_type(obj)
+
 class EventType(ParamType):
     """ An event: None - no event given, or a string - the name of the
     event-handler-method without the leading "handle_"
@@ -419,10 +467,29 @@ class NumberType(ParamType):
     def check_type(cls, obj):
         return type(obj) in [int, float]
 
+class OptionalNumberType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) in [int, float]
+
 class BooleanType(ParamType):
     @classmethod
     def check_type(cls, obj):
         return type(obj) is bool
+
+class OptionalBooleanType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+
+            return True
+        else:
+            return type(obj) is bool
 
 
 class DateType(ParamType):
@@ -442,6 +509,27 @@ class OptionalDateType(ParamType):
         else:
             return type(obj) is datetime.date
 
+class TimeType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        return type(obj) is datetime.time
+
+class OptionalTimeType(ParamType):
+    """ A simple time object of the datetime lib """
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) is datetime.time
+
+class StringType(ParamType):
+
+    @classmethod
+    def check_type(cls, obj):
+        return type(obj) in [str, unicode]
 
 class OptionalStringType(ParamType):
     """ A String or nothing """
@@ -452,6 +540,17 @@ class OptionalStringType(ParamType):
             return True
         else:
             return type(obj) in [str, unicode]
+
+
+class OptionalIntType(ParamType):
+    """ An integer or nothing """
+
+    @classmethod
+    def check_type(cls, obj):
+        if not obj:
+            return True
+        else:
+            return type(obj) is int
 
 
 

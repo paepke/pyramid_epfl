@@ -123,11 +123,11 @@ class Page(object):
 
         self.done_request()
 
-        return pyramid.response.Response(body = out.encode("utf-8"), 
-                                         content_type = "text/html; charset=utf-8", 
+        return pyramid.response.Response(body = out.encode("utf-8"),
+                                         content_type = "text/html; charset=utf-8",
                                          status = 200) # todo
 
-    @property    
+    @property
     def parent(self):
         """ Gets the parent-page (connected by the parent-transaction) - if any!
         It "spawns" a new page-obj-live-cycle with setup_component and via the PageRequest (get_handeled_pages) the
@@ -156,6 +156,9 @@ class Page(object):
 
 
     def done_request(self):
+        """ [request-processing-flow]
+        The main request teardown.
+        """
 
         for compo_obj in self.components.values():
             compo_obj.finalize()
@@ -198,7 +201,7 @@ class Page(object):
 
     def __get_transaction_from_request(self):
 
-        tid = self.page_request.get("tid")
+        tid = self.page_request.get_tid()
         transaction = epfltransaction.Transaction(self.request, tid)
 
         if transaction.created:
@@ -314,7 +317,7 @@ class Page(object):
 
         self.handle_transaction()
 
-        ajax_queue = self.page_request["q"]
+        ajax_queue = self.page_request.get_queue()
         for event in ajax_queue:
 
             event_type = event["t"]
@@ -335,6 +338,12 @@ class Page(object):
 
                 event_handler = getattr(self, "handle_" + event_name)
                 event_handler(**event_params)
+
+            elif event_type == "upl":
+                event_id = event["id"]
+                cid = event["cid"]
+                component_obj = self.components[cid]
+                component_obj.handle_event("UploadFile", {"widget_name": event["widget_name"]})
 
             else:
                 raise Exception, "Unknown ajax-event: " + repr(event)
@@ -438,7 +447,7 @@ class Page(object):
         Normally, you only need to redraw the components.
         """
         self.add_js_response("epfl.reload_page();")
-        
+
     def jump(self, route = None, target_url = None, **route_params):
         """ Jumps to a new page.
         The target is given as route/route_params or as target_url.
@@ -449,7 +458,7 @@ class Page(object):
         """
 
         if route:
-            target_url = self.page_request.route_url(route, **(route_params or {}))
+            target_url = self.request.route_url(route, **(route_params or {}))
 
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)
@@ -512,7 +521,7 @@ class Page(object):
         target_url = epflutil.URL(target_url).update_query(tid = new_transaction.get_id()) # adjust the url and add the TID
 
         # open the overlay
-        js = epflclient.make_js_call("epfl.open_overlay", overlay_name, 
+        js = epflclient.make_js_call("epfl.open_overlay", overlay_name,
                                                           target_url,
                                                           overlay_title,
                                                           overlay_opts,
@@ -521,7 +530,7 @@ class Page(object):
         self.add_js_response(js)
 
         # remeber this overlay (for full-page redraw of this parent page)
-        self.transaction["overlays"].append({"tid": new_transaction.get_id(), 
+        self.transaction["overlays"].append({"tid": new_transaction.get_id(),
                                              "name": page_class.get_name(),
                                              "target_url": target_url}) # the url with the TID
 
@@ -544,7 +553,7 @@ class Page(object):
             overlay_opts = page_class.get_overlay_options()
             overlay_title = page_class.overlay_title
 
-            js = epflclient.make_js_call("epfl.open_overlay", overlay["name"], 
+            js = epflclient.make_js_call("epfl.open_overlay", overlay["name"],
                                                               overlay["target_url"], # TID is already included
                                                               overlay_title,
                                                               overlay_opts,
@@ -553,7 +562,7 @@ class Page(object):
             self.add_js_response(js)
 
     def handle_CloseOverlay(self, overlay_tid):
-        """ Is called by the EPFL, whenever an overlay is closed. 
+        """ Is called by the EPFL, whenever an overlay is closed.
         It is called from the opening page and gives the tid of the overlay to close.
         """
 
@@ -571,24 +580,40 @@ class Page(object):
 
 
 class PageRequest(object):
-    """ 
+    """
     A Class containing the request-data specific to a specific page.
     This is an abstraction of the "request"-object provided by the framework.
     The framework's request-object is global, so creating subrequests (needed when handling events
     in page-objects other than the page-object created by the framework's request) can be hard.
-    Since all classes of EPFL only rely on this abstraction (page_request) it can be created on the fly 
-    everytime such a page-object needs one specific to it. 
+    Since all classes of EPFL only rely on this abstraction (page_request) it can be created on the fly
+    everytime such a page-object needs one specific to it.
     """
 
     def __init__(self, request, page_obj):
         self.request = request
         self.page_obj = page_obj
         self.handeled_pages = []
+        self.upload_mode = False
 
-        if self.request.is_xhr:
+        if self.request.content_type.startswith("multipart/"):
+            self.upload_mode = True
+            self.params = request.params
+        elif self.request.is_xhr:
             self.params = request.json_body
         else:
             self.params = request.params
+
+    def is_upload_mode(self):
+        return self.upload_mode
+
+    def get_tid(self):
+        return self.params.get("tid")
+
+    def get_queue(self):
+        if self.upload_mode:
+            return [self.params]
+        else:
+            return self.params["q"]
 
 
     def get(self, key, default = None):
@@ -606,6 +631,12 @@ class PageRequest(object):
 
     def get_handeled_pages(self):
         return self.handeled_pages
+
+    def get_uploads(self):
+        if not self.is_upload_mode:
+            return {}
+        else:
+            return {self.params["widget_name"]: self.request.POST[self.params["widget_name"] + "[]"]}
 
 
 

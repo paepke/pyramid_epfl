@@ -13,8 +13,6 @@ class BasicWidget(epflwidgetbase.WidgetBase):
     def handle_ValueChange(self, value):
         self.field.process_formdata([value])
 
-
-
 class ButtonWidget(BasicWidget):
 
     name = "button"
@@ -31,7 +29,7 @@ class RadioButtonWidget(BasicWidget):
     name = "radio"
 
     param_def = {"on_change": epflwidgetbase.EventType,
-                 "choices": epflwidgetbase.DomainType
+                 "choices": epflwidgetbase.OptionalDomainType
                 }
 
     template_name = {"template": "basic/basic.html",
@@ -43,8 +41,12 @@ class RadioButtonWidget(BasicWidget):
 class EntryWidget(BasicWidget):
 
     name = "entry"
+
+    css_name = ["basic_entry.css"]
+
     param_def = {"on_change": epflwidgetbase.EventType,
                  "on_return": epflwidgetbase.EventType,
+                 "char_count": (bool, False),
                 }
 
     template_name = {"template": "basic/basic.html",
@@ -76,7 +78,7 @@ class SelectWidget(BasicWidget):
 
     name = "select"
     param_def = {"on_change": epflwidgetbase.EventType,
-                 "choices": epflwidgetbase.DomainType
+                 "choices": epflwidgetbase.OptionalDomainType
                 }
 
     template_name = {"template": "basic/basic.html",
@@ -88,7 +90,7 @@ class ButtonSetWidget(BasicWidget):
 
     name = "buttonset"
     param_def = {"on_change": epflwidgetbase.EventType,
-                 "choices": epflwidgetbase.DomainType
+                 "choices": epflwidgetbase.OptionalDomainType
                 }
 
     template_name = {"template": "basic/basic.html",
@@ -110,10 +112,6 @@ class CheckboxWidget(BasicWidget):
     template_name = {"template": "basic/basic.html",
                      "html": "checkbox",
                      "js": "basic_js"}
-
-
-
-
 
 class Button(epflfieldbase.FieldBase):
     widget_class = ButtonWidget
