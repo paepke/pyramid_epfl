@@ -1,3 +1,10 @@
+solute-python-epfl (0.22) squeeze; urgency=low
+
+  [ Tobias Paepke ]
+  * updated setup.py with correct setuptools dependancy
+
+ -- Michael van Bracht <mvb@solute.de>  Tue, 01 Jul 2014 11:32:01 -0000
+
 solute-python-epfl (0.21) squeeze; urgency=low
 
   [ Gunter Bach ]
