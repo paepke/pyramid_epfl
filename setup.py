@@ -18,13 +18,14 @@
 import setuptools
 
 setuptools.setup(
-    name='EPFL Python Frontend Logic',
-    version='0.2.0',
+    name='python-solute-epfl',
+    version='0.25.0',
     author='Gunter Bach',
     author_email='gb@solute.de',
     packages=setuptools.find_packages(),
+    include_package_data=True,
     scripts=[],
-    url='http://pypi.python.org/pypi/epfl/',
+    url='https://github.com/solute/pyramid_epfl/',
     license='LICENSE.txt',
     description='The EPFL Python Frontend Logic.',
     long_description=open('README.md').read(),
@@ -36,6 +37,9 @@ setuptools.setup(
         "ujson >= 1.33",
         "python-memcached",
         "python-magic >= 0.4.6"
+    ],
+    setup_requires=[
+        "setuptools-git",
     ],
     entry_points = """\
     [pyramid.scaffold]
