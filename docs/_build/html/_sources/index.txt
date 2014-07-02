@@ -11,6 +11,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   intro
+   users.index
+   developers.index
+
+   feature_chart
+   todo
+
 
 
 Indices and tables
