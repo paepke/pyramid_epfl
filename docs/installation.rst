@@ -12,7 +12,7 @@ Open a shell in your Linux box and...
         virtualenv env
         source env/bin/activate
         pip install -e git+https://github.com/solute/pyramid_epfl.git#egg=pyramid_epfl
-        pcreate -s pyramid_epfl_notes notes
+        pcreate -s pyramid_epfl_notes notes_app
         cd notes
         python setup.py develop
         pserve development.ini

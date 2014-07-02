@@ -36,7 +36,8 @@ setuptools.setup(
         "pyramid_jinja2 >= 1.10",
         "ujson >= 1.33",
         "python-memcached",
-        "python-magic >= 0.4.6"
+        "python-magic >= 0.4.6",
+        "pycurl >= 7.19.3.1"
     ],
     setup_requires=[
         "setuptools-git",
