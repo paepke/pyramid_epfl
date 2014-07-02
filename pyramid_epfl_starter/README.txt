@@ -1,1 +1,0 @@
-epfl_pyramid_barebone README
