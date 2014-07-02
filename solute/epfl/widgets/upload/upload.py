@@ -223,9 +223,11 @@ class FileUploadObject(object):
 
         if self.url is not None:
             cu = curl.Curl()
+            cu.set_option(curl.pycurl.SSL_VERIFYPEER, 0)
+            cu.set_option(curl.pycurl.SSL_VERIFYHOST, 0)
             data = cu.get(self.url)
             self.from_data(request, data, self.file_name)
-            return 
+            return
 
 
     def to_temp_blob(self, request):
