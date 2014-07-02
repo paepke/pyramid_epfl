@@ -15,5 +15,11 @@ To install:
 	pserve development.ini
 
 
+Documentation:
+--------------
+
+    http://pyramid-epfl.readthedocs.org/en/latest/
+
+    
 
 
