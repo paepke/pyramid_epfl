@@ -12,11 +12,13 @@ So it very suitable for something like this:
     :width: 50%
     :align: center
 
+
 But not for this:
 
 .. image:: _static/billigerde_screen.png
     :width: 50%
     :align: center
+
 
 
 Because of it's design and the "server-side-state"-feature the number of concurrent sessions is directly related to it's memory usage. (Maybe 10k per session and 8h-24h session TTL) So again, an edit-frontend for company wide data is it's strength, a website accessible for everybody from the internet maybe not.

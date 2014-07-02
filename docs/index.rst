@@ -17,6 +17,7 @@ Contents:
 
    feature_chart
    todo
+   license
 
 
 
