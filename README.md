@@ -18,8 +18,8 @@ To install:
 Documentation:
 --------------
 
-    http://pyramid-epfl.readthedocs.org/en/latest/
+    Lives at [read the docs](http://pyramid-epfl.readthedocs.org/en/latest/)
 
-    
+
 
 
