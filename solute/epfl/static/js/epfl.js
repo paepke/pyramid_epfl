@@ -252,6 +252,7 @@ epfl_module = function() {
 		frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '">');
 		$(document.body).append(frm);
 		$("#__epfl_submit_form__").submit();
+		$("#__epfl_submit_form__").remove();
 	};
 
 	epfl.go_next = function(target_url) {
@@ -259,12 +260,19 @@ epfl_module = function() {
 		frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '"');
 		$(document.body).append(frm);
 		$("#__epfl_submit_form__").submit();
+		$("#__epfl_submit_form__").remove();
 	};
 
 	epfl.jump = function(target_url) {
 		var frm = $('<form id="__epfl_submit_form__" method="POST" action="' + encodeURI(target_url) + '"></form>');
 		$(document.body).append(frm);
 		$("#__epfl_submit_form__").submit();
+		$("#__epfl_submit_form__").remove();
+	};
+
+	epfl.jump_extern = function(target_url) {
+		var win = window.open(target_url, '_blank');
+		win.focus();		
 	};
 
 	epfl.open_overlay = function(name, url, title, opts, show_please_wait) {

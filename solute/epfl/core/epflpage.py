@@ -448,19 +448,26 @@ class Page(object):
         """
         self.add_js_response("epfl.reload_page();")
 
-    def jump(self, route = None, target_url = None, **route_params):
+    def jump(self, route, **route_params):
         """ Jumps to a new page.
-        The target is given as route/route_params or as target_url.
+        The target is given as route/route_params.
         The transactions (current an target-page-transaction) are not joined and
         therefore are completely unrelated.
         If you need the data of the current page in the next one (or vice versa), you must
         use "page.go_next(...)" instead.
         """
 
-        if route:
-            target_url = self.request.route_url(route, **(route_params or {}))
+        target_url = self.request.route_url(route, **(route_params or {}))
 
         js = "epfl.jump('" + target_url + "');"
+        self.add_js_response(js)
+
+    def jump_extern(self, target_url):
+        """ Jumps to an external URL. 
+        Do not use this to jump to an internal page of this appliaction. Use page.jump instead.
+        """
+
+        js = "epfl.jump_extern('" + target_url + "');"
         self.add_js_response(js)
 
     def go_next(self, route = None, target_url = None, **route_params):
