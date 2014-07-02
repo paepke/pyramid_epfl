@@ -19,7 +19,7 @@ import setuptools
 
 setuptools.setup(
     name='python-solute-epfl',
-    version='0.25.0',
+    version='0.30',
     author='Gunter Bach',
     author_email='gb@solute.de',
     packages=setuptools.find_packages(),
