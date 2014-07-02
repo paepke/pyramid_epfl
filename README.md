@@ -18,7 +18,7 @@ To install:
 Documentation:
 --------------
 
-    Lives at [read the docs](http://pyramid-epfl.readthedocs.org/en/latest/)
+Lives at http://pyramid-epfl.readthedocs.org/en/latest/
 
 
 
