@@ -14,6 +14,14 @@ from wtforms import validators
 class SuggestWidget(epflwidgetbase.WidgetBase):
 
     """ Displays a normal text-entry with autocomplete feature.
+
+    self.data is always the python-data-type given by the "type" attribute.
+    The entry-data (accessed by self.get_entry_data and self.set_entry_data) is always a string.
+    The entry-data corresponds to the "visual" of select-boxes, so it is the data the user selects from the suggest-box or types in.
+    self.data and the entry-data is never garanteed to correspond to each other, only if the user selects from the suggest-box.
+    The "match_required" option only checks on validation-phase that self.data and entry-data is match.
+    After a change of self.data you must call self.update_entry_data() to be sure that self.data and entry-data match.
+    This is done for you by form.set_data.
     """
 
     name = "suggest"
@@ -130,7 +138,7 @@ class Suggest(epflfieldbase.FieldBase):
 
     def set_entry_data(self, data):
         """ This is the data which is displayed/entered (this visual) into the actual autocomplete-field.
-        Whereas the self.data is the corresponding "value".
+        Whereas the self.data is the corresponding "value". (this.data is not touched by this function)
         For example: You type in the name of a category and the self.data is then the corresponding
         category-id. Of course the self.data may be None if nothing matching is found in the
         data returned by the "get_data"-function.
@@ -139,25 +147,29 @@ class Suggest(epflfieldbase.FieldBase):
 
 
     def get_entry_data(self):
-        """ Returns the text/value entered into the actual autocomplete-field """
+        """ Returns the text/value entered into the actual autocomplete-field. It may or may not be
+        set corresponding to the self.data-attribute at this time.
+        """
 
         entry_data = self.state["entry_data"] # this is the visual the user typed into the field
         return entry_data
 
-
-    def pre_setting_data(self, value):
-
+    def update_entry_data(self):
+        """ This updates the displayed/entered value accordingly to the self.data attribute.
+        """
         visual = ""
 
         if self.widget.params["get_visual"]:
-            visual = self.widget.params["get_visual"](value)
+            visual = self.widget.params["get_visual"](self.data)
         else:
             all_data = self.widget.params["get_data"](None)
             for data, vis in all_data:
-                if data == value:
+                if data == self.data:
                     visual = vis
 
         self.set_entry_data(visual)
+
+    after_form_set_data = update_entry_data
 
 
 class MatchRequired(object):

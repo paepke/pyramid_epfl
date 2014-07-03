@@ -158,7 +158,9 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
     def set_data(self, data):
         """ Sets multiple values of this form by passing a dictionary/dicionary like/object with attributes.
-        Values not defined as attributes of the form are stored separately and returned unchanged by self.get_data() """
+        Values not defined as attributes of the form are stored separately and returned unchanged by self.get_data().
+        Also the self.after_form_set_data of all fields will be triggered!
+        """
 
         if hasattr(data, "items"): # works for dict-like objects
             for field_name, field_value in data.items():
@@ -172,6 +174,9 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                 self[field_name].data = getattr(data, field_name)
             else:
                 self.additional_data[field_name] = field_value
+
+        for field in self:
+            field.after_form_set_data() # a convenience-hook 
 
 
     def reset_data(self, tag = None, additional_data = False):

@@ -125,20 +125,20 @@ class FieldBase(wtforms.Field):
         if self.name == "submit":
             raise ValueError, "'submit' is really a bad name for a field!"
 
-    """ The following methods are for adding more control over the self.data-value of a field.
-    self.pre_setting_data and self.pre_getting_data are hooks you can overwrite in subclasses """
-    @property
-    def data(self):
-        self.pre_getting_data()
-        return self._data
-    @data.setter
-    def data(self, value):
-        self.pre_setting_data(value)
-        self._data = value
-    def pre_getting_data(self):
-        pass
-    def pre_setting_data(self, value):
-        pass
+#    """ The following methods are for adding more control over the self.data-value of a field.
+#    self.pre_setting_data and self.pre_getting_data are hooks you can overwrite in subclasses """
+#    @property
+#    def data(self):
+#        self.pre_getting_data()
+#        return self._data
+#    @data.setter
+#    def data(self, value):
+#        self.pre_setting_data(value)
+#        self._data = value
+#    def pre_getting_data(self):
+#        pass
+#    def pre_setting_data(self, value):
+#        pass
     
 
     @property # some kind of late binding...
@@ -240,6 +240,15 @@ class FieldBase(wtforms.Field):
     def process_data(self, data):
         """ called with the default value """
         super(FieldBase, self).process_data(data)
+
+    def after_form_set_data(self):
+        """ A convenience hook, that is called after a form.set_data() was executed.
+        Here the framework will update the state of the field that depends on self.data.
+        E.g. a suggest-field will update its entry-data.
+        You must do the same, if a field uses this hook if you manipulate self.data by your self.
+        """
+        pass
+
 
     def create_new_value(self):
         """ Called if form.validate was called with create_new_values=True for every field.
