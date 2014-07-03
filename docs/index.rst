@@ -13,11 +13,12 @@ Contents:
 
    installation
    intro
-   users.index
-   developers.index
+   users/index
+   developers/index
 
    feature_chart
    todo
+   other_software
    license
 
 
