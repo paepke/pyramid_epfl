@@ -2,7 +2,8 @@
 
 TRANSLATIONS = {"txt_value_required": u"Bitte Wert eingeben!",
                 "txt_upload_file_ok": u"Upload erfolgreich abgeschlossen.",
-                "txt_upload_file_error": u"Fehler beim hochladen der Datei."}
+                "txt_upload_file_error": u"Fehler beim hochladen der Datei.",
+                "txt_value_must_be_file_upload_object": "Bitte eine Datei hochladen."}
 
 class BasicDB(object):
     

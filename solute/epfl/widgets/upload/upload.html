@@ -5,7 +5,7 @@
          {{ preview_image(ds) }}
     {% endif %}
    </div>
-    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" {{- ds.field.state|field_states -}} {% if ds.params.multiple %} multiple {% endif %}>
+    <input id="{{ds.wid}}" type="file" name="{{ds.name}}[]" data-url="#" class="{{ ds.css_classes }}" {{- ds.field.state|field_states -}} {% if ds.params.multiple %} multiple {% endif %}>
 {% endmacro %}
 
 {% macro preview_image(ds) %}
