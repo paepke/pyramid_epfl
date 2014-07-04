@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to EPFL Python Frontend Logic!
-======================================
+Welcome
+=======
 
 Contents:
 
@@ -17,6 +17,7 @@ Contents:
    developers/index
 
    feature_chart
+   components/index
    todo
    other_software
    license

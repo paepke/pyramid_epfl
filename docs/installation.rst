@@ -1,6 +1,6 @@
-============
-Installation
-============
+==========
+Quickstart
+==========
 
 You need "python", "virtualenv" and "pip" installed.
 
