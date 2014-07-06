@@ -2,7 +2,14 @@
 Quickstart
 ==========
 
-You need "python", "virtualenv" and "pip" installed.
+You need 
+
+- "python" (should be already on your box)
+- "virtualenv" (sudo apt-get install python-virtualenv)
+- "pip" (sudo apt-get install python-pip)
+- "curl" (sudo apt-get install libcurl4-gnutls-dev)
+
+installed.
 
 Open a shell in your Linux box and...
 
@@ -18,5 +25,6 @@ Open a shell in your Linux box and...
         pserve development.ini
 
 
-Have fun!
+Have fun at http://localhost:6543/
+
 
