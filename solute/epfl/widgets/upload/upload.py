@@ -58,7 +58,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         if self.field.data:
             fuob = self.field.data
             data_source.preview_url = fuob.get_preview_url(self.request)
-            data_source.preview_fn = "({fn})".format(fn = fuob.file_name)
+            data_source.preview_fn = u"({fn})".format(fn = fuob.file_name)
         else:
             data_source.preview_url = None
             data_source.preview_fn = None
@@ -72,7 +72,7 @@ class UploadWidget(epflwidgetbase.WidgetBase):
         upload_info = {"preview_url": fuob.get_preview_url(self.request),
                        "preview_height": self.params["preview_height"],
                        "preview_width": self.params["preview_width"],
-                       "preview_fn": "({fn})".format(fn = fuob.file_name)
+                       "preview_fn": u"({fn})".format(fn = fuob.file_name)
                        }
 
         self.form.return_ajax_response(upload_info)
