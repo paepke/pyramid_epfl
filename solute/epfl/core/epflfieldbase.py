@@ -326,6 +326,11 @@ class FieldBase(wtforms.Field):
         """ The Field is now optional """
         self.state["mandatory"] = False
 
+    def set_error(self, msg):
+        """ Sets the error message for the field. 
+        A latter call of "validate" will clear/override this message. """
+        self.errors.append(msg)
+
 
 class FieldMandatory(object):
     """
