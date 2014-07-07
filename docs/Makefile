@@ -48,8 +48,10 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	rm -rf _autodoc
 
 html:
+	sphinx-apidoc -o _autodoc -e ../solute
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
