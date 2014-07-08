@@ -27,7 +27,7 @@ class Box(epflcomponentbase.ComponentBase):
 
     compo_config = ["auto_visibility"]
 
-
+    box_shown = True
 
     def after_event_handling(self):
         super(Box, self).after_event_handling()
@@ -40,7 +40,7 @@ class Box(epflcomponentbase.ComponentBase):
             if not els:
                 return True # No subelements -> I am visible!
 
-            some_visible = False        
+            some_visible = False
             for el in els:
                 if el.is_visible():
                     some_visible = True # at least one subelement is visible -> I am visible!

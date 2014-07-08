@@ -176,7 +176,14 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                 self.additional_data[field_name] = field_value
 
         for field in self:
-            field.after_form_set_data() # a convenience-hook 
+            field.after_form_set_data() # a convenience-hook
+
+    def get_errors(self):
+        """ Returns the errors from all fields """
+        errors = {}
+        for field in self:
+            errors[field.name] = field.errors
+        return errors
 
 
     def reset_data(self, tag = None, additional_data = False):
@@ -359,6 +366,24 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
         for item in items:
             item.set_hidden()
+
+    def set_disabled(self, tag = None):
+        if tag:
+            items = self.get_fields_by_tag(tag)
+        else:
+            item = self
+
+        for item in items:
+            item.set_disabled()
+
+    def set_enabled(self, tag = None):
+        if tag:
+            items = self.get_fields_by_tag(tag)
+        else:
+            item = self
+
+        for item in items:
+            item.set_enabled()
 
 
     def handle_onClick(self, widget_name = None, **params):

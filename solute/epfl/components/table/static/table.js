@@ -34,7 +34,7 @@ epfl.TableComponent = function(cid, params) {
     this.table_container_div = $("#" + cid + "_table").closest(".ui-jqgrid-bdiv");
     this.table_container_div.scroll(function() { compo_obj.table_container_div_scrollfn.call(compo_obj) });
 
-}; 
+};
 epfl.TableComponent.inherits_from(epfl.ComponentBase);
 
 epfl.TableComponent.prototype.destroy = function() {
