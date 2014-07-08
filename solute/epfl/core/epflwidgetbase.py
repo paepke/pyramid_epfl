@@ -84,7 +84,7 @@ class WidgetBase(object):
         self.state = None
         self.is_rendered = False # is this widget rendered
         self.js_part = None # after the rendering of the html-part this contains the js-part
-        self.mark_error = False # sould this field be marked errorneous.
+        self.marked_error = False # sould this field be marked errorneous.
 
         self.params = {} # will be filled with persistable params and unpersistable params
 
@@ -307,7 +307,7 @@ class WidgetBase(object):
 
     def has_errors(self):
         """ Checks if the field has errors """
-        if self.field.errors or self.mark_error:
+        if self.field.errors or self.marked_error:
             return True
         else:
             return False
@@ -322,7 +322,7 @@ class WidgetBase(object):
         The marker is not persisted in state. This means just like the self.errors
         it is only displayed once.
         """
-        self.mark_error = True
+        self.marked_error = True
 
 
 

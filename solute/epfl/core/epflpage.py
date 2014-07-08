@@ -13,6 +13,8 @@ from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl.core import epflclient, epflutil
 
+from pprint import pprint
+
 def dummy_decorator(func):
     return func
 
@@ -115,13 +117,22 @@ class Page(object):
         # handling the "main"-page...
         self.setup_components()
 
-        if self.handle_ajax_request():
-            out = self.response.render_ajax_response()
-        else:
-            self.handle_submit_request()
-            out = self.render()
+        try:
+            if self.handle_ajax_request():
+                out = self.response.render_ajax_response()
+            else:
+                self.handle_submit_request()
+                out = self.render()
 
-        self.done_request()
+        except:
+            raise
+
+        finally:
+            self.done_request()
+
+            self.request.session.save() # performance issue! should only be called, when session is modified!
+            self.request.session.persist() # performance issue! should only be called, when session is modified!
+
 
         return pyramid.response.Response(body = out.encode("utf-8"),
                                          content_type = "text/html; charset=utf-8",
@@ -339,7 +350,7 @@ class Page(object):
                 event_handler = getattr(self, "handle_" + event_name)
                 event_handler(**event_params)
 
-            elif event_type == "upl":
+            elif event_type == "upl": # upload-event
                 event_id = event["id"]
                 cid = event["cid"]
                 component_obj = self.components[cid]

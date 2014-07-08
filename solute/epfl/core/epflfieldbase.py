@@ -331,6 +331,13 @@ class FieldBase(wtforms.Field):
         A latter call of "validate" will clear/override this message. """
         self.errors.append(msg)
 
+    def mark_error(self):
+        """ Marks the field visually errornous. After a form.redraw the field appears red. 
+        The marker is not persisted in state. This means just like the self.errors
+        it is only displayed once.
+        """
+        self.widget.mark_error()
+
 
 class FieldMandatory(object):
     """

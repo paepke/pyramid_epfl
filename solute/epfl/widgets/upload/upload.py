@@ -112,10 +112,10 @@ class FileUploadObject(object):
             state = "as file"
         elif self.url is not None:
             state = "from url"
-        return "<FileUploadObject {name} ({mime_type}) at {id} {state}>".format(id = id(self),
-                                                                                state = state,
-                                                                                name = self.file_name,
-                                                                                mime_type = self.mime_type)
+        return u"<FileUploadObject {name} ({mime_type}) at {id} {state}>".format(id = id(self),
+                                                                                 state = state,
+                                                                                 name = self.file_name,
+                                                                                 mime_type = self.mime_type)
     def from_upload(self, request, field_obj):
         """ called when uploaded file arrives at server """
 
