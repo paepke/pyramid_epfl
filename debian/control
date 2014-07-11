@@ -6,7 +6,7 @@ Build-Depends: python (>= 2.6), python-support (>= 1), debhelper(>= 8), build-es
 Standards-Version: 3.9.2
 
 Package: solute-python-epfl
-Depends: ${misc:Depends}, ${python:Depends}, solute-python-solute (>= 0.9.94), solute-python-wtf, python-jinja2, python-wtforms, python-pytz
+Depends: ${misc:Depends}, ${python:Depends}, solute-python-solute (>= 0.9.94), solute-python-wtf, python-jinja2, python-wtforms, python-tz, dateutil
 Architecture: all
 Description: epfl - the framework 3rd generation
 Homepage: http://confluence.solute.de/display/WT/epfl
