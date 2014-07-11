@@ -21,6 +21,9 @@ def get_timezone(request):
 
 
 def format_isodate(request, isodate_str, format):
+    if not isodate_str:
+        return None
+        
     dateobj = dateutil.parser.parse(isodate_str)
     if not dateobj.tzinfo:
         dateobj = pytz.utc.localize(dateobj)
