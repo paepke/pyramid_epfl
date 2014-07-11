@@ -139,12 +139,12 @@ class Select(epflfieldbase.FieldBase):
         """ The Domain (choices) of the Select-Box is evaluated again. """
         self.state["params"]["choices"] = self.widget.eval_param("choices")
 
-    
+
 
 class Checkbox(epflfieldbase.FieldBase):
     default_field_type = 'bool'
     default_field_value = False
-    
+
     widget_class = CheckboxWidget
 
 
