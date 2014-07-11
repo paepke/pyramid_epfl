@@ -103,6 +103,8 @@ class Suggest(epflfieldbase.FieldBase):
         if entry_data:
             entry_data = entry_data.strip()
 
+##        !!!!!data = self.widget.params["get_data"](entry_data) self.data und entry_data does not match
+
         if entry_data and not self.data:
             # so, we have user-typed-in-data but no match to the model in self.data!
             new_value_func = self.widget.params["new_value_func"]

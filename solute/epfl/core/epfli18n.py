@@ -1,20 +1,28 @@
 #* encoding: utf-8
 
-TRANSLATIONS = {"txt_value_required": u"Bitte Wert eingeben!",
-                "txt_upload_file_ok": u"Upload erfolgreich abgeschlossen.",
-                "txt_upload_file_error": u"Fehler beim hochladen der Datei.",
-                "txt_value_must_be_file_upload_object": "Bitte eine Datei hochladen."}
+import pytz, dateutil.parser
 
-class BasicDB(object):
-    
+TIMEZONE_PROVIDER = None
 
-    def gettext(self, msg):
-        global TRANSLATIONS
-        return TRANSLATIONS.get(msg, msg)
-        
-    def ngettext(self, singular, plural, n):
-        if n == 1:
-            return self.gettext(singular)
-        else:
-            return (plural)
+def set_timezone_provider(config, provider):
+    global TIMEZONE_PROVIDER
+    TIMEZONE_PROVIDER = provider
 
+
+def get_timezone(request):
+    """ Gets the current time-zone (bound and called to request.epfl_timezone) """
+    if not TIMEZONE_PROVIDER:
+        name = "Europe/Berlin"
+    else:
+        name = TIMEZONE_PROVIDER(request)
+
+    return pytz.timezone(name)
+
+
+
+def format_isodate(request, isodate_str, format):
+    dateobj = dateutil.parser.parse(isodate_str)
+    if not dateobj.tzinfo:
+        dateobj = pytz.utc.localize(dateobj)
+    dateobj = dateobj.astimezone(request.epfl_timezone)
+    return dateobj.strftime(format)

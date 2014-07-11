@@ -40,6 +40,7 @@ import math
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflutil
+from solute.epfl.core import epfli18n
 
 from jinja2 import filters as jinja_filters
 
@@ -97,6 +98,7 @@ class Table(epflcomponentbase.ComponentBase):
                                                     #           "target": [optional] if you need to open the link in a new tab
                                                     #           "class": [optional] set css style class for the link
                                                     #           "style": [optional] set css style directly on the anchor element
+                                                    # "isodate", "isodatetime", "isotime": cell-value is a isodatetime-formatted string
                                                     #
                                                     #
     total_rows_known = True                         # Set this to "False" if your data-source can not calculate
@@ -117,6 +119,10 @@ class Table(epflcomponentbase.ComponentBase):
     table_shown = True                              # indicates if the table is fold out or not
 
     on_row_click = None                             # the name of the event fired, when clicked on a row
+
+    isodatetime_format = "%d.%m.%Y %H:%M"           # the format used in case of "isodatetime"-type
+    isodate_format = "%d.%m.%Y"                     # the format used in case of "isodate"-type
+    isotime_format = "%H:%M"                        # the format used in case of "isotime"-type
 
     # internal
     target_row_id = None
@@ -150,11 +156,15 @@ class Table(epflcomponentbase.ComponentBase):
                 column_def["id"] = False
 
             if col_type == "icon":
-                col_type = "text"
+#                col_type = "text"
                 column_def["formatter"] = "icon_formatter"
 
-            if col_type == "anchor":
-                col_type = "text"
+            elif col_type == "anchor":
+#                col_type = "text"
+                column_def["formatter"] = "anchor_formatter"
+
+            elif col_type == "isodate":
+#                col_type = "text"
                 column_def["formatter"] = "anchor_formatter"
 
             # fixed, resized columns:
@@ -210,7 +220,11 @@ class Table(epflcomponentbase.ComponentBase):
         return self.target_row_id
 
     def getData(self, start_row, num_rows, sort_column, sort_order):
-        """ Dummy function. Please overwrite me! """
+        """ Dummy function. Please overwrite me! 
+        This function must get from somewhere the data that should be displayed in the table.
+        There is no garantueed call to this function and you should not make any changes to the tables state or
+        other components from this function. Just get the data and return it. 
+        """
         return 0, []
 
     def refresh_data(self):
@@ -254,7 +268,13 @@ class Table(epflcomponentbase.ComponentBase):
                         row[col_name] = default
                     elif type(default) is dict:
                         row[col_name] = dict(default, **row[col_name])  # merge default dict
-            if col_def['type'] == u'icon':
+
+
+        # converting values by type
+        for col_def in self.columns_def:
+            col_type = col_def["type"]
+            col_name = col_def["name"]
+            if col_type == u'icon':
                 for row in data:
                     src = row[col_name].get("src")
                     if src and src[:4] != "http":
@@ -265,7 +285,7 @@ class Table(epflcomponentbase.ComponentBase):
                         tip = jinja_filters.do_striptags(tip)
 ##todo                        tip = epfli18n.get_text(tip)
                         row[col_name]["tip"] = tip
-            if col_def['type'] == u'anchor':
+            elif col_type == u'anchor':
                 for row in data:
                     name = row[col_name].get("name")
                     if not name:
@@ -276,6 +296,16 @@ class Table(epflcomponentbase.ComponentBase):
                     if not target:
                         target = "_self"
                         row[col_name]["target"] = target
+            elif col_type == "isodatetime":
+                for row in data:
+                    row[col_name] = epfli18n.format_isodate(self.request, row[col_name], self.isodatetime_format)
+            elif col_type == "isodate":
+                for row in data:
+                    row[col_name] = epfli18n.format_isodate(self.request, row[col_name], self.isodate_format)
+            elif col_type == "isotime":
+                for row in data:
+                    row[col_name] = epfli18n.format_isodate(self.request, row[col_name], self.isotime_format)
+
 
         # converting to the format needed by jqgrid...
         col_keys = [cd["name"] for cd in self.columns_def]

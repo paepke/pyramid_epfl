@@ -16,7 +16,7 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflfieldbase
 from solute.epfl.core import epfltransaction
 from solute.epfl.core import epflconfig
-from solute.epfl.core import epfli18n
+from solute.epfl.core import epfll10n
 
 import jinja2
 import wtforms
@@ -43,7 +43,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
     class Meta(object):
         def get_translations(self, form):
-            return epfli18n.BasicDB()
+            return epfll10n.BasicDB()
 
 
 
@@ -469,11 +469,11 @@ class ChoicesWrapper(object):
                 self.choices = self.choices[:-2]
 
             func = getattr(self.field.form_obj, self.choices)
-            return self.i18n_iter(func())
+            return self.l10n_iter(func())
         else:
-            return self.i18n_iter(self.choices)
+            return self.l10n_iter(self.choices)
 
-    def i18n_iter(self, choice):
+    def l10n_iter(self, choice):
         for key, label in choice:
             label = self.field.gettext(label)
             yield key, label

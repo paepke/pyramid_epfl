@@ -18,7 +18,7 @@ from solute.epfl.jinja import jinja_helpers
 
 from zope.interface import Interface
 
-from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel
+from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel, epfli18n, epfll10n
 
 
 class IEPFLJinja2Environment(Interface):
@@ -137,10 +137,12 @@ def includeme(config):
     config.add_request_method(is_template_marked_as_not_found)
     config.add_request_method(mark_template_as_not_found)
     config.add_request_method(epflmodel.LazyModelAccessor, name = "epfl_model", reify = True)
+    config.add_request_method(epfli18n.get_timezone, name = "epfl_timezone", reify = True)
 
     config.add_directive("set_tempdata_provider", set_tempdata_provider)
     config.add_directive("set_nodeglobaldata_provider", set_nodeglobaldata_provider)
     config.add_directive("add_epfl_model", epflmodel.add_epfl_model)
+    config.add_directive("set_timezone_provider", epfli18n.set_timezone_provider)
 
     config.add_jinja2_search_path("solute.epfl:templates")
     config.add_jinja2_search_path("solute.epfl.components:")
