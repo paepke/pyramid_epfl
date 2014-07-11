@@ -86,7 +86,8 @@ class FieldBase(wtforms.Field):
 
     is_template_element = True # Needed for template-reflection: this makes me a template-element (like a component)
     default_field_type = "char"
-    default_field_value = None # can be overridden by kwargs of the field
+    default_field_value = None # can be overridden by kwargs of the field, here it can be also a function, that evaluates
+                               # to the default value
 
     def __init__(self, *field_args, **kwargs):
 
@@ -118,7 +119,10 @@ class FieldBase(wtforms.Field):
         super(FieldBase, self).__init__(*field_args, **field_kwargs)
 
         if "default" not in field_kwargs:
-            self.default = self.default_field_value
+            if type(self.default_field_value) is types.FunctionType:
+                self.default = self.default_field_value()
+            else:
+                self.default = self.default_field_value
 
         self.setup_type()
 
