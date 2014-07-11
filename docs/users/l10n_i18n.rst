@@ -1,0 +1,10 @@
+Internationalisation and Localisation
+======================================
+
+Internationalisation
+--------------------
+
+I18n is done by
+
+- config.set_timezone_provider
+
