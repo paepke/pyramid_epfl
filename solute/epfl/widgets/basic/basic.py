@@ -139,6 +139,16 @@ class Select(epflfieldbase.FieldBase):
         """ The Domain (choices) of the Select-Box is evaluated again. """
         self.state["params"]["choices"] = self.widget.eval_param("choices")
 
+    def default_field_value(self):
+        # the default value of a selectbox is always the first of the choices...
+        domain = self.state["params"]["choices"]
+        if domain:
+            return domain[0][0]
+        else:
+            return None
+
+
+
     
 
 class Checkbox(epflfieldbase.FieldBase):
