@@ -474,7 +474,7 @@ class Page(object):
         self.add_js_response(js)
 
     def jump_extern(self, target_url):
-        """ Jumps to an external URL. 
+        """ Jumps to an external URL.
         Do not use this to jump to an internal page of this appliaction. Use page.jump instead.
         """
 

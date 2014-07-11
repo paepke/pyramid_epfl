@@ -26,7 +26,7 @@
 {% endmacro %}
 
 {% macro checkbox(ds) %}
-    <input id="{{ds.wid}}" name="{{ ds.name }}" type="checkbox" {{ ds.value|checked_if_equal(True) }} {{ ds.field.state|field_states -}} /> 
+    <input id="{{ds.wid}}" name="{{ ds.name }}" type="checkbox" {{ ds.value|checked_if_equal(True) }} {{ ds.field.state|field_states -}} />
 {% endmacro %}
 
 {% macro textarea(ds) %}
