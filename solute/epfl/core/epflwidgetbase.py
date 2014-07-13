@@ -359,6 +359,7 @@ class DataSource(object):
             self.css_classes.append("epfl-form-field-error-mark")
 
         self.value = self.field.visualize_func(field) # widget_kwargs.get("value", field.data)
+        self.typed_value = field.data
 
     def get_data(self):
         return self.data

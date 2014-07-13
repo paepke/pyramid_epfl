@@ -49,7 +49,7 @@ class SortWidget(epflwidgetbase.WidgetBase):
 
         idx = 0
         all_items = []
-        for value, label in data_source.value or []:
+        for value, label in data_source.typed_value or []:
             all_items.append({"idx": idx,
                               "label": label})
             idx += 1
@@ -70,3 +70,20 @@ class SortWidget(epflwidgetbase.WidgetBase):
 
 class Sort(epflfieldbase.FieldBase):
     widget_class = SortWidget
+
+    default_field_type = False
+
+    def setup_type(self):
+        """ handles the different data-types for this field.
+        It manages the coerceion-function. """
+
+        self.coerce_func = None
+        self.visualize_func = epflfieldbase.visualize_func_standard
+        self.coerce_error_msg = ""
+
+        print self.field_type
+
+        if self.field_type:
+            raise TypeError, "Field-Type " + repr(self.__class__.__name__) + " does not support any type-conversion, just leave the type-param empty!"
+
+

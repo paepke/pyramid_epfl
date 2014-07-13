@@ -39,7 +39,7 @@ setuptools.setup(
         "python-magic >= 0.4.6",
         "pycurl >= 7.19.3.1",
         "pytz >= 2014.4",
-        "isodate >= 0.5.0"
+        "python-dateutil"
     ],
     setup_requires=[
         "setuptools-git",
@@ -48,6 +48,7 @@ setuptools.setup(
     [pyramid.scaffold]
     pyramid_epfl_starter=solute.epfl.scaffolds:EPFLStarterTemplate
     pyramid_epfl_notes=solute.epfl.scaffolds:EPFLNotesTemplate
+    pyramid_epfl_demo=solute.epfl.scaffolds:EPFLDemoTemplate
     """
 )
 
