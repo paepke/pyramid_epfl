@@ -75,6 +75,7 @@ class ComponentBase(object):
         self.template = None
         self.parts = None
         self.macros = None
+        self.__config = config
 
         for attr_name in self.compo_config:
             if attr_name in config:
@@ -100,6 +101,11 @@ class ComponentBase(object):
         config.add_static_view(name = "epfl/components/" + compo_path_part, 
                                path = "solute.epfl.components:" + compo_path_part + "/static")
 
+
+    def get_component_info(self):
+        return {"class": self.__class__, 
+                "config": self.__config, 
+                "cid": self.cid}
 
     def set_component_id(self, id):
         """ Tells the component its component-id. The component-id is the name of the attribute of the page object to which
@@ -266,7 +272,7 @@ class ComponentBase(object):
             return copy.deepcopy(getattr(self, attr_name))
 
 
-    def show_fading_message(self, msg, typ):
+    def show_fading_message(self, msg, typ = "ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
         typ = "info" | "ok" | "error"
         """

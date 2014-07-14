@@ -115,7 +115,7 @@ class Page(object):
             raise HTTPUnauthorized()
 
         # handling the "main"-page...
-        self.setup_components()
+        self.assign_components()
 
         try:
             if self.handle_ajax_request():
@@ -138,6 +138,24 @@ class Page(object):
                                          content_type = "text/html; charset=utf-8",
                                          status = 200) # todo
 
+    def assign_components(self):
+        if not self.transaction.get("components_assigned"):
+            self.setup_components()
+            compo_info = []
+            for cid, compo in self.components.items():
+                compo_info.append(compo.get_component_info())
+            self.transaction["compo_info"] = compo_info
+            self.transaction["components_assigned"] = True
+        else:
+            for compo_info in self.transaction["compo_info"]:
+                self.assign_component(compo_info)
+
+    def assign_component(self, compo_info):
+
+        compo_obj = compo_info["class"](**compo_info["config"])
+        setattr(self, compo_info["cid"], compo_obj)
+
+
     @property
     def parent(self):
         """ Gets the parent-page (connected by the parent-transaction) - if any!
@@ -156,7 +174,7 @@ class Page(object):
         parent_page_class = epflutil.get_page_class_by_name(self.request, parent_page_name)
 
         parent_page_obj = parent_page_class(self.request, parent_transaction)
-        parent_page_obj.setup_components()
+##        parent_page_obj.setup_components()
 
         self.page_request.add_handeled_page(parent_page_obj)
 
