@@ -40,7 +40,7 @@ class SuggestWidget(epflwidgetbase.WidgetBase):
 
                  "get_visual": epflwidgetbase.OptionalMethodType, # this optional function returns the visual to a single given data-id.
                                                                   # you should provide this function if your data-set is possibly very large
-                                                                  # and a get_data(None) would return too much data. (is is what epfl does 
+                                                                  # and a get_data(None) would return too much data. (is is what epfl does
                                                                   # if you do not declare a "get_visual"-function)
 
                  "match_required": (epflwidgetbase.BooleanType, False), # if true, the entered value must be from the "get_data"-method, so
@@ -138,7 +138,7 @@ class Suggest(epflfieldbase.FieldBase):
             self.validators.append(EntryDataRequired())
 
 
-    def set_entry_data(self, data):
+    def set_entry_data(self, data, adjust_data = False):
         """ This is the data which is displayed/entered (this visual) into the actual autocomplete-field.
         Whereas the self.data is the corresponding "value". (this.data is not touched by this function)
         For example: You type in the name of a category and the self.data is then the corresponding
@@ -146,6 +146,14 @@ class Suggest(epflfieldbase.FieldBase):
         data returned by the "get_data"-function.
         """
         self.state["entry_data"] = data
+
+        if adjust_data:
+            data = self.widget.params["get_data"](None)
+            for value, visual in data:
+                if self.state["entry_data"] == visual:
+                    self.data = value
+                    break
+
 
 
     def get_entry_data(self):

@@ -194,6 +194,8 @@ class FileUploadObject(object):
     def to_data(self, request):
         """ called whenever the data of the file is needed.
         It grabs it from wherever the data currently is.
+        This is called by the system, not by you.
+        If you need the data, call self.get_data()
         """
 
         if self.data is not None:
@@ -225,7 +227,7 @@ class FileUploadObject(object):
             cu = curl.Curl()
             cu.set_option(curl.pycurl.SSL_VERIFYPEER, 0)
             cu.set_option(curl.pycurl.SSL_VERIFYHOST, 0)
-            data = cu.get(self.url)
+            data = cu.get(str(self.url))
             self.from_data(request, data, self.file_name)
             return
 
@@ -249,6 +251,7 @@ class FileUploadObject(object):
 
 
     def get_data(self, request):
+        """ Returns the current uploaded data as string """
         self.to_data(request)
         return self.data
 
@@ -296,6 +299,8 @@ class Upload(epflfieldbase.FieldBase):
 
     def _coerce_func(self, value):
         # we have "real" FileUploadObject here
+        if value is None:
+            return value
         if not isinstance(value, FileUploadObject):
             raise TypeError, "FileUploadObject needed as value of Upload-Field, got " + repr(type(value))
         return value
