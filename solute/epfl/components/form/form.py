@@ -71,6 +71,14 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         self.action = ""
         self.target_widget = None # the widget that received the last cmd
 
+    @classmethod
+    def with_dynamic_fields(cls, fields):
+        form_class = type("Dynamic" + cls.__name__, (cls,), {})
+
+        for field in fields:
+            setattr(form_class, field.kwargs["id"], field)
+        return form_class()
+
 
     def get_field_state(self, field_name):
         """ Returns and creates the state for a field and widget. This is called during the binding of a field and its widget to the form.

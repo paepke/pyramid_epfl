@@ -115,7 +115,7 @@ class Page(object):
             raise HTTPUnauthorized()
 
         # handling the "main"-page...
-        self.assign_components()
+        self.create_components()
 
         try:
             if self.handle_ajax_request():
@@ -123,9 +123,6 @@ class Page(object):
             else:
                 self.handle_submit_request()
                 out = self.render()
-
-        except:
-            raise
 
         finally:
             self.done_request()
@@ -138,7 +135,8 @@ class Page(object):
                                          content_type = "text/html; charset=utf-8",
                                          status = 200) # todo
 
-    def assign_components(self):
+    def create_components(self):
+        """ Calling self.setup_components once and remember the compos as compo_info """
         if not self.transaction.get("components_assigned"):
             self.setup_components()
             compo_info = []
@@ -150,10 +148,12 @@ class Page(object):
             for compo_info in self.transaction["compo_info"]:
                 self.assign_component(compo_info)
 
-    def assign_component(self, compo_info):
 
-        compo_obj = compo_info["class"](**compo_info["config"])
-        setattr(self, compo_info["cid"], compo_obj)
+    def assign_component(self, compo_info):
+        """ Create a component from the remembered compo_info and assign it to the page """
+
+        compo_obj = compo_info["class"].create_by_compo_info(self, compo_info)
+        self.add_static_component(compo_info["cid"], compo_obj)
 
 
     @property
@@ -211,12 +211,18 @@ class Page(object):
         By assigning the components as attributes to the page, we can register them here as components,
         and we can tell the components thier id (which is thier attribute-name).
         """
-        self.__dict__[key] = value # regulär im Python-Objekt speichern
 
         if isinstance(value, epflcomponentbase.ComponentBase):
-            self.components[key] = value
-            value.set_component_id(key)
-            value.set_page_obj(self)
+            self.add_static_component(key, value)
+        else:
+            self.__dict__[key] = value # mimic "normal" behaviour
+
+    def add_static_component(self, cid, compo_obj):
+        """ Registeres the component in the page. """
+        self.__dict__[cid] = compo_obj
+        self.components[cid] = compo_obj
+        compo_obj.set_component_id(cid)
+        compo_obj.set_page_obj(self)
 
 
     def has_access(self):
@@ -243,7 +249,7 @@ class Page(object):
         """
         Overwrite this function!
         In this method all components needed by this page must be initialized and assinged to the page (self).
-        It is called every request.
+        It is called only once per transaction to register the "static" components of this page.
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
@@ -334,7 +340,7 @@ class Page(object):
 
 
     def handle_ajax_request(self):
-        """ Is called by the view-controller directly after the definition of all components (self.setup_components).
+        """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
         A "False" means we have a full-page-request. In this case self.render must be called.
 

@@ -85,6 +85,9 @@ class Transaction(object):
     def __setitem__(self, key, value):
         self.data[key] = value
 
+    def __delitem__(self, key):
+        del self.data[key]
+
     def __contains__(self, key):
         return self.has_key(key)
 

@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import time
 from solute.epfl import json
 import jinja2
 from jinja2 import nodes, Markup
@@ -168,7 +169,7 @@ class EpflComponentExtension(Extension):
         node = nodes.Macro(lineno = token.lineno)
         node.name = "compopart_" + parser.stream.expect('name').value
         parser.parse_signature(node)
-        node.args = [nodes.Name("self", "param")] + node.args# + [nodes.Name("caller", "param")]
+        node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
         node.body = parser.parse_statements(('name:endcompopart',), drop_needle=True)
         return node
 
@@ -176,7 +177,7 @@ class EpflComponentExtension(Extension):
         node = nodes.Macro(lineno = token.lineno)
         node.name = "main"
         parser.parse_signature(node)
-        node.args = [nodes.Name("self", "param")] + node.args# + [nodes.Name("caller", "param")]
+        node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
         node.body = parser.parse_statements(('name:endcompodef',), drop_needle=True)
         return node
 
@@ -196,6 +197,7 @@ def extend_environment(env):
     env.filters["field_states"] = field_states
 
     env.globals["ping"] = ping
+    env.globals["ctime"] = time.ctime
 
 def get_jinja_extensions():
     """ this one returns a list of 'regular' jinja2 extensions used with epfl """
