@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import types
+import inspect
 from wtforms.widgets.core import HTMLString
 import wtforms
 from wtforms import validators
@@ -233,8 +234,13 @@ class FieldBase(wtforms.Field):
 
         """
         if valuelist:
+            argspec = inspect.getargspec(self.coerce_func)
             try:
-                self.data = self.coerce_func(valuelist[0])
+                if argspec.args[0] == "request":
+                    # yes, a coerce func can get the request
+                    self.data = self.coerce_func(self.form.request, valuelist[0])
+                else:
+                    self.data = self.coerce_func(valuelist[0])
                 self.process_errors = []
             except (ValueError, TypeError) as e:
                 self.data = valuelist[0]
