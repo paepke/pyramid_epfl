@@ -49,6 +49,7 @@ setuptools.setup(
     pyramid_epfl_starter=solute.epfl.scaffolds:EPFLStarterTemplate
     pyramid_epfl_notes=solute.epfl.scaffolds:EPFLNotesTemplate
     pyramid_epfl_demo=solute.epfl.scaffolds:EPFLDemoTemplate
+    pyramid_epfl_dynamics_demo=solute.epfl.scaffolds:EPFLDynamicsDemo
     """
 )
 
