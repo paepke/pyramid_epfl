@@ -1,6 +1,6 @@
 #* encoding: utf-8
 
-import pytz, dateutil.parser
+import pytz, dateutil.parser, datetime
 
 TIMEZONE_PROVIDER = None
 
@@ -21,6 +21,7 @@ def get_timezone(request):
 
 
 def format_isodate(request, isodate_str, format):
+    """ Converts a iso-formatted string into another format (also a string) """
     if not isodate_str:
         return None
         
@@ -29,3 +30,14 @@ def format_isodate(request, isodate_str, format):
         dateobj = pytz.utc.localize(dateobj)
     dateobj = dateobj.astimezone(request.epfl_timezone)
     return dateobj.strftime(format)
+
+
+def convert_to_isodate(request, time_str, format):
+    """ Converts a time string (formatted with format) without timezone-info
+    into a valid UTC-Isodate.
+    Currently seconds are forced to 00 
+    """
+    dateobj = datetime.datetime.strptime(time_str, format)
+    dateobj = request.epfl_timezone.localize(dateobj)
+    dateobj = dateobj.astimezone(pytz.utc)
+    return datetime.datetime.strftime(dateobj, "%Y-%m-%dT%H:%M:00")

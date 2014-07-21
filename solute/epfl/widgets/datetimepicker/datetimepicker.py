@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-from solute.epfl.core import epflwidgetbase, epflfieldbase
+from solute.epfl.core import epflwidgetbase, epflfieldbase, epfli18n
 
 
 DATE_FORMAT = "%d.%m.%Y"
@@ -91,7 +91,7 @@ class Datetimepicker(epflfieldbase.FieldBase):
             super(self, Datetimepicker).setup_type()
         elif self.field_type == "float":
             super(self, Datetimepicker).setup_type()
-        elif self.field_type == "isodate":
+        elif self.field_type in ["isodatetime", "isodate", "isotime"]:
             self.coerce_func = coerce_func_isodate
             self.visualize_func = visualize_func_isodate
             self.coerce_error_msg = "txt_incorrect_isodate"
@@ -99,7 +99,9 @@ class Datetimepicker(epflfieldbase.FieldBase):
             raise TypeError, "Field-Type " + repr(self.__class__.__name__) + " does not support type: " + repr(self.field_type)
 
 
-def coerce_func_isodate(data):
+def coerce_func_isodate(request, data):
+
+
     if data is None:
         return None
     elif not unicode(data).strip():
@@ -119,21 +121,14 @@ def coerce_func_isodate(data):
         if iso_format:
             return data
         else:
-            time = datetime.datetime.strptime(data,  "%d.%m.%Y %H:%M")
-            iso_time = datetime.datetime.strftime(time, "%Y-%m-%dT%H:%M:00")
+            iso_time = epfli18n.convert_to_isodate(request, data, format = "%d.%m.%Y %H:%M")
             return iso_time
 
 def visualize_func_isodate(field):
     time = field.data
 
     if time:
-        try:
-            iso_time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%f")
-        except ValueError:
-            iso_time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
-
-        time_str = datetime.datetime.strftime(iso_time, "%d.%m.%Y %H:%M")
-
+        time_str = epfli18n.format_isodate(field.form.request, field.data, format = "%d.%m.%Y %H:%M")
         return unicode(time_str)
     else:
         return u""
