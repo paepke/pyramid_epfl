@@ -459,8 +459,20 @@ class ComponentBase(object):
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
         as keys and thier content as values. No modification of the "response" is made. Only the parts that are
-        requested to be redrawn are returned in the dict.
+        requested to be redrawn are returned in the dict. The "js" part is special. It is rendered if some other 
+        part of the component is requested (means actively by the programmer) or rendered (means passively by
+        e.g. rerendering the container-component).
         """
+        @@@ danger! what are my parents? by layout or by structure?
+        @@@ span the component tree:
+        @@@ at compo_info change-time and persist:
+        @@@     dict of children (cids)
+        @@@     dict of parents (cids)
+        @@@ 1. span by layout
+        @@@ 2. complete by structure and check contradictions
+
+        @@@ what about compo-parts
+
         self.pre_render()
         parts = {}
 
@@ -470,6 +482,7 @@ class ComponentBase(object):
             for part_name in self.redraw_requested:
                 parts[part_name] = self.parts[part_name]()
 
+        print "GET REDRAW PARTS:", self.cid, self.is_rendered
         if self.redraw_requested or self.is_rendered:
             parts["js"] = self.get_js_part()
 

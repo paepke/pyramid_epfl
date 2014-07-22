@@ -7,6 +7,8 @@ epfl.BasicWidget = function(wid, cid, params) {
 
 	this.typ = params.typ;
 
+    $("#" + this.wid).css("color", "red") 
+
 	if (this.typ == "button") {
 
 		// Javascript for buttons
@@ -144,7 +146,6 @@ epfl.BasicWidget.inherits_from(epfl.WidgetBase);
 
 epfl.BasicWidget.prototype.get_value = function() {
     if (this.typ == "checkbox") {
-            console.log(typeof($( "#" + this.wid).prop('checked')));
             return $( "#" + this.wid).prop('checked');
     } else if (this.typ == "buttonset" || this.typ == "radio") {
             return $( "#" + this.wid + " input:checked").val();

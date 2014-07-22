@@ -18,4 +18,4 @@ Todo-List
 - remove solute-namespace
 - dynamic pages
 - dynamic forms
-- singleton-page-state
+- persistent-transactions (always keep (force) the TID in the URL to be navigateable)
