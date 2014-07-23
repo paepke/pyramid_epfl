@@ -423,11 +423,9 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         self.target_widget = widget_name
         self[widget_name].widget.handle_UploadFile()
 
-
-
-
-
-
+    def handle_onDownload(self, widget_name = None):
+        self.target_widget = widget_name
+        self[widget_name].widget.handle_onDownload()
 
 
 class PostData(dict):
