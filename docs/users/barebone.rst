@@ -27,8 +27,9 @@ Nothing new to a pyramid user up to this point.
 
 Now let's adapt some configs and dependencies:
 
-    .. code-block:: python
-        :filename: test.py
+    *test.py:*
+
+    .. code:: python
 
         print "LALA!!"
 
