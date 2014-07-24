@@ -347,6 +347,11 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
                 out.append(field)
         return out
 
+    def get_widget_by_wid(self, wid):
+        for field in self:
+            if field.widget.get_wid() == wid:
+                return field.widget
+
     def set_visible(self, tag = None):
         """ Shows fields """
         if tag:

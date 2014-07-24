@@ -77,7 +77,7 @@ def add_extra_contents(response, obj):
 
 
 def get_page_class_by_name(request, page_name):
-    """ 
+    """
     Given a page-name (the page.get_name()-result), it returns this page - or raises an error.
     todo: This needs some caching!
     """
@@ -130,7 +130,7 @@ def get_component(request, tid, cid):
     this is the function for you!
     """
 
-    transaction = epfltransaction.Transaction(self.request, tid)
+    transaction = core.epfltransaction.Transaction(request, tid)
     page_name = transaction.get_page_name()
     page_class = get_page_class_by_name(request, page_name)
     page_obj = page_class(request, transaction)
@@ -142,7 +142,7 @@ def get_widget(request, tid, cid, wid):
     Same as get_component, but it returns a widget - in case the compo is a form!
     """
     compo_obj = get_component(request, tid, cid)
-    return compo_obj[wid]
+    return compo_obj.get_widget_by_wid(wid)
 
 
 
