@@ -103,7 +103,14 @@ class Suggest(epflfieldbase.FieldBase):
         if entry_data:
             entry_data = entry_data.strip()
 
-##        !!!!!data = self.widget.params["get_data"](entry_data) self.data und entry_data does not match
+        # now check, if something went to fast for the suggest at client-side
+        # and there is already a value for this visual in the model:
+        check_data = self.widget.params["get_data"](entry_data)
+        for check_value, check_visual in check_data:
+            if check_visual.lower() == entry_data.lower(): # the check is case insensitive!
+                self.data = check_value
+                self.set_entry_data(check_visual)
+                break
 
         if entry_data and not self.data:
             # so, we have user-typed-in-data but no match to the model in self.data!
