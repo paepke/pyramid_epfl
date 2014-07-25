@@ -270,9 +270,9 @@ epfl_module = function() {
 		$("#__epfl_submit_form__").remove();
 	};
 
-	epfl.jump_extern = function(target_url) {
-		var win = window.open(target_url, '_blank');
-		win.focus();		
+	epfl.jump_extern = function(target_url, target) {
+		var win = window.open(target_url, target);
+		win.focus();
 	};
 
 	epfl.open_overlay = function(name, url, title, opts, show_please_wait) {

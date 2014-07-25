@@ -73,7 +73,7 @@ class WidgetBase(object):
         epos = fn.index("/", pos + 14)
         widget_path_part = fn[pos + 14 : epos]
 
-        config.add_static_view(name = "epfl/widgets/" + widget_path_part, 
+        config.add_static_view(name = "epfl/widgets/" + widget_path_part,
                                path = "solute.epfl.widgets:" + widget_path_part + "/static")
 
 
@@ -100,6 +100,9 @@ class WidgetBase(object):
     def response(self):
         return self.form.response
 
+    def get_wid(self):
+        wid = self.form.get_component_id() + "_" + self.field.name
+        return wid
 
     def set_field(self, field):
         """ Called directly after the initialisation by epflfieldbase.FieldBase """
@@ -313,12 +316,12 @@ class WidgetBase(object):
             return False
 
     def set_error(self, msg):
-        """ Sets the error message for the field. 
+        """ Sets the error message for the field.
         A latter call of "validate" will clear/override this message. """
         self.field.errors.append(msg)
 
     def mark_error(self):
-        """ Marks the field visually errornous. After a form.redraw the field appears red. 
+        """ Marks the field visually errornous. After a form.redraw the field appears red.
         The marker is not persisted in state. This means just like the self.errors
         it is only displayed once.
         """
