@@ -144,7 +144,7 @@ class FieldBase(wtforms.Field):
 #        pass
 #    def pre_setting_data(self, value):
 #        pass
-    
+
 
     @property # some kind of late binding...
     def page_request(self):
@@ -331,18 +331,20 @@ class FieldBase(wtforms.Field):
     def set_mandatory(self):
         """ The Field is now mandatory """
         self.state["mandatory"] = True
+        self.setup_validators()
 
     def set_optional(self):
         """ The Field is now optional """
         self.state["mandatory"] = False
+        self.setup_validators()
 
     def set_error(self, msg):
-        """ Sets the error message for the field. 
+        """ Sets the error message for the field.
         A latter call of "validate" will clear/override this message. """
         self.errors.append(msg)
 
     def mark_error(self):
-        """ Marks the field visually errornous. After a form.redraw the field appears red. 
+        """ Marks the field visually errornous. After a form.redraw the field appears red.
         The marker is not persisted in state. This means just like the self.errors
         it is only displayed once.
         """
