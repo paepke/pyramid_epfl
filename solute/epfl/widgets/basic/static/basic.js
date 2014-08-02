@@ -7,8 +7,6 @@ epfl.BasicWidget = function(wid, cid, params) {
 
 	this.typ = params.typ;
 
-    $("#" + this.wid).css("color", "red") 
-
 	if (this.typ == "button") {
 
 		// Javascript for buttons

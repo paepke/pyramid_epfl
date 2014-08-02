@@ -39,7 +39,8 @@ setuptools.setup(
         "python-magic >= 0.4.6",
         "pycurl >= 7.19.3.1",
         "pytz >= 2014.4",
-        "python-dateutil"
+        "python-dateutil",
+        "odict"
     ],
     setup_requires=[
         "setuptools-git",

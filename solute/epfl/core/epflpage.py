@@ -5,6 +5,8 @@ import epflcomponentbase, epfltransaction, epflclient
 import types
 import string
 
+from odict import odict
+
 from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid import security
 
@@ -82,7 +84,7 @@ class Page(object):
                                                          # e.g.
                                                          # page.data["something"] = some_object
 
-        self.components = {} # all registered components of this page
+        self.components = odict() # all registered components of this page
         env = request.get_epfl_jinja2_environment()
         self.jinja_template = env.get_template(self.template)
 
@@ -280,9 +282,9 @@ class Page(object):
 
         ctx = {"epfl": {},
                "page": self,
-               "components": self.components}
+               "components": self.components.as_dict()}
 
-        ctx.update(self.components)
+        ctx.update(self.components.as_dict())
         ctx.update(self.data)
 
         return ctx
