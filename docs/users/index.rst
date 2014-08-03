@@ -14,6 +14,8 @@ Contents:
    event_driven_programming
    server_side_state
    l10n_i18n
+   dynamic_forms
+   dynamic_pages
 
    /components/index
 
