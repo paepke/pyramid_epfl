@@ -147,10 +147,6 @@ class Select(epflfieldbase.FieldBase):
         else:
             return None
 
-
-
-    
-
 class Checkbox(epflfieldbase.FieldBase):
     default_field_type = 'bool'
     default_field_value = False

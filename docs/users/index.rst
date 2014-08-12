@@ -13,7 +13,9 @@ Contents:
    page_layout
    event_driven_programming
    server_side_state
+   widgets
    l10n_i18n
+
 
    /components/index
 
