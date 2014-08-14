@@ -206,11 +206,6 @@ class FieldBase(wtforms.Field):
         self.validators = self.default_validators[:]
         self.validator_visual = ""
 
-##        if self.field_type == "int":
-##            self.validators.append(FieldMandatory())
-##        elif self.field_type == "float":
-##            self.validators.append(FieldMandatory())
-
         if self.state["mandatory"]:
             self.validators.append(FieldMandatory())
 
