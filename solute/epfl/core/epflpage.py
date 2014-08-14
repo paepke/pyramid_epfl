@@ -499,12 +499,12 @@ class Page(object):
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)
 
-    def jump_extern(self, target_url):
+    def jump_extern(self, target_url, target="_blank"):
         """ Jumps to an external URL.
         Do not use this to jump to an internal page of this appliaction. Use page.jump instead.
         """
 
-        js = "epfl.jump_extern('" + target_url + "');"
+        js = "epfl.jump_extern('" + target_url + "', '" + target + "');"
         self.add_js_response(js)
 
     def go_next(self, route = None, target_url = None, **route_params):

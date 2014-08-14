@@ -1,0 +1,9 @@
+{% macro main(ds) %}
+    <a href="#" id="{{ds.wid}}" name="{{ ds.name }}" {{ ds.field.state|field_states -}}>{{ ds.label }}</a>
+{% endmacro %}
+
+{% macro init_js(ds) %}
+    epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "DownloadWidget", {name:"{{ds.name}}"
+    });
+{% endmacro %}
+

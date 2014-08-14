@@ -22,7 +22,7 @@ Contents:
    other_software
    license
 
-   
+
 Indices and tables
 ==================
 

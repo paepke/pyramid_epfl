@@ -16,3 +16,4 @@ from widgets.basic.basic import Select
 from widgets.basic.basic import Checkbox
 from widgets.spinner.spinner import Spinner
 from widgets.datetimepicker.datetimepicker import Datetimepicker
+from widgets.download.download import Download
