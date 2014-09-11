@@ -9,12 +9,15 @@ Contents:
    :maxdepth: 2
 
    barebone
+   app_design
    pages_and_components
    page_layout
    event_driven_programming
    server_side_state
    widgets
    l10n_i18n
+
+   limitations
 
 
    /components/index
