@@ -34,7 +34,7 @@ setuptools.setup(
         "Jinja2 >= 2.7.2",
         "WTForms >= 1.0.5",
         "pyramid_jinja2 >= 1.10",
-        "ujson >= 1.33",
+        "ujson",
         "python-memcached",
         "python-magic >= 0.4.6",
         "pycurl >= 7.19.3.1",
