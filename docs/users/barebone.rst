@@ -281,13 +281,27 @@ Now the page knows about the form-component "MyForm". We must now tell the syste
 
             A "Hello" from the EPFL-application!
 
-            {{ my_form.render() }}
+            <div style="width:50%;margin:auto;background:#ddd">
+                {{ my_form.render() }}
+            </div>
+
 
             {{ js_imports() }}
 
         </body>
 
 Go to your browser and hit F5!
+
+.. figure:: /_static/first_app_1.png
+    :width: 50%
+    :align: center
+
+    This is what you should get at http://localhost:6543/
+
+Not very pretty, but you should get the point. 
+
+For now we do not go into details how to modify the layout of the form. Let's add some action instead...
+
 
 Events and server-side-state
 ----------------------------
