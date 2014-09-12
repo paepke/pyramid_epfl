@@ -33,5 +33,6 @@ nosetests.xml
 # Mr Developer
 .mr.developer.cfg
 .project
-.pydevproject
+/docs/_autodoc/*
 /docs/_build/*
+.pydevproject
