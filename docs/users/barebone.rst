@@ -262,7 +262,7 @@ Adapt the views/home.py as follows:
                 
                 self.my_form = MyForm()
 
-Components in EPFL are subclasses of so called "base-components" which themselves are subclasses of :class:epflcomponentbase.ComponentBase. In this example, we created a component called "MyForm" derived from a "Form"-base-component. The form is configured by overwriting and adding component-specific class-attributes. In the case of a form, we add fields.
+Components in EPFL are subclasses of so called "base-components" which themselves are subclasses of :class:`~solute.epfl.core.epflcomponentbase.ComponentBase`. In this example, we created a component called "MyForm" derived from a "Form"-base-component. The form is configured by overwriting and adding component-specific class-attributes. In the case of a form, we add fields.
 
 The components then are assinged to the page by creating them in the "setup_components"-method of the page. This method is called by EPFL, everytime it needs to know the components of this page.
 
@@ -338,6 +338,7 @@ If you want to see a more demonstrating application you can use the "memo-applic
 What next?
 ----------
 
+- Understand other concepts of the framework.
 - :doc:`Take a tour throu the existing base-components! </components/index>`
 - :doc:`How to design your own application? <app_design>`
 - :doc:`Check the limitations of an EPFL-application. <limitations>`
