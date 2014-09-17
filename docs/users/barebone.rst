@@ -306,6 +306,23 @@ For now we do not go into details how to modify the layout of the form. Let's ad
 Events and server-side-state
 ----------------------------
 
+Adapt the views/home.py as follows:
+
+    .. code:: python
+
+        ...
+
+        class MyForm(epfl.components.Form):
+
+            ...
+
+            ok = epfl.fields.Button("OK", on_click = "ok")
+
+            def handle_ok(self):
+                self.show_fading_message("Hello {name}".format(name = self.name.data))
+
+        ...
+
 
 
 .. _barebone-scaffold:
