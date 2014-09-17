@@ -319,18 +319,44 @@ Adapt the views/home.py as follows:
             ok = epfl.fields.Button("OK", on_click = "ok")
 
             def handle_ok(self):
-                self.show_fading_message("Hello {name}".format(name = self.name.data))
+                if self.validate():
+                    self.show_fading_message("Hello {name}".format(name = self.name.data))
+
+                self.redraw()
 
         ...
 
+    The changes are: add an "on_click" to the Button-definition, add the event-handler "def handle_ok"
 
+
+.. figure:: /_static/first_app_2.png
+    :width: 50%
+    :align: center
+
+    Clicking "OK"-Button with empty "Name" field.
+
+.. figure:: /_static/first_app_3.png
+    :width: 50%
+    :align: center
+
+    Clicking "OK"-Button with correctly filled "Name" field.
+
+EPFL supports an event-driven programming style. Components and fields (e.g. a button of a form) provide predefined events (e.g. "on_click") on which you can bind commands (in this example "ok"). When the event is fired (the user clicks the button) the event-handler of the component is invoked. An event-handler is a method of the component-class and always named "handle_XXX", where XXX is the name of the command. Since we have server-side-state (explained later) the value of the form-field "name" is always available on server-side as "self.name.data".
+
+Form validation - as feature of the form-base-component - is also done. The call to "self.validate()" does two things. As a side-effect it updates the error-state of each visible form-field according to the current field-value. If all validators - explicit ones given by the programmer and implicit ones entailed by the field-type - succeed the validator returns "True", if only one validator fails it returns "False".
+
+The "self.redraw()" call marks the component as "queued for redraw". When EPFL sends back the response to the browser it collects all components in is queue, renders them and sends back the new HTML and JS. At client side the HTML of the component is replaced with the new one and the JS is executed. Since the EPFL-core by design does not use a listener/observer technique you have to redraw your components manually. In this case because you want to see the error-messages of the mandatory field "name" appear and disappear.
+
+Finally, what does "server-side-state" mean? Every change made at client side (normally by a user typing in data or clicking somewhere) is replicated automatically to the server side. Also changes made at server side (normally by event handlers source code) is replicated back to the client - by redrawing components. So as a programmer you always can be sure to have all the state of the application at your fingertips at server side. Even across pages when the page is no longer available at client side. No need to submit forms, handle cookies, persist/update data in the session. Superb!
 
 .. _barebone-scaffold:
 
 Barebone scaffold
 -----------------
 
-This scaffold is intended as starting point for your project. It is as empty as possible!
+Congratulations! You just wrote and understood your first EPFL-application. You did this the hard way starting with an original pyramid-scaffold. 
+
+For convenience we provide a EPFL barebone scaffold: This scaffold is intended as starting point for your project. It is as empty as possible!
 You are highly encouraged to use the pre-build EPFL barebone scaffold instead of manually doing all steps as described above:
 
     .. code:: bash
@@ -355,7 +381,7 @@ If you want to see a more demonstrating application you can use the "memo-applic
 What next?
 ----------
 
-- Understand other concepts of the framework.
+- :doc:`Understand other concepts of the framework. <concepts>`
 - :doc:`Take a tour throu the existing base-components! </components/index>`
 - :doc:`How to design your own application? <app_design>`
 - :doc:`Check the limitations of an EPFL-application. <limitations>`

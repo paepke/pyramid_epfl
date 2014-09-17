@@ -37,7 +37,7 @@ setuptools.setup(
         "ujson >= 1.33",
         "python-memcached",
         "python-magic >= 0.4.6",
-##        "pycurl >= 7.19.3.1",
+        "pycurl >= 7.19.3.1",
         "pytz >= 2014.4",
         "python-dateutil"
     ],
