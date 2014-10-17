@@ -56,7 +56,7 @@ def field_states(states):
         if 'mandatory' in states and states['mandatory'] is True:
          state_list.append(u'required="REQUIRED"')
 
-        return u' '.join(state_list)
+        return jinja2.Markup(u' '.join(state_list))
 
 
 class EpflComponentExtension(Extension):

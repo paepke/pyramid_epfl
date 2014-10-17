@@ -9,6 +9,7 @@ Contents:
    :maxdepth: 2
 
    barebone
+   app_design
    pages_and_components
    page_layout
    event_driven_programming
@@ -17,6 +18,8 @@ Contents:
    l10n_i18n
    dynamic_forms
    dynamic_pages
+
+   limitations
 
 
    /components/index
