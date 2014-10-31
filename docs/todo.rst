@@ -26,5 +26,6 @@ Todo-List
 - dynamic pages
 - dynamic forms
 - singleton-page-state
+- adapt types of form and table
 
 
