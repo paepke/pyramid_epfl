@@ -55,3 +55,12 @@ The key ideas are:
 - server side state (every user input is available anytime on the server)
 - no javascript coding necessary
 
+
+---------------
+The EPFL design
+---------------
+
+.. toctree::
+   :maxdepth: 2
+
+   design

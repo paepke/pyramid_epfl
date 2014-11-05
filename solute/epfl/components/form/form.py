@@ -124,6 +124,16 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
 
     def validate(self, create_new_values = False):
         """
+        Call this before accessing the data of the form (normally in a event handler) like this:
+
+        def handle_save(self):
+            if self.validate():
+                ... do something with the data of the form ...
+            
+            self.redraw()
+
+        Redrawing the form is necessary to show or remove error messages.
+
         Additionally to the validation (done by the original-wtforms-class) it can create new values.
         This will be done if create_new_values = True:
         New values occur e.g. as the value-visuals the user types in at SuggestWidgets that have
