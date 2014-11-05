@@ -19,3 +19,6 @@ Todo-List
 - dynamic pages
 - dynamic forms
 - singleton-page-state
+- replace pycurl with request.py
+- reusable pages / app-state
+- table with virtual rows (jqgrid true scrolling rows)
