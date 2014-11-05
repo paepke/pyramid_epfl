@@ -5,7 +5,7 @@ import string
 import uuid
 
 import magic
-import curl
+import requests
 import urlparse
 
 from pyramid.view import view_config
@@ -224,11 +224,8 @@ class FileUploadObject(object):
             return
 
         if self.url is not None:
-            cu = curl.Curl()
-            cu.set_option(curl.pycurl.SSL_VERIFYPEER, 0)
-            cu.set_option(curl.pycurl.SSL_VERIFYHOST, 0)
-            data = cu.get(str(self.url))
-            self.from_data(request, data, self.file_name)
+            r = requests.get(self.url)
+            self.from_data(request, r.content, self.file_name)
             return
 
 

@@ -4,10 +4,17 @@ Todo-List
 
 (not ordered in any way)
 
+- sortable container component (e.g. user-sortable forms)
 - tree component
+- nice menu component
+- editable list component or list-form support or form in list?
+- progressbar / piechart as list-element
+- tabs component
+- hierarchical sort per drag+drop component
+- organigram component (editable?)
+
 - i18n
     check the pyramid way
-- nice menu component
 - create component showcase scaffold template
 - better ckeditor integration
     - remove flicker on redraw/reload
@@ -22,3 +29,5 @@ Todo-List
 - replace pycurl with request.py
 - reusable pages / app-state
 - table with virtual rows (jqgrid true scrolling rows)
+- adapt types of form and table
+
