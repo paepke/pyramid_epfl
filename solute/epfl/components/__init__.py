@@ -11,6 +11,7 @@ from menu.menu import Menu # A menu component
 from canvas.canvas import Canvas # A canvas component
 
 from containers.boxes import Box
+from containers.panel import Panel
 
 
 
@@ -21,4 +22,7 @@ def add_routes(config):
     Menu.add_pyramid_routes(config)
     Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
+    #Panel.add_pyramid_routes(config)
+
+
 

@@ -11,5 +11,5 @@ def make_module_patch(self, vars=None, shared=False, locals=None):
 environment.Template.make_module = make_module_patch
 
 class NeverFailUndefined(environment.Undefined):
-    def __call__(self, *args, **kwargs): return ""
+    def __call__(self, *args, **kwargs): return "FAILED"
     def __getattr__(self, key): return self
