@@ -31,3 +31,9 @@ Todo-List
 - table with virtual rows (jqgrid true scrolling rows)
 - adapt types of form and table
 
+
+- form
+	- add all "standard" widgets
+		- radios
+
+
