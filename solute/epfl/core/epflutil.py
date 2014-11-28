@@ -4,12 +4,14 @@ import os, urllib, urlparse
 
 from pyramid import security
 
+import solute.epfl
+from pyramid import path
+from os.path import exists
 from solute.epfl import json
 from solute.epfl import core
 
 
 class DictTransformer(object):
-
     def __init__(self, target_keys):
         self.target_keys = target_keys
 
@@ -21,7 +23,6 @@ class DictTransformer(object):
 
 
 class Dict2ListTransformer(object):
-
     def __init__(self, target_keys):
         self.target_keys = target_keys
 
@@ -32,17 +33,15 @@ class Dict2ListTransformer(object):
         return out
 
 
-
 def make_dict_transformer(target_keys):
     return DictTransformer(target_keys)
+
 
 def make_dict2list_transformer(target_keys):
     return Dict2ListTransformer(target_keys)
 
 
-
 class ClassAttributeExtender(type):
-
     def __new__(cls, name, bases, dct):
         print "Allocating memory for class", name
         return type.__new__(cls, name, bases, dct)
@@ -50,7 +49,6 @@ class ClassAttributeExtender(type):
     def __init__(cls, name, bases, dct):
         print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
-
 
 
 def add_extra_contents(response, obj):
@@ -63,17 +61,42 @@ def add_extra_contents(response, obj):
 
     if obj.js_name:
         for js_name in obj.js_name:
-            asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = js_name)
-            url = obj.request.static_url(asset_spec)
+            url = create_static_url(obj, js_name)
             js_script_src = core.epflclient.JSLink(url)
             response.add_extra_content(js_script_src)
 
     if obj.css_name:
         for css_name in obj.css_name:
-            asset_spec = "{spec}/{name}".format(spec = obj.asset_spec, name = css_name)
-            url = obj.request.static_url(asset_spec)
-            js_script_src = core.epflclient.CSSLink(url)
-            response.add_extra_content(js_script_src)
+            url = create_static_url(obj, css_name)
+            css_link_src = core.epflclient.CSSLink(url)
+            response.add_extra_content(css_link_src)
+
+
+def create_static_url(obj, mixin_name, spec=None):
+    if spec is None:
+        spec = obj.asset_spec
+    asset_spec = "{spec}/{name}".format(spec=spec, name=mixin_name)
+    if spec[0:11] != 'solute.epfl':
+        return obj.request.static_url(asset_spec)
+    static_path = obj.request.static_path(asset_spec)
+
+    static_mixin = 'static/'
+    if spec == 'solute.epfl:static':
+        static_mixin = ''
+
+    output = {'base_path': path.package_path(solute.epfl),
+              'relative_path': static_path[5:len(static_path) - len(mixin_name)],
+              'mixin': static_mixin,
+              'mixin_name': mixin_name}
+    absolute_path = "{base_path}{relative_path}{mixin}{mixin_name}".format(**output)
+
+    if exists(absolute_path):
+        return obj.request.static_url(asset_spec)
+    elif spec != 'solute.epfl:static':
+        return create_static_url(obj, mixin_name, 'solute.epfl:static')
+    else:
+        # return obj.request.static_url(asset_spec)
+        raise Exception('Static dependency not found. %s' % asset_spec)
 
 
 def get_page_class_by_name(request, page_name):
@@ -90,6 +113,7 @@ def get_page_class_by_name(request, page_name):
                 return view_callable
 
     raise ValueError, "Page '" + page_name + "' not found!"
+
 
 def get_page_classes_from_route(request, route_name):
     """
@@ -124,6 +148,7 @@ def has_permission_for_route(request, route_name, permission):
 
     return True
 
+
 def get_component(request, tid, cid):
     """
     If you do not have a page_obj (maybe you are in a pure pyramid-view-function), and you need a component,
@@ -137,6 +162,7 @@ def get_component(request, tid, cid):
     page_obj.setup_components()
     return page_obj.components[cid]
 
+
 def get_widget(request, tid, cid, wid):
     """
     Same as get_component, but it returns a widget - in case the compo is a form!
@@ -145,10 +171,7 @@ def get_widget(request, tid, cid, wid):
     return compo_obj.get_widget_by_wid(wid)
 
 
-
-
 class URL(object):
-
     def __init__(self, url):
         self.parsed_url = urlparse.urlsplit(url)
 
@@ -156,10 +179,10 @@ class URL(object):
         qsl = urlparse.parse_qsl(self.parsed_url.query)
         for key, value in kwargs.items():
             qsl.append((key, value))
-        new_url = urlparse.SplitResult(scheme = self.parsed_url.scheme,
-                                       netloc = self.parsed_url.netloc,
-                                       path = self.parsed_url.path,
-                                       query = urllib.urlencode(qsl),
-                                       fragment = self.parsed_url.fragment)
+        new_url = urlparse.SplitResult(scheme=self.parsed_url.scheme,
+                                       netloc=self.parsed_url.netloc,
+                                       path=self.parsed_url.path,
+                                       query=urllib.urlencode(qsl),
+                                       fragment=self.parsed_url.fragment)
 
         return new_url.geturl()
