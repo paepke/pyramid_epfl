@@ -97,12 +97,6 @@ class ButtonSetWidget(BasicWidget):
                      "html": "buttonset",
                      "js": "basic_js"}
 
-    def handle_ValueChange(self, value):
-        wid = self.form.get_component_id() + "_" + self.field.name
-        value = value.replace(wid + '_', '')
-        self.field.process_formdata([value])
-
-
 class CheckboxWidget(BasicWidget):
 
     name = "checkbox"
