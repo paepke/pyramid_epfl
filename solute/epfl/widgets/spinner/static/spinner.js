@@ -1,4 +1,11 @@
 epfl.SpinnerWidget = function(wid, cid, params) {
+    var notify_epfl = function(){
+        widget_obj.notify_value_change.call(widget_obj);
+        if (widget_obj.get_param("on_change")) {
+            var ev = widget_obj.make_event("onChange");
+            epfl.send(ev);
+        };
+    }
 
     var widget_obj = this;
 
@@ -8,32 +15,30 @@ epfl.SpinnerWidget = function(wid, cid, params) {
     var spinner_options = {}
     var options = params.params;
 
-    if(options.step) {
+    if (options.step) {
         spinner_options.step = options.step;
     }
 
-    if(options.min) {
+    if (options.min) {
         spinner_options.min = options.min;
     }
 
-    if(options.max) {
+    if (options.max) {
         spinner_options.max = options.max;
     }
 
     field.spinner(spinner_options);
 
     field.change(function() {
-        widget_obj.notify_value_change.call(widget_obj);
-        if (widget_obj.get_param("on_change")) {
-            var ev = widget_obj.make_event("onChange");
-            epfl.send(ev);
-        };
+        notify_epfl();
     });
-
-
+    
+    field.on("spinstop", function(event, ui) {
+        notify_epfl();
+    });
 };
 epfl.SpinnerWidget.inherits_from(epfl.WidgetBase);
 
 epfl.SpinnerWidget.prototype.get_value = function() {
-    return $( "#" + this.wid).val();
+    return $("#" + this.wid).val();
 };

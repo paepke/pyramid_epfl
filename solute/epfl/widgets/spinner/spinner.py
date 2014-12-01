@@ -23,10 +23,5 @@ class SpinnerWidget(epflwidgetbase.WidgetBase):
     def handle_ValueChange(self, value):
         self.field.process_formdata([value])
 
-
-    #def update_data_source(self, data_source):
-
-
-
 class Spinner(epflfieldbase.FieldBase):
     widget_class = SpinnerWidget
