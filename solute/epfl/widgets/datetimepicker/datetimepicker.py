@@ -84,13 +84,13 @@ class Datetimepicker(epflfieldbase.FieldBase):
         It manages the coerceion-function. """
 
         if self.field_type == "char":
-            super(self, Datetimepicker).setup_type()
+            super(Datetimepicker, self).setup_type()
         elif self.field_type.startswith("char("):
-            super(self, Datetimepicker).setup_type()
+            super(Datetimepicker, self).setup_type()
         elif self.field_type == "int":
-            super(self, Datetimepicker).setup_type()
+            super(Datetimepicker, self).setup_type()
         elif self.field_type == "float":
-            super(self, Datetimepicker).setup_type()
+            super(Datetimepicker, self).setup_type()
         elif self.field_type in ["isodatetime", "isodate", "isotime"]:
             self.coerce_func = coerce_func_isodate
             self.visualize_func = visualize_func_isodate
