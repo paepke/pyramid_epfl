@@ -619,6 +619,8 @@ class ComponentPartAccessor(object):
                 # everything else is a part of the compo defined in the compo-template
                 macro = self.get_macro(self.compo_template, "compopart_" + key)
 
+        print "get_macgro:", key, macro
+
         if macro:
 
             def macro_wrapper(*args, **kwargs):

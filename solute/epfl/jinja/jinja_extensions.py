@@ -61,7 +61,7 @@ def field_states(states):
 
 class EpflComponentExtension(Extension):
 
-    tags = set(['compo', "compodef", "compopart", "component_exports"])
+    tags = set(['compo', "compodef", "compopart", "component_exports", "part"])
 
     def __init__(self, environment):
         super(EpflComponentExtension, self).__init__(environment)
@@ -115,6 +115,8 @@ class EpflComponentExtension(Extension):
 
         if token.value == "compopart":
             return self.parse_componentpart(parser, token)
+        elif token.value == "part":
+            return self.parse_part(parser, token)
         elif token.value == "compodef":
             return self.parse_componentdef(parser, token)
         elif token.value == "compo":
@@ -171,6 +173,32 @@ class EpflComponentExtension(Extension):
         parser.parse_signature(node)
         node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
         node.body = parser.parse_statements(('name:endcompopart',), drop_needle=True)
+        return node
+
+    def parse_part(self, parser, token):
+
+        node = nodes.Macro(lineno = token.lineno)
+        node.name = part_name = "compopart_" + parser.stream.expect('name').value
+        parser.parse_signature(node)
+        node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
+
+        assign_node = nodes.Assign()
+        assign_node.target = nodes.Name("dummy", "ctx")
+        assign_node.node = nodes.Call()
+        assign_node.node.node = nodes.Getattr()
+        assign_node.node.node.node = nodes.Name("self", "load")
+        assign_node.node.node.attr = "register_part"
+        assign_node.node.node.ctx = "load"
+        assign_node.node.args = [nodes.Const(part_name), 
+                                 nodes.Name('compopart_' + part_name, 'load')]
+        assign_node.node.kwargs = []
+        assign_node.node.dyn_args = None
+        assign_node.node.dyn_kwargs = None
+
+        node.body = parser.parse_statements(('name:end_part',), drop_needle=True) + [assign_node]
+
+        print "PART PARSED!!!"
+
         return node
 
     def parse_componentdef(self, parser, token):

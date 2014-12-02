@@ -3,20 +3,41 @@
 
 {% compodef () %}
 
+    {{ caller() }}
+
     <div epflid="{{self.cid}}">
 
-        <div class="north">{{ north() }}</div>
-        <div class="east">{{ east() }}</div>
-        <div class="west">{{ west() }}</div>
-        <div class="center">{{ center() }}</div>
-        <div class="south">{{ south() }}</div>
+        <div class="north">{{ self.parts.north() }}</div>
+        <div class="east">{{ self.parts.east() }}</div>
+        <div class="west">{{ self.parts.west() }}</div>
+        <div class="center">{{ self.parts.center() }}</div>
+        <div class="south">{{ self.parts.south() }}</div>
 
     </div>
 
-    {{ caller() }}
 
 {% endcompodef %}
 
+
+{% compopart north() %}
+    Original North
+{% endcompopart %}
+
+{% compopart east() %}
+    Original east
+{% endcompopart %}
+
+{% compopart west() %}
+    Original west
+{% endcompopart %}
+
+{% compopart center() %}
+    Original center
+{% endcompopart %}
+
+{% compopart south() %}
+    Original south
+{% endcompopart %}
 
 
 {% compopart js () %}
