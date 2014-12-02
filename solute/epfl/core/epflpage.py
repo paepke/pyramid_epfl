@@ -47,7 +47,8 @@ class Page(object):
                "js/json2-min.js"]
 
     css_name = ["css/epfl.css",
-                "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css"]
+                "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
+               "css/font-awesome/css/font-awesome.min.css" ]
 
 
     template = "dummy_page.html" # the name of the template used to render this page
