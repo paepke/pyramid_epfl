@@ -11,6 +11,7 @@ from basic.basic import ButtonWidget
 from sort.sort import SortWidget
 from upload.upload import UploadWidget
 from download.download import DownloadWidget
+from progress.progress import ProgressWidget
 
 
 
@@ -29,3 +30,4 @@ def add_routes(config):
     DatetimepickerWidget.add_pyramid_routes(config)
     SpinnerWidget.add_pyramid_routes(config)
     DownloadWidget.add_pyramid_routes(config)
+    ProgressWidget.add_pyramid_routes(config)

@@ -1,0 +1,19 @@
+{% compodef() %}
+<div class="container">
+    {% for obj in self.components %} 
+        {{ self.macros.row(obj) }} 
+    {% endfor %}
+</div>
+{% endcompodef %}
+
+{% macro row(compo) %}
+    <div class="jumbotron">{{compo.id}}</div>
+{% endmacro %}
+
+
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}", "FormComponent", {}); 
+</script>
+{% endcompopart %}

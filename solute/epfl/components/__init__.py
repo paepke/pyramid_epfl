@@ -9,6 +9,8 @@ from form.form import Form    # A web-form component based on WTForms
 from table.table import Table # A data-table component
 from menu.menu import Menu # A menu component
 from canvas.canvas import Canvas # A canvas component
+from flipflop.flipflop import FlipFlop
+
 
 from containers.boxes import Box
 
@@ -21,4 +23,6 @@ def add_routes(config):
     Menu.add_pyramid_routes(config)
     Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
+    FlipFlop.add_pyramid_routes(config)
+    
 
