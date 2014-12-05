@@ -61,7 +61,7 @@ def field_states(states):
 
 class EpflComponentExtension(Extension):
 
-    tags = set(['compo', "compodef", "compopart", "component_exports", "part"])
+    tags = set(['compo', "compodef", "compopartdef", "component_exports", "compopart"])
 
     def __init__(self, environment):
         super(EpflComponentExtension, self).__init__(environment)
@@ -102,9 +102,9 @@ class EpflComponentExtension(Extension):
         This defines the main-component-part of the component itself. It does not render the component.
 
         Only inside a component-template (as the component definition):
-        {% compopart PART_NAME (arg1, args2, ...) %}
+        {% compopartdef PART_NAME (arg1, args2, ...) %}
             ...
-        {% endcompopart %}
+        {% endcompopartdef %}
         This defines a component-part. You can access it by self.parts.PART_NAME (self beeing the component). It renders nothing.
         A special part-name is "js" which denotes the javascript shipped with the component.
 
@@ -113,9 +113,9 @@ class EpflComponentExtension(Extension):
 
         token = parser.stream.next()
 
-        if token.value == "compopart":
+        if token.value == "compopartdef":
             return self.parse_componentpart(parser, token)
-        elif token.value == "part":
+        elif token.value == "compopart":
             return self.parse_part(parser, token)
         elif token.value == "compodef":
             return self.parse_componentdef(parser, token)
@@ -172,34 +172,36 @@ class EpflComponentExtension(Extension):
         node.name = "compopart_" + parser.stream.expect('name').value
         parser.parse_signature(node)
         node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
-        node.body = parser.parse_statements(('name:endcompopart',), drop_needle=True)
+        node.body = parser.parse_statements(('name:endcompopartdef',), drop_needle=True)
         return node
 
     def parse_part(self, parser, token):
 
         node = nodes.Macro(lineno = token.lineno)
-        node.name = part_name = "compopart_" + parser.stream.expect('name').value
+        part_name = parser.stream.expect('name').value
+        node.name = "compopart_" + part_name
         parser.parse_signature(node)
         node.args = [nodes.Name("self", "param"), nodes.Name("has_caller", "param")] + node.args# + [nodes.Name("caller", "param")]
 
         assign_node = nodes.Assign()
-        assign_node.target = nodes.Name("dummy", "ctx")
-        assign_node.node = nodes.Call()
-        assign_node.node.node = nodes.Getattr()
-        assign_node.node.node.node = nodes.Name("self", "load")
-        assign_node.node.node.attr = "register_part"
-        assign_node.node.node.ctx = "load"
-        assign_node.node.args = [nodes.Const(part_name), 
+        assign_node.target = nodes.Name("dummy", "store")
+
+        call_node = nodes.Call()
+        call_node.node = nodes.Getattr()
+        call_node.node.node = nodes.Name("self", "load")
+        call_node.node.attr = "overwrite_compopart" # calls the method "self.overwrite_compopart()" from the components
+        call_node.node.ctx = "load"
+        call_node.args = [nodes.Const(part_name), 
                                  nodes.Name('compopart_' + part_name, 'load')]
-        assign_node.node.kwargs = []
-        assign_node.node.dyn_args = None
-        assign_node.node.dyn_kwargs = None
+        call_node.kwargs = []
+        call_node.dyn_args = None
+        call_node.dyn_kwargs = None
 
-        node.body = parser.parse_statements(('name:end_part',), drop_needle=True) + [assign_node]
+        assign_node.node = call_node
 
-        print "PART PARSED!!!"
+        node.body = parser.parse_statements(('name:endcompopart',), drop_needle=True)
 
-        return node
+        return [node, assign_node]
 
     def parse_componentdef(self, parser, token):
         node = nodes.Macro(lineno = token.lineno)

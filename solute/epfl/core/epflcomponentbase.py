@@ -540,6 +540,11 @@ class ComponentBase(object):
         """
         return self
 
+    def overwrite_compopart(self, name, part):        
+        """ Is called from the template by "{% %}"
+        """
+        setattr(self.template.module, "compopart_" + name, part)
+
 
 
 
@@ -578,7 +583,7 @@ class ComponentPartAccessor(object):
                 return getattr(template_obj.module, macro_name)
             except AttributeError, e:
                 info = self.parseAttributeError(e)
-                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopart {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
+                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopartdef {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
         else:
             return getattr(template_obj.module, macro_name)
 
@@ -618,8 +623,6 @@ class ComponentPartAccessor(object):
             else:
                 # everything else is a part of the compo defined in the compo-template
                 macro = self.get_macro(self.compo_template, "compopart_" + key)
-
-        print "get_macgro:", key, macro
 
         if macro:
 

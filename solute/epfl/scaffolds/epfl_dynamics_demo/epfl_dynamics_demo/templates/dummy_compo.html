@@ -14,7 +14,7 @@
 {% endcompodef %}
 
 
-{% compopart js () %}
+{% compopartdef js () %}
 
     epfl.init_component("{{self.cid}}", "ComponentBase", {})
 
@@ -23,5 +23,5 @@
 		epfl.send(ev);
 	})
 
-{% endcompopart %}
+{% endcompopartdef %}
 

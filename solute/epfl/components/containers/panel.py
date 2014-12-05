@@ -22,5 +22,3 @@ class Panel(epflcomponentbase.ComponentContainerBase):
 
 
 
-    def register_part(self, name, part):        
-        setattr(self.template.module, "compopart_" + name, part)

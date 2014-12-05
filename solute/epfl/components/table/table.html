@@ -1,14 +1,14 @@
 
-{% compopart table () -%}
+{% compopartdef table () -%}
     <table id="{{self.cid}}_table" epflid="{{self.cid}}$table" ></table>
-{%- endcompopart %}
+{%- endcompopartdef %}
 
-{% compopart pager () -%}
+{% compopartdef pager () -%}
     <div id="{{self.cid}}_pager" epflid="{{self.cid}}$pager" ></div>
-{%- endcompopart %}
+{%- endcompopartdef %}
 
 
-{% compopart js () %}
+{% compopartdef js () %}
     <script>
 
     epfl.init_component("{{self.cid}}", "TableComponent",
@@ -41,7 +41,7 @@
 
     });
     </script>
-{% endcompopart %}
+{% endcompopartdef %}
 
 
 {% compodef () %}
