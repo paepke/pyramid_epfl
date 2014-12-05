@@ -12,7 +12,7 @@ class ProgressWidget(epflwidgetbase.WidgetBase):
     asset_spec = "solute.epfl.widgets:progress/static"
 
     js_name = ["progress.js"]
-    css_name = ["progress.css"]
+    css_name = ["progress.css","bootstrap.min.css"]
 
 
     param_def = { "max": epflwidgetbase.NumberType }

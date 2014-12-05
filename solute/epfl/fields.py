@@ -18,3 +18,4 @@ from widgets.spinner.spinner import Spinner
 from widgets.datetimepicker.datetimepicker import Datetimepicker
 from widgets.download.download import Download
 from widgets.progress.progress import Progress
+from widgets.toggle.toggle import Toggle

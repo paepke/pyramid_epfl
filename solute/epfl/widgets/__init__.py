@@ -12,7 +12,7 @@ from sort.sort import SortWidget
 from upload.upload import UploadWidget
 from download.download import DownloadWidget
 from progress.progress import ProgressWidget
-
+from toggle.toggle import ToggleWidget
 
 
 
@@ -31,3 +31,4 @@ def add_routes(config):
     SpinnerWidget.add_pyramid_routes(config)
     DownloadWidget.add_pyramid_routes(config)
     ProgressWidget.add_pyramid_routes(config)
+    ToggleWidget.add_pyramid_routes(config)

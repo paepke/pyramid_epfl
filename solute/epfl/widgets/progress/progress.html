@@ -1,7 +1,11 @@
 {% macro main(ds) %}
     <div class="progress">
-        <progress id="{{ ds.wid }}" name="{{ ds.name }}" value="{{ ds.value|e }}" max="{{ds.params.max}}">
-        </progress>
+        <div class="progress-bar" 
+             role="progressbar" 
+             aria-valuenow="{{ds.value}}" 
+             aria-valuemin="0" aria-valuemax="{{ds.params.max}}" 
+             style="width: {{ds.value}}%;"></div>
+         {{ds.value}}%
     </div>
 {% endmacro %}
 
