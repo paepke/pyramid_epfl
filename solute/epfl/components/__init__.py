@@ -13,6 +13,7 @@ from flipflop.flipflop import FlipFlop
 
 
 from containers.boxes import Box
+from sortable.sortable import Sortable
 
 
 
@@ -24,5 +25,6 @@ def add_routes(config):
     Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
     FlipFlop.add_pyramid_routes(config)
+    Sortable.add_pyramid_routes(config)
     
 

@@ -28,7 +28,7 @@ class Box(epflcomponentbase.ComponentBase):
     compo_config = ["auto_visibility"]
 
     box_shown = True
-
+    
     def after_event_handling(self):
         super(Box, self).after_event_handling()
 

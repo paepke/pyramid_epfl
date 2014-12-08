@@ -1,0 +1,23 @@
+
+{% compodef () %}
+    <div  epflid="{{self.cid}}" >
+        <ul id="{{self.cid}}">
+            {{ caller() }}
+        </ul>
+    </div>
+{% endcompodef %}
+
+
+{% macro row(rowid) %}
+    <li id="{{rowid}}">
+    <div class="listicon"><i class="fa fa-sort fa-2x"></i></div>
+    <div class="listele">{{caller()}}</div>
+    </li>
+{% endmacro %}
+
+{% compopart js () %}
+   <script>
+       epfl.init_component("{{self.cid}}", "SortableComponent", {});
+   </script>
+{% endcompopart %}
+
