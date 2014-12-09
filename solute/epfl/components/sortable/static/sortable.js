@@ -15,6 +15,8 @@ epfl.SortableComponent = function(cid, params) {
             epfl.send(ev);
         }
     });
+
+    epfl.send(compo.make_event("loadingFinished",{}));
 }; 
 epfl.SortableComponent.inherits_from(epfl.ComponentBase);
 

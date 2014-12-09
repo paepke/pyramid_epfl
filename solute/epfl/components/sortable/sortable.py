@@ -28,16 +28,21 @@ class Sortable(epflcomponentbase.ComponentBase):
 
     sort_order = []
     
-    def setup_component(self):
-        super(Sortable, self).setup_component()
-        self.make_order()
-        
     def handle_orderChanged(self,newOrder):
         self.sort_order = newOrder
         self.make_order()
 
     def make_order(self):
-        if len(self.sort_order) > 0:
+        if self.sort_order:
             js = "epfl.components[\"" + self.cid + "\"].makeSortOrder("+json.dumps(self.sort_order)+");"
             self.add_ajax_response(js)
+    
+    def handle_loadingFinished(self):
+        self.make_order()
 
+    def get_sort_order(self):
+        return self.sort_order
+
+    def set_sort_order(self, new_order):
+        self.sort_order = new_order
+        self.make_order()
