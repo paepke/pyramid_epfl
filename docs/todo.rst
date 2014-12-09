@@ -25,9 +25,15 @@ Todo-List
 - remove solute-namespace
 - dynamic pages
 - dynamic forms
+- persistent-transactions (always keep (force) the TID in the URL to be navigateable)
 - singleton-page-state
-- replace pycurl with request.py
 - reusable pages / app-state
 - table with virtual rows (jqgrid true scrolling rows)
 - adapt types of form and table
+
+
+- form
+	- add all "standard" widgets
+		- radios
+
 

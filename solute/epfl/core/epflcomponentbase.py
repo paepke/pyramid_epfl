@@ -2,7 +2,7 @@
 
 from pprint import pprint
 
-import types, copy, string, inspect
+import types, copy, string, inspect, uuid
 
 from pyramid import security
 
@@ -71,10 +71,14 @@ class ComponentBase(object):
 
         self.is_rendered = False # whas this componend rendered (so was the self.render-method called?
         self.redraw_requested = set() # all these parts of the component (or "main") want to be redrawn
+        self.container_compo = None
+        self.container_slot = None
+        self.deleted = False
 
         self.template = None
         self.parts = None
         self.macros = None
+        self.__config = config
 
         for attr_name in self.compo_config:
             if attr_name in config:
@@ -99,6 +103,27 @@ class ComponentBase(object):
 
         config.add_static_view(name = "epfl/components/" + compo_path_part, 
                                path = "solute.epfl.components:" + compo_path_part + "/static")
+
+
+    def get_component_info(self):
+        if self.container_compo:
+            container_id = self.container_compo.cid
+        else:
+            container_id = None
+        return {"class": self.__class__, 
+                "config": self.__config, 
+                "cid": self.cid,
+                "slot": self.container_slot,
+                "cntrid": container_id}
+
+    @classmethod
+    def create_by_compo_info(cls, page, compo_info):
+        compo_obj = cls(**compo_info["config"])
+        if compo_info["cntrid"]:
+            container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
+            compo_obj.set_container_compo(container_compo, compo_info["slot"])
+            container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
+        return compo_obj
 
 
     def set_component_id(self, id):
@@ -132,6 +157,18 @@ class ComponentBase(object):
         # now we can setup the component-state
         self.setup_component_state()
 
+    def set_container_compo(self, compo_obj, slot):
+        self.container_compo = compo_obj
+        self.container_slot = slot
+
+    def delete_component(self):
+        """ Deletes itself. You can call this method on dynamically created components. After it's deletion
+        you can not use this component any longer in the layout. """
+        if not self.container_compo:
+            raise ValueError, "Only dynamically created components can be deleted"
+
+        self.container_compo.del_component(self, self.container_slot)
+        self.deleted = True
 
     def finalize(self):
         """ Called from the page-object when the page is finalized
@@ -266,7 +303,7 @@ class ComponentBase(object):
             return copy.deepcopy(getattr(self, attr_name))
 
 
-    def show_fading_message(self, msg, typ):
+    def show_fading_message(self, msg, typ = "ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
         typ = "info" | "ok" | "error"
         """
@@ -296,13 +333,18 @@ class ComponentBase(object):
         """
         This function finalizes the compo_state attributes
         """
+
         values = {}
 
         for attr_name in self.compo_state + self.base_compo_state:
             value = getattr(self, attr_name)
             values[self.cid + "$" + attr_name] = value
 
-        self.page.transaction.update(values)
+        if self.deleted:
+            for attr_name in values:
+                del self.page.transaction[attr_name]
+        else:
+            self.page.transaction.update(values)
 
 
     def get_component_id(self):
@@ -417,8 +459,11 @@ class ComponentBase(object):
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
         as keys and thier content as values. No modification of the "response" is made. Only the parts that are
-        requested to be redrawn are returned in the dict.
+        requested to be redrawn are returned in the dict. The "js" part is special. It is rendered if some other 
+        part of the component is requested (means actively by the programmer) or rendered (means passively by
+        e.g. rerendering the container-component).
         """
+
         self.pre_render()
         parts = {}
 
@@ -428,7 +473,7 @@ class ComponentBase(object):
             for part_name in self.redraw_requested:
                 parts[part_name] = self.parts[part_name]()
 
-        if self.redraw_requested:
+        if self.redraw_requested or self.is_rendered:
             parts["js"] = self.get_js_part()
 
         return parts
@@ -495,6 +540,11 @@ class ComponentBase(object):
         """
         return self
 
+    def overwrite_compopart(self, name, part):        
+        """ Is called from the template by "{% %}"
+        """
+        setattr(self.template.module, "compopart_" + name, part)
+
 
 
 
@@ -533,7 +583,7 @@ class ComponentPartAccessor(object):
                 return getattr(template_obj.module, macro_name)
             except AttributeError, e:
                 info = self.parseAttributeError(e)
-                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopart {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
+                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopartdef {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
         else:
             return getattr(template_obj.module, macro_name)
 
@@ -581,13 +631,18 @@ class ComponentPartAccessor(object):
                 The rendering of a single part of a component marks the component as "rendered".
                 This implies the rendering of the js-part of this component. """
 
+                if "caller" in kwargs:
+                    has_caller = True
+                else:
+                    has_caller = False
+
                 self.compo_obj.is_rendered = True # please render my js-part!
                 if key == "js":
-                    js = macro(self.compo_obj, *args, **kwargs)
+                    js = macro(self.compo_obj, has_caller, *args, **kwargs)
                     return self.snip_script_tags(js) + ";"
                 else:
 #                    import pdb; pdb.set_trace()
-                    return macro(self.compo_obj, *args, **kwargs)
+                    return macro(self.compo_obj, has_caller, *args, **kwargs)
 
             return macro_wrapper
 
@@ -612,3 +667,45 @@ class ComponentPartAccessor(object):
 
 
 
+
+class ComponentContainerBase(ComponentBase):
+
+    def __init__(self, **config):
+        super(ComponentContainerBase, self).__init__(**config)
+
+        self.setup_component_slots()
+
+    def add_component(self, compo_obj, slot = None):
+        """ You can call this function to add a component to its container. Optional is the slot-name. 
+        """
+        # we have no nice cid, so use a UUID
+        cid = str(uuid.uuid4())
+        # assign the container
+        compo_obj.set_container_compo(self, slot)
+        # handle the static part
+        self.page.add_static_component(cid, compo_obj)
+        # now remember it
+        self.page.transaction["compo_info"].append(compo_obj.get_component_info())
+        # and make it available in this container
+        self.add_component_to_slot(compo_obj, slot)
+        # the transaction-setup has to be redone because the component can
+        # directly be displayed in this request.
+        self.page.handle_transaction()
+
+    def setup_component_slots(self):
+        """ Overwrite me. This method must initialize the slots that this
+        container-component provides to accumulate components """
+        self.components = []
+
+    def add_component_to_slot(self, compo_obj, slot):
+        """ This method must fill the correct slot with the component """
+        self.components.append(compo_obj)
+
+    def del_component(self, compo_obj, slot):
+        """ Removes the component from the slot and form the compo_info """
+        self.components.remove(compo_obj)
+
+        # remove it from the compo_info
+        self.page.transaction["compo_info"] = [ci 
+                                                for ci in self.page.transaction["compo_info"] 
+                                                if ci["cid"] != compo_obj.cid]

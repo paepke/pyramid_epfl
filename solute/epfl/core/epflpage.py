@@ -5,6 +5,8 @@ import epflcomponentbase, epfltransaction, epflclient
 import types
 import string
 
+from odict import odict
+
 from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid import security
 
@@ -83,7 +85,7 @@ class Page(object):
                                                          # e.g.
                                                          # page.data["something"] = some_object
 
-        self.components = {} # all registered components of this page
+        self.components = odict() # all registered components of this page
         env = request.get_epfl_jinja2_environment()
         self.jinja_template = env.get_template(self.template)
 
@@ -116,7 +118,7 @@ class Page(object):
             raise HTTPUnauthorized()
 
         # handling the "main"-page...
-        self.setup_components()
+        self.create_components()
 
         try:
             if self.handle_ajax_request():
@@ -124,9 +126,6 @@ class Page(object):
             else:
                 self.handle_submit_request()
                 out = self.render()
-
-        except:
-            raise
 
         finally:
             self.done_request()
@@ -138,6 +137,27 @@ class Page(object):
         return pyramid.response.Response(body = out.encode("utf-8"),
                                          content_type = "text/html; charset=utf-8",
                                          status = 200) # todo
+
+    def create_components(self):
+        """ Calling self.setup_components once and remember the compos as compo_info """
+        if not self.transaction.get("components_assigned"):
+            self.setup_components()
+            compo_info = []
+            for cid, compo in self.components.items():
+                compo_info.append(compo.get_component_info())
+            self.transaction["compo_info"] = compo_info
+            self.transaction["components_assigned"] = True
+        else:
+            for compo_info in self.transaction["compo_info"]:
+                self.assign_component(compo_info)
+
+
+    def assign_component(self, compo_info):
+        """ Create a component from the remembered compo_info and assign it to the page """
+
+        compo_obj = compo_info["class"].create_by_compo_info(self, compo_info)
+        self.add_static_component(compo_info["cid"], compo_obj)
+
 
     @property
     def parent(self):
@@ -157,7 +177,7 @@ class Page(object):
         parent_page_class = epflutil.get_page_class_by_name(self.request, parent_page_name)
 
         parent_page_obj = parent_page_class(self.request, parent_transaction)
-        parent_page_obj.setup_components()
+##        parent_page_obj.setup_components()
 
         self.page_request.add_handeled_page(parent_page_obj)
 
@@ -194,12 +214,18 @@ class Page(object):
         By assigning the components as attributes to the page, we can register them here as components,
         and we can tell the components thier id (which is thier attribute-name).
         """
-        self.__dict__[key] = value # regulär im Python-Objekt speichern
 
         if isinstance(value, epflcomponentbase.ComponentBase):
-            self.components[key] = value
-            value.set_component_id(key)
-            value.set_page_obj(self)
+            self.add_static_component(key, value)
+        else:
+            self.__dict__[key] = value # mimic "normal" behaviour
+
+    def add_static_component(self, cid, compo_obj):
+        """ Registeres the component in the page. """
+        self.__dict__[cid] = compo_obj
+        self.components[cid] = compo_obj
+        compo_obj.set_component_id(cid)
+        compo_obj.set_page_obj(self)
 
 
     def has_access(self):
@@ -226,7 +252,7 @@ class Page(object):
         """
         Overwrite this function!
         In this method all components needed by this page must be initialized and assinged to the page (self).
-        It is called every request.
+        It is called only once per transaction to register the "static" components of this page.
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
@@ -257,9 +283,9 @@ class Page(object):
 
         ctx = {"epfl": {},
                "page": self,
-               "components": self.components}
+               "components": self.components.as_dict()}
 
-        ctx.update(self.components)
+        ctx.update(self.components.as_dict())
         ctx.update(self.data)
 
         return ctx
@@ -317,7 +343,7 @@ class Page(object):
 
 
     def handle_ajax_request(self):
-        """ Is called by the view-controller directly after the definition of all components (self.setup_components).
+        """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
         A "False" means we have a full-page-request. In this case self.render must be called.
 

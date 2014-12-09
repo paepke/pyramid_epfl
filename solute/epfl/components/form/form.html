@@ -3,9 +3,20 @@
 {% compodef () %}
 
     <form id="{{ self.cid }}" method="POST" action="{{ self.action }}" epflid="{{self.cid}}" >
- 
-		{{ caller() }}
-
+        {% if has_caller %}
+    	   {{ caller() }}
+        {% else %}
+            {% call rows() %}
+                {% for field in self.get_fields_by_type("field") %}
+                    {{ row(field) }}
+                {% endfor %}
+            {% endcall %}
+            {% call buttons() %}
+                {% for field in self.get_fields_by_type("button") %}
+                    {{ button(field) }}
+                {% endfor %}
+            {% endcall %}
+        {% endif %}
 	</form>
 
 {% endcompodef %}
@@ -105,11 +116,11 @@
 
 
 <!-- the javascript part of the form -->
-{% compopart js () %}
+{% compopartdef js () %}
    <script>
 
     epfl.init_component("{{self.cid}}", "FormComponent", {});
 
    </script>
-{% endcompopart %}
+{% endcompopartdef %}
 

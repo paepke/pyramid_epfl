@@ -1,0 +1,27 @@
+
+
+{% compodef () %}
+
+	<div style="width:150px;height:150px;margin:3px;background:gray;float:left;overflow:auto;padding:5px">
+
+		<button style="float:right;padding:0px" id="{{ self.cid }}_close">X</button>
+
+    	<h2>I am a</h2>
+    	<h1>Dummy [ {{ self.dummy_id }} ]</h1>
+    	<h3>... and proud of it!</h3>
+    </div>
+
+{% endcompodef %}
+
+
+{% compopartdef js () %}
+
+    epfl.init_component("{{self.cid}}", "ComponentBase", {})
+
+	$("#{{ self.cid }}_close").click(function() {
+		var ev = epfl.components["{{self.cid}}"].make_event("close");
+		epfl.send(ev);
+	})
+
+{% endcompopartdef %}
+
