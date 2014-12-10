@@ -1,17 +1,21 @@
 {% compodef() %}
-    <div  epflid="{{self.cid}}" > 
-    <ul id="{{self.cid}}">
-        
-    <ul>
+<div class="container" id="{{self.cid}}">
+    {% for obj in self.components %} 
+        {{ self.macros.row(obj) }} 
+    {% endfor %}
 </div>
 {% endcompodef %}
 
-{% macro row() %}
-<li  id="row">
-</li>
+{% macro row(compo) %}
+<div class="jumbotron" id="{{compo.id}}">{{compo.id}}</div>
 {% endmacro %}
 
 
 
 {% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}"
+                      , "FlipFlopComponent", 
+                      {}); 
+</script>
 {% endcompopart %}

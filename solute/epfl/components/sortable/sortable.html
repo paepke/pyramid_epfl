@@ -2,7 +2,15 @@
 {% compodef () %}
     <div  epflid="{{self.cid}}" >
         <ul id="{{self.cid}}">
-            {{ caller() }}
+            {% if has_caller %}
+                {{ caller() }}
+            {% else %}
+                {% for component in self.child_components %}
+                   {% call rowdef(component.name) %}
+                        {{ component.element() }}
+                    {% endcall %}
+                {% endfor %}
+            {% endif %}
         </ul>
     </div>
 {% endcompodef %}
@@ -10,10 +18,11 @@
 
 {% macro rowdef(rowid) %}
     <li id="{{rowid}}">
-    <div class="listicon"><i class="fa fa-sort fa-2x"></i></div>
-    <div class="listele">{{caller()}}</div>
+        <div class="listicon"><i class="fa fa-sort fa-2x"></i></div>
+        <div class="listele">{{caller()}}</div>
     </li>
 {% endmacro %}
+
 
 {% compopart js () %}
    <script>
