@@ -570,9 +570,36 @@ class ComponentBase(object):
         target.components.insert(position, compo)
 
         self.page.transaction["compo_info"].insert(position_index, compo.get_component_info())
+        self.assure_hierarchical_order()
 
         target.redraw()
         source.redraw()
+
+    def assure_hierarchical_order(self):
+        out = []
+        seen = {}
+
+        # Recursive appending to output
+        def append_to_out(value):
+            out.append(value)
+            [append_to_out(v) for v in seen[value['cid']]]
+
+        for value in self.page.transaction["compo_info"]:
+            seen.setdefault(value['cid'], [])
+
+            # No container id: Append to out, add potential dependencies
+            if value['cntrid'] is None:
+                append_to_out(value)
+
+            # With container id not seen
+            elif seen.get(value['cntrid'], None) is None:
+                seen.setdefault(value['cntrid'], []).append(value)
+
+            # With container id seen
+            else:
+                append_to_out(value)
+
+        self.page.transaction["compo_info"] = out
 
 
 class ComponentPartAccessor(object):

@@ -369,6 +369,12 @@ epfl_module = function() {
 		}
 	};
 
+	epfl.handle_dynamic_extra_content= function(content) {
+        content.forEach(function (data) {
+            $(document.body).append(data)
+        });
+	};
+
 
 
 };

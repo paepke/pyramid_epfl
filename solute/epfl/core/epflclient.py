@@ -46,6 +46,9 @@ class ExtraContent(object):
     target = None # http-header, head, footer
     exclusive = False
 
+    # Dynamic Components need to be able to push content dynamically.
+    render_once = False
+
     def __new__(cls, data):
         """ Nifty little trick: if you create an Extra-Content with a list of Extra-Content, you get a list of Extra-Content-Objects """
         if type(data) is list:
@@ -108,6 +111,7 @@ class JSLink(JSContent):
     be once rendered.
     """
     target = "footer"
+    render_once = True
 
     def get_content_id(self):
         return self.data # src-path as unique-id
@@ -120,6 +124,7 @@ class CSSLink(CSSContent):
     """ Same story as JSLink but for CSS """
 
     target = "head"
+    render_once = True
 
     def get_content_id(self):
         return self.data # src-path as unique-id
