@@ -13,6 +13,8 @@ from flipflop.flipflop import FlipFlop
 from containers.boxes import Box
 from sortable.sortable import Sortable
 from containers.panel import Panel
+from droppable.droppable import Droppable
+from dragable.dragable import Dragable
 
 
 
@@ -25,5 +27,7 @@ def add_routes(config):
     Box.add_pyramid_routes(config)
     FlipFlop.add_pyramid_routes(config)
     Sortable.add_pyramid_routes(config)
+    Droppable.add_pyramid_routes(config)
+    Dragable.add_pyramid_routes(config)
     #Panel.add_pyramid_routes(config)
 

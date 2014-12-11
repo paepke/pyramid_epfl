@@ -1,4 +1,4 @@
-epfl.FlipFlopComponent = function(cid, params) {
+epfl.DragableComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     
     var widget_obj = this;
@@ -11,9 +11,9 @@ epfl.FlipFlopComponent = function(cid, params) {
     });
 
 };
-epfl.FlipFlopComponent.inherits_from(epfl.ComponentBase);
+epfl.DragableComponent.inherits_from(epfl.ComponentBase);
 
-epfl.FlipFlopComponent.prototype.fire_event = function(event_name, params, callback_fn) {
+epfl.DragableComponent.prototype.fire_event = function(event_name, params, callback_fn) {
     if (!params) {
         params = {}
     };
@@ -21,7 +21,7 @@ epfl.FlipFlopComponent.prototype.fire_event = function(event_name, params, callb
     epfl.send(evt, callback_fn)
 };
 
-epfl.FlipFlopComponent.prototype.remove_row = function(rowid) {
+epfl.DragableComponent.prototype.remove_row = function(rowid) {
     console.log("remove",rowid);
     console.log(this.cid);
     $("#" + this.cid + " #" + rowid).remove();

@@ -112,7 +112,13 @@ epfl_module = function() {
 				    dataType: "script",
 	                success: function(data) {
 	                    if (callback_func) {
-	                        callback_func($.parseJSON(data))
+                            try {
+                                callback_func($.parseJSON(data))
+                            } catch(e) {
+                                console.log('Caught Exception when trying to parse data as JSON. Did you provide a ' +
+                                    'callback for an event without a json response?');
+                                console.log(e);
+                            }
 	                    };
 	                    epfl.hide_please_wait(true);
 	                },
