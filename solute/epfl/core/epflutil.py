@@ -75,6 +75,8 @@ def add_extra_contents(response, obj):
 def create_static_url(obj, mixin_name, spec=None):
     if spec is None:
         spec = obj.asset_spec
+    if type(mixin_name) is tuple:
+        spec, mixin_name = mixin_name
     asset_spec = "{spec}/{name}".format(spec=spec, name=mixin_name)
     if spec[0:11] != 'solute.epfl':
         return obj.request.static_url(asset_spec)

@@ -545,7 +545,34 @@ class ComponentBase(object):
         """
         setattr(self.template.module, "compopart_" + name, part)
 
+    def switch_component(self, target, cid, slot=None, position=None):
+        compo = getattr(self.page, cid)
+        target = getattr(self.page, target)
+        source = getattr(self.page, compo.container_compo.cid)
 
+        self.page.transaction["compo_info"].remove(compo.get_component_info())
+
+        position_index = -1
+        counter = -1
+        for key, value in enumerate(self.page.transaction["compo_info"]):
+            if value.get('cid', None) == self.cid and position is not None:
+                counter += 1
+            if value.get('cntrid', None) == self.cid and position is not None:
+                counter += 1
+            if counter > position:
+                position_index = key
+                break
+
+        source.components.remove(compo)
+        compo.set_container_compo(target, slot)
+        if position is None:
+            position = -1
+        target.components.insert(position, compo)
+
+        self.page.transaction["compo_info"].insert(position_index, compo.get_component_info())
+
+        target.redraw()
+        source.redraw()
 
 
 class ComponentPartAccessor(object):
