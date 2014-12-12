@@ -121,14 +121,14 @@ class Page(object):
         try:
             if self.handle_ajax_request():
                 out = self.response.render_ajax_response()
-                extra_content = [s.render() for s in self.response.extra_content if s.render_once]
+                extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
                 extra_content = [s for s in extra_content if s not in self.transaction['rendered_extra_content']]
                 out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
                 self.transaction['rendered_extra_content'].update(extra_content)
             else:
                 self.handle_submit_request()
                 out = self.render()
-                extra_content = set([s.render() for s in self.response.extra_content if s.render_once])
+                extra_content = set([s.render() for s in self.response.extra_content if s.enable_dynamic_rendering])
                 self.transaction['rendered_extra_content'] = self.transaction.get('rendered_extra_content', set())
                 self.transaction['rendered_extra_content'].update(extra_content)
 
