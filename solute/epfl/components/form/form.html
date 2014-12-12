@@ -6,16 +6,13 @@
         {% if has_caller %}
     	   {{ caller() }}
         {% else %}
-            {% call rows() %}
-                {% for field in self.get_fields_by_type("field") %}
-                    {{ row(field) }}
-                {% endfor %}
-            {% endcall %}
-            {% call buttons() %}
-                {% for field in self.get_fields_by_type("button") %}
-                    {{ button(field) }}
-                {% endfor %}
-            {% endcall %}
+            {% for field in self.get_fields_by_type("field") %}
+                <label class="control-label">{{field.label}}{{ field.validator_visual }}</label>
+                {{ field }}
+            {% endfor %}
+            {% for field in self.get_fields_by_type("button") %}
+                {{ field }}
+            {% endfor %}
         {% endif %}
 	</form>
 

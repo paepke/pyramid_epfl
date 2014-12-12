@@ -579,25 +579,20 @@ class ComponentBase(object):
         def order_recursive(input, seen_key=set()):
             if len(input) == 0:
                 return []
-            seen_types = set()
             new_seen_key = set()
             output = []
             withheld = []
             for v in input:
                 if v['cntrid'] is None or v['cntrid'] in seen_key:
                     output.append(v)
-                    seen_types.add(v['class'])
                     new_seen_key.add(v['cid'])
                 else:
                     withheld.append(v)
             seen_key.update(new_seen_key)
-            print seen_types
+
             output += order_recursive(withheld, seen_key)
             return output
-        print 'start assure_hierarchical_order'
         self.page.transaction["compo_info"] = order_recursive(self.page.transaction["compo_info"])
-        print self.page.transaction["compo_info"]
-        print 'end assure_hierarchical_order'
 
 
 class ComponentPartAccessor(object):

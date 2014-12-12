@@ -1,15 +1,15 @@
 {% macro button(ds) %}
-	<button type="button" id="{{ds.wid}}" name="{{ ds.name }}" {{ ds.field.state|field_states -}}>{{ ds.label }}</button>
+	<button type="button" class="form-control" id="{{ds.wid}}" name="{{ ds.name }}" {{ ds.field.state|field_states -}}>{{ ds.label }}</button>
 {% endmacro %}
 
 {% macro spinner(ds) %}
-    <input id="{{ds.wid}}" name="{{ ds.name }}">
+    <input id="{{ds.wid}}" class="form-control" name="{{ ds.name }}">
 {% endmacro %}
 
 {% macro entry(ds) %}
 
 
-    <input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" class="{{ ds.css_classes }}" {{ ds.maxlength_attr }} {{ ds.field.state|field_states -}} />
+    <input type="text" id="{{ds.wid}}" name="{{ ds.name }}" value="{{ ds.value|e }}" class="{{ ds.css_classes }} form-control" {{ ds.maxlength_attr }} {{ ds.field.state|field_states -}} />
     {% if ds.params.char_count %}
         <div class="epfl-form-field-entry-ccnt" id="{{ds.wid}}_ccnt"></div>
     {% endif %}

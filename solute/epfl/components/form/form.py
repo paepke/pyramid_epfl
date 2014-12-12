@@ -31,7 +31,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
     template_name = "form/form.html"
     asset_spec = "solute.epfl.components:form/static"
 
-    css_name = ["form.css"]
+    css_name = ["form.css", "bootstrap.min.css"]
     js_name = ["form.js",
                "epflwidgetbase.js"]
 
