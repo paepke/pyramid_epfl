@@ -1,0 +1,16 @@
+{% compodef() %}
+<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" epflid="{{self.cid}}">
+    {% for compo in self.components %}
+        {{ compo() }}
+    {% endfor %}
+</div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}",
+                        "DroppableComponent",
+                        {type: {{ self.get_valid_types(True)|safe }}});
+</script>
+{% endcompopart %}

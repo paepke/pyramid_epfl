@@ -1,0 +1,18 @@
+{% compodef() %}
+<div class="list-group-item"
+     id="{{self.cid}}"
+     epflid="{{self.cid}}">
+    {% if not self.components %}
+        {{ self.id }}
+    {% endif %}
+    {% for compo_obj in self.components %}
+        {{ compo_obj.render() }}
+    {% endfor %}
+</div>
+{% endcompodef %}
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}", "DragableComponent", {type: "{{self.type}}"});
+</script>
+{% endcompopart %}
