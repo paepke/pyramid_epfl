@@ -1,0 +1,8 @@
+{% compodef() %}
+    {% for compo_obj in self.components %}
+        {{ compo_obj.render() }}
+    {% endfor %}
+{% endcompodef %}
+
+{% compopart js() %}
+{% endcompopart %}
