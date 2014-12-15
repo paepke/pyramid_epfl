@@ -1,0 +1,19 @@
+{% compodef() %}
+<form class="form-horizontal" epflid="{{self.cid}}">
+    {% for compo in self.components %}
+        {{ compo() }}
+    {% endfor %}
+</form>
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+    $('[epflid="{{self.cid}}"]').submit(function(event) {
+        event.preventDefault();
+        var request = epfl.make_component_event("{{self.cid}}", "form_submit", {'params': $(this).serializeArray()});
+        epfl.send(request);
+    });
+
+</script>
+{% endcompopart %}
