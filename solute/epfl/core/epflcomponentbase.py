@@ -768,19 +768,21 @@ class ComponentTreeBase(ComponentContainerBase):
     def init_transaction(self):
         super(ComponentTreeBase, self).init_transaction()
 
-        for params in self.node_list:
-            if params is None:
+        for node in self.node_list:
+            if node is None:
                 cls, params = ComponentBase, {}
-            elif type(params) is tuple:
-                cls, params = params
+            elif type(node) is tuple:
+                cls, params = node
             else:
-                cls, params = params, {}
-            cid = params.pop('cid', None)
-            slot = params.pop('slot', None)
+                cls, params = node, {}
+            cid = params.get('cid', None)
+            slot = params.get('slot', None)
 
             if len(params) > 0:
                 cls = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
                 for param in params:
+                    if param in ['cid', 'slot']:
+                        continue
                     setattr(cls, param, params[param])
 
             self.add_component(cls(), slot=slot, cid=cid)
