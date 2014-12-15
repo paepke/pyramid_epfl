@@ -1,0 +1,12 @@
+{% compodef() %}
+    {% if self.value %}
+        <span class="badge" id="{{ self.cid }}" epflid="{{ self.cid }}">{{self.value}}</span>
+    {% endif %}
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}" , "BadgeComponent", {});
+</script>
+{% endcompopart %}
