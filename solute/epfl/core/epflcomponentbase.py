@@ -52,7 +52,7 @@ class ComponentBase(object):
                                                               # The base-component only defines the "access"-permission. 
                                                               # If not given the component is not rendered.
 
-    template_name = "" # filename of the template for this component (if any)
+    template_name = "empty.html" # filename of the template for this component (if any)
     js_name = [] # filenames of the js-files for this component (if any)
     css_name = [] # filenames of the css-files for this component (if any)
     compo_state = [] # which attributes of the object are persisted into the transaction
@@ -713,8 +713,6 @@ class ComponentPartAccessor(object):
             raise AttributeError, key
 
 
-
-
 class ComponentContainerBase(ComponentBase):
 
     def __init__(self, **config):
@@ -722,11 +720,12 @@ class ComponentContainerBase(ComponentBase):
 
         self.setup_component_slots()
 
-    def add_component(self, compo_obj, slot = None):
+    def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
         """
         # we have no nice cid, so use a UUID
-        cid = str(uuid.uuid4())
+        if not cid:
+            cid = str(uuid.uuid4())
         # assign the container
         compo_obj.set_container_compo(self, slot)
         # handle the static part
@@ -756,3 +755,34 @@ class ComponentContainerBase(ComponentBase):
         self.page.transaction["compo_info"] = [ci 
                                                 for ci in self.page.transaction["compo_info"] 
                                                 if ci["cid"] != compo_obj.cid]
+
+
+class ComponentTreeBase(ComponentContainerBase):
+    """
+    node_list contains (cls, dict_params) tuples.
+    The TreeComponent will generate temporary classes if necessary and instantiate them in the right positions.
+    """
+    template_name = 'tree_base.html'
+    node_list = []
+
+    def init_transaction(self):
+        super(ComponentTreeBase, self).init_transaction()
+
+        for node in self.node_list:
+            if node is None:
+                cls, params = ComponentBase, {}
+            elif type(node) is tuple:
+                cls, params = node
+            else:
+                cls, params = node, {}
+            cid = params.get('cid', None)
+            slot = params.get('slot', None)
+
+            if len(params) > 0:
+                cls = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
+                for param in params:
+                    if param in ['cid', 'slot']:
+                        continue
+                    setattr(cls, param, params[param])
+
+            self.add_component(cls(), slot=slot, cid=cid)
