@@ -15,7 +15,7 @@ from sortable.sortable import Sortable
 from containers.panel import Panel
 from droppable.droppable import Droppable
 from dragable.dragable import Dragable
-
+from badge.badge import Badge
 
 
 
@@ -29,5 +29,5 @@ def add_routes(config):
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
-    #Panel.add_pyramid_routes(config)
+    Badge.add_pyramid_routes(config)
 
