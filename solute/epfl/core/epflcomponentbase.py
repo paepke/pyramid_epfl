@@ -49,7 +49,7 @@ class ComponentBase(object):
 
     __acl__ = [(security.Allow, security.Everyone, 'access')] # a pyramid acl that defines the permissions for this component
                                                               # it only affects the has_access()-method.
-                                                              # The base-component only defines the "access"-permission. 
+                                                              # The base-component only defines the "access"-permission.
                                                               # If not given the component is not rendered.
 
     template_name = "empty.html" # filename of the template for this component (if any)
@@ -101,7 +101,7 @@ class ComponentBase(object):
         epos = fn.index("/", pos + 17)
         compo_path_part = fn[pos + 17 : epos]
 
-        config.add_static_view(name = "epfl/components/" + compo_path_part, 
+        config.add_static_view(name = "epfl/components/" + compo_path_part,
                                path = "solute.epfl.components:" + compo_path_part + "/static")
 
 
@@ -110,8 +110,8 @@ class ComponentBase(object):
             container_id = self.container_compo.cid
         else:
             container_id = None
-        return {"class": self.__class__, 
-                "config": self.__config, 
+        return {"class": self.__class__,
+                "config": self.__config,
                 "cid": self.cid,
                 "slot": self.container_slot,
                 "cntrid": container_id}
@@ -540,7 +540,7 @@ class ComponentBase(object):
         """
         return self
 
-    def overwrite_compopart(self, name, part):        
+    def overwrite_compopart(self, name, part):
         """ Is called from the template by "{% %}"
         """
         setattr(self.template.module, "compopart_" + name, part)
@@ -752,9 +752,52 @@ class ComponentContainerBase(ComponentBase):
         self.components.remove(compo_obj)
 
         # remove it from the compo_info
-        self.page.transaction["compo_info"] = [ci 
-                                                for ci in self.page.transaction["compo_info"] 
+        self.page.transaction["compo_info"] = [ci
+                                                for ci in self.page.transaction["compo_info"]
                                                 if ci["cid"] != compo_obj.cid]
+
+
+class ComponentTreeBaseHelper(object):
+    def boxed_form(self, title, fields, params=None):
+        if params is None:
+            params = {}
+        return 'boxed_form', title, fields, params
+
+    def box(self, title, components, params=None):
+        if params is None:
+            params = {}
+        return 'box', title, components, params
+
+    def translate(self, node):
+        return {'box': self._translate_box,
+                'boxed_form': self._translate_boxed_form}.get(node[0])(node)
+
+    def _translate_box(self, node):
+        from solute.epfl.components import Box
+
+        name, title, components = node[0:3]
+        params = {'title': title,
+                  'node_list': components}
+
+        if len(node) > 3:
+            params.update(node[3])
+
+        return (Box,
+                params)
+
+    def _translate_boxed_form(self, node):
+        from solute.epfl.components import CompoForm
+
+        name, title, fields = node[0:3]
+        params = {'fields': fields}
+
+        if len(node) > 3:
+            params.update(node[3])
+
+        return self._translate_box(('box',
+                                    title,
+                                    [(CompoForm,
+                                      params)]))
 
 
 class ComponentTreeBase(ComponentContainerBase):
@@ -764,13 +807,21 @@ class ComponentTreeBase(ComponentContainerBase):
     """
     template_name = 'tree_base.html'
     node_list = []
+    helper = ComponentTreeBaseHelper()
+
+    def init_tree_struct(self):
+        pass
 
     def init_transaction(self):
         super(ComponentTreeBase, self).init_transaction()
 
+        self.init_tree_struct()
+
         for node in self.node_list:
             if node is None:
                 cls, params = ComponentBase, {}
+            elif type(node) is tuple and type(node[0]) is str:
+                cls, params = self.helper.translate(node)
             elif type(node) is tuple:
                 cls, params = node
             else:
@@ -784,5 +835,5 @@ class ComponentTreeBase(ComponentContainerBase):
                     if param in ['cid', 'slot']:
                         continue
                     setattr(cls, param, params[param])
-
+            print 'add_component', cls, slot, cid
             self.add_component(cls(), slot=slot, cid=cid)

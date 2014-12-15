@@ -15,6 +15,8 @@ from sortable.sortable import Sortable
 from containers.panel import Panel
 from droppable.droppable import Droppable
 from dragable.dragable import Dragable
+from form_components.form import Form as CompoForm
+from form_components.form import Button as CompoFormButton
 
 
 
@@ -29,5 +31,6 @@ def add_routes(config):
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
+    CompoForm.add_pyramid_routes(config)
     #Panel.add_pyramid_routes(config)
 
