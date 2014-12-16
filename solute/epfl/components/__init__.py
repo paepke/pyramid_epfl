@@ -17,6 +17,7 @@ from droppable.droppable import Droppable
 from dragable.dragable import Dragable
 from form_components.form import Types as CompoForm
 from badge.badge import Badge
+from button.button import Button
 
 
 def add_routes(config):
@@ -32,4 +33,5 @@ def add_routes(config):
     CompoForm.Form.add_pyramid_routes(config)
     #Panel.add_pyramid_routes(config)
     Badge.add_pyramid_routes(config)
+    Button.add_pyramid_routes(config)
 

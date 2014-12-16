@@ -1,0 +1,10 @@
+{% compodef() %}
+    <button type="button" class="form-control" id="{{ self.cid }}" epflid="{{ self.cid }}" name="{{ self.cid }}"><label for="{{ self.cid }}">{{ self.label }}</label></button>
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}" , "ButtonComponent", {});
+</script>
+{% endcompopart %}
