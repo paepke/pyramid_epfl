@@ -51,7 +51,11 @@ class Page(object):
                "css/font-awesome/css/font-awesome.min.css" ]
 
 
-    template = "dummy_page.html" # the name of the template used to render this page
+    template = "page.html" # the name of the template used to render this page
+    base_html = 'base.html'
+
+    root_cls = None
+    title = 'Empty Page'
 
     overlay_title = "Overlay" # If this page is displayed as overlay, use this title.
 
@@ -86,11 +90,14 @@ class Page(object):
         self.components = odict() # all registered components of this page
         env = request.get_epfl_jinja2_environment()
         self.jinja_template = env.get_template(self.template)
+        env.globals['epfl_base_html'] = self.base_html
+        env.globals['epfl_base_title'] = self.title
 
         self.jinja_template.module # this access triggers the parsing of the template
                                    # this is neccessary because this parsing
                                    # collects additional meta-data from the template via
                                    # the epfl-jinja-component-extension (jinja_extensions.py)
+        print "foo"
 
 ##        request.register_template_usage(self.template, self) # tells the request which page is in use
 
@@ -159,7 +166,6 @@ class Page(object):
 
     def assign_component(self, compo_info):
         """ Create a component from the remembered compo_info and assign it to the page """
-
         compo_obj = compo_info["class"].create_by_compo_info(self, compo_info)
         self.add_static_component(compo_info["cid"], compo_obj)
 
@@ -261,7 +267,7 @@ class Page(object):
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
-        pass
+        self.root_node = self.root_cls(__existing__=True)
 
     def get_jinja_template_extra_data(self):
         """ Returns the data accumulated by the jinja-epfl-component-extension (jinja_extensions.py).

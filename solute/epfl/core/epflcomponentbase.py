@@ -66,8 +66,15 @@ class ComponentBase(object):
 
     is_template_element = True # Needed for template-reflection: this makes me a template-element (like a form-field)
 
+    def __new__(cls, *args, **config):
+        """
+        EPFL wraps component creation at this stage to allow custom __init__ functions without interfering with
+        component creation by the system.
+        """
+        if config.pop('__existing__', None) is None:
+            return cls, args, config
 
-    def __init__(self, **config):
+        self = super(ComponentBase, cls).__new__(cls)
 
         self.is_rendered = False # whas this componend rendered (so was the self.render-method called?
         self.redraw_requested = set() # all these parts of the component (or "main") want to be redrawn
@@ -92,6 +99,14 @@ class ComponentBase(object):
             if attr_name in config:
                 config_value = config[attr_name]
                 setattr(self, attr_name, copy.deepcopy(config_value))
+
+        return self
+
+    def __init__(self, *args, **kwargs):
+        """
+        Overwrite-me for autocompletion features on component level.
+        """
+        pass
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -118,7 +133,7 @@ class ComponentBase(object):
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info):
-        compo_obj = cls(**compo_info["config"])
+        compo_obj = cls(__existing__=True, **compo_info["config"])
         if compo_info["cntrid"]:
             container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
@@ -380,7 +395,16 @@ class ComponentBase(object):
         May be overridden by concrete components.
         """
 
-        event_handler = getattr(self, "handle_" + event_name)
+        event_handler = getattr(self, "event_" + event_name, None)
+        # TODO: This first if is compat code to ease transition into the new epfl way for event handling.
+        if event_handler is None and getattr(self, "handle_" + event_name, None) is not None:
+            raise Exception('Received None as event handler, possible old style handler detected: '
+                            '%r (%r)' % (getattr(self, "handle_" + event_name),
+                                         event_name))
+        elif event_handler is None:
+            raise Exception('Received None as event handler, have you setup an event handler?')
+        elif not hasattr(event_handler, '__call__'):
+            raise Exception('Received non callable for event handling.')
         event_handler(**event_params)
 
     def handle_submit(self, params):
@@ -715,10 +739,11 @@ class ComponentPartAccessor(object):
 
 class ComponentContainerBase(ComponentBase):
 
-    def __init__(self, **config):
-        super(ComponentContainerBase, self).__init__(**config)
-
-        self.setup_component_slots()
+    def __new__(cls, *args, **kwargs):
+        self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
+        if isinstance(self, cls):
+            self.setup_component_slots()
+        return self
 
     def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
@@ -810,30 +835,25 @@ class ComponentTreeBase(ComponentContainerBase):
     helper = ComponentTreeBaseHelper()
 
     def init_tree_struct(self):
-        pass
+        return self.node_list
 
     def init_transaction(self):
         super(ComponentTreeBase, self).init_transaction()
 
-        self.init_tree_struct()
+        self.node_list = self.init_tree_struct()
 
         for node in self.node_list:
             if node is None:
-                cls, params = ComponentBase, {}
-            elif type(node) is tuple and type(node[0]) is str:
-                cls, params = self.helper.translate(node)
-            elif type(node) is tuple:
-                cls, params = node
+                cls, args, kwargs = ComponentBase, tuple(), {}
             else:
-                cls, params = node, {}
-            cid = params.get('cid', None)
-            slot = params.get('slot', None)
+                cls, args, kwargs = node
+            cid = kwargs.get('cid', None)
+            slot = kwargs.get('slot', None)
 
-            if len(params) > 0:
+            if len(kwargs) > 0:
                 cls = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
-                for param in params:
+                for param in kwargs:
                     if param in ['cid', 'slot']:
                         continue
-                    setattr(cls, param, params[param])
-            print 'add_component', cls, slot, cid
-            self.add_component(cls(), slot=slot, cid=cid)
+                    setattr(cls, param, kwargs[param])
+            self.add_component(cls(__existing__=True), slot=slot, cid=cid)

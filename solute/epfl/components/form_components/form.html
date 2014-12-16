@@ -11,7 +11,7 @@
 <script>
     $('[epflid="{{self.cid}}"]').submit(function(event) {
         event.preventDefault();
-        var request = epfl.make_component_event("{{self.cid}}", "form_submit", {'params': $(this).serializeArray()});
+        var request = epfl.make_component_event("{{self.cid}}", "submit", {'params': $(this).serializeArray()});
         epfl.send(request);
     });
 
