@@ -18,6 +18,7 @@ from dragable.dragable import Dragable
 from form_components.form import Form as CompoForm
 from form_components.form import Button as CompoFormButton
 from badge.badge import Badge
+from button.button import Button
 
 
 def add_routes(config):
@@ -33,4 +34,5 @@ def add_routes(config):
     CompoForm.add_pyramid_routes(config)
     #Panel.add_pyramid_routes(config)
     Badge.add_pyramid_routes(config)
+    Button.add_pyramid_routes(config)
 
