@@ -85,8 +85,16 @@ class Input(FormBaseComponent):
         super(Input, self).__init__()
 
 
-Text = Input(input_type='text',
-             validation_type='text')
+def Text(label=None, name=None, default="", validation_type="", **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='text',
+                                                                validation_type='text',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                validation_type=validation_type,
+                                                                **extra_params)],
+                                               template='',
+                                               label=label)
 
 
 class Button(FormBaseComponent):
