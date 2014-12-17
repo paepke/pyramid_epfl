@@ -97,7 +97,6 @@ class Page(object):
                                    # this is neccessary because this parsing
                                    # collects additional meta-data from the template via
                                    # the epfl-jinja-component-extension (jinja_extensions.py)
-        print "foo"
 
 ##        request.register_template_usage(self.template, self) # tells the request which page is in use
 
@@ -228,6 +227,9 @@ class Page(object):
 
         if isinstance(value, epflcomponentbase.ComponentBase):
             self.add_static_component(key, value)
+        # TODO: Check auto instantiation possibility here
+        # if isinstance(value, epflcomponentbase.UnboundComponent):
+        #     self.add_static_component(key, value(__instantiate__=True))
         else:
             self.__dict__[key] = value # mimic "normal" behaviour
 
@@ -267,7 +269,7 @@ class Page(object):
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
-        self.root_node = self.root_cls(__existing__=True)
+        self.root_node = self.root_cls(__instantiate__=True)
 
     def get_jinja_template_extra_data(self):
         """ Returns the data accumulated by the jinja-epfl-component-extension (jinja_extensions.py).

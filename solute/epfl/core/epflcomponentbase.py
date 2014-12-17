@@ -16,6 +16,31 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
+class UnboundComponent(object):
+    def __init__(self, cls, config):
+        """
+        Unbound components handle:
+        1. Dynamic class creation with inheritance from cls and attributes on the new class as defined in config.
+        2. Dynamic cid generation for unbound components without a cid entry in config.
+        """
+        self.__unbound_cls__ = cls
+
+        config = config.copy()
+        self.position = (config.pop('cid', uuid.uuid4().hex), config.pop('slot', None))
+        if len(config) > 0:
+            self.__unbound_cls__ = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
+            for param in config:
+                setattr(self.__unbound_cls__, param, config[param])
+
+    def __call__(self, *args, **kwargs):
+        """
+        With this helper the UnboundComponent can be pseudo instantiated to yield a new UnboundComponent from it's base
+        class. Additionally this can be used to generate an instance if one is needed if the __
+        """
+
+        return self.__unbound_cls__(*args, **kwargs)
+
+
 class ComponentBase(object):
 
     """ The base of all epfl-components
@@ -71,8 +96,8 @@ class ComponentBase(object):
         EPFL wraps component creation at this stage to allow custom __init__ functions without interfering with
         component creation by the system.
         """
-        if config.pop('__existing__', None) is None:
-            return cls, args, config
+        if config.pop('__instantiate__', None) is None:
+            return UnboundComponent(cls, config)
 
         self = super(ComponentBase, cls).__new__(cls)
 
@@ -133,7 +158,7 @@ class ComponentBase(object):
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info):
-        compo_obj = cls(__existing__=True, **compo_info["config"])
+        compo_obj = cls(__instantiate__=True, **compo_info["config"])
         if compo_info["cntrid"]:
             container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
@@ -748,6 +773,10 @@ class ComponentContainerBase(ComponentBase):
     def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
         """
+        # TODO: Check auto instantiation possibility here
+        # if isinstance(compo_obj, UnboundComponent):
+        #     compo_obj = compo_obj(__instantiate__=True)
+        
         # we have no nice cid, so use a UUID
         if not cid:
             cid = str(uuid.uuid4())
@@ -777,52 +806,8 @@ class ComponentContainerBase(ComponentBase):
         self.components.remove(compo_obj)
 
         # remove it from the compo_info
-        self.page.transaction["compo_info"] = [ci
-                                                for ci in self.page.transaction["compo_info"]
-                                                if ci["cid"] != compo_obj.cid]
-
-
-class ComponentTreeBaseHelper(object):
-    def boxed_form(self, title, fields, params=None):
-        if params is None:
-            params = {}
-        return 'boxed_form', title, fields, params
-
-    def box(self, title, components, params=None):
-        if params is None:
-            params = {}
-        return 'box', title, components, params
-
-    def translate(self, node):
-        return {'box': self._translate_box,
-                'boxed_form': self._translate_boxed_form}.get(node[0])(node)
-
-    def _translate_box(self, node):
-        from solute.epfl.components import Box
-
-        name, title, components = node[0:3]
-        params = {'title': title,
-                  'node_list': components}
-
-        if len(node) > 3:
-            params.update(node[3])
-
-        return (Box,
-                params)
-
-    def _translate_boxed_form(self, node):
-        from solute.epfl.components import CompoForm
-
-        name, title, fields = node[0:3]
-        params = {'fields': fields}
-
-        if len(node) > 3:
-            params.update(node[3])
-
-        return self._translate_box(('box',
-                                    title,
-                                    [(CompoForm,
-                                      params)]))
+        self.page.transaction["compo_info"] = [ci for ci in self.page.transaction["compo_info"]
+                                               if ci["cid"] != compo_obj.cid]
 
 
 class ComponentTreeBase(ComponentContainerBase):
@@ -832,7 +817,6 @@ class ComponentTreeBase(ComponentContainerBase):
     """
     template_name = 'tree_base.html'
     node_list = []
-    helper = ComponentTreeBaseHelper()
 
     def init_tree_struct(self):
         return self.node_list
@@ -843,17 +827,6 @@ class ComponentTreeBase(ComponentContainerBase):
         self.node_list = self.init_tree_struct()
 
         for node in self.node_list:
-            if node is None:
-                cls, args, kwargs = ComponentBase, tuple(), {}
-            else:
-                cls, args, kwargs = node
-            cid = kwargs.get('cid', None)
-            slot = kwargs.get('slot', None)
+            cid, slot = node.position
 
-            if len(kwargs) > 0:
-                cls = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
-                for param in kwargs:
-                    if param in ['cid', 'slot']:
-                        continue
-                    setattr(cls, param, kwargs[param])
-            self.add_component(cls(__existing__=True), slot=slot, cid=cid)
+            self.add_component(node(__instantiate__=True), slot=slot, cid=cid)
