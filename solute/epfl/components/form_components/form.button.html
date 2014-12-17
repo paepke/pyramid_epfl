@@ -13,7 +13,6 @@
 {% compopart js () %}
 <script>
     $('[id="{{self.cid}}"]').click(function(event) {
-        console.log(event);
         var request = epfl.make_component_event("{{self.callback[0]}}", "{{self.callback[1]}}");
         epfl.send(request);
     });

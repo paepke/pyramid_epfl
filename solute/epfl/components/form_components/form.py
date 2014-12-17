@@ -34,7 +34,7 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
         """
-        self.validation_error = ''
+
         result, text = False, ''
         if self.validation_type == 'text':
             result, text = type(self.converted_value) is str, 'Value did not validate as text.'
@@ -42,15 +42,20 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
             result, text = type(self.converted_value) is int, 'Value did not validate as number.'
 
         for helper in self.validation_helper:
-            result, text = helper[0](self), helper[1]
             if not result:
                 break
+            result, text = helper[0](self), helper[1]
 
         if not result:
-            self.validation_error = text
             self.redraw()
+            self.validation_error = text
+            return False
 
-        return result
+        if self.validation_error:
+            self.redraw()
+        self.validation_error = ''
+
+        return True
 
     @property
     def converted_value(self):
@@ -71,11 +76,17 @@ class Input(FormBaseComponent):
 
     label = None
     name = None
+    default = None
     value = None
     input_type = None
 
-    def __init__(self, input_type=None, label=None, name=None, value="", validation_type="", **extra_params):
+    def __init__(self, input_type=None, label=None, name=None, default="", validation_type="", **extra_params):
+        self.value = self.default
         super(Input, self).__init__()
+
+
+Text = Input(input_type='text',
+             validation_type='text')
 
 
 class Button(FormBaseComponent):
