@@ -1,7 +1,6 @@
 epfl.DiagramComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
-    console.log(params);
     $('#' + cid).highcharts(
         params
     );
