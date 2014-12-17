@@ -6,9 +6,9 @@
 {% compopart js () %}
 <script>
 $(function () {
-    $('#{{self.cid}}').highcharts(
-        {{ self.get_params()|tojson }}
-    );
+	 epfl.init_component("{{self.cid}}"
+                      , "DiagramComponent",
+                      {{ self.get_params()|tojson }});
 });
 </script>
 {% endcompopart %}
