@@ -20,6 +20,7 @@ from form_components.form import Input as cfInput
 from form_components.form import Form as cfForm
 from badge.badge import Badge
 from button.button import Button
+from diagram.diagram import Diagram
 
 
 def add_routes(config):
@@ -36,4 +37,6 @@ def add_routes(config):
     #Panel.add_pyramid_routes(config)
     Badge.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
+    Diagram.add_pyramid_routes(config)
+    
 
