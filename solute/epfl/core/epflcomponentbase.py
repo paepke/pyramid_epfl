@@ -768,9 +768,10 @@ class ComponentContainerBase(ComponentBase):
     def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
         """
-        # TODO: Check auto instantiation possibility here
-        # if isinstance(compo_obj, UnboundComponent):
-        #     compo_obj = compo_obj(__instantiate__=True)
+
+        if isinstance(compo_obj, UnboundComponent):
+            cid, slot = compo_obj.position
+            compo_obj = compo_obj(__instantiate__=True)
 
         # we have no nice cid, so use a UUID
         if not cid:
@@ -786,6 +787,8 @@ class ComponentContainerBase(ComponentBase):
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
         self.page.handle_transaction()
+
+        return compo_obj
 
     def setup_component_slots(self):
         """ Overwrite me. This method must initialize the slots that this
