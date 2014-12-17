@@ -1,0 +1,17 @@
+{% compodef() %}
+    <div class="progress" epflid="{{self.cid}}">
+        <div class="progress-bar"
+             role="progressbar"
+             aria-valuenow="{{self.value}}"
+             aria-valuemin="{{self.min}}"" aria-valuemax="{{self.max}}"
+             style="width: {{self.value}}%;"></div>
+         {{self.value}}%
+    </div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+    epfl.init_component("{{self.cid}}", "ProgressComponent",{});
+</script>
+{% endcompopart %}
