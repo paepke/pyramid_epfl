@@ -370,7 +370,6 @@ class Page(object):
 
         ajax_queue = self.page_request.get_queue()
         for event in ajax_queue:
-
             event_type = event["t"]
 
             if event_type == "ce": # component-event

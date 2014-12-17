@@ -4,15 +4,17 @@ from solute.epfl.core import epflcomponentbase
 class FormBaseComponent(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form_components/static"
 
+    compo_state = ['name', 'value', 'validation_error']
+
     # An element without a name can not have a value.
     name = None
     value = None
     validation_error = ''
     validation_type = None
+    validation_helper = []
 
     def init_transaction(self):
         super(FormBaseComponent, self).init_transaction()
-
         def get_parent_form(compo):
             if isinstance(compo, Form):
                 return compo
@@ -32,11 +34,23 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
         """
+        self.validation_error = ''
+        result, text = False, ''
         if self.validation_type == 'text':
-            return type(self.converted_value) is str
-        if self.validation_type == 'number':
-            return type(self.converted_value) is int
-        return False
+            result, text = type(self.converted_value) is str, 'Value did not validate as text.'
+        elif self.validation_type == 'number':
+            result, text = type(self.converted_value) is int, 'Value did not validate as number.'
+
+        for helper in self.validation_helper:
+            result, text = helper[0](self), helper[1]
+            if not result:
+                break
+
+        if not result:
+            self.validation_error = text
+            self.redraw()
+
+        return result
 
     @property
     def converted_value(self):
@@ -46,16 +60,21 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
             return int(self.value)
         return self.value
 
+    def handle_change(self, value):
+        self.value = value
+
+
 class Input(FormBaseComponent):
     template_name = "form_components/form.input.html"
+
+    compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
 
     label = None
     name = None
     value = None
-    link = None
     input_type = None
 
-    def __init__(self, input_type=None, label=None, name=None, link=None, value="", validation_type="", **extra_params):
+    def __init__(self, input_type=None, label=None, name=None, value="", validation_type="", **extra_params):
         super(Input, self).__init__()
 
 
@@ -82,18 +101,15 @@ class Form(epflcomponentbase.ComponentTreeBase):
 
     validate_hidden_fields = False
 
-    def __init__(self, fields=None, validate_hidden_fields=False, **extra_params):
+    def __init__(self, node_list=None, validate_hidden_fields=False, **extra_params):
         super(Form, self).__init__()
-
-    def init_tree_struct(self):
-        return self.fields
 
     def register_field(self, field):
         self._registered_fields.append(field.cid)
 
     @property
     def registered_fields(self):
-        return [getattr(self.page, cid) for cid in self._registered_fields]
+        return [self.page.components[cid] for cid in self._registered_fields]
 
     def get_values(self):
         values = []
@@ -105,7 +121,7 @@ class Form(epflcomponentbase.ComponentTreeBase):
 
     def validate(self):
         result = []
-        for field in self.registered_fields:
+        for field in self.registered_fields[:]:
             # Do not validate fields without a name, cause they can not contain a value.
             if field.name is None:
                 continue

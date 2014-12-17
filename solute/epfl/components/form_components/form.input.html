@@ -1,15 +1,19 @@
 {% compodef() %}
-    {% if self.label %}
-        <label for="{{self.cid}}" class="col-sm-2 control-label">{{self.label}}</label>
-    {% endif %}
-    <div class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}">
-        <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+    <div epflid="{{self.cid}}">
+        {% if self.label %}
+            <label for="{{self.cid}}" class="col-sm-2 control-label">{{self.label}}</label>
+        {% endif %}
+        <div class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}">
+            <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+            {% if self.validation_error %}
+                <small class="help-block has-error">{{ self.validation_error }}</small>
+            {% endif %}
+        </div>
     </div>
 {% endcompodef %}
 
 
 {% compopart js () %}
-<script>
-
-</script>
+{% import 'form_components/form.macros.html' as form %}
+{{ form.register_field_js(self.cid) }}
 {% endcompopart %}

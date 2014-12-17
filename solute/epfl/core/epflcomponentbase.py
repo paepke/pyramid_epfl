@@ -99,7 +99,7 @@ class ComponentBase(object):
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
 
-        self = super(ComponentBase, cls).__new__(cls)
+        self = super(ComponentBase, cls).__new__(cls, **config)
 
         self.is_rendered = False # whas this componend rendered (so was the self.render-method called?
         self.redraw_requested = set() # all these parts of the component (or "main") want to be redrawn
@@ -129,7 +129,7 @@ class ComponentBase(object):
 
     def __init__(self, *args, **kwargs):
         """
-        Overwrite-me for autocompletion features on component level.
+        Overwrite-me for auto completion features on component level.
         """
         pass
 
