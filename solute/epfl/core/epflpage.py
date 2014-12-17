@@ -440,7 +440,7 @@ class Page(object):
         self.handle_transaction()
 
         for component_name, component_obj in self.components.items():
-            component_obj.handle_submit(dict(self.page_request.params))
+            component_obj.request_handle_submit(dict(self.page_request.params))
 
         for cid, compo in self.components.items():
             compo.after_event_handling()

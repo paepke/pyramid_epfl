@@ -420,19 +420,14 @@ class ComponentBase(object):
         May be overridden by concrete components.
         """
 
-        event_handler = getattr(self, "event_" + event_name, None)
-        # TODO: This first if is compat code to ease transition into the new epfl way for event handling.
-        if event_handler is None and getattr(self, "handle_" + event_name, None) is not None:
-            raise Exception('Received None as event handler, possible old style handler detected: '
-                            '%r (%r)' % (getattr(self, "handle_" + event_name),
-                                         event_name))
-        elif event_handler is None:
+        event_handler = getattr(self, "handle_" + event_name, None)
+        if event_handler is None:
             raise Exception('Received None as event handler, have you setup an event handler?')
         elif not hasattr(event_handler, '__call__'):
             raise Exception('Received non callable for event handling.')
         event_handler(**event_params)
 
-    def handle_submit(self, params):
+    def request_handle_submit(self, params):
         """
         Called by the system (epflpage.Page.handle_submit_request) with the CGI-params once for
         every non-ajax-request
@@ -776,7 +771,7 @@ class ComponentContainerBase(ComponentBase):
         # TODO: Check auto instantiation possibility here
         # if isinstance(compo_obj, UnboundComponent):
         #     compo_obj = compo_obj(__instantiate__=True)
-        
+
         # we have no nice cid, so use a UUID
         if not cid:
             cid = str(uuid.uuid4())

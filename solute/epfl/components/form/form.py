@@ -288,7 +288,7 @@ class Form(epflcomponentbase.ComponentBase, wtforms.Form):
         return None
 
 
-    def handle_submit(self, params):
+    def request_handle_submit(self, params):
         """
         Called by the system (epflpage.Page.handle_submit_request) with the CGI-params once for every non-ajax-request
         Checks if the submit was from this form and calls the corresponding submit_*-handler.
