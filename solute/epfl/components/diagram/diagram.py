@@ -19,7 +19,7 @@ class Diagram(epflcomponentbase.ComponentBase):
     template_name = "diagram/diagram.html"
     asset_spec = "solute.epfl.components:diagram/static"
 
-    js_name = ["highcharts.js"]
+    js_name = ["highcharts.js", "exporting.js", "export-csv-1.2.1.js"]
 
     
     compo_config = []
