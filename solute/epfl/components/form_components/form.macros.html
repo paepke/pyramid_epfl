@@ -1,0 +1,10 @@
+{% macro register_field_js(cid) %}
+    <script>
+        $("#{{cid}}").change(function() {
+            epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}",
+                                                          'change',
+                                                          {value: $(this).val()}),
+                                "{{ cid }}");
+        });
+    </script>
+{% endmacro %}
