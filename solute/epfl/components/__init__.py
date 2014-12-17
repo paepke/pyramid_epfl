@@ -18,6 +18,7 @@ from dragable.dragable import Dragable
 from form_components.form import Button as cfButton
 from form_components.form import Input as cfInput
 from form_components.form import Form as cfForm
+from form_components.form import Text as cfText
 from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram

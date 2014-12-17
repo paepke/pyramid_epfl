@@ -37,7 +37,6 @@ class UnboundComponent(object):
         With this helper the UnboundComponent can be pseudo instantiated to yield a new UnboundComponent from it's base
         class. Additionally this can be used to generate an instance if one is needed if the __
         """
-
         return self.__unbound_cls__(*args, **kwargs)
 
 
