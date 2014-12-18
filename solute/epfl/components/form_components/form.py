@@ -40,6 +40,8 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
             result, text = type(self.converted_value) is str, 'Value did not validate as text.'
         elif self.validation_type == 'number':
             result, text = type(self.converted_value) is int, 'Value did not validate as number.'
+        elif self.validation_type == 'bool':
+            result, text = type(self.converted_value) is bool, 'Value did not validate as bool.'
 
         for helper in self.validation_helper:
             if not result:
@@ -63,6 +65,8 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
             return str(self.value)
         if self.validation_type == 'number':
             return int(self.value)
+        if self.validation_type == 'bool':
+            return bool(self.value)
         return self.value
 
     def handle_change(self, value):
@@ -92,7 +96,34 @@ def Text(label=None, name=None, default="", **extra_params):
                                                                 name=name,
                                                                 default=default,
                                                                 **extra_params)],
-                                               template='',
+                                               template_name='form_components/form.label.html',
+                                               label=label)
+
+
+def Number(label=None, name=None, default=0, **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='number',
+                                                                validation_type='number',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
+
+
+def Checkbox(label=None, name=None, default=False, mandatory=False, validation_helper=None, **extra_params):
+    if validation_helper is None:
+        validation_helper = []
+    if mandatory:
+        validation_helper.append((lambda x: x.value, 'Mandatory field not checked.'))
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='checkbox',
+                                                                validation_type='bool',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                validation_helper=validation_helper,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
                                                label=label)
 
 

@@ -1,9 +1,16 @@
 {% macro register_field_js(cid) %}
     <script>
+        if ($("#{{cid}}").attr('type') == 'checkbox') {
+            $("#{{cid}}").attr('checked', $("#{{cid}}").val() == 'True');
+        }
         $("#{{cid}}").change(function() {
+            var val = $(this).val();
+            if ($(this).attr('type') == 'checkbox') {
+                val = $(this).is(':checked');
+            }
             epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}",
                                                           'change',
-                                                          {value: $(this).val()}),
+                                                          {value: val}),
                                 "{{ cid }}");
         });
     </script>
