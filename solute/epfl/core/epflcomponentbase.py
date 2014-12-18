@@ -33,7 +33,7 @@ class UnboundComponent(object):
                 if getattr(config[param], '__self__', None) is not None:
                     # Bound objects may contain unwanted references to instances so they should not be part of these
                     # classes since they are pickled and kept alive over all requests of a transaction.
-                    raise Exception('Tried adding a bound object to an unbound class.')
+                    raise Exception('Tried adding a bound method to an unbound class.')
                 setattr(self.__unbound_cls__, param, config[param])
 
     def __call__(self, *args, **kwargs):
