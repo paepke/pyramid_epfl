@@ -48,6 +48,6 @@ def add_routes(config):
     Button.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
-    Iamge.add_pyramid_routes(config)
+    Image.add_pyramid_routes(config)
     
 
