@@ -21,5 +21,12 @@ Documentation:
 Lives at http://pyramid-epfl.readthedocs.org/en/latest/
 
 
+Notice:
+-------
+
+This software contains a Highsoft software product (Highcharts JS) that is not free for commercial use (http://www.highcharts.com/license).
+For more information, visit http://www.highcharts.com/
+  
+
 
 
