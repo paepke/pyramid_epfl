@@ -1,9 +1,20 @@
 {% macro register_field_js(cid) %}
     <script>
-        if ($("#{{cid}}").attr('type') == 'checkbox') {
-            $("#{{cid}}").attr('checked', $("#{{cid}}").val() == 'True');
+
+        var selector = "#{{cid}}";
+
+           if($(selector).attr('type') == 'radiobuttongroup' || $(selector).attr('type') == 'buttonsetgroup'){
+               if($(selector).attr('type') == 'buttonsetgroup'){
+                    $(selector).buttonset();
+               }
+               selector = "input[type=radio][name={{ cid }}]";
+           }
+
+        if ($(selector).attr('type') == 'checkbox') {
+            $(selector).attr('checked', $("#{{cid}}").val() == 'True');
         }
-        $("#{{cid}}").change(function() {
+
+        $(selector).change(function() {
             var val = $(this).val();
             if ($(this).attr('type') == 'checkbox') {
                 val = $(this).is(':checked');

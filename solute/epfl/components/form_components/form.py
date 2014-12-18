@@ -127,6 +127,50 @@ def Checkbox(label=None, name=None, default=False, mandatory=False, validation_h
                                                label=label)
 
 
+def Textarea(label=None, name=None, default="", **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='textarea',
+                                                                validation_type='text',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
+
+def Select(label=None, name=None, default="",options=[], **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='select',
+                                                            validation_type='text',
+                                                            label=label,
+                                                            name=name,
+                                                            default=default,
+                                                            options=options,
+                                                            **extra_params)],
+                                           template_name='form_components/form.label.html',
+                                           label=label)
+
+def Radio(label=None, name=None, default="",options=[], **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='radio',
+                                                            validation_type='text',
+                                                            label=label,
+                                                            name=name,
+                                                            default=default,
+                                                            options=options,
+                                                            **extra_params)],
+                                           template_name='form_components/form.label.html',
+                                           label=label)
+
+def Buttonset(label=None, name=None, default="",options=[], **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='buttonset',
+                                                            validation_type='text',
+                                                            label=label,
+                                                            name=name,
+                                                            default=default,
+                                                            options=options,
+                                                            **extra_params)],
+                                           template_name='form_components/form.label.html',
+                                           label=label)
+
+
 class Button(FormBaseComponent):
     template_name = "form_components/form.button.html"
 

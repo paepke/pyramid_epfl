@@ -21,6 +21,10 @@ from form_components.form import Form as cfForm
 from form_components.form import Text as cfText
 from form_components.form import Number as cfNumber
 from form_components.form import Checkbox as cfCheckbox
+from form_components.form import Textarea as cfTextarea
+from form_components.form import Select as cfSelect
+from form_components.form import Radio as cfRadio
+from form_components.form import Buttonset as cfButtonset
 from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram

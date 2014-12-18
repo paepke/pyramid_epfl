@@ -1,7 +1,35 @@
 {% compodef() %}
     <div epflid="{{self.cid}}"
          class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}{{ ' has-error' if self.validation_error else '' }}">
-        <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+
+        {% if self.input_type == "textarea" %}
+            <textarea class="form-control" id="{{self.cid}}" name="{{self.name}}" >{{self.value}}</textarea>
+
+        {%  elif self.input_type == "select" %}
+            <select class="form-control" id="{{self.cid}}" name="{{self.name}}">
+            {% for option in self.options %}
+                <option value="{{ option }}" {% if self.value == option %} selected="selected" {% endif %} >{{ option }}</option>
+            {% endfor %}
+            </select>
+
+        {%  elif self.input_type == "radio" %}
+            <div class="form-control" id="{{self.cid}}" name="{{self.name}}" type="radiobuttongroup">
+            {% for option in self.options %}
+                <input type="radio" value="{{ option }}" name="{{self.cid}}" {% if self.value == option %} checked="checked" {% endif %} >{{ option }}</input>
+            {% endfor %}
+            </div>
+
+         {%  elif self.input_type == "buttonset" %}
+            <div id="{{self.cid}}" name="{{self.name}}" type="buttonsetgroup">
+            {% for option in self.options %}
+                <label for="{{ self.cid }}_{{ option }}">{{ option }} </label>
+                <input type="radio" id="{{ self.cid }}_{{ option }}" value="{{ option }}" name="{{self.cid}}" {% if self.value == option %} checked="checked" {% endif %} >
+            {% endfor %}
+            </div>
+
+        {% else %}
+            <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+        {% endif %}
         {% if self.validation_error %}
             <small class="help-block has-error">{{ self.validation_error }}</small>
         {% endif %}
