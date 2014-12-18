@@ -1,28 +1,28 @@
 {% macro register_field_js(cid) %}
     <script>
-
         var selector = "#{{cid}}";
 
-           if($(selector).attr('type') == 'radiobuttongroup' || $(selector).attr('type') == 'buttonsetgroup'){
-               if($(selector).attr('type') == 'buttonsetgroup'){
-                    $(selector).buttonset();
-               }
-               selector = "input[type=radio][name={{ cid }}]";
-           }
-
-        if ($(selector).attr('type') == 'checkbox') {
+        if ($(selector).attr('type') == 'radiobuttongroup' || $(selector).attr('type') == 'buttonsetgroup') {
+            selector = "input[type=radio][name={{ cid }}]";
+        }
+        else if ($(selector).attr('type') == 'checkbox') {
             $(selector).attr('checked', $("#{{cid}}").val() == 'True');
         }
 
-        $(selector).change(function() {
+        $(selector).change(function () {
             var val = $(this).val();
             if ($(this).attr('type') == 'checkbox') {
                 val = $(this).is(':checked');
+            } else if ($(this).parent().parent().attr("type") == 'buttonsetgroup') {
+                var parent = $(this).parent().parent();
+                $(parent).find("label").removeClass("active");
+                $(this).parent().addClass("active");
             }
+            
             epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}",
-                                                          'change',
-                                                          {value: val}),
-                                "{{ cid }}");
+                            'change',
+                            {value: val}),
+                    "{{ cid }}");
         });
     </script>
 {% endmacro %}
