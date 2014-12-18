@@ -29,6 +29,7 @@ from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
+from image.image import Image
 
 
 def add_routes(config):
@@ -47,5 +48,6 @@ def add_routes(config):
     Button.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
+    Image.add_pyramid_routes(config)
     
 
