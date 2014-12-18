@@ -30,6 +30,7 @@ from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image
+from toggle.toggle import Toggle as cfToggle
 
 
 def add_routes(config):
