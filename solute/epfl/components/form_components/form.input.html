@@ -20,10 +20,12 @@
             </div>
 
          {%  elif self.input_type == "buttonset" %}
-            <div id="{{self.cid}}" name="{{self.name}}" type="buttonsetgroup">
+            <div id="{{self.cid}}" name="{{self.name}}" type="buttonsetgroup" class="btn-group" data-toggle="buttons">
             {% for option in self.options %}
-                <label for="{{ self.cid }}_{{ option }}">{{ option }} </label>
-                <input type="radio" id="{{ self.cid }}_{{ option }}" value="{{ option }}" name="{{self.cid}}" {% if self.value == option %} checked="checked" {% endif %} >
+                <label for="{{ self.cid }}_{{ option }}" class="btn btn-default blue {{ "active" if self.value == option else "" }}">
+
+                <input type="radio" id="{{ self.cid }}_{{ option }}" value="{{ option }}" name="{{self.cid}}" class="toggle" {% if self.value == option %} checked="checked" {% endif %} >
+                {{ option }} </label>
             {% endfor %}
             </div>
 
