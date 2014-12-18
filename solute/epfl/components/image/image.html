@@ -4,17 +4,17 @@
     <div class="row">
 	    {% if self.show_dominant_color %}
 	    <div style="float:left">Dominante Farbe:<br>
-	    	<div class="epfl-img-component-dominant-color" style="float:left; width:100%; height: 30px;"></div>
+	    	<div class="epfl-img-component-dominant-color epfl-img-component-color" style="float:left; width:100%; height: 30px;"></div>
 	    </div>
 	    {% endif %}
 	    {% if self.show_additional_colors %}
 	    <div style="float:left; margin-left:10px;">Weitere Farben:<br>
-		    <div id="{{self.cid}}_palette1" style="float:left; width:15px; height: 15px;"></div>
-		    <div id="{{self.cid}}_palette2" style="float:left; width:15px; height: 15px;"></div>
-		    <div id="{{self.cid}}_palette3" style="float:left; width:15px; height: 15px;"></div>
-		    <div id="{{self.cid}}_palette4" style="float:left; width:15px; height: 15px;"></div>
-		    <div id="{{self.cid}}_palette5" style="float:left; width:15px; height: 15px;"></div>
-		    <div id="{{self.cid}}_palette6" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette1" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette2" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette3" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette4" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette5" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
+		    <div id="{{self.cid}}_palette6" class="epfl-img-component-color" style="float:left; width:15px; height: 15px;"></div>
 	    </div>
 	    {% endif %}
     </div>

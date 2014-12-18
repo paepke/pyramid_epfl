@@ -5,6 +5,7 @@ from pprint import pprint
 import types, copy, string, inspect, uuid
 
 from pyramid import security
+from pyramid import threadlocal
 
 from solute.epfl.core import epflclient, epflutil, epflexceptions
 from solute.epfl.jinja import jinja_helpers
@@ -17,23 +18,44 @@ from jinja2.exceptions import TemplateNotFound
 
 
 class UnboundComponent(object):
+    """
+    This is one of two main classes used by epfl users. Any ComponentBase derived subclass will yield an
+    UnboundComponent wrapping it, unless specifically instructed to yield a real instance. See ComponentBase.__new__ for
+    further details.
+
+    Instantiation should normally be handled by the epfl core!
+
+    If you encounter an UnboundComponent you are likely trying to access a component in an untimely manner. Assign it a
+    cid and access that component via page.cid after init_transaction() is done by ComponentTreeBase.
+
+    Both ComponentTreeBase and ComponentContainerBase's add_component will return the actually instantiated component if
+    they are called with an UnboundComponent.
+    """
+
+    __valid_subtypes__ = [bool, int, long, float, complex,
+                          str, unicode, bytearray, xrange,
+                          type, types.FunctionType, ]
+    __debugging_on__ = False
+
     def __init__(self, cls, config):
         """
         Unbound components handle:
         1. Dynamic class creation with inheritance from cls and attributes on the new class as defined in config.
         2. Dynamic cid generation for unbound components without a cid entry in config.
+        3. Sanity checks for all attributes if epfl.debug mode is enabled.
         """
         self.__unbound_cls__ = cls
 
+        # Copy config and create a cid if none exists.
         config = config.copy()
         self.position = (config.pop('cid', uuid.uuid4().hex), config.pop('slot', None))
+
+        # If the config contains entries besides cid and slot a dynamic class is generated.
+        # This can theoretically be done at any time just before invoking self.__unbound_cls__ in __call__.
         if len(config) > 0:
             self.__unbound_cls__ = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
             for param in config:
-                if getattr(config[param], '__self__', None) is not None:
-                    # Bound objects may contain unwanted references to instances so they should not be part of these
-                    # classes since they are pickled and kept alive over all requests of a transaction.
-                    raise Exception('Tried adding a bound method to an unbound class.')
+                self.assure_valid_subtype(config[param])
                 setattr(self.__unbound_cls__, param, config[param])
 
     def __call__(self, *args, **kwargs):
@@ -42,6 +64,46 @@ class UnboundComponent(object):
         class. Additionally this can be used to generate an instance if one is needed if the __
         """
         return self.__unbound_cls__(*args, **kwargs)
+
+    @staticmethod
+    def assure_valid_subtype(param):
+        """
+        Raise an exception if param is not among the valid subtypes or contains invalid subtypes.
+        ***epfl.debug***: This test is skipped if epfl.debug is set to False in the config.
+        """
+
+        # Safely read the epfl.debug flag from the settings.
+        registry = threadlocal.get_current_registry()
+        if not registry or not registry.settings or not registry.settings.get('epfl.debug', 'false') == 'true':
+            return
+
+        # There are some basic types that are always accepted.
+        if type(param) in UnboundComponent.__valid_subtypes__:
+            return
+
+        # If param is in the list of iterables all its entries are checked.
+        if type(param) in [list, tuple, set, frozenset]:
+            for item in param.__iter__():
+                UnboundComponent.assure_valid_subtype(item)
+            return
+        # If param is a dict all its entries are checked.
+        if type(param) is dict:
+            for item in param.values():
+                UnboundComponent.assure_valid_subtype(item)
+            return
+
+        # Methods or Functions are fine in general, only if it is a bound method an exception is raised.
+        # The UnboundMethodType is unreliable since it is just a reference to instancemethod.
+        if type(param) in [types.FunctionType, types.UnboundMethodType]:
+            if getattr(param, '__self__', None) is not None:
+                # Bound objects may contain unwanted references to instances so they should not be part of these
+                # classes since they are pickled and kept alive over all requests of a transaction.
+                raise Exception('Tried adding a bound method to an unbound class.')
+            return
+        if type(param) in [UnboundComponent]:
+            return
+        raise Exception('Tried adding unsupported %r to an unbound class.' % param)
+
 
 
 class ComponentBase(object):
@@ -96,8 +158,14 @@ class ComponentBase(object):
 
     def __new__(cls, *args, **config):
         """
-        EPFL wraps component creation at this stage to allow custom __init__ functions without interfering with
+        epfl wraps component creation at this stage to allow custom __init__ functions without interfering with
         component creation by the system.
+
+        Calling a class derived from ComponentBase will normally yield an UnboundComponent unless __instantiate__=True
+        has been passed as a keyword argument.
+
+        Any component developer may thus overwrite the __init__ method without causing any problems in order to expose
+        runtime settable attributes for code completion and documentation purposes.
         """
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
@@ -593,6 +661,12 @@ class ComponentBase(object):
         setattr(self.template.module, "compopart_" + name, part)
 
     def switch_component(self, target, cid, slot=None, position=None):
+        """
+        Switches a component from its current location (whatever component it may reside in at that time) and move it to
+        slot and position in the component determined by the cid in target.
+        After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
+        """
+
         compo = getattr(self.page, cid)
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
@@ -623,6 +697,11 @@ class ComponentBase(object):
         source.redraw()
 
     def assure_hierarchical_order(self):
+        """
+        Recursively applies the correct order on all compo_info dicts in the transaction. This has to be used after
+        changing component order to ensure that all container components are initialized before their respective content
+        components.
+        """
         def order_recursive(input, seen_key=set()):
             if len(input) == 0:
                 return []
@@ -813,8 +892,11 @@ class ComponentContainerBase(ComponentBase):
 
 class ComponentTreeBase(ComponentContainerBase):
     """
-    node_list contains (cls, dict_params) tuples.
-    The TreeComponent will generate temporary classes if necessary and instantiate them in the right positions.
+    This component automatically adds components based on the UnboundComponent objects its node_list contains once per
+    transaction.
+
+    Components inheriting from it can overwrite init_tree_struct in order to dynamically return different lists per
+    transaction instead of one static list for the lifetime of the epfl service.
     """
     template_name = 'tree_base.html'
     node_list = []

@@ -30,3 +30,11 @@ epfl.ImageComponent.prototype.fire_event = function(event_name, params, callback
     var evt = this.make_event(event_name, params);
     epfl.send(evt, callback_fn)
 };
+
+$(".epfl-img-component-color").mouseover(function() {
+	$(this).css({"border-width":"2px", "border-style":"solid"});
+})
+.mouseout(function() {
+	$(this).css({"border-width":"0px", "border-style":"solid"});
+});
+
