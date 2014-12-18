@@ -22,7 +22,12 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
                 return None
             return compo.container_compo
 
-        get_parent_form(self.container_compo).register_field(self)
+        # try to find a parent form and register this component, but fail silently,
+        # since components do not need to be nested inside a form
+        try:
+            get_parent_form(self.container_compo).register_field(self)
+        except AttributeError:
+            pass
 
     def get_value(self):
         """

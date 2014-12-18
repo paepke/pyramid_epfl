@@ -30,6 +30,10 @@ class UnboundComponent(object):
         if len(config) > 0:
             self.__unbound_cls__ = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
             for param in config:
+                if getattr(config[param], '__self__', None) is not None:
+                    # Bound objects may contain unwanted references to instances so they should not be part of these
+                    # classes since they are pickled and kept alive over all requests of a transaction.
+                    raise Exception('Tried adding a bound method to an unbound class.')
                 setattr(self.__unbound_cls__, param, config[param])
 
     def __call__(self, *args, **kwargs):

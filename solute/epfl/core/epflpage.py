@@ -233,8 +233,16 @@ class Page(object):
         else:
             self.__dict__[key] = value # mimic "normal" behaviour
 
-    def add_static_component(self, cid, compo_obj):
-        """ Registeres the component in the page. """
+    def add_static_component(self, cid, compo_obj, overwrite=False):
+        """ Registers the component in the page. """
+        if self.__dict__.has_key(cid) and not overwrite:
+            raise Exception('A component with CID %(cid)s is already present in this page!\n'
+                            'Existing component: %(existing_compo)r\n'
+                            'New component: %(new_compo)r\n'
+                            'Call epfl.page.add_static_component(cid, compo_obj, overwrite=True) instead of page.cid = '
+                            'compo_obj if you really want to do this.' % {'cid': cid,
+                                                                          'existing_compo': self.__dict__[cid],
+                                                                          'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
         self.components[cid] = compo_obj
         compo_obj.set_component_id(cid)
