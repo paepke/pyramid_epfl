@@ -1,0 +1,14 @@
+{% compodef() %}
+    <div epflid="{{self.cid}}" class="">
+        {% if self.label %}
+            <label for="{{self.cid}}" class="col-sm-2 control-label">{{self.label}}</label>
+        {% endif %}
+        {% for compo in self.components %}
+            {{ compo.render() }}
+        {% endfor %}
+    </div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+{% endcompopart %}
