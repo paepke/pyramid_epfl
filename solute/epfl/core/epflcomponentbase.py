@@ -74,7 +74,7 @@ class UnboundComponent(object):
 
         # Safely read the epfl.debug flag from the settings.
         registry = threadlocal.get_current_registry()
-        if not registry or not registry.settings or not registry.settings.get('epfl.debug', False):
+        if not registry or not registry.settings or not registry.settings.get('epfl.debug', 'false') == 'true':
             return
 
         # There are some basic types that are always accepted.
