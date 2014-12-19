@@ -1,34 +1,48 @@
 {% macro register_field_js(cid) %}
     <script>
+
+
         var selector = "#{{cid}}";
+        var type = $(selector).closest("div").attr('epfl-type');
 
-        if ($(selector).attr('type') == 'radiobuttongroup' || $(selector).attr('type') == 'buttonsetgroup') {
-            selector = "input[type=radio][name={{ cid }}]";
-        }
-        else if ($(selector).attr('type') == 'checkbox') {
+        if (type == "defaultinput" || type == "textarea" || type == "select") {
+            $(selector).change(function () {
+                epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: $(this).val()}), "{{ cid }}");
+            });
+
+        } else if (type == "checkbox") {
             $(selector).attr('checked', $("#{{cid}}").val() == 'True');
-            if($(selector).closest("div").attr("type") == "toggle") {
-                $(selector).bootstrapSwitch();n
-            }
-        }
+            $(selector).change(function () {
+                var val = val = $(this).is(':checked');
+                epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: val}), "{{ cid }}");
+            });
 
-        
-        $(selector).change(function () {
-            var val = $(this).val();
-            if ($(this).attr('type') == 'checkbox') {
-                val = $(this).is(':checked');
-            } else if ($(this).parent().parent().attr("type") == 'buttonsetgroup') {
+        } else if (type == "toggle") {
+            $(selector).attr('checked', $("#{{cid}}").val() == 'True');
+            $(selector).bootstrapSwitch('state');
+                $(selector).on('switchChange.bootstrapSwitch', function(event, state) {
+                    var val = $(this).closest("div").parent().hasClass("bootstrap-switch-on");
+                    epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: val}), "{{ cid }}");
+                });
+
+        } else if (type == "radiobuttongroup") {
+            selector = "input[type=radio][name={{ cid }}]";
+            $(selector).change(function () {
+                var val = val = $(this).is(':checked');
+                epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: val}), "{{ cid }}");
+            });
+
+        } else if (type == "buttonsetgroup") {
+            selector = "input[type=radio][name={{ cid }}]";
+            $(selector).change(function () {
+                var val = val = $(this).is(':checked');
                 var parent = $(this).parent().parent();
                 $(parent).find("label").removeClass("active");
                 $(this).parent().addClass("active");
-            }
-            
-            epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}",
-                            'change',
-                            {value: val}),
-                    "{{ cid }}");
+                epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: val}), "{{ cid }}");
+            });
 
+        }
 
-        });
     </script>
 {% endmacro %}
