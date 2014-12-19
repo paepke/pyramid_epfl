@@ -36,6 +36,7 @@ class UnboundComponent(object):
                           str, unicode, bytearray, xrange,
                           type, types.FunctionType, ]
     __debugging_on__ = False
+    __dynamic_class_store__ = None
 
     def __init__(self, cls, config):
         """
@@ -45,25 +46,69 @@ class UnboundComponent(object):
         3. Sanity checks for all attributes if epfl.debug mode is enabled.
         """
         self.__unbound_cls__ = cls
+        self.__unbound_config__ = config.copy()
 
         # Copy config and create a cid if none exists.
-        config = config.copy()
-        self.position = (config.pop('cid', uuid.uuid4().hex), config.pop('slot', None))
-
-        # If the config contains entries besides cid and slot a dynamic class is generated.
-        # This can theoretically be done at any time just before invoking self.__unbound_cls__ in __call__.
-        if len(config) > 0:
-            self.__unbound_cls__ = type(cls.__name__ + '_auto_' + str(uuid.uuid4()), (cls, ), {})
-            for param in config:
-                self.assure_valid_subtype(config[param])
-                setattr(self.__unbound_cls__, param, config[param])
+        self.position = (self.__unbound_config__.get('cid', uuid.uuid4().hex),
+                         self.__unbound_config__.get('slot', None))
 
     def __call__(self, *args, **kwargs):
         """
         With this helper the UnboundComponent can be pseudo instantiated to yield a new UnboundComponent from it's base
-        class. Additionally this can be used to generate an instance if one is needed if the __
+        class. Additionally this can be used to generate an instance if one is needed if the __instantiate__ keyword is
+        set to True.
         """
-        return self.__unbound_cls__(*args, **kwargs)
+        if kwargs.pop('__instantiate__', None) is None:
+            config = self.__unbound_config__.copy()
+            config.update(kwargs)
+            return UnboundComponent(self.__unbound_cls__, config)
+        else:
+            self.__unbound_config__.update(kwargs)
+            self.__dynamic_class_store__ = None
+            kwargs['__instantiate__'] = True
+
+        cls = self.__dynamic_class__
+        return cls(*args, **kwargs)
+
+    @property
+    def __dynamic_class__(self):
+        """
+        If the config contains entries besides cid and slot a dynamic class is generated.
+        This feature offers just in time creation of the actual class object to be used by epfl.
+        """
+        if self.__dynamic_class_store__:
+            return self.__dynamic_class_store__
+
+        stripped_conf = self.__unbound_config__.copy()
+        stripped_conf.pop('cid', None)
+        stripped_conf.pop('slot', None)
+        if len(stripped_conf) > 0:
+            self.__dynamic_class_store__ = type(self.__unbound_cls__.__name__ + '_auto_' + uuid.uuid4().hex,
+                       (self.__unbound_cls__, ),
+                       {})
+            for param in self.__unbound_config__:
+                self.assure_valid_subtype(self.__unbound_config__[param])
+                setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
+            setattr(self.__dynamic_class_store__, '__unbound_component__', self)
+            return self.__dynamic_class_store__
+        else:
+            return self.__unbound_cls__
+
+    def create_by_compo_info(self, *args, **kwargs):
+        """
+        Expose the ComponentBase class method in order to allow storing UnboundComponent instances instead of raw
+        classes. This is required in order to have dynamic classes at all with a pickling session store, since only
+        static classes can be pickled.
+
+        The class needs to be setup with all dynamic attributes
+        """
+        return self.__dynamic_class__.create_by_compo_info(*args, **kwargs)
+
+    def __getstate__(self):
+        return self.__unbound_cls__, self.__unbound_config__, self.position
+
+    def __setstate__(self, state):
+        self.__unbound_cls__, self.__unbound_config__, self.position = state
 
     @staticmethod
     def assure_valid_subtype(param):
@@ -151,6 +196,10 @@ class ComponentBase(object):
 
     visible = True # Is the component visible or not?
 
+    # This should never be None, if it is and something breaks because of it the parameter has not been correctly passed
+    # through the __new__/UnboundComponent pipe.
+    __unbound_component__ = None
+
 
     base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
 
@@ -169,6 +218,9 @@ class ComponentBase(object):
         """
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
+
+        if not hasattr(cls, '__unbound_component__'):
+            setattr(cls, '__unbound_component__', cls())
 
         self = super(ComponentBase, cls).__new__(cls, **config)
 
@@ -221,7 +273,7 @@ class ComponentBase(object):
             container_id = self.container_compo.cid
         else:
             container_id = None
-        return {"class": self.__class__,
+        return {"class": self.__unbound_component__,
                 "config": self.__config,
                 "cid": self.cid,
                 "slot": self.container_slot,
