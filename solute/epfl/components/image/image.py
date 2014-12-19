@@ -4,13 +4,15 @@
 
 """
 
-import types, copy
+import types
+import copy
 
 from pyramid import security
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflutil
 import json
+
 
 class Image(epflcomponentbase.ComponentBase):
 
@@ -21,20 +23,18 @@ class Image(epflcomponentbase.ComponentBase):
 
     js_name = ["color-thief.min.js", "imagesloaded.pkgd.min.js", "image.js"]
 
-    
     compo_config = []
-    compo_state = [ "image_path"]
-    
+    compo_state = ["image_path"]
+
     image_path = ""
-    show_dominant_color=False
-    show_additional_colors=False
-    
+    show_dominant_color = False
+    show_additional_colors = False
+
     def get_image_path(self):
         return self.image_path
+
     def set_image_path(self, path):
         self.image_path = path
-        
-                    
 
     def __init__(self, **extra_params):
         super(Image, self).__init__()
