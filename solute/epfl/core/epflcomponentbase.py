@@ -17,6 +17,25 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
+class CallableWrapper(object):
+    cls, name = None, ''
+    _function = None
+
+    def __init__(self, *args):
+        self.__setstate__(args)
+
+    def __getstate__(self):
+        return self.cls, self.name
+
+    def __setstate__(self, state):
+        self.cls, self.name = state
+
+    def __call__(self, *args, **kwargs):
+        if not self._function:
+            self._function = getattr(self.cls, self.name)
+        return self._function(*args, **kwargs)
+
+
 class UnboundComponent(object):
     """
     This is one of two main classes used by epfl users. Any ComponentBase derived subclass will yield an
@@ -34,7 +53,7 @@ class UnboundComponent(object):
 
     __valid_subtypes__ = [bool, int, long, float, complex,
                           str, unicode, bytearray, xrange,
-                          type, types.FunctionType, ]
+                          type, types.FunctionType, CallableWrapper]
     __debugging_on__ = False
     __dynamic_class_store__ = None
 
@@ -84,8 +103,8 @@ class UnboundComponent(object):
         stripped_conf.pop('slot', None)
         if len(stripped_conf) > 0:
             self.__dynamic_class_store__ = type(self.__unbound_cls__.__name__ + '_auto_' + uuid.uuid4().hex,
-                       (self.__unbound_cls__, ),
-                       {})
+                                                (self.__unbound_cls__, ),
+                                                {})
             for param in self.__unbound_config__:
                 self.assure_valid_subtype(self.__unbound_config__[param])
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
@@ -105,6 +124,8 @@ class UnboundComponent(object):
         return self.__dynamic_class__.create_by_compo_info(*args, **kwargs)
 
     def __getstate__(self):
+        for param in self.__unbound_config__:
+            self.assure_valid_subtype(self.__unbound_config__[param])
         return self.__unbound_cls__, self.__unbound_config__, self.position
 
     def __setstate__(self, state):
@@ -137,14 +158,6 @@ class UnboundComponent(object):
                 UnboundComponent.assure_valid_subtype(item)
             return
 
-        # Methods or Functions are fine in general, only if it is a bound method an exception is raised.
-        # The UnboundMethodType is unreliable since it is just a reference to instancemethod.
-        if type(param) in [types.FunctionType, types.UnboundMethodType]:
-            if getattr(param, '__self__', None) is not None:
-                # Bound objects may contain unwanted references to instances so they should not be part of these
-                # classes since they are pickled and kept alive over all requests of a transaction.
-                raise Exception('Tried adding a bound method to an unbound class.')
-            return
         if type(param) in [UnboundComponent]:
             return
         raise Exception('Tried adding unsupported %r to an unbound class.' % param)
