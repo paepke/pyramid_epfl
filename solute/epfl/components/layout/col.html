@@ -1,0 +1,13 @@
+{% compodef() %}
+<div class="row">
+{% for compo_obj in self.components %}
+	<div class="col-md-{{ compo_obj.cols }}">
+    	{{ compo_obj.render() }}
+    </div>
+{% endfor %}
+</div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+{% endcompopart %}

@@ -25,12 +25,15 @@ from form_components.form import Textarea as cfTextarea
 from form_components.form import Select as cfSelect
 from form_components.form import Radio as cfRadio
 from form_components.form import Buttonset as cfButtonset
+from form_components.form import Toggle as cfToggle
 from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image
 from tab.tab import Tab
+from layout.col import ColLayout
+
 
 def add_routes(config):
     Form.add_pyramid_routes(config)
@@ -50,6 +53,7 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Tab.add_pyramid_routes(config)
+    ColLayout.add_pyramid_routes(config)
     
     
 

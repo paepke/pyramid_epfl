@@ -3,24 +3,28 @@
          class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}{{ ' has-error' if self.validation_error else '' }}">
 
         {% if self.input_type == "textarea" %}
-            <textarea class="form-control" id="{{self.cid}}" name="{{self.name}}" >{{self.value}}</textarea>
-
+            <div epfl-type="textarea">
+                <textarea class="form-control" id="{{self.cid}}" name="{{self.name}}" >{{self.value}}</textarea>
+            </div>
         {%  elif self.input_type == "select" %}
-            <select class="form-control" id="{{self.cid}}" name="{{self.name}}">
-            {% for option in self.options %}
-                <option value="{{ option }}" {% if self.value == option %} selected="selected" {% endif %} >{{ option }}</option>
-            {% endfor %}
-            </select>
+            <div epfl-type="select">
+                <select class="form-control" id="{{self.cid}}" name="{{self.name}}">
+                {% for option in self.options %}
+                    <option value="{{ option }}" {% if self.value == option %} selected="selected" {% endif %} >{{ option }}</option>
+                {% endfor %}
+                </select>
+            </div>
 
         {%  elif self.input_type == "radio" %}
-            <div class="form-control" id="{{self.cid}}" name="{{self.name}}" type="radiobuttongroup">
+
+            <div class="form-control" id="{{self.cid}}" name="{{self.name}}" epfl-type="radiobuttongroup">
             {% for option in self.options %}
                 <input type="radio" value="{{ option }}" name="{{self.cid}}" {% if self.value == option %} checked="checked" {% endif %} >{{ option }}</input>
             {% endfor %}
             </div>
 
-         {%  elif self.input_type == "buttonset" %}
-            <div id="{{self.cid}}" name="{{self.name}}" type="buttonsetgroup" class="btn-group" data-toggle="buttons">
+        {%  elif self.input_type == "buttonset" %}
+            <div id="{{self.cid}}" name="{{self.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
             {% for option in self.options %}
                 <label for="{{ self.cid }}_{{ option }}" class="btn btn-default blue {{ "active" if self.value == option else "" }}">
 
@@ -29,9 +33,22 @@
             {% endfor %}
             </div>
 
+        {%  elif self.input_type == "toggle" %}
+        <div class="toggle" epfl-type="toggle">
+            <input type="checkbox" id="{{self.cid}}" name="{{self.name}}" data-on-text="{{ self.on_text }}" data-off-text="{{ self.off_text }}"  value="{{self.value}}"/>
+        </div>
+
+        {%  elif self.input_type == "checkbox" %}
+            <div epfl-type="checkbox">
+                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+            </div>
+
         {% else %}
-            <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+            <div epfl-type="defaultinput">
+                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+            </div>
         {% endif %}
+
         {% if self.validation_error %}
             <small class="help-block has-error">{{ self.validation_error }}</small>
         {% endif %}
