@@ -32,6 +32,7 @@ from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image
 from tab.tab import Tab
+from layout.col import ColLayout
 
 
 def add_routes(config):
@@ -52,6 +53,7 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Tab.add_pyramid_routes(config)
+    ColLayout.add_pyramid_routes(config)
     
     
 
