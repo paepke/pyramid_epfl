@@ -131,6 +131,20 @@ def Checkbox(label=None, name=None, default=False, mandatory=False, validation_h
                                                template_name='form_components/form.label.html',
                                                label=label)
 
+def Toggle(label=None, name=None, default=False, on_text="an", off_text="aus", validation_helper=None, **extra_params):
+    return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='toggle',
+                                                                validation_type='bool',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                on_text=on_text,
+                                                                off_text=off_text,
+                                                                css_name=["bootstrap-switch.min.css"],
+                                                                js_name=["bootstrap-switch.min.js"],
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
+
 
 def Textarea(label=None, name=None, default="", **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='textarea',

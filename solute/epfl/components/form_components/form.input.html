@@ -19,7 +19,7 @@
             {% endfor %}
             </div>
 
-         {%  elif self.input_type == "buttonset" %}
+        {%  elif self.input_type == "buttonset" %}
             <div id="{{self.cid}}" name="{{self.name}}" type="buttonsetgroup" class="btn-group" data-toggle="buttons">
             {% for option in self.options %}
                 <label for="{{ self.cid }}_{{ option }}" class="btn btn-default blue {{ "active" if self.value == option else "" }}">
@@ -29,9 +29,15 @@
             {% endfor %}
             </div>
 
+        {%  elif self.input_type == "toggle" %}
+        <div class="toggle" type="toggle">
+            <input type="checkbox" id="{{self.cid}}" name="{{self.name}}" data-on-text="{{ self.on_text }}" data-off-text="{{ self.off_text }}"  />
+        </div>
+
         {% else %}
             <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
         {% endif %}
+
         {% if self.validation_error %}
             <small class="help-block has-error">{{ self.validation_error }}</small>
         {% endif %}

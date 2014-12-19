@@ -7,8 +7,12 @@
         }
         else if ($(selector).attr('type') == 'checkbox') {
             $(selector).attr('checked', $("#{{cid}}").val() == 'True');
+            if($(selector).closest("div").attr("type") == "toggle") {
+                $(selector).bootstrapSwitch();n
+            }
         }
 
+        
         $(selector).change(function () {
             var val = $(this).val();
             if ($(this).attr('type') == 'checkbox') {
@@ -23,6 +27,8 @@
                             'change',
                             {value: val}),
                     "{{ cid }}");
+
+
         });
     </script>
 {% endmacro %}
