@@ -11,10 +11,23 @@ class Droppable(epflcomponentbase.ComponentTreeBase):
     js_name = ["droppable.js"]
 
     compo_config = ["valid_types"]
-    compo_state = ["elements"]
+    compo_state = ["elements", "is_collapsed"]
 
     valid_types = [Dragable]
     elements = []
+    collapsable=False
+    is_collapsed=False
+    title=None
+    
+    def __init__(self, title=None, collapsable=False, **extra_params):
+        super(Droppable, self).__init__()
+        
+        
+        
+    def init_transaction(self):
+        super(Droppable, self).init_transaction()
+        if (self.collapsable == True) and (self.title is None):
+            raise RuntimeError("Title must be set for collapsable droppables!")
 
     def add_dragable_element(self, element, position=None):
         if not hasattr(element, 'cid') or not hasattr(self.page, element.cid):
@@ -25,6 +38,9 @@ class Droppable(epflcomponentbase.ComponentTreeBase):
 
     def handle_add_dragable(self, cid, position):
         self.switch_component(self.cid, cid, position=position)
+        
+    def handle_toggle_collapse(self, collapsed):
+        self.is_collapsed = collapsed
 
     def get_valid_types(self, dotted=False):
         if dotted:

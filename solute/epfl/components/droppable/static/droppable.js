@@ -1,5 +1,6 @@
 epfl.DroppableComponent = function (cid, params) {
     var blocked_compos = {};
+    var compo = this;
     this.blocked = 0;
     epfl.ComponentBase.call(this, cid, params);
     $('#' + cid)
@@ -27,6 +28,19 @@ epfl.DroppableComponent = function (cid, params) {
             $(this).removeClass('list-group-active');
             $(this).css('min-height', '');
 //            $(this).css('padding-bottom', '');
+        });
+        // handle collapsable droppables
+        $('[epflid="'+cid+'"]').find('.toggle-list').first().click(function(event) {
+        	$('[epflid="'+cid+'"]').find('.list-contents').first().toggle();
+        	is_collapsed = !($('[epflid="'+cid+'"]').find('.list-contents').first().is(":visible"));
+        	if (is_collapsed) {
+        		$('[epflid="'+cid+'"]').find('.toggle-list i').first().html("&#xf196;");
+        	} else {
+        		$('[epflid="'+cid+'"]').find('.toggle-list i').first().html("&#xf147;");
+        	}
+        	
+  			var ev = compo.make_event("toggle_collapse",{"collapsed":is_collapsed});
+        	epfl.send(ev);
         });
 };
 epfl.DroppableComponent.inherits_from(epfl.ComponentBase);
