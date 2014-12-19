@@ -14,6 +14,7 @@ epfl.DroppableComponent = function (cid, params) {
                 return;
             }
             var parent_epflid = ui.item.parent().attr('epflid');
+            //console.log("Sort new - EPFLID: " + ui.item.attr('epflid') + " | Position: " + ui.item.index());
             var evt = epfl.components[parent_epflid].make_event('add_dragable', {
                 cid: ui.item.attr('epflid'),
                 position: ui.item.index()});
