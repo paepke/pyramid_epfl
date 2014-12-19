@@ -3,12 +3,12 @@
     <div class="epfl_tab" epflid="{{self.cid}}" role="tabpanel">
         <ul id="{{self.cid}}_tabmenu" class="nav nav-tabs" role="tablist">
         	{% for compo_obj in self.components %}
-        	<li role="presentation" {% if (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid) %}class="active"{% endif %}><a href="#{{ compo_obj.cid }}" id="{{ compo_obj.cid }}-tab" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" data-toggle="tab" aria-controls="{{ compo_obj.cid }}" aria-expanded="true">{{ compo_obj.title }}</a></li>
+        	<li role="presentation" {% if (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid) %}class="active"{% endif %}><a href="#{{ compo_obj.cid }}_tab" id="{{ compo_obj.cid }}_tabmenuentry" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" data-toggle="tab" aria-controls="{{ compo_obj.cid }}_tab" aria-expanded="true">{{ compo_obj.title }}</a></li>
         	{% endfor %}
 	    </ul>
 	    <div id="{{self.cid}}_tabcontent" class="tab-content">
 	    	{% for compo_obj in self.components %}
-	    	<div role="tabpanel" class="tab-pane fade in {% if (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid) %}active{% endif %}" id="{{ compo_obj.cid }}" aria-labelledBy="{{ compo_obj.cid }}-tab">
+	    	<div role="tabpanel" class="fade in {% if (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid) %}active{% endif %}" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
 	    	{{ compo_obj.render() }}
 	    	</div>
 	    	{% endfor %}

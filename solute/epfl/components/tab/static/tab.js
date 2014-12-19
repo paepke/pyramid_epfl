@@ -5,8 +5,11 @@ epfl.TabComponent = function(cid, params) {
     	selected_compo_cid = $(this).data('tab-compo-cid');
   		var ev = compo.make_event("toggleTab",{"selected_compo_cid":selected_compo_cid});
         epfl.send(ev); 
-	});    
-
+	});
+	window.setTimeout(function() {
+		$('[epflid="'+cid+'"]').find('[role="tabpanel"]').addClass("tab-pane");
+	},0);
+	
 };
 epfl.TabComponent.inherits_from(epfl.ComponentBase);
 
