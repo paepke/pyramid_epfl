@@ -219,7 +219,7 @@ class ComponentBase(object):
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
 
-        if not hasattr(cls, '__unbound_component__'):
+        if not getattr(cls, '__unbound_component__'):
             setattr(cls, '__unbound_component__', cls())
 
         self = super(ComponentBase, cls).__new__(cls, **config)
