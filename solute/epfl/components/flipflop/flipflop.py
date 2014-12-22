@@ -36,7 +36,6 @@ class FlipFlop(Droppable):
             for compo in self.components:
                 self.components_order.append(compo.get_child_cid())
 
-
     def get_components_order(self):
         return self.components_order
 
@@ -50,17 +49,15 @@ class FlipFlop(Droppable):
         pos = 0
 
         for child_compo_cid in self.components_order:
-
             for compo in self.components:
-
                 if child_compo_cid == compo.components[0].cid:
-                    print compo.get_component_id()
-                    print self.cid
-                    print pos
                     self.switch_component(self.cid,compo.cid,position=pos)
                     break
 
             pos += 1
 
-
-
+    def handle_add_dragable(self, cid, position):
+        super(FlipFlop,self).handle_add_dragable(cid,position)
+        self.components_order = []
+        for compo in self.components:
+            self.components_order.append(compo.components[0].cid)
