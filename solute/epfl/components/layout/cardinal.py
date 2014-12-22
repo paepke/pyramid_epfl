@@ -22,7 +22,8 @@ class CardinalLayout(epflcomponentbase.ComponentTreeBase):
                                          'east': [],
                                          'south': [],
                                          'west': []}
-            [self._cardinal_components[compo.slot].append(compo) for compo in self.components]
+            for compo in self.components:
+                self._cardinal_components[getattr(compo, 'slot', None) or 'center'].append(compo)
 
         return self._cardinal_components[direction]
 

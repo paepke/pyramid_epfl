@@ -1,5 +1,14 @@
 {% compodef() %}
 <div class="container-fluid">
+    {% if self.cardinal_components('north') %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for compo_obj in self.cardinal_components('north') %}
+                {{ compo_obj.render() }}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     <div class="row">
     {% if self.cardinal_components('west') %}
         <div class="col-sm-2">
@@ -21,6 +30,15 @@
         </div>
     {% endif %}
     </div>
+    {% if self.cardinal_components('south') %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for compo_obj in self.cardinal_components('south') %}
+                {{ compo_obj.render() }}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endcompodef %}
 

@@ -7,8 +7,16 @@ from solute import epfl
 
 
 class HomeRoot(epfl.components.CardinalLayout):
-    node_list = []
-
+    node_list = [epfl.components.Box(title='Testbox center',
+                                     slot='center'),
+                 epfl.components.Box(title='Testbox west',
+                                     slot='west'),
+                 epfl.components.Box(title='Testbox east',
+                                     slot='east'),
+                 epfl.components.Box(title='Testbox north',
+                                     slot='north'),
+                 epfl.components.Box(title='Testbox south',
+                                     slot='south')]
 
 @view_config(route_name='home')
 class HomePage(epfl.Page):
