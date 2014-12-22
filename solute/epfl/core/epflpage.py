@@ -42,6 +42,7 @@ class Page(object):
 
     js_name = ["js/jquery-1.8.2.min.js",
                "js/jquery-ui.js",
+               "js/history.js",
                "js/epfl.js",
                "js/epflcomponentbase.js",
                "js/json2-min.js"]
@@ -362,7 +363,9 @@ class Page(object):
         for cid, compo in self.components.items():
             compo.setup_component()
 
-
+    def make_new_tid(self):
+        self.transaction.store_as_new()
+        self.add_js_response('epfl.new_tid("%s")' % self.transaction.tid_new)
 
 
     def handle_ajax_request(self):
@@ -430,6 +433,10 @@ class Page(object):
 
         return True
 
+
+    def handle_redraw_all(self):
+        for compo in self.components.values():
+            compo.redraw()
 
     def handle_submit_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.

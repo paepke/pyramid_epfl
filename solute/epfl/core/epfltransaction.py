@@ -26,6 +26,8 @@ class Transaction(MutableMapping):
     _data = None
     _data_original = None
 
+    tid_new = None
+
     def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
 
@@ -51,18 +53,6 @@ class Transaction(MutableMapping):
     def get_id(self):
         return self.tid
 
-    def __get_child_tids(self):
-
-        child_tids = []
-
-        for key in self.session.keys():
-            if key.startswith("TA_") and type(self.session[key]) is dict and self.session[key].has_key("__is_transaction__"):
-                ptid = self.session[key].get("__pid__")
-                if ptid == self.tid:
-                    child_tids.append(key[3:])
-
-        return child_tids
-
     def get_pid(self):
         return self.get("__pid__", None)
 
@@ -73,12 +63,6 @@ class Transaction(MutableMapping):
         """
         Deletes this transaction and all child-transactions.
         """
-        child_tids = self.__get_child_tids()
-
-        for tid in child_tids:
-            trans = Transaction(self.request, tid)
-            trans.delete()
-
         del self.data
 
     # MutableMapping requirements:
@@ -101,9 +85,23 @@ class Transaction(MutableMapping):
         return self.data.__len__()
 
     # Internal storage handling
-    def store(self):
-        if self.is_clean:
+    def lock_transaction(self):
+        old_transaction = Transaction(self.request, self.tid)
+        old_transaction.store(lock=True)
+
+    def store_as_new(self):
+        self.tid_new = uuid.uuid4().hex
+
+    def store(self, lock=False):
+        if self.is_clean or self.get('locked', None):
             return
+
+        if lock:
+            self['locked'] = lock
+
+        if self.tid_new:
+            self.lock_transaction()
+            self.tid = self.tid_new
 
         store_type = self.request.registry.settings.get('epfl.transaction.store')
         if store_type == 'redis':

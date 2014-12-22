@@ -33,7 +33,7 @@ epfl_module = function() {
 		});
 */
 
-		epfl.tid = opts["tid"];
+		epfl.new_tid(opts["tid"]);
 		epfl.ptid = opts["ptid"];
 		$(document).attr("data:tid", epfl.tid);
 
@@ -375,7 +375,18 @@ epfl_module = function() {
         });
 	};
 
+    epfl.new_tid = function (tid) {
+        epfl.tid = tid;
+        History.pushState({tid: tid}, tid, "?tid=" + tid);
+    };
 
+    History.Adapter.bind(window,'statechange',function(){
+        var state = History.getState();
+        if (epfl.tid == state.tid) {
+            return;
+        }
+        epfl.send(epfl.make_page_event('redraw_all', {tid: state.tid}));
+    });
 
 };
 

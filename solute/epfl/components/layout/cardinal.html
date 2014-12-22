@@ -1,5 +1,5 @@
 {% compodef() %}
-<div class="container{{ '-fluid' if not self.constrained else '' }}">
+<div class="container{{ '-fluid' if not self.constrained else '' }}" epflid="{{ self.cid }}">
     {% if self.cardinal_components('north') %}
     <div class="row">
         <div class="col-sm-12">
