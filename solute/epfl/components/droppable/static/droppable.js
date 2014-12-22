@@ -34,12 +34,41 @@ epfl.DroppableComponent = function (cid, params) {
         // handle collapsable droppables
         $('[epflid="'+cid+'"] > .toggle-list').click(function(event) {
         	event.stopImmediatePropagation();
+        	event.preventDefault();
         	$('#'+cid).toggle().sortable('disable').sortable('enable');
         	$(this).children('i').toggleClass('fa-minus').toggleClass('fa-plus');
         	
   			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
         	epfl.send(ev);
         });
+        $('[epflid="'+cid+'"] > .title-rename.inactive').bind('dblclick keyup', function(event) {
+        	if ((event.type == "keyup") && (event.keyCode != 113)) { // F2
+				return;
+			}
+        	$(this).removeClass("inactive");
+        });
+		$('[epflid="'+cid+'"] > .title-rename').bind('keyup', function(event){
+			if ((event.keyCode != 13) && (event.keyCode != 27)) {
+				return;
+			}
+			if (event.keyCode == 27) { // ESC, undo changes
+				$(this).val($(this).data("oldtitle"));
+			}
+			$(this).blur(); // will trigger focusout event
+		});
+		$('[epflid="'+cid+'"] > .title-rename').bind('focusout', function(event){
+
+			if ($(this).hasClass("inactive")) {
+				return;
+			}
+			
+			$(this).addClass("inactive");
+			if ($(this).data("oldtitle") != $(this).val()) {
+				$(this).data("oldtitle", $(this).val());
+    			var ev = compo.make_event("rename_title",{"title":$(this).val()});
+    			epfl.send(ev);
+    		}
+		});
 };
 epfl.DroppableComponent.inherits_from(epfl.ComponentBase);
 

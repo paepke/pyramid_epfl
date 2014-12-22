@@ -4,7 +4,12 @@
 		{% if self.collapsable %}
 		<a href="#" class="toggle-list"><i class="fa fa-{{ "minus" if not self.is_collapsed else "plus" }}"></i></a>
 		{% endif %}
-		{{ self.title }}
+		{% if self.title_renamable %}
+		<input class="title-rename inactive" value="{{ self.title }}" data-oldtitle="{{ self.title }}" />
+		{% else %}
+		<span class="plain-title">{{ self.title }}</span>
+		{% endif %}
+		
 	{% endif %}
 	<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" style="{{ "display: none;" if self.collapsable and self.is_collapsed else "" }}">
 	    {% for compo in self.components %}
@@ -13,7 +18,6 @@
 	</div>
 </div>
 {% endcompodef %}
-
 
 {% compopart js () %}
 <script>
