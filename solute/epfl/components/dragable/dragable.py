@@ -9,10 +9,12 @@ class Dragable(epflcomponentbase.ComponentTreeBase):
     js_name = ["dragable.js"]
 
     compo_config = []
-    compo_state = ["id", "is_selected"]
+    compo_state = ["id", "title", "is_selected"]
 
     type = "dragable"
     id = None
+    title =None
+    title_renamable = False
     is_selected = False
     selectable=False
     
@@ -24,3 +26,6 @@ class Dragable(epflcomponentbase.ComponentTreeBase):
         result = cls()
         result.id = id
         return result
+    
+    def handle_rename_title(self, title):
+        self.title = title
