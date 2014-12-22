@@ -11,15 +11,16 @@ class Droppable(epflcomponentbase.ComponentTreeBase):
     js_name = ["droppable.js"]
 
     compo_config = ["valid_types"]
-    compo_state = ["elements", "is_collapsed"]
+    compo_state = ["elements", "is_collapsed", "title"]
 
     valid_types = [Dragable]
     elements = []
     collapsable=False
+    title_renamable = False
     is_collapsed=False
     title=None
     
-    def __init__(self, title=None, collapsable=False, **extra_params):
+    def __init__(self, title=None, collapsable=False, title_renamable=False, **extra_params):
         super(Droppable, self).__init__()
         
         
@@ -41,6 +42,9 @@ class Droppable(epflcomponentbase.ComponentTreeBase):
         
     def handle_toggle_collapse(self, collapsed):
         self.is_collapsed = collapsed
+        
+    def handle_rename_title(self, title):
+        self.title = title
 
     def get_valid_types(self, dotted=False):
         if dotted:
