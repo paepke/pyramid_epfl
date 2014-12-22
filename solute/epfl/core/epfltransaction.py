@@ -149,7 +149,7 @@ class Transaction(MutableMapping):
             self.redis.setex('TA_%s' % self.tid, 1800, pickle.dumps(value))
             return
         elif store_type == 'memory':
-            self.memory['TA_%s' % self.tid] = pickle.dumps(value)
+            self.memory['TA_%s' % self.tid] = value
             return
 
         raise Exception('No valid transaction store found!')
