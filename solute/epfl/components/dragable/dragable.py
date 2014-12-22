@@ -9,10 +9,15 @@ class Dragable(epflcomponentbase.ComponentTreeBase):
     js_name = ["dragable.js"]
 
     compo_config = []
-    compo_state = ["id"]
+    compo_state = ["id", "is_selected"]
 
     type = "dragable"
     id = None
+    is_selected = False
+    selectable=False
+    
+    def __init__(self, **extra_params):
+        super(Dragable, self).__init__()
 
     @classmethod
     def generate_from_id(cls, id):

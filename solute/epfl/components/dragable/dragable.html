@@ -1,5 +1,5 @@
 {% compodef() %}
-<div class="list-group-item"
+<div class="list-group-item{{ " selectable" if self.selectable else "" }}{{ " selected" if self.is_selected else "" }}"
      id="{{self.cid}}"
      epflid="{{self.cid}}">
     {% if not self.components %}

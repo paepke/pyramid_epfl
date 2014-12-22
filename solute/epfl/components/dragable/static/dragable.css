@@ -3,3 +3,7 @@ td.dragHandle{
     background: url("/epfl/components/flipflop/updown.gif") no-repeat center center;
     width:16px;
 }
+
+.selected {
+	background-color: #ccc;
+}
