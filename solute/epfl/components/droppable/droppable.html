@@ -1,16 +1,18 @@
 {% compodef() %}
-<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" epflid="{{self.cid}}">
+<div epflid="{{self.cid}}">
 	{% if self.title %}
 		{% if self.collapsable %}
-		<a href="#" class="toggle-list">{% if self.is_collapsed %}<i class="fa fa-fw"></i>{% else %}<i class="fa fa-fw"></i>{% endif %}</a>
+		<a href="#" class="toggle-list"><i class="fa fa-{{ "minus" if not self.is_collapsed else "plus" }}"></i></a>
 		{% endif %}
 		{{ self.title }}
 	{% endif %}
-	<div class="list-contents" {% if self.collapsable and self.is_collapsed %}style="display: none;"{% endif %}>
-    {% for compo in self.components %}
-        {{ compo() }}
-    {% endfor %}
-    </div>
+	<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" style="{{ "display: none;" if self.collapsable and self.is_collapsed else "" }}">
+		<div class="list-contents">
+	    {% for compo in self.components %}
+	        {{ compo() }}
+	    {% endfor %}
+	    </div>
+	</div>
 </div>
 {% endcompodef %}
 

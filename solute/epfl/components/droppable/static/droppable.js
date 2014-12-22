@@ -8,12 +8,13 @@ epfl.DroppableComponent = function (cid, params) {
             connectWith: params.type,
             placeholder: "ui-state-highlight",
             forcePlaceholderSize: true
+            
         })
         .on('sortstop', function (event, ui) {
-            if (epfl.components[$(this).attr('epflid')].block_cid(ui.item.attr('epflid'))) {
+            if (epfl.components[$(this).attr('id')].block_cid(ui.item.attr('epflid'))) {
                 return;
             }
-            var parent_epflid = ui.item.parent().attr('epflid');
+            var parent_epflid = ui.item.parent().attr('id');
             //console.log("Sort new - EPFLID: " + ui.item.attr('epflid') + " | Position: " + ui.item.index());
             var evt = epfl.components[parent_epflid].make_event('add_dragable', {
                 cid: ui.item.attr('epflid'),
@@ -31,16 +32,12 @@ epfl.DroppableComponent = function (cid, params) {
 //            $(this).css('padding-bottom', '');
         });
         // handle collapsable droppables
-        $('[epflid="'+cid+'"]').find('.toggle-list').first().click(function(event) {
-        	$('[epflid="'+cid+'"]').find('.list-contents').first().toggle();
-        	is_collapsed = !($('[epflid="'+cid+'"]').find('.list-contents').first().is(":visible"));
-        	if (is_collapsed) {
-        		$('[epflid="'+cid+'"]').find('.toggle-list i').first().html("&#xf196;");
-        	} else {
-        		$('[epflid="'+cid+'"]').find('.toggle-list i').first().html("&#xf147;");
-        	}
+        $('[epflid="'+cid+'"] > .toggle-list').click(function(event) {
+        	event.stopImmediatePropagation();
+        	$('#'+cid).toggle().sortable('disable').sortable('enable');
+        	$(this).children('i').toggleClass('fa-minus').toggleClass('fa-plus');
         	
-  			var ev = compo.make_event("toggle_collapse",{"collapsed":is_collapsed});
+  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
         	epfl.send(ev);
         });
 };
