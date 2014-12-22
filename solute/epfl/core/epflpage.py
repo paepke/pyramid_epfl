@@ -196,7 +196,6 @@ class Page(object):
         return parent_page_obj
 
 
-
     def done_request(self):
         """ [request-processing-flow]
         The main request teardown.
@@ -210,6 +209,8 @@ class Page(object):
             page_obj.done_request()
 
         epfltransaction.kill_deleted_transactions(self.request)
+
+        self.transaction.store()
 
 
     @classmethod
