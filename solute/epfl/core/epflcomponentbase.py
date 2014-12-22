@@ -162,6 +162,14 @@ class UnboundComponent(object):
             return
         raise Exception('Tried adding unsupported %r to an unbound class.' % param)
 
+    def __eq__(self, other):
+        if type(other) is not UnboundComponent\
+                or other.__unbound_cls__ != self.__unbound_cls__\
+                or other.__unbound_config__ != self.__unbound_config__:
+            return False
+
+        return True
+
 
 class ComponentBase(object):
 

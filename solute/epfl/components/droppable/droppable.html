@@ -7,11 +7,9 @@
 		{{ self.title }}
 	{% endif %}
 	<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" style="{{ "display: none;" if self.collapsable and self.is_collapsed else "" }}">
-		<div class="list-contents">
 	    {% for compo in self.components %}
 	        {{ compo() }}
 	    {% endfor %}
-	    </div>
 	</div>
 </div>
 {% endcompodef %}
