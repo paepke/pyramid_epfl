@@ -87,14 +87,19 @@ class Transaction(MutableMapping):
     # Internal storage handling
     def lock_transaction(self):
         old_transaction = Transaction(self.request, self.tid)
+        old_transaction.tid_new = None
+        old_transaction.pop('locked', None)
         old_transaction.store(lock=True)
 
     def store_as_new(self):
         self.tid_new = uuid.uuid4().hex
 
     def store(self, lock=False):
-        if self.is_clean or self.get('locked', None):
+        if self.is_clean and not lock:
             return
+
+        if self.pop('locked', False):
+            self.store_as_new()
 
         if lock:
             self['locked'] = lock
@@ -172,12 +177,4 @@ class Transaction(MutableMapping):
     @property
     def is_clean(self):
         return self._data == self._data_original
-
-
-def kill_deleted_transactions(request):
-
-    tids = request.get_epfl_request_aux("deleted_tas", default = [])
-
-    for tid in tids:
-        del request.session["TA_" + tid]
 
