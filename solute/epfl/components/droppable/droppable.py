@@ -7,7 +7,7 @@ class Droppable(epflcomponentbase.ComponentTreeBase):
     template_name = "droppable/droppable.html"
     asset_spec = "solute.epfl.components:droppable/static"
 
-    css_name = ["droppable.css", "bootstrap.min.css"]
+    css_name = ["droppable.css", "bootstrap.min.css", "css/font-awesome/css/font-awesome.min.css"]
     js_name = ["droppable.js"]
 
     compo_config = ["valid_types"]
