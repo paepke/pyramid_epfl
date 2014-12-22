@@ -1,38 +1,63 @@
-# coding: utf-8
-
-
-"""
-
-"""
-
-import types, copy
-
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.core import epflutil
+from solute.epfl.components.droppable.droppable import Droppable
+from solute.epfl.components.dragable.dragable import Dragable
+
+class FlipFlopDragable(Dragable):
+    type = "flipflopdragable"
+
+    def get_child_cid(self):
+        self.components[0].get_component_id()
 
 
-class FlipFlop(epflcomponentbase.ComponentBase):
+class FlipFlop(Droppable):
 
-    template_name = "flipflop/flipflop.html"
-
-    asset_spec = "solute.epfl.components:flipflop/static"
-    js_name = ["jquery.tablednd.js", "flipflop.js"]
-
-    css_name = ["flipflop.css", "bootstrap.min.css"]
-
-    compo_state = ["components"]
+    compo_state = ["components_order"]
 
     compo_config = []
     
-    components = []
-    
-    def handle_onClickChildren(self,compo_id):
-        new_compo = []
+    components_order = []
+
+    valid_types = [FlipFlopDragable]
+
+    def init_tree_struct(self):
+        node_list = []
+
+        for compo in self.node_list:
+            new_container = FlipFlopDragable(node_list=[compo])
+            node_list.append(new_container)
+
+        return node_list
+
+    def init_transaction(self):
+        super(FlipFlop, self).init_transaction()
+        if self.components_order:
+            self.order_components()
+        else:
+            for compo in self.components:
+                self.components_order.append(compo.get_child_cid())
+
+    def get_components_order(self):
+        return self.components_order
+
+    def set_component_order(self,order):
+        self.components_order = order
+
+    def order_components(self,new_order=None):
+        if(new_order):
+            self.set_component_order(new_order)
+
+        pos = 0
+
+        for child_compo_cid in self.components_order:
+            for compo in self.components:
+                if child_compo_cid == compo.components[0].cid:
+                    self.switch_component(self.cid,compo.cid,position=pos)
+                    break
+
+            pos += 1
+
+    def handle_add_dragable(self, cid, position):
+        super(FlipFlop,self).handle_add_dragable(cid,position)
+        self.components_order = []
         for compo in self.components:
-            if compo["id"] != compo_id :
-                new_compo.append(compo)
-        self.components = new_compo
-        
-        print compo_id
-        js = "epfl.components[\"" + self.cid + "\"].remove_row('"+compo_id+"');"
-        self.add_ajax_response(js) 
+            self.components_order.append(compo.components[0].cid)
