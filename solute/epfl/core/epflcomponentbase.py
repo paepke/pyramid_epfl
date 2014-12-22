@@ -163,7 +163,6 @@ class UnboundComponent(object):
         raise Exception('Tried adding unsupported %r to an unbound class.' % param)
 
 
-
 class ComponentBase(object):
 
     """ The base of all epfl-components

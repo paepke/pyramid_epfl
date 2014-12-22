@@ -1,0 +1,29 @@
+{% compodef() %}
+<div class="container-fluid">
+    <div class="row">
+    {% if self.cardinal_components('west') %}
+        <div class="col-sm-2">
+            {% for compo_obj in self.cardinal_components('west') %}
+                {{ compo_obj.render() }}
+            {% endfor %}
+        </div>
+    {% endif %}
+        <div class="col-sm-{{ 12 - 2 * self.has_cardinal('east') - 2 * self.has_cardinal('west') }}">
+            {% for compo_obj in self.cardinal_components() %}
+                {{ compo_obj.render() }}
+            {% endfor %}
+        </div>
+    {% if self.cardinal_components('east') %}
+        <div class="col-sm-2">
+            {% for compo_obj in self.cardinal_components('east') %}
+                {{ compo_obj.render() }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    </div>
+</div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+{% endcompopart %}

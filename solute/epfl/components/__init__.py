@@ -33,6 +33,7 @@ from progress.progress import Progress
 from image.image import Image
 from tab.tab import Tab
 from layout.col import ColLayout
+from layout.cardinal import CardinalLayout
 
 
 def add_routes(config):
