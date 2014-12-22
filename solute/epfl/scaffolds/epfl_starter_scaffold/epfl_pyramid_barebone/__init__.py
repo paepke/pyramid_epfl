@@ -16,8 +16,9 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include("solute.epfl")
 
-    config.add_route('home', '/')    
-    config.add_route('publikationen', '/publikationen')    
+    config.add_route('home', '/')
+    config.add_route('foo', '/foo')
+    config.add_route('publikationen', '/publikationen')
     config.add_route('publikationen_formular', '/neue_publikation')    
     
     session_factory = session_factory_from_settings(settings)    
