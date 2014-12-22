@@ -1,0 +1,20 @@
+{% compodef () %}
+    <div class="epfl_evotable" epflid="{{self.cid}}" role="evotable">
+    <hr>
+    {{ self.rows }}
+    <hr>
+    <table border="1">
+        {% for row in self.rows %}
+        <tr>
+        {% for cell in row.cells %}
+        <td>{{ cell.value }}</td>
+        {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+{% endcompodef %}
+
+{% compopart js () %}
+{% endcompopart %}
+

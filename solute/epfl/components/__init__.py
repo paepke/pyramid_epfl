@@ -36,6 +36,7 @@ from layout.col import ColLayout
 from layout.cardinal import CardinalLayout
 from layout.list import ListLayout
 from layout.nav import NavLayout
+from evotable.evotable import EvoTable
 
 
 def add_routes(config):
@@ -57,6 +58,7 @@ def add_routes(config):
     Image.add_pyramid_routes(config)
     Tab.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
-    
+    EvoTable.add_pyramid_routes(config)
+
     
 
