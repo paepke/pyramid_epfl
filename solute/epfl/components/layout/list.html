@@ -1,0 +1,16 @@
+{% compodef() %}
+<div class="list-group">
+    {% for compo_obj in self.components %}
+    <div class="list-group-item">
+        {{ compo_obj.render() }}
+    </div>
+    {% endfor %}
+    {% for name, href in self.links %}
+    <a class="list-group-item" href="{{ href }}">{{ name }}</a>
+    {% endfor %}
+</div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+{% endcompopart %}

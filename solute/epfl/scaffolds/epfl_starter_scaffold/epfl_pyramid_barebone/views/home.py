@@ -12,6 +12,8 @@ Nav = epfl.components.NavLayout
 
 
 class HomeRoot(epfl.components.CardinalLayout):
+    constrained = True
+
     node_list = [Tab(slot='center',
                      node_list=[Box(title='Test 1'),
                                 Box(title='Test 2'),

@@ -15,6 +15,10 @@ class CardinalLayout(epflcomponentbase.ComponentTreeBase):
 
     css_name = ["bootstrap.min.css"]
 
+    compo_state = ['constrained']
+
+    constrained = False
+
     def cardinal_components(self, direction='center'):
         if self._cardinal_components is None:
             self._cardinal_components = {'center': [],
