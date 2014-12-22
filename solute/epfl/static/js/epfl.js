@@ -382,10 +382,11 @@ epfl_module = function() {
 
     History.Adapter.bind(window,'statechange',function(){
         var state = History.getState();
-        if (epfl.tid == state.tid) {
+        if (epfl.tid == state.data.tid) {
             return;
         }
-        epfl.send(epfl.make_page_event('redraw_all', {tid: state.tid}));
+        epfl.tid = state.data.tid;
+        epfl.send(epfl.make_page_event('redraw_all'));
     });
 
 };
