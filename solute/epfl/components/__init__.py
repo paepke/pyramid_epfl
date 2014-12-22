@@ -34,6 +34,8 @@ from image.image import Image
 from tab.tab import Tab
 from layout.col import ColLayout
 from layout.cardinal import CardinalLayout
+from layout.list import ListLayout
+from layout.nav import NavLayout
 
 
 def add_routes(config):

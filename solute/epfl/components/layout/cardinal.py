@@ -23,9 +23,9 @@ class CardinalLayout(epflcomponentbase.ComponentTreeBase):
                                          'south': [],
                                          'west': []}
             for compo in self.components:
-                self._cardinal_components[getattr(compo, 'slot', None) or 'center'].append(compo)
+                self._cardinal_components.setdefault(getattr(compo, 'slot', None) or 'center', []).append(compo)
 
-        return self._cardinal_components[direction]
+        return self._cardinal_components.get(direction, [])
 
     def has_cardinal(self, direction):
         return len(self.cardinal_components(direction)) > 0
