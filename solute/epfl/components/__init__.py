@@ -26,6 +26,7 @@ from form_components.form import Select as cfSelect
 from form_components.form import Radio as cfRadio
 from form_components.form import Buttonset as cfButtonset
 from form_components.form import Toggle as cfToggle
+from form_components.form import MultiSelect as cfMultiSelect
 from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram

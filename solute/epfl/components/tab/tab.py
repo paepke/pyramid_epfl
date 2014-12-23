@@ -15,7 +15,4 @@ class Tab(epflcomponentbase.ComponentTreeBase):
     active_tab_cid = ""
 
     def handle_toggleTab(self, selected_compo_cid):
-        # self.page.components[self.active_tab_cid].set_hidden()
-        # self.page.components[self.active_tab_cid].redraw()
-        # self.page.components[selected_compo_cid].redraw()
         self.active_tab_cid = selected_compo_cid
