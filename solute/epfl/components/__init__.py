@@ -31,7 +31,7 @@ from badge.badge import Badge
 from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
-from image.image import Image
+from image.image import Image, ImageList
 from tab.tab import Tab
 from layout.col import ColLayout
 from layout.cardinal import CardinalLayout
