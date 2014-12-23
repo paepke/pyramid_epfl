@@ -953,7 +953,7 @@ class ComponentContainerBase(ComponentBase):
         """ This method must fill the correct slot with the component """
         self.components.append(compo_obj)
 
-    def del_component(self, compo_obj, slot):
+    def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
         self.components.remove(compo_obj)
 

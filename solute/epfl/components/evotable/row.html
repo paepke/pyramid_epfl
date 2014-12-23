@@ -1,13 +1,13 @@
 {% compodef () %}
-    <div class="epfl_evotable" epflid="{{ self.cid }}" role="evotable">
-    <table class="table table-bordered">
+    <tr>
+    <div class="epfl_evorow" epflid="{{ self.cid }}" role="evorow">
+
         {% for compo in self.components %}
             {{ compo() }}
         {% endfor %}
-    </table>
     </div>
+    </tr>
 {% endcompodef %}
 
 {% compopart js () %}
 {% endcompopart %}
-

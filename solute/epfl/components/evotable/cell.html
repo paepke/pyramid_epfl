@@ -1,0 +1,12 @@
+{% compodef () %}
+    <td>
+    <div class="epfl_evocell" epflid="{{ self.cid }}" role="evocell">
+         {% for compo in self.components %}
+            {{ compo() }}
+        {% endfor %}
+    </div>
+    </td>
+{% endcompodef %}
+
+{% compopart js () %}
+{% endcompopart %}
