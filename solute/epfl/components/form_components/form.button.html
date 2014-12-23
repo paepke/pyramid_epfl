@@ -1,4 +1,5 @@
 {% compodef() %}
+<div epflid="{{ self.cid }}">
     {% if self.label %}
         <label for="{{self.cid}}" class="col-sm-2 control-label">{{self.label}}</label>
     {% endif %}
@@ -7,6 +8,7 @@
             {{self.value}}
         </button>
     </div>
+ </div>
 {% endcompodef %}
 
 

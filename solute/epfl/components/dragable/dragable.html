@@ -1,9 +1,13 @@
 {% compodef() %}
-<div class="list-group-item"
+<div class="list-group-item{{ " selectable" if self.selectable else "" }}{{ " selected" if self.is_selected else "" }}{{ " rename-inactive" if self.title_renamable else "" }}"
      id="{{self.cid}}"
      epflid="{{self.cid}}">
     {% if not self.components %}
-        {{ self.id }}
+    	{% if self.title_renamable %}
+			<input class="title-rename inactive" value="{{ self.title }}" data-oldtitle="{{ self.title }}" />
+		{% else %}
+			<span class="plain-title">{{ self.title if self.title != None else self.id }}</span>
+		{% endif %}
     {% endif %}
     {% for compo_obj in self.components %}
         {{ compo_obj.render() }}

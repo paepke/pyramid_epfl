@@ -1,5 +1,5 @@
 {% compodef() %}
-<div class="row">
+<div class="row" epflid="{{ self.cid }}">
 {% for compo_obj in self.components %}
 	<div class="col-md-{{ compo_obj.cols }}">
     	{{ compo_obj.render() }}

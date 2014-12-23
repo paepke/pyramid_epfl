@@ -26,6 +26,8 @@ class Transaction(MutableMapping):
     _data = None
     _data_original = None
 
+    tid_new = None
+
     def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
 
@@ -37,11 +39,6 @@ class Transaction(MutableMapping):
         if not self.tid:
             self.tid = uuid.uuid4().hex
             self.created = True
-            self["overlays"] = []
-            self["__is_transaction__"] = True
-            self["__ct__"] = time.time()
-
-        self.pid = self.data.get("__pid__")
 
     def set_page_obj(self, page_obj):
         self["__page__"] = page_obj.get_name()
@@ -56,43 +53,17 @@ class Transaction(MutableMapping):
     def get_id(self):
         return self.tid
 
-    def __get_child_tids(self):
-
-        child_tids = []
-
-        for key in self.session.keys():
-            if key.startswith("TA_") and type(self.session[key]) is dict and self.session[key].has_key("__is_transaction__"):
-                ptid = self.session[key].get("__pid__")
-                if ptid == self.tid:
-                    child_tids.append(key[3:])
-
-        return child_tids
-
     def get_pid(self):
-        return self.pid
+        return self.get("__pid__", None)
 
     def set_pid(self, pid):
-        self.pid = pid
         self["__pid__"] = pid
 
     def delete(self):
         """
-        Marks this transaction for deletion and all child-transactions.
+        Deletes this transaction and all child-transactions.
         """
-
-        tids = self.request.get_epfl_request_aux("deleted_tas", default = [])
-        if self.tid not in tids:
-            tids.append(self.tid)
-        self.request.set_epfl_request_aux("deleted_tas", tids)
-
-        child_tids = self.__get_child_tids()
-
-        for tid in child_tids:
-            trans = Transaction(self.request, tid)
-            trans.delete()
-
-    def store(self):
-        self.data = self.data
+        del self.data
 
     # MutableMapping requirements:
     def __getitem__(self, key):
@@ -114,6 +85,37 @@ class Transaction(MutableMapping):
         return self.data.__len__()
 
     # Internal storage handling
+    def lock_transaction(self):
+        old_transaction = Transaction(self.request, self.tid)
+        old_transaction.tid_new = None
+        old_transaction.pop('locked', None)
+        old_transaction.store(lock=True)
+
+    def store_as_new(self):
+        self.tid_new = uuid.uuid4().hex
+
+    def store(self, lock=False):
+        if self.is_clean and not lock:
+            return
+
+        if self.pop('locked', False):
+            self.store_as_new()
+
+        if lock:
+            self['locked'] = lock
+
+        if self.tid_new:
+            self.lock_transaction()
+            self.tid = self.tid_new
+
+        store_type = self.request.registry.settings.get('epfl.transaction.store')
+        if store_type == 'redis':
+            self.redis.setex('TA_%s' % self.tid, 1800, pickle.dumps(self._data))
+        elif store_type == 'memory':
+            self.memory['TA_%s' % self.tid] = self._data
+        else:
+            raise Exception('No valid transaction store found!')
+
     @property
     def data(self):
         if self._data:
@@ -122,37 +124,40 @@ class Transaction(MutableMapping):
         if not self.tid:
             raise Exception('Transaction store was accessed before transaction id was set.')
 
+        default_data = {"overlays": []}
+
         store_type = self.request.registry.settings.get('epfl.transaction.store')
         if store_type == 'redis':
             data = self.redis.get('TA_%s' % self.tid)
             if data:
                 self._data = pickle.loads(data)
             else:
-                self._data = {}
+                self._data = default_data
+            self._data_original = deepcopy(self._data)
+            if not self.is_clean:
+                raise Exception("what the fuck? ")
+            return self._data
+        elif store_type == 'memory':
+            self._data = deepcopy(self.memory.setdefault('TA_%s' % self.tid, default_data))
+            if self._data == default_data:
+                self.created = True
             self._data_original = deepcopy(self._data)
             return self._data
-        if store_type == 'memory':
-            self._data = deepcopy(self.memory.setdefault('TA_%s' % self.tid, {}))
-            self._data_original = deepcopy(self._data)
-            return self._data
+        else:
+            raise Exception('No valid transaction store found!')
 
-        raise Exception('No valid transaction store found!')
-
-    @data.setter
-    def data(self, value):
-        self._data = value
-        if self.is_dirty:
-            return
+    @data.deleter
+    def data(self):
+        del self._data
+        del self._data_original
 
         store_type = self.request.registry.settings.get('epfl.transaction.store')
         if store_type == 'redis':
-            self.redis.setex('TA_%s' % self.tid, 1800, pickle.dumps(value))
-            return
+            self.redis.delete('TA_%s' % self.tid)
         elif store_type == 'memory':
-            self.memory['TA_%s' % self.tid] = value
-            return
-
-        raise Exception('No valid transaction store found!')
+            del self.memory['TA_%s' % self.tid]
+        else:
+            raise Exception('No valid transaction store found!')
 
     @property
     def redis(self):
@@ -170,14 +175,6 @@ class Transaction(MutableMapping):
         return self.request.registry.transaction_memory
 
     @property
-    def is_dirty(self):
+    def is_clean(self):
         return self._data == self._data_original
-
-
-def kill_deleted_transactions(request):
-
-    tids = request.get_epfl_request_aux("deleted_tas", default = [])
-
-    for tid in tids:
-        del request.session["TA_" + tid]
 

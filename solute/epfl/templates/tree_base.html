@@ -1,7 +1,9 @@
 {% compodef() %}
+<div epflid="{{ self.cid }}">
     {% for compo_obj in self.components %}
         {{ compo_obj.render() }}
     {% endfor %}
+</div>
 {% endcompodef %}
 
 {% compopart js() %}

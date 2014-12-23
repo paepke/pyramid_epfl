@@ -42,6 +42,7 @@ class Page(object):
 
     js_name = ["js/jquery-1.8.2.min.js",
                "js/jquery-ui.js",
+               "js/history.js",
                "js/epfl.js",
                "js/epflcomponentbase.js",
                "js/json2-min.js"]
@@ -125,14 +126,19 @@ class Page(object):
         self.create_components()
 
         try:
+            check_tid = False
             if self.handle_ajax_request():
                 out = self.response.render_ajax_response()
                 extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
-                extra_content = [s for s in extra_content if s not in self.transaction['rendered_extra_content']]
+                extra_content = [s for s in extra_content
+                                 if s not in self.transaction.setdefault('rendered_extra_content', set())]
                 out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
                 self.transaction['rendered_extra_content'].update(extra_content)
+
+                check_tid = True
             else:
                 self.handle_submit_request()
+
                 out = self.render()
                 extra_content = set([s.render() for s in self.response.extra_content if s.enable_dynamic_rendering])
                 self.transaction['rendered_extra_content'] = self.transaction.get('rendered_extra_content', set())
@@ -140,6 +146,10 @@ class Page(object):
 
         finally:
             self.done_request()
+            self.transaction.store()
+            if check_tid:
+                if self.transaction.tid_new:
+                    out += 'epfl.new_tid("%s");' % self.transaction.tid_new
 
             self.request.session.save() # performance issue! should only be called, when session is modified!
             self.request.session.persist() # performance issue! should only be called, when session is modified!
@@ -207,10 +217,6 @@ class Page(object):
         other_pages = self.page_request.get_handeled_pages()
         for page_obj in other_pages:
             page_obj.done_request()
-
-        epfltransaction.kill_deleted_transactions(self.request)
-
-        self.transaction.store()
 
 
     @classmethod
@@ -362,7 +368,8 @@ class Page(object):
         for cid, compo in self.components.items():
             compo.setup_component()
 
-
+    def make_new_tid(self):
+        self.transaction.store_as_new()
 
 
     def handle_ajax_request(self):
@@ -427,9 +434,12 @@ class Page(object):
             else:
                 page_obj.add_js_response("epfl.hide_component('{cid}')".format(cid = cid))
 
-
         return True
 
+
+    def handle_redraw_all(self):
+        for compo in self.components.values():
+            compo.redraw()
 
     def handle_submit_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.

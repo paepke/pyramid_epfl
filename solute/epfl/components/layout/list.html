@@ -1,5 +1,5 @@
 {% compodef() %}
-<div class="list-group">
+<div class="list-group" epflid="{{ self.cid }}">
     {% for compo_obj in self.components %}
     <div class="list-group-item">
         {{ compo_obj.render() }}
