@@ -1,6 +1,9 @@
 {% macro register_field_js(cid) %}
     <script>
-
+		function get_typeahead(cid, query, process) {
+			// TODO: fire event and query results from server
+			return ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo'];
+		}
 
         var selector = "#{{cid}}";
         var type = $(selector).closest("div").attr('epfl-type');
@@ -9,6 +12,15 @@
             $(selector).change(function () {
                 epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: $(this).val()}), "{{ cid }}");
             });
+            
+            provide_typeahead = $(selector).data("provide");
+            if (provide_typeahead == "typeahead") {
+            	$(selector).typeahead({
+            		source: function (query, process) {
+            			return process(get_typeahead("{cid}}", query));
+					}
+				});
+			}
 
         } else if (type == "checkbox") {
             $(selector).attr('checked', $("#{{cid}}").val() == 'True');

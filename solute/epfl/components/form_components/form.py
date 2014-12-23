@@ -87,24 +87,29 @@ class Input(FormBaseComponent):
     template_name = "form_components/form.input.html"
 
     compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
+    
+    js_name=["bootstrap3-typeahead.min.js"]
+    css_name=["form.css"]
 
     label = None
     name = None
     default = None
     value = None
     input_type = None
+    typeahead = False
 
-    def __init__(self, input_type=None, label=None, name=None, default="", validation_type="", **extra_params):
+    def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="", **extra_params):
         self.value = self.default
         super(Input, self).__init__()
 
 
-def Text(label=None, name=None, default="", **extra_params):
+def Text(label=None, name=None, default="", typeahead=False, **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='text',
                                                                 validation_type='text',
                                                                 label=label,
                                                                 name=name,
                                                                 default=default,
+                                                                typeahead=typeahead,
                                                                 **extra_params)],
                                                template_name='form_components/form.label.html',
                                                label=label)
