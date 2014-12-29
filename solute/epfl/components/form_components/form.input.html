@@ -45,7 +45,7 @@
 
         {% else %}
             <div epfl-type="defaultinput">
-                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" {{ "data-provide='typeahead'"|safe if self.typeahead else "" }}/>
             </div>
         {% endif %}
 

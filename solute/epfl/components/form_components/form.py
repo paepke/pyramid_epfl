@@ -1,4 +1,5 @@
 from solute.epfl.core import epflcomponentbase
+from solute.epfl.components import Droppable, Dragable
 
 
 class FormBaseComponent(epflcomponentbase.ComponentBase):
@@ -15,6 +16,7 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
     def init_transaction(self):
         super(FormBaseComponent, self).init_transaction()
+
         def get_parent_form(compo):
             if isinstance(compo, Form):
                 return compo
@@ -42,11 +44,14 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
         result, text = False, ''
         if self.validation_type == 'text':
-            result, text = type(self.converted_value) is str, 'Value did not validate as text.'
+            result, text = type(
+                self.converted_value) is str, 'Value did not validate as text.'
         elif self.validation_type == 'number':
-            result, text = type(self.converted_value) is int, 'Value did not validate as number.'
+            result, text = type(
+                self.converted_value) is int, 'Value did not validate as number.'
         elif self.validation_type == 'bool':
-            result, text = type(self.converted_value) is bool, 'Value did not validate as bool.'
+            result, text = type(
+                self.converted_value) is bool, 'Value did not validate as bool.'
 
         for helper in self.validation_helper:
             if not result:
@@ -82,24 +87,29 @@ class Input(FormBaseComponent):
     template_name = "form_components/form.input.html"
 
     compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
+    
+    js_name=["bootstrap3-typeahead.min.js"]
+    css_name=["form.css"]
 
     label = None
     name = None
     default = None
     value = None
     input_type = None
+    typeahead = False
 
-    def __init__(self, input_type=None, label=None, name=None, default="", validation_type="", **extra_params):
+    def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="", **extra_params):
         self.value = self.default
         super(Input, self).__init__()
 
 
-def Text(label=None, name=None, default="", **extra_params):
+def Text(label=None, name=None, default="", typeahead=False, **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='text',
                                                                 validation_type='text',
                                                                 label=label,
                                                                 name=name,
                                                                 default=default,
+                                                                typeahead=typeahead,
                                                                 **extra_params)],
                                                template_name='form_components/form.label.html',
                                                label=label)
@@ -120,7 +130,8 @@ def Checkbox(label=None, name=None, default=False, mandatory=False, validation_h
     if validation_helper is None:
         validation_helper = []
     if mandatory:
-        validation_helper.append((lambda x: x.value, 'Mandatory field not checked.'))
+        validation_helper.append(
+            (lambda x: x.value, 'Mandatory field not checked.'))
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='checkbox',
                                                                 validation_type='bool',
                                                                 label=label,
@@ -131,6 +142,7 @@ def Checkbox(label=None, name=None, default=False, mandatory=False, validation_h
                                                template_name='form_components/form.label.html',
                                                label=label)
 
+
 def Toggle(label=None, name=None, default=False, on_text="an", off_text="aus", validation_helper=None, **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='toggle',
                                                                 validation_type='bool',
@@ -139,8 +151,10 @@ def Toggle(label=None, name=None, default=False, on_text="an", off_text="aus", v
                                                                 default=default,
                                                                 on_text=on_text,
                                                                 off_text=off_text,
-                                                                css_name=["bootstrap-switch.min.css"],
-                                                                js_name=["bootstrap-switch.min.js"],
+                                                                css_name=[
+                                                                    "bootstrap-switch.min.css"],
+                                                                js_name=[
+                                                                    "bootstrap-switch.min.js"],
                                                                 **extra_params)],
                                                template_name='form_components/form.label.html',
                                                label=label)
@@ -156,38 +170,41 @@ def Textarea(label=None, name=None, default="", **extra_params):
                                                template_name='form_components/form.label.html',
                                                label=label)
 
-def Select(label=None, name=None, default="",options=[], **extra_params):
+
+def Select(label=None, name=None, default="", options=[], **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='select',
-                                                            validation_type='text',
-                                                            label=label,
-                                                            name=name,
-                                                            default=default,
-                                                            options=options,
-                                                            **extra_params)],
-                                           template_name='form_components/form.label.html',
-                                           label=label)
+                                                                validation_type='text',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                options=options,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
 
-def Radio(label=None, name=None, default="",options=[], **extra_params):
+
+def Radio(label=None, name=None, default="", options=[], **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='radio',
-                                                            validation_type='text',
-                                                            label=label,
-                                                            name=name,
-                                                            default=default,
-                                                            options=options,
-                                                            **extra_params)],
-                                           template_name='form_components/form.label.html',
-                                           label=label)
+                                                                validation_type='text',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                options=options,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
 
-def Buttonset(label=None, name=None, default="",options=[], **extra_params):
+
+def Buttonset(label=None, name=None, default="", options=[], **extra_params):
     return epflcomponentbase.ComponentTreeBase(node_list=[Input(input_type='buttonset',
-                                                            validation_type='text',
-                                                            label=label,
-                                                            name=name,
-                                                            default=default,
-                                                            options=options,
-                                                            **extra_params)],
-                                           template_name='form_components/form.label.html',
-                                           label=label)
+                                                                validation_type='text',
+                                                                label=label,
+                                                                name=name,
+                                                                default=default,
+                                                                options=options,
+                                                                **extra_params)],
+                                               template_name='form_components/form.label.html',
+                                               label=label)
 
 
 class Button(FormBaseComponent):
@@ -199,6 +216,99 @@ class Button(FormBaseComponent):
 
     def __init__(self, label=None, value=None, callback=None, **extra_params):
         super(Button, self).__init__()
+
+
+class MultiSelect_Dragable(Dragable):
+    type = "MultiSelect_Dragable"
+
+    def handle_selected(self):
+        self.is_selected = True
+        self.redraw()
+
+    def handle_unselected(self):
+        self.is_selected = False
+        self.redraw()
+
+
+class MultiSelect_Droppable(Droppable):
+    valid_types = [MultiSelect_Dragable]
+
+
+class MultiSelect(epflcomponentbase.ComponentTreeBase, FormBaseComponent):
+    template_name = "form_components/form.multiselect.html"
+
+    js_name = ["form.multiselect.js"]
+
+    number_of_selects = 2
+    label = None
+    value = None
+    callback = None
+
+    def init_tree_struct(self):
+        node_list = []
+
+        # node_list.append(droppable)
+        return node_list
+
+    def __init__(self, number_of_selects=None, label=None, value=None, callback=None, **extra_params):
+        super(MultiSelect, self).__init__()
+        if not number_of_selects is None:
+            self.number_of_selects = number_of_selects
+
+    def init_transaction(self):
+        epflcomponentbase.ComponentTreeBase.init_transaction(self)
+        for i in range(self.number_of_selects):
+            droppable = self.add_component(
+                MultiSelect_Droppable(cid=self.cid + "_" + str(i)))
+                
+    def add_content(self, selection_index, comp=None, title=None, id=None):
+        if comp is None:
+            self.components[selection_index].add_component(MultiSelect_Dragable(
+                    selectable=True, title=title, id=id))
+        else:
+            pass #TODO
+        
+        
+
+    def handle_moveforward(self, select_index):
+        from_droppable = self.components[select_index]
+        to_droppable = self.components[select_index + 1]
+        components_to_move = []
+        for comp in from_droppable.components:
+            if comp.is_selected == True:
+                components_to_move.append(comp)
+        # anything > 0 and in increasing order leads to appending elements at
+        # the end of to_droppabe
+        # TODO: this does not work correctly yet. order in droppable on a epfl.reload_page() may be different. check this.
+        pos_counter = 1
+        for comp in components_to_move:
+            to_droppable.switch_component(
+                to_droppable.cid, comp.cid, position=pos_counter)
+            comp.is_selected = False
+            pos_counter += 1
+        if len(components_to_move) > 0:
+            from_droppable.redraw()
+            to_droppable.redraw()
+
+    def handle_moveback(self, select_index):
+        from_droppable = self.components[select_index + 1]
+        to_droppable = self.components[select_index]
+        components_to_move = []
+        for comp in from_droppable.components:
+            if comp.is_selected == True:
+                components_to_move.append(comp)
+        # anything > 0 and in increasing order leads to appending elements at
+        # the end of to_droppabe
+        # TODO: this does not work correctly yet. order in droppable on a epfl.reload_page() may be different. check this.
+        pos_counter = 1
+        for comp in components_to_move:
+            to_droppable.switch_component(
+                to_droppable.cid, comp.cid, position=pos_counter)
+            comp.is_selected = False
+            pos_counter += 1
+        if len(components_to_move) > 0:
+            from_droppable.redraw()
+            to_droppable.redraw()
 
 
 class Form(epflcomponentbase.ComponentTreeBase):
@@ -234,7 +344,8 @@ class Form(epflcomponentbase.ComponentTreeBase):
     def validate(self):
         result = []
         for field in self.registered_fields[:]:
-            # Do not validate fields without a name, cause they can not contain a value.
+            # Do not validate fields without a name, cause they can not contain
+            # a value.
             if field.name is None:
                 continue
             if not self.validate_hidden_fields and not field.is_visible():

@@ -1,0 +1,19 @@
+{% compodef() %}
+    <div epflid="{{self.cid}}" class="row"><div class="col-sm-12 {{ self.get_valid_types() }}" id="{{self.cid}}">
+    {% for compo in self.components %}
+    <div style="float: left; margin:5px; {{ " border: 1px solid black;" if self.show_borders else "" }}">
+    {{ compo() }}
+    </div>
+    {% endfor %}
+    </div>
+    </div>
+{% endcompodef %}
+
+
+{% compopart js () %}
+<script>
+	epfl.init_component("{{self.cid}}",
+                        "DroppableComponent",
+                        {type: {{ self.get_valid_types(True)|safe }}});
+</script>
+{% endcompopart %}

@@ -33,7 +33,7 @@ epfl_module = function() {
 		});
 */
 
-		epfl.new_tid(opts["tid"]);
+		epfl.new_tid(opts["tid"], true);
 		epfl.ptid = opts["ptid"];
 		$(document).attr("data:tid", epfl.tid);
 
@@ -375,9 +375,13 @@ epfl_module = function() {
         });
 	};
 
-    epfl.new_tid = function (tid) {
+    epfl.new_tid = function (tid, initial) {
         epfl.tid = tid;
-        History.pushState({tid: tid}, tid, "?tid=" + tid);
+        if (initial) {
+            History.replaceState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
+        } else {
+            History.pushState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
+        }
     };
 
     History.Adapter.bind(window,'statechange',function(){

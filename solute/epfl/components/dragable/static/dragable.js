@@ -9,6 +9,10 @@ epfl.DragableComponent = function(cid, params) {
     	var ev = compo.make_event("selected",{});
     	epfl.send(ev);
     });
+    $('[epflid="'+cid+'"].selectable.selected').click(function(event) {
+    	var ev = compo.make_event("unselected",{});
+    	epfl.send(ev);
+    });
     // handle title renaming
     $('[epflid="'+cid+'"].rename-inactive').bind('dblclick', function(event) {
 		$(this).removeClass("rename-inactive");
