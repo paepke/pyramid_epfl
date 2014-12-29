@@ -32,14 +32,11 @@ from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image, ImageList
-from tab.tab import Tab
 from layout.col import ColLayout
 from layout.cardinal import CardinalLayout
 from layout.list import ListLayout
 from layout.nav import NavLayout
 from layout.tabs import TabsLayout
-from evotable.evotable import EvoTable
-
 
 def add_routes(config):
     Form.add_pyramid_routes(config)
@@ -58,9 +55,6 @@ def add_routes(config):
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
-    Tab.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
-    EvoTable.add_pyramid_routes(config)
-
     
 

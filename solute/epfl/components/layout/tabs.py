@@ -3,7 +3,7 @@ from solute.epfl.core import epflcomponentbase
 
 
 
-class Tab(epflcomponentbase.ComponentContainerBase):
+class TabsLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/tabs.html"
     asset_spec = "solute.epfl.components:layout/static"
 
