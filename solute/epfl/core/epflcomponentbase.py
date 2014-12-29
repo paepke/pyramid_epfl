@@ -668,9 +668,6 @@ class ComponentBase(object):
 
         if "main" in self.redraw_requested:
             parts["main"] = self.render(for_redraw = True)
-        else:
-            for part_name in self.redraw_requested:
-                parts[part_name] = self.parts[part_name]()
 
         if self.redraw_requested or self.is_rendered:
             parts["js"] = self.get_js_part()
@@ -687,24 +684,7 @@ class ComponentBase(object):
         Subelements are other components or widgets. Only container-like components have subelements.
         This is done by using the template-reflection.
         """
-
-        out = []
-
-        ri = self.page.get_template_reflection_info()
-        compo_ri = ri.get_element_by_name(self.page, self.cid)
-
-        if not compo_ri:
-            return out
-
-        for el in compo_ri.get_subelements():
-            compo_accessor, part_accessor = el.get_accessors()
-            compo_obj = self.page.components.get(compo_accessor)
-            if compo_obj:
-                template_element = compo_obj._get_template_element(part_accessor)
-                if template_element and template_element not in out:
-                    out.append(template_element)
-
-        return out
+        raise Exception, 'Deprecated'
 
     def get_template_parentelements(self):
         """ Returns all the template-elements of this component up to the root-template-element.
