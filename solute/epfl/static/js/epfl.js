@@ -377,7 +377,10 @@ epfl_module = function() {
 
     epfl.new_tid = function (tid, initial) {
         epfl.tid = tid;
-        if (initial) {
+
+        if (false) {
+            return;
+        } else if (initial) {
             History.replaceState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
         } else {
             History.pushState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);

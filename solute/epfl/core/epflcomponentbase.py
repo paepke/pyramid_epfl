@@ -252,7 +252,6 @@ class ComponentBase(object):
         self.deleted = False
 
         self.template = None
-        self.parts = None
         self.macros = None
         self.__config = config
 
@@ -336,7 +335,6 @@ class ComponentBase(object):
         env = self.request.get_epfl_jinja2_environment()
         self.template = env.get_template(self.template_name)
         self.macros = jinja_helpers.MacroAccessor(self.template)
-        self.parts = ComponentPartAccessor(self) # this one does all the inline-compo/compo-part-inheritance magic!
 
         # now we can setup the component-state
         self.setup_component_state()
@@ -392,18 +390,15 @@ class ComponentBase(object):
         If check_parents is True, it also checks if the template-element-parents are all visible - so it checks
         if this compo is "really" visible to the user.
         """
+
         if not self.visible:
             return False
-        elif check_parents:
-            if self.has_access():
-                for compo_obj in self.get_template_parentelements():
-                    if not compo_obj.is_visible():
-                        return False
-                return True
-            else:
-                return False
-        else:
-            return self.has_access()
+        if not self.has_access():
+            return False
+        if check_parents:
+            return not self.container_compo or self.container_compo.is_visible()
+
+        return self.has_access()
 
 
     def add_ajax_response(self, resp_string):
@@ -611,24 +606,30 @@ class ComponentBase(object):
         # Prepare the environment and output of the render process.
         env = self.request.get_epfl_jinja2_environment()
 
-        out = ''
-        if not kwargs.pop('for_js', False):
-            out += ''.join(self.render_templates(env, self.template_name))
+        for_js = kwargs.pop('for_js', False)
+        for_raw_js = kwargs.pop('for_raw_js', False)
+        for_redraw = kwargs.pop('for_redraw', False)
 
-        if not kwargs.pop('for_redraw', False):
+        out = ''
+        if for_raw_js:
+            out += ''.join(self.render_templates(env, self.js_parts))
+        elif for_js:
             js_out = ''.join(self.render_templates(env, self.js_parts))
-            out += '<script type="text/javascript">%s</script>' % js_out
+            if len(js_out) > 0:
+                out += '<script type="text/javascript">%s</script>' % js_out
+        else:
+            out += ''.join(self.render_templates(env, self.template_name))
 
         return jinja2.Markup(out)
 
-    def get_js_part(self):
+    def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
 
         if not self.is_visible():
             # this js cleans up the browser for this component
             return self.js_call("epfl.destroy_component", self.cid)
 
-        return self.render(for_js=True)
+        return self.render(for_js=True, for_raw_js=raw)
 
     def notify_render_inline(self):
         """ This one is called from the modified template (by the epfl-component-jinja-extension).
@@ -644,9 +645,8 @@ class ComponentBase(object):
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        for compo_obj in self.get_template_parentelements():
-            if "main" in compo_obj.redraw_requested: # TODO: compo-parts!
-                return # a parent of me already needs redrawing!
+        if self.container_compo and "main" in self.container_compo.redraw_requested: # TODO: compo-parts!
+            return # a parent of me already needs redrawing!
 
         if type(parts) is list:
             self.redraw_requested.update(set(parts))
@@ -667,10 +667,10 @@ class ComponentBase(object):
         parts = {}
 
         if "main" in self.redraw_requested:
-            parts["main"] = self.render(for_redraw = True)
+            parts["main"] = self.render()
 
         if self.redraw_requested or self.is_rendered:
-            parts["js"] = self.get_js_part()
+            parts["js"] = self.get_js_part(raw=True)
 
         return parts
 
@@ -678,51 +678,6 @@ class ComponentBase(object):
     def __call__(self, *args, **kwargs):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
         return self.render(*args, **kwargs)
-
-    def get_template_subelements(self):
-        """ Returns all subelements of this component rendered by the template.
-        Subelements are other components or widgets. Only container-like components have subelements.
-        This is done by using the template-reflection.
-        """
-        raise Exception, 'Deprecated'
-
-    def get_template_parentelements(self):
-        """ Returns all the template-elements of this component up to the root-template-element.
-        Parent-Elements only can be container-like components.
-        This is done by using the template-reflection.
-        """
-
-        out = []
-
-        ri = self.page.get_template_reflection_info()
-        compo_ri = ri.get_element_by_name(self.page, self.cid)
-
-        if not compo_ri:
-            return []
-
-        parent_ri = compo_ri
-        while True:
-            parent_ri = parent_ri.get_parent()
-            if not parent_ri:
-                break
-
-            compo_accessor, part_accessor = parent_ri.get_accessors()
-            compo_obj = self.page.components.get(compo_accessor)
-            if compo_obj:
-                out.append(compo_obj)
-
-        return out
-
-    def _get_template_element(self, part_accessor):
-        """ A method used by "get_template_subelements". Here the component must implement the logic to access
-        its subelements (e.g. the form has widgets)
-        """
-        return self
-
-    def overwrite_compopart(self, name, part):
-        """ Is called from the template by "{% %}"
-        """
-        setattr(self.template.module, "compopart_" + name, part)
 
     def switch_component(self, target, cid, slot=None, position=None):
         """
@@ -783,124 +738,6 @@ class ComponentBase(object):
             output += order_recursive(withheld, seen_key)
             return output
         self.page.transaction["compo_info"] = order_recursive(self.page.transaction["compo_info"])
-
-
-class ComponentPartAccessor(object):
-    """ Used to access the component-part-macros inside a template. If the macro is not defined, a nice error will be raised.
-    Access the macros in dict-style.
-    It implements the fall-thou-logic from inline-definition to component-definition of parts
-    """
-
-    def __init__(self, compo_obj):
-        self.compo_obj = compo_obj
-        self.compo_template = compo_obj.template
-        self.debug = compo_obj.request.registry.settings["epfl.debug"]
-
-    def __getitem__(self, key):
-        return getattr(self, key)
-
-    def parseAttributeError(self, excep):
-        """ Parse the message of an AttributeError-Exception.
-        """
-        tokens = excep.message.split()
-        return {"missing_attribute": tokens[-1].strip("'")}
-
-    def snip_script_tags(self, data):
-        data = data.strip()
-        if data.startswith("<script"):
-            data = data[data.index(">") + 1:]
-        if data.endswith("</script>"):
-            data = data[:-9]
-        return data
-
-
-    def get_macro(self, template_obj, macro_name):
-        if self.debug:
-            try:
-                return getattr(template_obj.module, macro_name)
-            except AttributeError, e:
-                info = self.parseAttributeError(e)
-                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopartdef {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
-        else:
-            return getattr(template_obj.module, macro_name)
-
-    def get_redraw_template(self):
-        template_name = self.compo_obj.page.template + " redraw:" + self.compo_obj.cid
-        if self.compo_obj.request.is_template_marked_as_not_found(template_name):
-            return None
-
-        try:
-            env = self.compo_obj.request.get_epfl_jinja2_environment()
-            template = env.get_template(template_name)
-        except TemplateNotFound:
-            self.compo_obj.request.mark_template_as_not_found(template_name)
-            return None
-        else:
-            return template
-
-
-    def __getattr__(self, key):
-        """ Access the macro as dict-style-attribute """
-
-        macro = None
-        redraw_template = None
-
-        if self.compo_template:
-            # now looking throu the component-template (if there is one)
-
-            if key == "main":
-                # the "main" macro is named "main" and defined in the component-template
-                macro = self.get_macro(self.compo_template, "main")
-            elif key == "redraw_main":
-                # the macro for redrawing a component may be defined in the page-template named "redraw_CID"...
-                redraw_template = self.get_redraw_template() # a lot of magic!
-                if not redraw_template:
-                    # ... or it's simply the main-macro of the compo-template
-                    macro = self.get_macro(self.compo_template, "main")
-            else:
-                # everything else is a part of the compo defined in the compo-template
-                macro = self.get_macro(self.compo_template, "compopart_" + key)
-
-        if macro:
-
-            def macro_wrapper(*args, **kwargs):
-                """ this one does the rendering (zwiebeld because of the 'self' parameter of the macro).
-                The rendering of a single part of a component marks the component as "rendered".
-                This implies the rendering of the js-part of this component. """
-
-                if "caller" in kwargs:
-                    has_caller = True
-                else:
-                    has_caller = False
-
-                self.compo_obj.is_rendered = True # please render my js-part!
-                if key == "js":
-                    js = macro(self.compo_obj, has_caller, *args, **kwargs)
-                    return self.snip_script_tags(js) + ";"
-                else:
-#                    import pdb; pdb.set_trace()
-                    return macro(self.compo_obj, has_caller, *args, **kwargs)
-
-            return macro_wrapper
-
-        elif redraw_template:
-
-            def template_wrapper(*args, **kwargs):
-                """ this one does the rendering (zwiebeld because this is not a macro but a template).
-                The rendering of a single part of a component marks the component as "rendered".
-                This implies the rendering of the js-part of this component. """
-
-                self.compo_obj.is_rendered = True # please render my js-part!
-
-                ctx = self.compo_obj.page.get_template_ctx()
-
-                return redraw_template.render(**ctx)
-
-            return template_wrapper
-
-        else:
-
-            raise AttributeError, key
 
 
 class ComponentContainerBase(ComponentBase):
