@@ -376,7 +376,6 @@ epfl_module = function() {
 	};
 
     epfl.new_tid = function (tid, initial) {
-        console.log($(this).prop("href"));
         epfl.tid = tid;
         if (initial) {
             History.replaceState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
