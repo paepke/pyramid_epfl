@@ -14,6 +14,7 @@ from solute.epfl.core import epflutil
 class Menu(epflcomponentbase.ComponentBase):
 
     template_name = "menu/menu.html"
+    js_parts = "menu/menu.js"
     asset_spec = "solute.epfl.components:menu/static"
 
     js_name = ["menu.js"]

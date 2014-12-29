@@ -17,6 +17,7 @@ class Sortable(epflcomponentbase.ComponentBase):
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template_name = "sortable/sortable.html"
+    js_parts = "sortable/sortable.js"
     asset_spec = "solute.epfl.components:sortable/static"
 
     css_name = ["sortable.css"]

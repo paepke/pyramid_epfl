@@ -1,22 +1,10 @@
-{% compodef() %}
-<div epflid="{{ self.cid }}">
-    {% if self.label %}
-        <label for="{{self.cid}}" class="col-sm-2 control-label">{{self.label}}</label>
+<div epflid="{{ compo.cid }}">
+    {% if compo.label %}
+        <label for="{{compo.cid}}" class="col-sm-2 control-label">{{compo.label}}</label>
     {% endif %}
-    <div class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}">
-        <button class="form-control" type="button" id="{{self.cid}}">
-            {{self.value}}
+    <div class="{{ 'col-sm-10' if compo.label else 'col-sm-12' }}">
+        <button class="form-control" type="button" id="{{compo.cid}}">
+            {{compo.value}}
         </button>
     </div>
  </div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-<script>
-    $('[id="{{self.cid}}"]').click(function(event) {
-        var request = epfl.make_component_event("{{self.callback[0]}}", "{{self.callback[1]}}");
-        epfl.send(request);
-    });
-</script>
-{% endcompopart %}

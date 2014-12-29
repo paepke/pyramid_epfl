@@ -48,6 +48,7 @@ from jinja2 import filters as jinja_filters
 class Table(epflcomponentbase.ComponentBase):
 
     template_name = "table/table.html"
+    js_parts = "table/table.js"
     asset_spec = "solute.epfl.components:table/static"
     exporting_macros = ["table", "pager"]
 

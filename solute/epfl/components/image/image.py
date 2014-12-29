@@ -20,6 +20,7 @@ class Image(epflcomponentbase.ComponentBase):
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template_name = "image/image.html"
+    js_parts = "image/image.js"
     asset_spec = "solute.epfl.components:image/static"
 
     css_name = ["image.css"]
@@ -44,7 +45,8 @@ class Image(epflcomponentbase.ComponentBase):
 
 class ImageList(Droppable):
     template_name = "image/image_list.html"
-        
+    js_parts = "image/image_list.js"
+
     show_borders=False
     
     def handle_add_dragable(self, cid, position):

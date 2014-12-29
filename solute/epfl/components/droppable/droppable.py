@@ -5,6 +5,7 @@ import json
 
 class Droppable(epflcomponentbase.ComponentContainerBase):
     template_name = "droppable/droppable.html"
+    js_parts = "droppable/droppable.js"
     asset_spec = "solute.epfl.components:droppable/static"
 
     css_name = ["droppable.css", "bootstrap.min.css", "css/font-awesome/css/font-awesome.min.css"]

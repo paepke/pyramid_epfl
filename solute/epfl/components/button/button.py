@@ -8,6 +8,7 @@ from solute.epfl.core import epflutil
 class Button(epflcomponentbase.ComponentBase):
 
     template_name = "button/button.html"
+    js_parts = "button/button.js"
 
     asset_spec = "solute.epfl.components:button/static"
     js_name = ["button.js"]

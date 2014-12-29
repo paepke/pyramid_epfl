@@ -1,53 +1,16 @@
 
 {% compopartdef table () -%}
-    <table id="{{self.cid}}_table" epflid="{{self.cid}}$table" ></table>
+    <table id="{{compo.cid}}_table" epflid="{{compo.cid}}$table" ></table>
 {%- endcompopartdef %}
 
 {% compopartdef pager () -%}
-    <div id="{{self.cid}}_pager" epflid="{{self.cid}}$pager" ></div>
+    <div id="{{compo.cid}}_pager" epflid="{{compo.cid}}$pager" ></div>
 {%- endcompopartdef %}
 
 
-{% compopartdef js () %}
-    <script>
-
-    epfl.init_component("{{self.cid}}", "TableComponent",
-
-                                             {"opts": {
-                                                        url: "{{self.table_data_url}}",
-                                                        page: {{self.current_page}},
-                                                        colModel: {{self.columns_def|tojson}},
-                                                        rowNum: "{{self.num_rows or "Alle"}}",
-                                                        rowList: {{self.num_rows_domain|tojson}},
-                                                        pager: "{{self.cid}}_pager",
-                                                        sortname: "{{ self.sort_column|tojson_ifjson }}",
-                                                        sortname_default: "{{self.sort_column_default}}",
-                                                        sortorder: "{{self.sort_order}}",
-                                                        sortorder_default: "{{self.sort_order_default}}",
-                                                        caption: {{self.caption|tojson}},
-                                                        autowidth: {{self.autowidth|tojson}},
-                                                        width: {{self.width}},
-                                                        height: {{self.height}},
-                                                        repeatitems: true,
-                                                        gridview: true,
-                                                        hiddengrid: !{{self.table_shown|tojson}},
-                                                        keyIndex: "{{self.index_column_name}}",
-                                                        pgtext: {{self.pager_template|tojson}},
-                                                        multisort: {{ self.multisort|format_bool }}
-                                                    },
-
-                                              "scroll_pos": {{self.scroll_pos|tojson}},
-                                              "on_row_click": {{self.on_row_click|tojson}}
-
-    });
-    </script>
-{% endcompopartdef %}
-
-
-{% compodef () %}
-    <div epflid="{{self.cid}}">
-        {{ self.parts.table() }}
-        {{ self.parts.pager() }}
+    <div epflid="{{compo.cid}}">
+        {{ compo.parts.table() }}
+        {{ compo.parts.pager() }}
     </div>
-{% endcompodef %}
+
 

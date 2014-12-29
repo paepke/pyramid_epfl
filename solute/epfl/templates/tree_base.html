@@ -1,5 +1,5 @@
-<div epflid="{{ self.cid }}">
-    {% for compo_obj in self.components %}
+<div epflid="{{ compo.cid }}">
+    {% for compo_obj in compo.components %}
         {{ compo_obj.render() }}
     {% endfor %}
 </div>

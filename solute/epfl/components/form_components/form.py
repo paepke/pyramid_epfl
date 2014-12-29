@@ -209,6 +209,7 @@ def Buttonradio(label=None, name=None, default="", options=[], **extra_params):
 
 class Button(FormBaseComponent):
     template_name = "form_components/form_button.html"
+    js_parts = "form_components/form_button.js"
 
     label = None
     value = None
@@ -236,6 +237,7 @@ class MultiSelect_Droppable(Droppable):
 
 class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
     template_name = "form_components/form_multiselect.html"
+    js_parts = "form_components/form_multiselect.html"
 
     js_name = ["form.multiselect.js"]
 
@@ -313,6 +315,8 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
 
 class Form(epflcomponentbase.ComponentContainerBase):
     template_name = "form_components/form.html"
+    js_parts = "form_components/form.js"
+
     asset_spec = "solute.epfl.components:form_components/static"
 
     css_name = ["bootstrap.min.css"]

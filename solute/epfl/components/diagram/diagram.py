@@ -19,6 +19,7 @@ class Diagram(epflcomponentbase.ComponentBase):
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template_name = "diagram/diagram.html"
+    js_parts = "diagram/diagram.js"
     asset_spec = "solute.epfl.components:diagram/static"
 
     js_name = ["highcharts.js", "exporting.js",
