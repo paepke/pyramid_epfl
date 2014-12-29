@@ -7,7 +7,7 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class ListLayout(epflcomponentbase.ComponentTreeBase):
+class ListLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/list.html"
     asset_spec = "solute.epfl.components:layout/static"
 

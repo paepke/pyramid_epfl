@@ -7,7 +7,7 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class CardinalLayout(epflcomponentbase.ComponentTreeBase):
+class CardinalLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/cardinal.html"
     asset_spec = "solute.epfl.components:layout/static"
 

@@ -912,12 +912,34 @@ class ComponentPartAccessor(object):
 
 
 class ComponentContainerBase(ComponentBase):
+    """
+    This component automatically adds components based on the UnboundComponent objects its node_list contains once per
+    transaction.
+
+    Components inheriting from it can overwrite init_struct in order to dynamically return different lists per
+    transaction instead of one static list for the lifetime of the epfl service.
+    """
+    template_name = 'tree_base.html'
+    node_list = []
 
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
             self.setup_component_slots()
         return self
+
+    def init_struct(self):
+        return self.node_list
+
+    def init_transaction(self):
+        super(ComponentContainerBase, self).init_transaction()
+
+        self.node_list = self.init_struct()
+
+        for node in self.node_list:
+            cid, slot = node.position
+
+            self.add_component(node(__instantiate__=True), slot=slot, cid=cid)
 
     def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
@@ -960,28 +982,3 @@ class ComponentContainerBase(ComponentBase):
         # remove it from the compo_info
         self.page.transaction["compo_info"] = [ci for ci in self.page.transaction["compo_info"]
                                                if ci["cid"] != compo_obj.cid]
-
-
-class ComponentTreeBase(ComponentContainerBase):
-    """
-    This component automatically adds components based on the UnboundComponent objects its node_list contains once per
-    transaction.
-
-    Components inheriting from it can overwrite init_tree_struct in order to dynamically return different lists per
-    transaction instead of one static list for the lifetime of the epfl service.
-    """
-    template_name = 'tree_base.html'
-    node_list = []
-
-    def init_tree_struct(self):
-        return self.node_list
-
-    def init_transaction(self):
-        super(ComponentTreeBase, self).init_transaction()
-
-        self.node_list = self.init_tree_struct()
-
-        for node in self.node_list:
-            cid, slot = node.position
-
-            self.add_component(node(__instantiate__=True), slot=slot, cid=cid)

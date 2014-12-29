@@ -1,7 +1,7 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class Dragable(epflcomponentbase.ComponentTreeBase):
+class Dragable(epflcomponentbase.ComponentContainerBase):
     template_name = "dragable/dragable.html"
     asset_spec = "solute.epfl.components:dragable/static"
 

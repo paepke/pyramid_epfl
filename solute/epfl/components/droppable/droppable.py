@@ -3,7 +3,7 @@ from solute.epfl.components.dragable.dragable import Dragable
 import json
 
 
-class Droppable(epflcomponentbase.ComponentTreeBase):
+class Droppable(epflcomponentbase.ComponentContainerBase):
     template_name = "droppable/droppable.html"
     asset_spec = "solute.epfl.components:droppable/static"
 

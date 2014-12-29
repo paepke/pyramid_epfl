@@ -12,7 +12,7 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.core import epflutil
 
 
-class Box(epflcomponentbase.ComponentTreeBase):
+class Box(epflcomponentbase.ComponentContainerBase):
 
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
