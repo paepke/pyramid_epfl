@@ -1,6 +1,6 @@
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import Droppable, Dragable
-
+from odict import odict
 
 class FormBaseComponent(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form_components/static"
@@ -334,11 +334,11 @@ class Form(epflcomponentbase.ComponentContainerBase):
         return [self.page.components[cid] for cid in self._registered_fields]
 
     def get_values(self):
-        values = []
+        values = odict()
         for field in self.registered_fields:
             if field.name is None:
                 continue
-            values.append((field.name, field.converted_value))
+            values[field.name] = field.converted_value
         return values
 
     def validate(self):
