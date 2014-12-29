@@ -5,10 +5,16 @@ from pyramid.view import view_config
 from pyramid import security
 from solute import epfl
 
-Box = epfl.components.Box
-Tab = epfl.components.Tab
-List = epfl.components.ListLayout
-Nav = epfl.components.NavLayout
+from solute.epfl.components import TabsLayout
+from solute.epfl.components import ListLayout as List
+from solute.epfl.components import NavLayout as Nav
+from solute.epfl.components import Box
+
+
+def toggle_tab(self, selected_compo_cid):
+    self.active_tab_cid = selected_compo_cid
+    if selected_compo_cid == 'special_tab':
+        self.page.make_new_tid()
 
 
 class HomeRoot(epfl.components.CardinalLayout):
@@ -28,33 +34,35 @@ class HomeRoot(epfl.components.CardinalLayout):
                  Box(title='Testbox south',
                      slot='south')]
 
-    def init_tree_struct(self):
+    def init_struct(self):
         # Important since we would not want to change the actual node_list with every new transaction.
         out = self.node_list[:]
-        out.append(Tab(slot='center',
-                       node_list=[Box(title='Test 1'),
-                                  Box(title='Test 2'),
-                                  Box(title='Test 3')]), )
+        out.append(TabsLayout(slot='center',
+                              node_list=[Box(title='Test 1'),
+                                         Box(title='Test 2'),
+                                         Box(title='Test 3',
+                                             cid='special_tab')],
+                              handle_toggleTab=toggle_tab), )
 
         return out
 
 
 class FooRoot(HomeRoot):
-    def init_tree_struct(self):
+    def init_struct(self):
         # Important since we would not want to change the actual node_list with every new transaction.
         out = self.node_list[:]
-        out.append(Tab(slot='center',
-                       node_list=[Box(title='Foo 1'),
-                                  Box(title='Foo 2'),
-                                  Box(title='Foo 3')]), )
+        out.append(TabsLayout(slot='center',
+                              node_list=[Box(title='Foo 1'),
+                                         Box(title='Foo 2'),
+                                         Box(title='Foo 3')]), )
         return out
 
 
 @view_config(route_name='home')
 class HomePage(epfl.Page):
-    root_cls = HomeRoot
+    root_node = HomeRoot()
 
 
 @view_config(route_name='foo')
 class FooPage(epfl.Page):
-    root_cls = FooRoot
+    root_node = FooRoot()
