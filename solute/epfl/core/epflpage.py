@@ -55,7 +55,6 @@ class Page(object):
     template = "page.html" # the name of the template used to render this page
     base_html = 'base.html'
 
-    root_cls = None
     title = 'Empty Page'
 
     overlay_title = "Overlay" # If this page is displayed as overlay, use this title.
@@ -285,7 +284,7 @@ class Page(object):
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
-        self.root_node = self.root_cls(__instantiate__=True)
+        self.root_node = self.root_node(__instantiate__=True)
 
     def get_jinja_template_extra_data(self):
         """ Returns the data accumulated by the jinja-epfl-component-extension (jinja_extensions.py).
