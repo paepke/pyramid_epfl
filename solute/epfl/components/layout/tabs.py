@@ -5,6 +5,7 @@ from solute.epfl.core import epflcomponentbase
 
 class TabsLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/tabs.html"
+    js_parts = ["layout/tabs.js"]
     asset_spec = "solute.epfl.components:layout/static"
 
     css_name = ["bootstrap.min.css"]

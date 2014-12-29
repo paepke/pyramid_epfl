@@ -207,7 +207,8 @@ class ComponentBase(object):
                                                               # The base-component only defines the "access"-permission.
                                                               # If not given the component is not rendered.
 
-    template_name = "empty.html" # filename of the template for this component (if any)
+    template_name = ["empty.html"] # filenames of the templates for this component (if any)
+    js_parts = [] # filenames of the js-parts of this component
     js_name = [] # filenames of the js-files for this component (if any)
     css_name = [] # filenames of the css-files for this component (if any)
     compo_state = [] # which attributes of the object are persisted into the transaction
@@ -578,7 +579,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def pre_render(self):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
@@ -586,7 +586,15 @@ class ComponentBase(object):
 
         epflutil.add_extra_contents(self.response, obj = self)
 
+    def render_templates(self, env, templates):
+        out = []
+        if type(templates) is not list:
+            templates = [templates]
 
+        for template in templates:
+            jinja_template = env.get_template(template)
+            out.append(jinja_template.render(compo=self))
+        return out
 
     def render(self, *args, **kwargs):
         """ Called to render the complete component.
@@ -600,13 +608,18 @@ class ComponentBase(object):
 
         self.is_rendered = True
 
-        # the "main"-html of this component:
-        for_redraw = kwargs.pop("for_redraw", False)
-        if for_redraw:
-            main_macro = self.parts.redraw_main
-        else:
-            main_macro = self.parts.main
-        return main_macro(*args, **kwargs)
+        # Prepare the environment and output of the render process.
+        env = self.request.get_epfl_jinja2_environment()
+
+        out = ''
+        if not kwargs.pop('for_js', False):
+            out += ''.join(self.render_templates(env, self.template_name))
+
+        if not kwargs.pop('for_redraw', False):
+            js_out = ''.join(self.render_templates(env, self.js_parts))
+            out += '<script type="text/javascript">%s</script>' % js_out
+
+        return jinja2.Markup(out)
 
     def get_js_part(self):
         """ gets the javascript-portion of the component """
@@ -615,8 +628,7 @@ class ComponentBase(object):
             # this js cleans up the browser for this component
             return self.js_call("epfl.destroy_component", self.cid)
 
-        init_js_macro = self.parts.js
-        return init_js_macro()
+        return self.render(for_js=True)
 
     def notify_render_inline(self):
         """ This one is called from the modified template (by the epfl-component-jinja-extension).
