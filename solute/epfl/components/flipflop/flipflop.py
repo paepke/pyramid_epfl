@@ -19,7 +19,7 @@ class FlipFlop(Droppable):
 
     valid_types = [FlipFlopDragable]
 
-    def init_tree_struct(self):
+    def init_struct(self):
         node_list = []
 
         for compo in self.node_list:

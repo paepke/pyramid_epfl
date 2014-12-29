@@ -24,7 +24,7 @@ from form_components.form import Checkbox as cfCheckbox
 from form_components.form import Textarea as cfTextarea
 from form_components.form import Select as cfSelect
 from form_components.form import Radio as cfRadio
-from form_components.form import Buttonset as cfButtonset
+from form_components.form import Buttonradio as cfButtonradio
 from form_components.form import Toggle as cfToggle
 from form_components.form import MultiSelect as cfMultiSelect
 from badge.badge import Badge
@@ -49,7 +49,6 @@ def add_routes(config):
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
     cfForm.add_pyramid_routes(config)
-    #Panel.add_pyramid_routes(config)
     Badge.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)

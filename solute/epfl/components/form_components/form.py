@@ -84,7 +84,7 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
 
 class Input(FormBaseComponent):
-    template_name = "form_components/form.input.html"
+    template_name = "form_components/form_input.html"
 
     compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
     
@@ -111,7 +111,7 @@ def Text(label=None, name=None, default="", typeahead=False, **extra_params):
                                                                 default=default,
                                                                 typeahead=typeahead,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -122,7 +122,7 @@ def Number(label=None, name=None, default=0, **extra_params):
                                                                 name=name,
                                                                 default=default,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -139,7 +139,7 @@ def Checkbox(label=None, name=None, default=False, mandatory=False, validation_h
                                                                 default=default,
                                                                 validation_helper=validation_helper,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -156,7 +156,7 @@ def Toggle(label=None, name=None, default=False, on_text="an", off_text="aus", v
                                                                 js_name=[
                                                                     "bootstrap-switch.min.js"],
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -167,7 +167,7 @@ def Textarea(label=None, name=None, default="", **extra_params):
                                                                 name=name,
                                                                 default=default,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -179,7 +179,7 @@ def Select(label=None, name=None, default="", options=[], **extra_params):
                                                                 default=default,
                                                                 options=options,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
@@ -191,11 +191,11 @@ def Radio(label=None, name=None, default="", options=[], **extra_params):
                                                                 default=default,
                                                                 options=options,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
-def Buttonset(label=None, name=None, default="", options=[], **extra_params):
+def Buttonradio(label=None, name=None, default="", options=[], **extra_params):
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='buttonset',
                                                                 validation_type='text',
                                                                 label=label,
@@ -203,12 +203,12 @@ def Buttonset(label=None, name=None, default="", options=[], **extra_params):
                                                                 default=default,
                                                                 options=options,
                                                                 **extra_params)],
-                                               template_name='form_components/form.label.html',
+                                               template_name='form_components/form_label.html',
                                                label=label)
 
 
 class Button(FormBaseComponent):
-    template_name = "form_components/form.button.html"
+    template_name = "form_components/form_button.html"
 
     label = None
     value = None
@@ -235,7 +235,7 @@ class MultiSelect_Droppable(Droppable):
 
 
 class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
-    template_name = "form_components/form.multiselect.html"
+    template_name = "form_components/form_multiselect.html"
 
     js_name = ["form.multiselect.js"]
 
@@ -244,7 +244,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
     value = None
     callback = None
 
-    def init_tree_struct(self):
+    def init_struct(self):
         node_list = []
 
         # node_list.append(droppable)
