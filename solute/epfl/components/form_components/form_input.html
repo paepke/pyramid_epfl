@@ -6,11 +6,30 @@
             <div epfl-type="textarea">
                 <textarea class="form-control" id="{{self.cid}}" name="{{self.name}}" >{{self.value}}</textarea>
             </div>
+
         {%  elif self.input_type == "select" %}
             <div epfl-type="select">
                 <select class="form-control" id="{{self.cid}}" name="{{self.name}}">
                 {% for option in self.options %}
-                    <option value="{{ option }}" {% if self.value == option %} selected="selected" {% endif %} >{{ option }}</option>
+                    {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
+                    <option value="{{ value }}" {% if self.value == value %} selected="selected" {% endif %} >{{ visual }}</option>
                 {% endfor %}
                 </select>
             </div>
@@ -19,17 +38,63 @@
 
             <div class="form-control" id="{{self.cid}}" name="{{self.name}}" epfl-type="radiobuttongroup">
             {% for option in self.options %}
-                <input type="radio" value="{{ option }}" name="{{self.cid}}" {% if self.value == option %} checked="checked" {% endif %} >{{ option }}</input>
+                {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
+
+
+                <input type="radio" value="{{ value }}" name="{{self.cid}}" {% if self.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
             {% endfor %}
             </div>
 
         {%  elif self.input_type == "buttonset" %}
             <div id="{{self.cid}}" name="{{self.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
             {% for option in self.options %}
-                <label for="{{ self.cid }}_{{ option }}" class="btn btn-default blue {{ "active" if self.value == option else "" }}">
+                {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
 
-                <input type="radio" id="{{ self.cid }}_{{ option }}" value="{{ option }}" name="{{self.cid}}" class="toggle" {% if self.value == option %} checked="checked" {% endif %} >
-                {{ option }} </label>
+                <label for="{{ self.cid }}_{{ value }}"
+                           class="btn btn-default blue {{ "active" if self.value == value else "" }}">
+                     <input type="radio"
+                           id="{{ self.cid }}_{{ value }}"
+                           value="{{ value }}"
+                           name="{{self.cid}}"
+                           class="toggle"
+                            {% if self.value == value %} checked="checked" {% endif %}>
+                    {{ visual }}
+                </label>
+
             {% endfor %}
             </div>
 

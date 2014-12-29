@@ -40,14 +40,14 @@
         } else if (type == "radiobuttongroup") {
             selector = "input[type=radio][name={{ cid }}]";
             $(selector).change(function () {
-                var val = val = $(this).is(':checked');
+                var val = $(this).val();
                 epfl.repeat_enqueue(epfl.make_component_event("{{ cid }}", 'change', {value: val}), "{{ cid }}");
             });
 
         } else if (type == "buttonsetgroup") {
             selector = "input[type=radio][name={{ cid }}]";
             $(selector).change(function () {
-                var val = val = $(this).is(':checked');
+                var val = $(this).val();
                 var parent = $(this).parent().parent();
                 $(parent).find("label").removeClass("active");
                 $(this).parent().addClass("active");
