@@ -37,6 +37,7 @@ from layout.col import ColLayout
 from layout.cardinal import CardinalLayout
 from layout.list import ListLayout
 from layout.nav import NavLayout
+from layout.tabs import TabsLayout
 from evotable.evotable import EvoTable
 
 

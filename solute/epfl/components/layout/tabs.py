@@ -2,13 +2,13 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class Tab(epflcomponentbase.ComponentTreeBase):
+class TabsLayout(epflcomponentbase.ComponentTreeBase):
 
-    template_name = "tab/tab.html"
-    asset_spec = "solute.epfl.components:tab/static"
+    template_name = "layout/tabs.html"
+    asset_spec = "solute.epfl.components:layout/static"
 
     css_name = ["bootstrap.min.css"]
-    js_name = ["bootstrap.tab.js", "tab.js"]
+    js_name = ["bootstrap.tab.js", "tabs.js"]
 
     compo_state = ["active_tab_cid"]
 
