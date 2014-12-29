@@ -2,8 +2,8 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class TabsLayout(epflcomponentbase.ComponentTreeBase):
 
+class Tab(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/tabs.html"
     asset_spec = "solute.epfl.components:layout/static"
 

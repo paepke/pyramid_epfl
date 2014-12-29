@@ -7,7 +7,7 @@
 from solute.epfl.core import epflcomponentbase
 
 
-class ColLayout(epflcomponentbase.ComponentTreeBase):
+class ColLayout(epflcomponentbase.ComponentContainerBase):
 
     template_name = "layout/col.html"
     asset_spec = "solute.epfl.components:layout/static"
