@@ -591,7 +591,7 @@ class ComponentBase(object):
             out.append(jinja_template.render(compo=self))
         return out
 
-    def render(self, *args, **kwargs):
+    def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
         It returns HTML.
@@ -606,18 +606,14 @@ class ComponentBase(object):
         # Prepare the environment and output of the render process.
         env = self.request.get_epfl_jinja2_environment()
 
-        for_js = kwargs.pop('for_js', False)
-        for_raw_js = kwargs.pop('for_raw_js', False)
-        for_redraw = kwargs.pop('for_redraw', False)
-
         out = ''
-        if for_raw_js:
-            out += ''.join(self.render_templates(env, self.js_parts))
-        elif for_js:
+        if target == 'js':
             js_out = ''.join(self.render_templates(env, self.js_parts))
             if len(js_out) > 0:
                 out += '<script type="text/javascript">%s</script>' % js_out
-        else:
+        elif target == 'js_raw':
+            out += ''.join(self.render_templates(env, self.js_parts))
+        elif target == 'main':
             out += ''.join(self.render_templates(env, self.template_name))
 
         return jinja2.Markup(out)
@@ -628,8 +624,9 @@ class ComponentBase(object):
         if not self.is_visible():
             # this js cleans up the browser for this component
             return self.js_call("epfl.destroy_component", self.cid)
-
-        return self.render(for_js=True, for_raw_js=raw)
+        if raw:
+            return self.render('js_raw')
+        return self.render('js')
 
     def notify_render_inline(self):
         """ This one is called from the modified template (by the epfl-component-jinja-extension).
