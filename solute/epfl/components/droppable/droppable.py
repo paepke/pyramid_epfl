@@ -20,11 +20,6 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     title_renamable = False
     is_collapsed=False
     title=None
-    
-    def __init__(self, title=None, collapsable=False, title_renamable=False, **extra_params):
-        super(Droppable, self).__init__()
-        
-        
         
     def init_transaction(self):
         super(Droppable, self).init_transaction()
@@ -33,7 +28,7 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
 
     def add_dragable_element(self, element, position=None):
         if not hasattr(element, 'cid') or not hasattr(self.page, element.cid):
-            self.add_component(element)
+            element = self.add_component(element)
         if position is not None:
             self.switch_component(self.cid, element.cid, position=position)
         self.redraw()

@@ -295,21 +295,16 @@ class ComponentBase(object):
 
 
     def get_component_info(self):
-        if self.container_compo:
-            container_id = self.container_compo.cid
-        else:
-            container_id = None
         return {"class": self.__unbound_component__,
                 "config": self.__config,
                 "cid": self.cid,
-                "slot": self.container_slot,
-                "cntrid": container_id}
+                "slot": self.container_slot}
 
     @classmethod
-    def create_by_compo_info(cls, page, compo_info):
+    def create_by_compo_info(cls, page, compo_info, container_id):
         compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
-        if compo_info["cntrid"]:
-            container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
+        if container_id:
+            container_compo = page.components[container_id] # container should exist before thier content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
@@ -724,6 +719,7 @@ class ComponentContainerBase(ComponentBase):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
             self.setup_component_slots()
+
         return self
 
     def init_struct(self):
