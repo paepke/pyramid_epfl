@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from pprint import pprint
+from better_od import BetterOrderedDict as odict
 
 import types, copy, string, inspect, uuid
 
@@ -53,7 +54,8 @@ class UnboundComponent(object):
 
     __valid_subtypes__ = [bool, int, long, float, complex,
                           str, unicode, bytearray, xrange,
-                          type, types.FunctionType, CallableWrapper]
+                          type, types.FunctionType, CallableWrapper,
+                          types.NoneType]
     __debugging_on__ = False
     __dynamic_class_store__ = None
 
@@ -220,6 +222,7 @@ class ComponentBase(object):
     # This should never be None, if it is and something breaks because of it the parameter has not been correctly passed
     # through the __new__/UnboundComponent pipe.
     __unbound_component__ = None
+    struct_dict = None
 
 
     base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
@@ -268,6 +271,9 @@ class ComponentBase(object):
                 config_value = config[attr_name]
                 setattr(self, attr_name, copy.deepcopy(config_value))
 
+        self.cid = args[1]
+        self._set_page_obj(args[0])
+
         return self
 
     def __init__(self, *args, **kwargs):
@@ -301,25 +307,16 @@ class ComponentBase(object):
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info):
-        compo_obj = cls(__instantiate__=True, **compo_info["config"])
+        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
         if compo_info["cntrid"]:
             container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
 
-
-    def set_component_id(self, id):
-        """ Tells the component its component-id. The component-id is the name of the attribute of the page object to which
-        the component was assined.
-        This function is called by the __setattr__-function of the page-object
-        """
-        self.cid = id
-
-    def set_page_obj(self, page_obj):
-        """ Will be called by epflpage.Page by the __setattr__-trick.
-        Multiple initialisation-routines are called from here, so a component is only
-        correctly setup AFTER is was assined to its page.
+    def _set_page_obj(self, page_obj):
+        """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
+        set up after being assigned its page.
         """
         self.page = page_obj
         self.page_request = page_obj.page_request
@@ -342,6 +339,16 @@ class ComponentBase(object):
     def set_container_compo(self, compo_obj, slot):
         self.container_compo = compo_obj
         self.container_slot = slot
+
+        # Traverse upwards in the structure to set the correct position for this component in transaction.
+        def traverse(compo):
+            container = getattr(compo, 'container_compo', None)
+            structure_dict = self.page.transaction.setdefault("compo_struct", odict())
+            if container:
+                structure_dict = traverse(container)
+            return structure_dict.setdefault(compo.cid, odict())
+
+        self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
 
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
@@ -687,54 +694,19 @@ class ComponentBase(object):
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
 
-        self.page.transaction["compo_info"].remove(compo.get_component_info())
-
-        position_index = -1
-        counter = -1
-        for key, value in enumerate(self.page.transaction["compo_info"]):
-            if value.get('cid', None) == self.cid and position is not None:
-                counter += 1
-            if value.get('cntrid', None) == self.cid and position is not None:
-                counter += 1
-            if counter > position:
-                position_index = key
-                break
-
+        struct_dict = source.struct_dict.pop(cid)
         source.components.remove(compo)
+
         compo.set_container_compo(target, slot)
         if position is None:
-            position = -1
-        target.components.insert(position, compo)
-
-        self.page.transaction["compo_info"].insert(position_index, compo.get_component_info())
-        self.assure_hierarchical_order()
+            target.struct_dict[cid] = struct_dict
+            target.components.append(compo)
+        else:
+            target.struct_dict.insert(cid, struct_dict, position)
+            target.components.insert(position, compo)
 
         target.redraw()
         source.redraw()
-
-    def assure_hierarchical_order(self):
-        """
-        Recursively applies the correct order on all compo_info dicts in the transaction. This has to be used after
-        changing component order to ensure that all container components are initialized before their respective content
-        components.
-        """
-        def order_recursive(input, seen_key=set()):
-            if len(input) == 0:
-                return []
-            new_seen_key = set()
-            output = []
-            withheld = []
-            for v in input:
-                if v['cntrid'] is None or v['cntrid'] in seen_key:
-                    output.append(v)
-                    new_seen_key.add(v['cid'])
-                else:
-                    withheld.append(v)
-            seen_key.update(new_seen_key)
-
-            output += order_recursive(withheld, seen_key)
-            return output
-        self.page.transaction["compo_info"] = order_recursive(self.page.transaction["compo_info"])
 
 
 class ComponentContainerBase(ComponentBase):
@@ -765,7 +737,7 @@ class ComponentContainerBase(ComponentBase):
         for node in self.node_list:
             cid, slot = node.position
 
-            self.add_component(node(__instantiate__=True), slot=slot, cid=cid)
+            self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
 
     def add_component(self, compo_obj, slot = None, cid = None):
         """ You can call this function to add a component to its container. Optional is the slot-name. 
@@ -773,7 +745,7 @@ class ComponentContainerBase(ComponentBase):
 
         if isinstance(compo_obj, UnboundComponent):
             cid, slot = compo_obj.position
-            compo_obj = compo_obj(__instantiate__=True)
+            compo_obj = compo_obj(self.page, cid, __instantiate__=True)
 
         # we have no nice cid, so use a UUID
         if not cid:
@@ -783,7 +755,7 @@ class ComponentContainerBase(ComponentBase):
         # handle the static part
         self.page.add_static_component(cid, compo_obj)
         # now remember it
-        self.page.transaction["compo_info"].append(compo_obj.get_component_info())
+        self.page.transaction["compo_info"][cid] = compo_obj.get_component_info()
         # and make it available in this container
         self.add_component_to_slot(compo_obj, slot)
         # the transaction-setup has to be redone because the component can

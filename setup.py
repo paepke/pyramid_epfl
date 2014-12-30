@@ -41,6 +41,7 @@ setuptools.setup(
         "pytz >= 2014.4",
         "python-dateutil",
         "odict"
+        "better_od"
     ],
     setup_requires=[
         "setuptools-git",
