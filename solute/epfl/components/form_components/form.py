@@ -88,7 +88,7 @@ class Input(FormBaseComponent):
     template_name = "form_components/form_input.html"
 
     compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
-
+    js_parts = "form_components/form_macros.js"
     js_name = ["bootstrap3-typeahead.min.js"]
     css_name = ["form.css"]
 
