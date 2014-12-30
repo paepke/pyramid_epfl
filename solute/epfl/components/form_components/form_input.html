@@ -1,15 +1,35 @@
-<div epflid="{{compo.cid}}"
+
+    <div epflid="{{compo.cid}}"
          class="{{ 'col-sm-10' if compo.label else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
 
         {% if compo.input_type == "textarea" %}
             <div epfl-type="textarea">
                 <textarea class="form-control" id="{{compo.cid}}" name="{{compo.name}}" >{{compo.value}}</textarea>
             </div>
+
         {%  elif compo.input_type == "select" %}
             <div epfl-type="select">
                 <select class="form-control" id="{{compo.cid}}" name="{{compo.name}}">
                 {% for option in compo.options %}
-                    <option value="{{ option }}" {% if compo.value == option %} selected="selected" {% endif %} >{{ option }}</option>
+                    {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
+                    <option value="{{ value }}" {% if compo.value == value %} selected="selected" {% endif %} >{{ visual }}</option>
                 {% endfor %}
                 </select>
             </div>
@@ -18,17 +38,63 @@
 
             <div class="form-control" id="{{compo.cid}}" name="{{compo.name}}" epfl-type="radiobuttongroup">
             {% for option in compo.options %}
-                <input type="radio" value="{{ option }}" name="{{compo.cid}}" {% if compo.value == option %} checked="checked" {% endif %} >{{ option }}</input>
+                {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
+
+
+                <input type="radio" value="{{ value }}" name="{{compo.cid}}" {% if compo.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
             {% endfor %}
             </div>
 
         {%  elif compo.input_type == "buttonset" %}
             <div id="{{compo.cid}}" name="{{compo.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
             {% for option in compo.options %}
-                <label for="{{ compo.cid }}_{{ option }}" class="btn btn-default blue {{ "active" if compo.value == option else "" }}">
+                {% if option is string %}
+                    {% set value = option %}
+                    {% set visual = option %}
+                {% else %}
+                    {% if option[0] is defined and option[1] is defined %}
+                        {% set value = option[0] %}
+                        {% set visual = option[1] %}
+                    {% endif %}
+                    {% if option["visual"] is defined  %}
+                          {% set visual = option["visual"] %}
+                          {% if option["value"] is defined %}
+                              {% set value = option["value"] %}
+                          {% endif %}
+                          {% if option["id"] is defined %}
+                              {% set value = option["id"] %}
+                          {% endif %}
+                    {% endif %}
+                {% endif %}
 
-                <input type="radio" id="{{ compo.cid }}_{{ option }}" value="{{ option }}" name="{{compo.cid}}" class="toggle" {% if compo.value == option %} checked="checked" {% endif %} >
-                {{ option }} </label>
+                <label for="{{ compo.cid }}_{{ value }}"
+                           class="btn btn-default blue {{ "active" if compo.value == value else "" }}">
+                     <input type="radio"
+                           id="{{ compo.cid }}_{{ value }}"
+                           value="{{ value }}"
+                           name="{{compo.cid}}"
+                           class="toggle"
+                            {% if compo.value == value %} checked="checked" {% endif %}>
+                    {{ visual }}
+                </label>
+
             {% endfor %}
             </div>
 
@@ -52,6 +118,3 @@
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}
     </div>
-
-
-
