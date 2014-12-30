@@ -175,7 +175,6 @@ class Page(object):
     def _create_components_traverse_compo_struct(self, struct=None, container_id=None):
         if struct is None:
             struct = self.transaction["compo_struct"]
-            print struct
 
         for key, value in struct.iteritems():
             self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
