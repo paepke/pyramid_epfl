@@ -18,9 +18,6 @@ class Dragable(epflcomponentbase.ComponentContainerBase):
     title_renamable = False
     is_selected = False
     selectable=False
-    
-    def __init__(self, **extra_params):
-        super(Dragable, self).__init__()
 
     @classmethod
     def generate_from_id(cls, id):

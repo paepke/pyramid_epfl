@@ -6,6 +6,7 @@ import types
 import string
 
 from odict import odict
+from better_od import BetterOrderedDict as better_od
 
 from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid import security
@@ -162,19 +163,26 @@ class Page(object):
         """ Calling self.setup_components once and remember the compos as compo_info """
         if not self.transaction.get("components_assigned"):
             self.setup_components()
-            compo_info = []
+            compo_info = {}
             for cid, compo in self.components.items():
-                compo_info.append(compo.get_component_info())
+                compo_info[cid] = compo.get_component_info()
             self.transaction["compo_info"] = compo_info
+            self.transaction["compo_struct"] = better_od()
             self.transaction["components_assigned"] = True
         else:
-            for compo_info in self.transaction["compo_info"]:
-                self.assign_component(compo_info)
+            self._create_components_traverse_compo_struct()
 
+    def _create_components_traverse_compo_struct(self, struct=None, container_id=None):
+        if struct is None:
+            struct = self.transaction["compo_struct"]
 
-    def assign_component(self, compo_info):
+        for key, value in struct.iteritems():
+            self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
+            self._create_components_traverse_compo_struct(value, container_id=key)
+
+    def assign_component(self, compo_info, container_id=None):
         """ Create a component from the remembered compo_info and assign it to the page """
-        compo_obj = compo_info["class"].create_by_compo_info(self, compo_info)
+        compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
         self.add_static_component(compo_info["cid"], compo_obj)
 
 
@@ -252,9 +260,8 @@ class Page(object):
                                                                           'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
         self.components[cid] = compo_obj
-        compo_obj.set_component_id(cid)
-        compo_obj.set_page_obj(self)
-
+        if not hasattr(compo_obj, 'container_compo'):
+            self.transaction["compo_struct"].setdefault(cid, odict())
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this page.
@@ -284,7 +291,7 @@ class Page(object):
         No need to call this (super) method in derived classes.
         [request-processing-flow]
         """
-        self.root_node = self.root_node(__instantiate__=True)
+        self.root_node = self.root_node(self, 'root_node', __instantiate__=True)
 
     def get_jinja_template_extra_data(self):
         """ Returns the data accumulated by the jinja-epfl-component-extension (jinja_extensions.py).
