@@ -2,6 +2,7 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import Droppable, Dragable
 from odict import odict
 
+
 class FormBaseComponent(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form_components/static"
 
@@ -87,9 +88,9 @@ class Input(FormBaseComponent):
     template_name = "form_components/form_input.html"
 
     compo_state = ['name', 'value', 'label', 'input_type', 'validation_error']
-    
-    js_name=["bootstrap3-typeahead.min.js"]
-    css_name=["form.css"]
+
+    js_name = ["bootstrap3-typeahead.min.js"]
+    css_name = ["form.css"]
 
     label = None
     name = None
@@ -98,113 +99,160 @@ class Input(FormBaseComponent):
     input_type = None
     typeahead = False
 
-    def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="", **extra_params):
+    def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="",
+                 **extra_params):
         self.value = self.default
         super(Input, self).__init__()
 
 
 def Text(label=None, name=None, default="", typeahead=False, **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='text',
-                                                                validation_type='text',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                typeahead=typeahead,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='text',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     typeahead=typeahead,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Number(label=None, name=None, default=0, **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='number',
-                                                                validation_type='number',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='number',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Checkbox(label=None, name=None, default=False, mandatory=False, validation_helper=None, **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     if validation_helper is None:
         validation_helper = []
     if mandatory:
         validation_helper.append(
             (lambda x: x.value, 'Mandatory field not checked.'))
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='checkbox',
-                                                                validation_type='bool',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                validation_helper=validation_helper,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='bool',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     validation_helper=validation_helper,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Toggle(label=None, name=None, default=False, on_text="an", off_text="aus", validation_helper=None, **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='toggle',
-                                                                validation_type='bool',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                on_text=on_text,
-                                                                off_text=off_text,
-                                                                css_name=[
-                                                                    "bootstrap-switch.min.css"],
-                                                                js_name=[
-                                                                    "bootstrap-switch.min.js"],
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='bool',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     on_text=on_text,
+                                                                     off_text=off_text,
+                                                                     css_name=["bootstrap-switch.min.css"],
+                                                                     js_name=["bootstrap-switch.min.js"],
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Textarea(label=None, name=None, default="", **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='textarea',
-                                                                validation_type='text',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='text',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Select(label=None, name=None, default="", options=[], **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='select',
-                                                                validation_type='text',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                options=options,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='text',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     options=options,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Radio(label=None, name=None, default="", options=[], **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='radio',
-                                                                validation_type='text',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                options=options,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='text',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     options=options,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 def Buttonradio(label=None, name=None, default="", options=[], **extra_params):
+    try:
+        structure_params = {'cols': extra_params.pop('cols')}
+    except KeyError:
+        structure_params = {}
+
     return epflcomponentbase.ComponentContainerBase(node_list=[Input(input_type='buttonset',
-                                                                validation_type='text',
-                                                                label=label,
-                                                                name=name,
-                                                                default=default,
-                                                                options=options,
-                                                                **extra_params)],
-                                               template_name='form_components/form_label.html',
-                                               label=label)
+                                                                     validation_type='text',
+                                                                     label=label,
+                                                                     name=name,
+                                                                     default=default,
+                                                                     options=options,
+                                                                     **extra_params)],
+                                                    template_name='form_components/form_label.html',
+                                                    label=label,
+                                                    **structure_params)
 
 
 class Button(FormBaseComponent):
@@ -262,15 +310,14 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
         for i in range(self.number_of_selects):
             droppable = self.add_component(
                 MultiSelect_Droppable(cid=self.cid + "_" + str(i)))
-                
+
     def add_content(self, selection_index, comp=None, title=None, id=None):
         if comp is None:
             self.components[selection_index].add_component(MultiSelect_Dragable(
-                    selectable=True, title=title, id=id))
+                selectable=True, title=title, id=id))
         else:
-            pass #TODO
-        
-        
+            pass  # TODO
+
 
     def handle_moveforward(self, select_index):
         from_droppable = self.components[select_index]
