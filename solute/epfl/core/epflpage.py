@@ -132,8 +132,9 @@ class Page(object):
                 extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
                 extra_content = [s for s in extra_content
                                  if s not in self.transaction.setdefault('rendered_extra_content', set())]
-                out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
-                self.transaction['rendered_extra_content'].update(extra_content)
+                if extra_content:
+                    out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
+                    self.transaction['rendered_extra_content'].update(extra_content)
 
                 check_tid = True
             else:
