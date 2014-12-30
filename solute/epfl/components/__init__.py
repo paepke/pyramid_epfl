@@ -37,6 +37,8 @@ from layout.cardinal import CardinalLayout
 from layout.list import ListLayout
 from layout.nav import NavLayout
 from layout.tabs import TabsLayout
+from containers.table import TableContainer
+from datagrid.datagrid import DataGrid
 
 def add_routes(config):
     Form.add_pyramid_routes(config)
@@ -55,5 +57,7 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
+    DataGrid.add_pyramid_routes(config)
+
     
 
