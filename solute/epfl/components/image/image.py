@@ -39,9 +39,6 @@ class Image(epflcomponentbase.ComponentBase):
     def set_image_path(self, path):
         self.image_path = path
 
-    def __init__(self, **extra_params):
-        super(Image, self).__init__()
-        self.image_path = ""
 
 class ImageList(Droppable):
     template_name = "image/image_list.html"
@@ -61,7 +58,9 @@ class ImageList(Droppable):
         origin_comp_box.redraw()
         self.redraw()
     
-    def __init__(self, show_borders=None, **extra_params):
-        super(ImageList, self).__init__()
-        if not show_borders is None:
-            self.show_borders = show_borders
+    def __init__(self, *args, **extra_params):
+        super(ImageList, self).__init__(*args, **extra_params)
+        if "show_borders" in extra_params:
+            self.show_borders = extra_params["show_borders"]
+        else:
+            self.show_borders = False

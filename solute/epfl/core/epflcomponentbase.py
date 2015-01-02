@@ -304,7 +304,7 @@ class ComponentBase(object):
     def create_by_compo_info(cls, page, compo_info, container_id):
         compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
         if container_id:
-            container_compo = page.components[container_id] # container should exist before thier content
+            container_compo = page.components[container_id] # container should exist before their content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
@@ -769,10 +769,17 @@ class ComponentContainerBase(ComponentBase):
         """ This method must fill the correct slot with the component """
         self.components.append(compo_obj)
 
+    # TO BE REVIEWED
     def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
         self.components.remove(compo_obj)
-
+        
+        # new: removing component from transaction code has moved into epflpagebase
+        
+        # remove component from page transaction
+        self.page.remove_component_from_transaction(compo_obj.cid)
+        
         # remove it from the compo_info
-        self.page.transaction["compo_info"] = [ci for ci in self.page.transaction["compo_info"]
-                                               if ci["cid"] != compo_obj.cid]
+        #self.page.transaction["compo_info"] = {cid:self.page.transaction["compo_info"][cid] for cid in self.page.transaction["compo_info"]
+        #                                       if cid != compo_obj.cid}
+        
