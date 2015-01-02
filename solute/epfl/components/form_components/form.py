@@ -285,7 +285,7 @@ class MultiSelect_Droppable(Droppable):
 
 class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
     template_name = "form_components/form_multiselect.html"
-    js_parts = "form_components/form_multiselect.html"
+    js_parts = "form_components/form_multiselect.js"
 
     js_name = ["form.multiselect.js"]
 
@@ -300,10 +300,10 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
         # node_list.append(droppable)
         return node_list
 
-    def __init__(self, number_of_selects=None, label=None, value=None, callback=None, **extra_params):
+    def __init__(self, label=None, value=None, callback=None, **extra_params):
         super(MultiSelect, self).__init__()
-        if not number_of_selects is None:
-            self.number_of_selects = number_of_selects
+        if "number_of_selects" in extra_params:
+            self.number_of_selects = extra_params["number_of_selects"]
 
     def init_transaction(self):
         epflcomponentbase.ComponentContainerBase.init_transaction(self)
@@ -316,7 +316,8 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
             self.components[selection_index].add_component(MultiSelect_Dragable(
                 selectable=True, title=title, id=id))
         else:
-            pass  # TODO
+            # TODO
+            raise Exception("Adding existing components is not supported yet!")
 
 
     def handle_moveforward(self, select_index):

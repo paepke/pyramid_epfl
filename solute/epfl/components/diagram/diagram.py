@@ -48,6 +48,4 @@ class Diagram(epflcomponentbase.ComponentBase):
                         elif "visible" in backed_series_entry:
                             backed_series_entry.pop("visible")
 
-    def __init__(self, label=None, value=None, callback=None, **extra_params):
-        super(Diagram, self).__init__()
-        self.diagram_params = {}
+    
