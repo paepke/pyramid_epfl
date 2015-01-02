@@ -1,5 +1,7 @@
-<div class="epfl_box" epflid="{{compo.cid}}" >
+<div class="{{ "epfl_box_border" if compo.box_shown else "epfl_box" }}" epflid="{{compo.cid}}" >
+    {% if compo.box_shown %}
     <div class="epfl_box_headline">{{ compo.title }}</div>
+    {% endif %}
     <div class="epfl_box_content">
         {% for compo_obj in compo.components %}
             {{ compo_obj.render() }}
