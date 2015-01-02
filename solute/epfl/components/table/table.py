@@ -45,7 +45,7 @@ from solute.epfl.core import epfli18n
 from jinja2 import filters as jinja_filters
 
 
-class Table(epflcomponentbase.ComponentBase):
+class Table(epflcomponentbase.ComponentContainerBase):
 
     template_name = "table/table.html"
     js_parts = "table/table.js"
@@ -53,8 +53,7 @@ class Table(epflcomponentbase.ComponentBase):
     exporting_macros = ["table", "pager"]
 
     js_name = ["jquery.jqGrid-4.4.1/js/i18n/grid.locale-de.js",
-               "jquery.jqGrid-4.4.1/js/jquery.jqGrid.src.js",
-               "table.js"]
+               "jquery.jqGrid-4.4.1/js/jquery.jqGrid.src.js"]
 
     css_name = ["jquery.jqGrid-4.4.1/css/ui.jqgrid.css",
                 "table.css"]
@@ -157,15 +156,10 @@ class Table(epflcomponentbase.ComponentBase):
                 column_def["id"] = False
 
             if col_type == "icon":
-#                col_type = "text"
                 column_def["formatter"] = "icon_formatter"
-
             elif col_type == "anchor":
-#                col_type = "text"
                 column_def["formatter"] = "anchor_formatter"
-
             elif col_type == "isodate":
-#                col_type = "text"
                 column_def["formatter"] = "anchor_formatter"
 
             # fixed, resized columns:
