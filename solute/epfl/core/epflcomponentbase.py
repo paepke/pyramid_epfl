@@ -771,6 +771,9 @@ class ComponentContainerBase(ComponentBase):
 
     def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
+        if hasattr(compo_obj, 'components'):
+            for compo in compo_obj.components:
+                compo_obj.del_component(compo)
         self.components.remove(compo_obj)
         self.struct_dict.pop(compo_obj.cid)
         self.page.transaction['compo_info'].pop(compo_obj.cid)
