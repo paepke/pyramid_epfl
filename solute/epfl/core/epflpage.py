@@ -186,31 +186,6 @@ class Page(object):
         """ Create a component from the remembered compo_info and assign it to the page """
         compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
         self.add_static_component(compo_info["cid"], compo_obj)
-    
-    # TO BE REVIEWED
-    def _remove_component_traverse_compo_struct(self, struct=None, compo_id=None):
-        """ Traverse recursively through the compo struct tree and remove the component if found """
-        if struct is None:
-            struct = self.transaction["compo_struct"]
-        if compo_id in struct._keys:
-            struct.__delitem__(compo_id)
-            return True
-        else:
-            found = False
-            for key, value in struct.iteritems():
-                found = self._remove_component_traverse_compo_struct(struct=value, compo_id=compo_id)
-                if found == True:
-                    break
-            return found
-    
-    # TO BE REVIEWED
-    def remove_component_from_transaction(self, compo_id):
-        """ Remove a component from the page's transaction. """
-        # remove component from the compo_info
-        self.transaction["compo_info"] = {cid:self.transaction["compo_info"][cid] for cid in self.transaction["compo_info"]
-                                               if cid != compo_id}
-        # remove it also from the compo struct
-        self._remove_component_traverse_compo_struct(struct=self.transaction["compo_struct"], compo_id=compo_id)
 
     @property
     def parent(self):

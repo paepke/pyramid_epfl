@@ -261,10 +261,15 @@ class Button(FormBaseComponent):
 
     label = None
     value = None
-    callback = None
+    event_name=None
+    event_target=None
 
-    def __init__(self, label=None, value=None, callback=None, **extra_params):
+    def __init__(self, label=None, value=None, event_name=None, event_target=None, **extra_params):
         super(Button, self).__init__()
+        if not self.event_name:
+            raise Exception('Missing event_name for Button component. %s' % self.cid)
+        if not self.event_target:
+            self.event_target = self.cid
 
 
 class MultiSelect_Dragable(Dragable):
@@ -292,7 +297,8 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
     number_of_selects = 2
     label = None
     value = None
-    callback = None
+    event_name=None
+    event_target=None
 
     def init_struct(self):
         node_list = []
@@ -300,10 +306,14 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase, FormBaseComponent):
         # node_list.append(droppable)
         return node_list
 
-    def __init__(self, label=None, value=None, callback=None, **extra_params):
+    def __init__(self, label=None, value=None, event_name=None, event_target=None, **extra_params):
         super(MultiSelect, self).__init__()
         if "number_of_selects" in extra_params:
             self.number_of_selects = extra_params["number_of_selects"]
+        if not self.event_name:
+            raise Exception('Missing event_name for MultiSelect component. %s' % self.cid)
+        if not self.event_target:
+            self.event_target = self.cid
 
     def init_transaction(self):
         epflcomponentbase.ComponentContainerBase.init_transaction(self)

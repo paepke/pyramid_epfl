@@ -769,17 +769,9 @@ class ComponentContainerBase(ComponentBase):
         """ This method must fill the correct slot with the component """
         self.components.append(compo_obj)
 
-    # TO BE REVIEWED
     def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
         self.components.remove(compo_obj)
-        
-        # new: removing component from transaction code has moved into epflpagebase
-        
-        # remove component from page transaction
-        self.page.remove_component_from_transaction(compo_obj.cid)
-        
-        # remove it from the compo_info
-        #self.page.transaction["compo_info"] = {cid:self.page.transaction["compo_info"][cid] for cid in self.page.transaction["compo_info"]
-        #                                       if cid != compo_obj.cid}
-        
+        self.struct_dict.pop(compo_obj.cid)
+        self.page.transaction['compo_info'].pop(compo_obj.cid)
+        delattr(self.page, compo_obj.cid)
