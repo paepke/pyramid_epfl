@@ -70,6 +70,7 @@ class Page(object):
                            #  "position": "center"}
 
     __name = None # cached value from get_name()
+    _active_initiations = 0
 
     def __init__(self, request, transaction = None):
         """ The optional parameter "transaction" is needed when creating page_objs manually.
@@ -393,11 +394,14 @@ class Page(object):
 
         for cid, compo in self.components.items():
             if cid + "$__inited__" not in self.transaction:
+                self._active_initiations += 1
                 self.transaction[cid + "$__inited__"] = True
                 compo.init_transaction()
+                self._active_initiations -= 1
 
-        for cid, compo in self.components.items():
-            compo.setup_component()
+        if self._active_initiations == 0:
+            for cid, compo in self.components.items():
+                compo.setup_component()
 
     def make_new_tid(self):
         self.transaction.store_as_new()
