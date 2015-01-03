@@ -39,3 +39,4 @@ nosetests.xml
 /docs/_autodoc/*
 .pydevproject
 /.settings/
+.idea
