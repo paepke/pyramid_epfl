@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from pprint import pprint
-from better_od import BetterOrderedDict as odict
+from collections2 import OrderedDict as odict
 
 import types, copy, string, inspect, uuid
 
@@ -331,7 +331,8 @@ class ComponentBase(object):
         # now we can setup the component-state
         self.setup_component_state()
 
-    def set_container_compo(self, compo_obj, slot):
+    def set_container_compo(self, compo_obj, slot, position=None):
+        # TODO: Can be handled without traversal due to container_compo having a struct_dict reference.
         self.container_compo = compo_obj
         self.container_slot = slot
 
@@ -343,7 +344,10 @@ class ComponentBase(object):
                 structure_dict = traverse(container)
             return structure_dict.setdefault(compo.cid, odict())
 
-        self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
+        if position:
+            self.struct_dict = traverse(self.container_compo).insert(self.cid, odict(), position)
+        else:
+            self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
 
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
@@ -678,6 +682,14 @@ class ComponentBase(object):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
         return self.render(*args, **kwargs)
 
+    def compo_destruct(self):
+        """ Called before destruction of this component by a container component.
+
+        [request-processing-flow]
+        """
+        pass
+
+
     def switch_component(self, target, cid, slot=None, position=None):
         """
         Switches a component from its current location (whatever component it may reside in at that time) and move it to
@@ -714,6 +726,14 @@ class ComponentContainerBase(ComponentBase):
     """
     template_name = 'tree_base.html'
     node_list = []
+    compo_state = ['row_offset', 'row_limit']
+
+    default_child_cls = None
+    row_offset = 0
+    row_limit = 30
+    row_data = 30
+
+    __update_children_done__ = False
 
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
@@ -721,6 +741,37 @@ class ComponentContainerBase(ComponentBase):
             self.setup_component_slots()
 
         return self
+
+    def after_event_handling(self):
+        super(ComponentContainerBase, self).after_event_handling()
+        self.update_children(force=True)
+
+    def update_children(self, force=False):
+        """If a default_child_cls has been set this updates all child components to reflect the current state from
+        get_data(). Will raise an exception if called twice without the force parameter present."""
+
+        if self.__update_children_done__ and not force:
+            raise Exception('update_children called twice without force parameter for component %s.' % self.cid)
+        self.__update_children_done__ = True
+
+        if self.default_child_cls is None:
+            return
+
+        for i, data in enumerate(self.get_data(self.row_offset, self.row_limit, self.row_data)):
+            if self.components[i].id == data['id']:
+                continue
+            self.replace_component(self.components[i], self.default_child_cls(**data))
+            self.redraw()
+
+    def get_data(self, row_offset=None, row_limit=None, row_data=None):
+        """ Overwrite this method to automatically provide data to this components children.
+
+        The list must comprise of dict like data objects with an id key. The data objects will be used as parameters for
+        the creation of a default_child_cls component."""
+        return []
+
+    def handle_set_row(self, row_offset, row_limit, row_data=None):
+        self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
 
     def init_struct(self):
         return self.node_list
@@ -735,8 +786,17 @@ class ComponentContainerBase(ComponentBase):
 
             self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
 
-    def add_component(self, compo_obj, slot = None, cid = None):
-        """ You can call this function to add a component to its container. Optional is the slot-name. 
+    def replace_component(self, old_compo_obj, new_compo_obj):
+        """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
+        cid = old_compo_obj.cid
+        position = self.components.index(old_compo_obj)
+        self.del_component(old_compo_obj)
+        return self.add_component(new_compo_obj(cid=cid), position=position)
+
+    def add_component(self, compo_obj, slot = None, cid = None, position=None):
+        """ You can call this function to add a component to its container.
+        slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
+        compo_obj, position can be used to insert at a specific location.
         """
 
         if isinstance(compo_obj, UnboundComponent):
@@ -747,13 +807,13 @@ class ComponentContainerBase(ComponentBase):
         if not cid:
             cid = str(uuid.uuid4())
         # assign the container
-        compo_obj.set_container_compo(self, slot)
+        compo_obj.set_container_compo(self, slot, position=position)
         # handle the static part
         self.page.add_static_component(cid, compo_obj)
         # now remember it
         self.page.transaction["compo_info"][cid] = compo_obj.get_component_info()
         # and make it available in this container
-        self.add_component_to_slot(compo_obj, slot)
+        self.add_component_to_slot(compo_obj, slot, position=position)
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
         self.page.handle_transaction()
@@ -765,12 +825,16 @@ class ComponentContainerBase(ComponentBase):
         container-component provides to accumulate components """
         self.components = []
 
-    def add_component_to_slot(self, compo_obj, slot):
+    def add_component_to_slot(self, compo_obj, slot, position=None):
         """ This method must fill the correct slot with the component """
-        self.components.append(compo_obj)
+        if position:
+            self.components.insert(position, compo_obj)
+        else:
+            self.components.append(compo_obj)
 
     def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
+        compo_obj.compo_destruct()
         if hasattr(compo_obj, 'components'):
             for compo in compo_obj.components:
                 compo_obj.del_component(compo)

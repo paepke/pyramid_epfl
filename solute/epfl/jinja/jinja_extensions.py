@@ -231,4 +231,5 @@ def extend_environment(env):
 
 def get_jinja_extensions():
     """ this one returns a list of 'regular' jinja2 extensions used with epfl """
-    return [EpflComponentExtension, jinja2.ext.do]
+    # return [EpflComponentExtension, jinja2.ext.do]
+    return [jinja2.ext.do]
