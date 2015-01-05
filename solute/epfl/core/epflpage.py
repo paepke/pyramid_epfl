@@ -6,7 +6,7 @@ import types
 import string
 
 from odict import odict
-from better_od import BetterOrderedDict as better_od
+from collections2 import OrderedDict as better_od
 
 from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid import security
