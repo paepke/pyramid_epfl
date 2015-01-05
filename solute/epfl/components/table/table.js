@@ -196,7 +196,6 @@ $(document).ready(function () {
 // formatters
     jQuery.extend($.fn.fmatter, {
         "icon_formatter": function (cellvalue, options, row) {
-            console.log("ICON");
             var alt_attr = "", lnk_open = "", lnk_close = ""
             if (!cellvalue["src"]) {
                 return '';

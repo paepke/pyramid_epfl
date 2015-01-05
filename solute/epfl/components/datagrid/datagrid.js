@@ -1,70 +1,111 @@
+epfl.DataGridComponent = function (cid, params) {
+    epfl.ComponentBase.call(this, cid, params);
+    var compo = this;
+
+    columns = [];
+    {% for field in compo.fields %}
+        columns.push({
+            field: "{{field.id}}",
+            title: "{{field.name}}"
+            {% if field.type is defined%}
+                {% if field.type == "element" %}
+                    ,formatter: "epfl.DataGridComponent.elementFormatter"
+                {% endif %}
+            {% endif %}
+            {% if field.align is defined %}
+                ,align : "{{field.align}}"
+                ,valign:"{{field.align}}"
+            {% endif %}
+        });
+    {% endfor %}
+
+
+    $("#datagrid_{{compo.cid}}").bootstrapTable({
+        method:"get",
+        url:"{{ compo.data_url }}",
+        height: {{compo.height}},
+        pagination: true,
+        sidePagination: "server",
+        pageList:  [10, 25, 50, 100, 200],
+        search:true,
+        columns:columns,
+        onLoadSuccess: epfl.DataGridComponent.onLoadSuccess
+    });
+
+   epfl.DataGridComponent.buttonFormaterClickHandler = function(eventname){
+       var evt = compo.make_event(eventname,{});
+       epfl.send(evt);
+   }
+
+};
+
+epfl.DataGridComponent.onLoadSuccess = function (data) {
+    data.forEach(function (row) {
+        for (var key in row) {
+            if (!row[key].type) {
+                continue;
+            }
+            if (row[key].type == "diagramm") {
+                $("#" + row[key].name).highcharts( {
+                        title : { text:null},
+                        tooltip:{enabled:false},
+                        plotOptions: {
+                            pie: {
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                showLegend: false
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            name: 'Browser share',
+                            data: [
+                                ['Firefox', 45.0],
+                                ['IE', 26.8],
+                                ['Safari', 8.5],
+                                ['Opera', 6.2],
+                                ['Others', 0.7]
+                            ]
+                        }]
+                    });
+                $("#" + row[key].name).find(".highcharts-button").hide();
+                $("#" + row[key].name).find("text").hide();
+            }
+        }
+    });
+};
+
+epfl.DataGridComponent.inherits_from(epfl.ComponentBase);
+
+epfl.DataGridComponent.prototype.fire_event = function (event_name, params, callback_fn) {
+    if (!params) {
+        params = {}
+    }
+
+    var evt = this.make_event(event_name, params);
+    epfl.send(evt, callback_fn)
+};
+
 epfl.init_component("{{compo.cid}}", "DataGridComponent", {});
 
+epfl.DataGridComponent.elementFormatter = function (data, row) {
+    if (!data || !data.type) {
+        return data;
+    }
 
-var mydata = [
-    {id: "1", invdate: "2007-10-01", name: "test", note: "note", amount: "200.00", tax: "10.00", total: "210.00"},
-    {id: "2", invdate: "2007-10-02", name: "test2", note: "note2", amount: "300.00", tax: "20.00", total: "320.00"},
-    {id: "3", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "4", invdate: "2007-10-04", name: "test", note: "note", amount: "200.00", tax: "10.00", total: "210.00"},
-    {id: "5", invdate: "2007-10-05", name: "test2", note: "note2", amount: "300.00", tax: "20.00", total: "320.00"},
-    {id: "6", invdate: "2007-09-06", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "7", invdate: "2007-10-04", name: "test", note: "note", amount: "200.00", tax: "10.00", total: "210.00"},
-    {id: "8", invdate: "2007-10-03", name: "test2", note: "note2", amount: "300.00", tax: "20.00", total: "320.00"},
-    {id: "9", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "10", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "11", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "12", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "13", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "14", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "15", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "16", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "17", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "18", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "19", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "20", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "21", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "22", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "23", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "24", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "25", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "26", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "27", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "28", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "29", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"},
-    {id: "30", invdate: "2007-09-01", name: "test3", note: "note3", amount: "400.00", tax: "30.00", total: "430.00"}
-];
+    if (data.type == "diagramm") {
+        return "<div id='"+data.name+"' style='min-width: 100px; height: 100px; max-width: 100px; margin: 0 auto'></div>";
+    } else if (data.type == "icon") {
+        var size = '1';
+        if(data.size){
+            size = data.size;
+        }
+        return '<i class="fa fa-' + data.icon + ' fa-'+ size+'x"></i> ' + data.text;
+    } else if (data.type == "button") {
+        return "<button type='button' class='btn btn-default' onclick='epfl.DataGridComponent.buttonFormaterClickHandler(\""+ data.handler + "\")'>" + data.text + "</button>";
+    }
+};
 
 
-$(document).ready(function () {
-    $("#jqGrid").jqGrid({
-
-
-        datatype: "json",
-        url: "",
-        mtype:"POST",
-
-        /*
-        datatype: "local",
-        data: mydata,
-        */
-        height: 250,
-        width: 780,
-
-        pager: "#jqGridPager",
-        rowNum: 10,
-
-        colModel: [
-            {label: 'Inv No', name: 'id', width: 75, key: true},
-            {label: 'Date', name: 'invdate', width: 90},
-            {label: 'Client', name: 'name', width: 100},
-            {label: 'Amount', name: 'amount', width: 80},
-            {label: 'Tax', name: 'tax', width: 80},
-            {label: 'Total', name: 'total', width: 80},
-            {label: 'Notes', name: 'note', width: 150}
-        ],
-        viewrecords: true, // show the current page, data rang and total records on the toolbar
-        caption: "Load jqGrid through Javascript Array"
-    });
-    $("#load_jqGrid").css("display", "none");
-});
 
