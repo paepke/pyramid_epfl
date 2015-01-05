@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from pprint import pprint
-from better_od import BetterOrderedDict as odict
+from collections2 import OrderedDict as odict
 
 import types, copy, string, inspect, uuid
 
