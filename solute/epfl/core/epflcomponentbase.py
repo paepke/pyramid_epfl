@@ -845,6 +845,8 @@ class ComponentContainerBase(ComponentBase):
             for compo in compo_obj.components:
                 compo_obj.del_component(compo)
         self.components.remove(compo_obj)
+        if not hasattr(self, 'struct_dict'):
+            self.struct_dict = self.page.transaction['compo_struct'][self.cid]
         self.struct_dict.pop(compo_obj.cid)
         self.page.transaction['compo_info'].pop(compo_obj.cid)
         delattr(self.page, compo_obj.cid)
