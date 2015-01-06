@@ -455,8 +455,6 @@ class ComponentBase(object):
 
         for attr_name in self.compo_state + self.base_compo_state:
             value = self._get_compo_state_attribute(attr_name)
-            if getattr(self, 'name', None) == 'source':
-                print 'get', self.cid, attr_name, value
             setattr(self, attr_name, value)
 
     def setup_component(self):
@@ -522,12 +520,9 @@ class ComponentBase(object):
         """
 
         values = {}
-        print self.compo_state
         for attr_name in self.compo_state + self.base_compo_state:
             value = getattr(self, attr_name)
             values[self.cid + "$" + attr_name] = value
-            if getattr(self, 'name', None) == 'source':
-                print 'set', self.cid, attr_name, value
 
         if self.deleted:
             for attr_name in values:
