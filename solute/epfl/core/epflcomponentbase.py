@@ -756,15 +756,9 @@ class ComponentContainerBase(ComponentBase):
 
         if self.default_child_cls is None:
             return
-        from pprint import pprint
-        pprint([compo.command for compo in self.components])
+
         for i, data in enumerate(self.get_data(self.row_offset, self.row_limit, self.row_data)):
-            try:
-                print i, data['id'], self.components[i].id
-            except Exception:
-                pass
             if i < len(self.components) and self.components[i].id == data['id']:
-                print 'nothing to do'
                 continue
             if i < len(self.components):
                 self.replace_component(self.components[i], self.default_child_cls(**data))
