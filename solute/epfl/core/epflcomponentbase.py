@@ -344,7 +344,7 @@ class ComponentBase(object):
                 structure_dict = traverse(container)
             return structure_dict.setdefault(compo.cid, odict())
 
-        if position:
+        if position is not None:
             self.struct_dict = traverse(self.container_compo).insert(self.cid, odict(), position)
         else:
             self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
@@ -756,14 +756,20 @@ class ComponentContainerBase(ComponentBase):
 
         if self.default_child_cls is None:
             return
-
+        from pprint import pprint
+        pprint([compo.command for compo in self.components])
         for i, data in enumerate(self.get_data(self.row_offset, self.row_limit, self.row_data)):
+            try:
+                print i, data['id'], self.components[i].id
+            except Exception:
+                pass
             if i < len(self.components) and self.components[i].id == data['id']:
+                print 'nothing to do'
                 continue
             if i < len(self.components):
                 self.replace_component(self.components[i], self.default_child_cls(**data))
             else:
-                self.add_component(self.default_child_cls(**data))
+                self.add_component(self.default_child_cls(**data), position=i)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         """ Overwrite this method to automatically provide data to this components children.
@@ -795,8 +801,9 @@ class ComponentContainerBase(ComponentBase):
         cid = old_compo_obj.cid
         position = self.components.index(old_compo_obj)
         self.del_component(old_compo_obj)
+        compo = self.add_component(new_compo_obj(cid=cid), position=position)
         self.redraw()
-        return self.add_component(new_compo_obj(cid=cid), position=position)
+        return compo
 
     def add_component(self, compo_obj, slot = None, cid = None, position=None):
         """ You can call this function to add a component to its container.
@@ -832,7 +839,7 @@ class ComponentContainerBase(ComponentBase):
 
     def add_component_to_slot(self, compo_obj, slot, position=None):
         """ This method must fill the correct slot with the component """
-        if position:
+        if position is not None:
             self.components.insert(position, compo_obj)
         else:
             self.components.append(compo_obj)
