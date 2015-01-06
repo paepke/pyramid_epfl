@@ -566,7 +566,8 @@ class ComponentBase(object):
 
         event_handler = getattr(self, "handle_" + event_name, None)
         if event_handler is None:
-            raise Exception('Received None as event handler, have you setup an event handler for %s?' % event_name)
+            raise Exception('Received None as event handler, have you setup an '
+                            'event handler for %s in %s?' % (event_name, self.__class__))
         elif not hasattr(event_handler, '__call__'):
             raise Exception('Received non callable for event handling.')
         event_handler(**event_params)
