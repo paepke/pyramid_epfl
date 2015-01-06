@@ -101,8 +101,12 @@ class Input(FormBaseComponent):
 
     def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):
-        self.value = self.default
         super(Input, self).__init__()
+
+    def init_transaction(self):
+        if self.value is None and self.default is not None:
+            self.value = self.default
+        super(Input, self).init_transaction()
 
 
 def Text(label=None, name=None, default="", typeahead=False, **extra_params):

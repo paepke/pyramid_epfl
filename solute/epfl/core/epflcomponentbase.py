@@ -455,6 +455,8 @@ class ComponentBase(object):
 
         for attr_name in self.compo_state + self.base_compo_state:
             value = self._get_compo_state_attribute(attr_name)
+            if getattr(self, 'name', None) == 'source':
+                print 'get', self.cid, attr_name, value
             setattr(self, attr_name, value)
 
     def setup_component(self):
@@ -520,10 +522,12 @@ class ComponentBase(object):
         """
 
         values = {}
-
+        print self.compo_state
         for attr_name in self.compo_state + self.base_compo_state:
             value = getattr(self, attr_name)
             values[self.cid + "$" + attr_name] = value
+            if getattr(self, 'name', None) == 'source':
+                print 'set', self.cid, attr_name, value
 
         if self.deleted:
             for attr_name in values:
@@ -842,11 +846,13 @@ class ComponentContainerBase(ComponentBase):
         """ Removes the component from the slot and form the compo_info """
         compo_obj.compo_destruct()
         if hasattr(compo_obj, 'components'):
-            for compo in compo_obj.components:
+            for compo in compo_obj.components[:]:
                 compo_obj.del_component(compo)
         self.components.remove(compo_obj)
-        if not hasattr(self, 'struct_dict'):
-            self.struct_dict = self.page.transaction['compo_struct'][self.cid]
-        self.struct_dict.pop(compo_obj.cid)
+        if self.struct_dict is None:
+            self.page.transaction['compo_struct'][self.cid].pop(compo_obj.cid)
+        else:
+            self.struct_dict.pop(compo_obj.cid)
         self.page.transaction['compo_info'].pop(compo_obj.cid)
-        delattr(self.page, compo_obj.cid)
+        self.page.components.pop(compo_obj.cid)
+        self.page.__dict__.pop(compo_obj.cid)
