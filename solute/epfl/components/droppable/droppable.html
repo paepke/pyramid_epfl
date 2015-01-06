@@ -10,7 +10,7 @@
 		{% endif %}
 		
 	{% endif %}
-	<div class="list-group {{ compo.get_valid_types() }}" id="{{compo.cid}}" style="{{ "display: none;" if compo.collapsable and compo.is_collapsed else "" }}">
+	<div class="list-group row {{ compo.get_valid_types() }}" id="{{compo.cid}}" style="{{ "display: none;" if compo.collapsable and compo.is_collapsed else "" }}">
 	    {% for compo in compo.components %}
 	        {{ compo() }}
 	    {% endfor %}
