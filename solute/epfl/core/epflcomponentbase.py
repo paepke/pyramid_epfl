@@ -758,10 +758,12 @@ class ComponentContainerBase(ComponentBase):
             return
 
         for i, data in enumerate(self.get_data(self.row_offset, self.row_limit, self.row_data)):
-            if self.components[i].id == data['id']:
+            if i < len(self.components) and self.components[i].id == data['id']:
                 continue
-            self.replace_component(self.components[i], self.default_child_cls(**data))
-            self.redraw()
+            if i < len(self.components):
+                self.replace_component(self.components[i], self.default_child_cls(**data))
+            else:
+                self.add_component(self.default_child_cls(**data))
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         """ Overwrite this method to automatically provide data to this components children.
@@ -786,11 +788,14 @@ class ComponentContainerBase(ComponentBase):
 
             self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
 
+        self.update_children(force=True)
+
     def replace_component(self, old_compo_obj, new_compo_obj):
         """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
         cid = old_compo_obj.cid
         position = self.components.index(old_compo_obj)
         self.del_component(old_compo_obj)
+        self.redraw()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
     def add_component(self, compo_obj, slot = None, cid = None, position=None):
