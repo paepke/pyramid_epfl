@@ -4,7 +4,7 @@
 
         {% if compo.input_type == "textarea" %}
             <div epfl-type="textarea">
-                <textarea class="form-control" id="{{compo.cid}}" name="{{compo.name}}" >{{compo.value}}</textarea>
+                <textarea class="form-control" id="{{compo.cid}}" name="{{compo.name}}" style="{{ compo.style if compo.style is defined else '' }}">{{compo.value}}</textarea>
             </div>
 
         {%  elif compo.input_type == "select" %}

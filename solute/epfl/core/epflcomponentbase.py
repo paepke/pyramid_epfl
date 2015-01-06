@@ -209,7 +209,7 @@ class ComponentBase(object):
                                                               # The base-component only defines the "access"-permission.
                                                               # If not given the component is not rendered.
 
-    template_name = ["empty.html"] # filenames of the templates for this component (if any)
+    template_name = "empty.html" # filenames of the templates for this component (if any)
     js_parts = [] # filenames of the js-parts of this component
     js_name = [] # filenames of the js-files for this component (if any)
     css_name = [] # filenames of the css-files for this component (if any)
