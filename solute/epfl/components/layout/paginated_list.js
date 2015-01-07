@@ -3,7 +3,7 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
         return;
     }
     var event = epfl.make_component_event(
-        '{{ compo.cid }}',
+        cid,
         'set_row',
         {
             row_offset: row_offset,

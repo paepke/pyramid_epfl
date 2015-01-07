@@ -758,17 +758,16 @@ class ComponentContainerBase(ComponentBase):
         if self.default_child_cls is None:
             return
         data = self.get_data(self.row_offset, self.row_limit, self.row_data)
-        for i, data in enumerate(data):
-            if i < len(self.components) and self.components[i].id == data['id']:
+        for i, d in enumerate(data):
+            if i < len(self.components) and self.components[i].id == d['id']:
                 continue
             if i < len(self.components):
-                self.replace_component(self.components[i], self.default_child_cls(**data))
+                self.replace_component(self.components[i], self.default_child_cls(**d))
             else:
-                self.add_component(self.default_child_cls(**data), position=i)
+                self.add_component(self.default_child_cls(**d), position=i)
+            self.redraw()
 
-        for i, compo in enumerate(self.components):
-            if i <= len(data):
-                continue
+        for compo in self.components[len(data):]:
             self.del_component(compo)
             self.redraw()
 
@@ -794,7 +793,6 @@ class ComponentContainerBase(ComponentBase):
             cid, slot = node.position
 
             self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
-
         self.update_children(force=True)
 
     def replace_component(self, old_compo_obj, new_compo_obj):
