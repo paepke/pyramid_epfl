@@ -686,7 +686,11 @@ class PageRequest(object):
             self.upload_mode = True
             self.params = request.params
         elif self.request.is_xhr:
-            self.params = request.json_body
+            try:
+                self.params = request.json_body
+            except:
+                #TODO: Bad bad hack fix this
+                pass
         else:
             self.params = request.params
 

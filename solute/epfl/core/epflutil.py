@@ -164,6 +164,19 @@ def get_component(request, tid, cid):
     page_obj.setup_components()
     return page_obj.components[cid]
 
+def get_component_from_root_node(request, tid, cid):
+    """
+    Same as get_component but for the new pages which always have a root node with the compos in it
+    """
+
+    transaction = core.epfltransaction.Transaction(request, tid)
+    page_name = transaction.get_page_name()
+    page_class = get_page_class_by_name(request, page_name)
+    page_obj = page_class(request, transaction)
+    page_obj.setup_components()
+    root_node = page_obj.components['root_node']
+    root_node.init_transaction()
+    return page_obj.components[cid]
 
 def get_widget(request, tid, cid, wid):
     """
