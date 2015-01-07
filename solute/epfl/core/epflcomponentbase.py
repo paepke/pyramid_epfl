@@ -726,12 +726,13 @@ class ComponentContainerBase(ComponentBase):
     """
     template_name = 'tree_base.html'
     node_list = []
-    compo_state = ['row_offset', 'row_limit']
+    compo_state = ['row_offset', 'row_limit', 'row_count']
 
     default_child_cls = None
     row_offset = 0
     row_limit = 30
     row_data = 30
+    row_count = 30
 
     __update_children_done__ = False
 

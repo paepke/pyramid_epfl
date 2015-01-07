@@ -14,6 +14,7 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
     css_name = ["bootstrap.min.css"]
 
     compo_state = ['links']
+    compo_state.extend(epflcomponentbase.ComponentContainerBase.compo_state)
 
     links = []
 

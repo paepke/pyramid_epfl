@@ -1,15 +1,45 @@
 <div class="list-group row" epflid="{{ compo.cid }}">
     {% for compo_obj in compo.components %}
-    {% if compo_obj.is_visible() %}
-    <div class="list-group-item col-sm-12">
-        {{ compo_obj.render() }}
-    </div>
-    {% endif %}
+        {% if compo_obj.is_visible() %}
+            <div class="list-group-item col-sm-12">
+                {{ compo_obj.render() }}
+            </div>
+        {% endif %}
     {% endfor %}
     {% for name, href in compo.links %}
-    <a class="list-group-item col-sm-12" href="{{ href }}">{{ name }}</a>
+        <a class="list-group-item col-sm-12" href="{{ href }}">{{ name }}</a>
     {% endfor %}
-    <a class="list-group-item col-sm-2" onclick=""><i class="fa fa-chevron-left"></i></a>
-    <div class="list-group-item col-sm-8"></div>
-    <a class="list-group-item col-sm-2" onclick=""><i class="fa fa-chevron-right"></i></a>
+    {% if compo.row_offset > 0 %}
+        <a class="list-group-item col-sm-1" onclick=""><i class="fa fa-chevron-left pull-left"></i></a>
+    {% else %}
+        <div class="col-sm-1"></div>
+    {% endif %}
+    <div class="col-sm-10"></div>
+    {% if compo.row_offset + compo.row_limit < compo.row_count %}
+        <a class="list-group-item col-sm-1"><i class="fa fa-chevron-right pull-right"></i></a>
+    {% else %}
+        <div class="col-sm-1"></div>
+    {% endif %}
+    <script type="text/javascript">
+        window.setTimeout(function () {
+
+            $('[epflid={{ compo.cid }}] .fa-chevron-right').parent().click(function () {
+                var event = epfl.make_component_event('{{ compo.cid }}',
+                                                      'set_row',
+                                                      {row_offset: {{ compo.row_offset + compo.row_limit }},
+                                                       row_limit: {{ compo.row_limit }},
+                                                       row_data: 0});
+                epfl.send(event);
+            });
+
+            $('[epflid={{ compo.cid }}] .fa-chevron-left').parent().click(function () {
+                var event = epfl.make_component_event('{{ compo.cid }}',
+                                                      'set_row',
+                                                      {row_offset: {{ compo.row_offset - compo.row_limit }},
+                                                       row_limit: {{ compo.row_limit }},
+                                                       row_data: 0});
+                epfl.send(event);
+            });
+        }, 0);
+    </script>
 </div>
