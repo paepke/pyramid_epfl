@@ -3,7 +3,9 @@ epfl.DragableComponent = function(cid, params) {
     var compo = this;
     var tmp = $('#' + cid).draggable({
         connectToSortable: '.droppable_type_' + params.type,
-        cursorAt: {top: 0, left: 0}
+        cursorAt: {top: 0, left: 0},
+        delay: 500,
+        zIndex: 9999
     });
     $('[epflid="'+cid+'"].selectable').not('.selected').click(function(event) {
     	var ev = compo.make_event("selected",{});

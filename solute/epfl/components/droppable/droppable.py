@@ -20,6 +20,7 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     title_renamable = False
     is_collapsed=False
     title=None
+    deactivate_on_drop=False # if set to true, a child cannot be dragged once it has been placed inside the droppable
         
     def init_transaction(self):
         super(Droppable, self).init_transaction()

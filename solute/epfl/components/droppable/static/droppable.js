@@ -41,6 +41,15 @@ epfl.DroppableComponent = function (cid, params) {
   			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
         	epfl.send(ev);
         });
+        $('[epflid="'+cid+'"] > .plain-title').bind('dblclick', function(event) {
+        	event.stopImmediatePropagation();
+        	event.preventDefault();
+        	$('#'+cid).toggle().sortable('disable').sortable('enable');
+        	$('[epflid="'+cid+'"] > .toggle-list').children('i').toggleClass('fa-minus').toggleClass('fa-plus');
+        	
+  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
+        	epfl.send(ev);
+        });
         // handle title renaming
         $('[epflid="'+cid+'"] > .title-rename.inactive').bind('dblclick keyup', function(event) {
         	if ((event.type == "keyup") && (event.keyCode != 113)) { // F2
