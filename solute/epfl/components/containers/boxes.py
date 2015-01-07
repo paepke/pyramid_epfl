@@ -19,7 +19,9 @@ class Box(epflcomponentbase.ComponentContainerBase):
     template_name = "containers/box.html"
     asset_spec = "solute.epfl.components:containers/static"
 
+    js_parts = "containers/box.js"
     css_name = ["box.css"]
+    js_name = ["box.js"]
 
     auto_visibility = True # the visibility of the box depends on the visibility of the containing template-elements
                            # if none of them (compos or form-fields) are visible the box to is not visible
@@ -28,6 +30,12 @@ class Box(epflcomponentbase.ComponentContainerBase):
     compo_config = ["auto_visibility"]
 
     box_shown = True
+    is_removable = False
+    
+    def handle_removed(self):
+        if not self.container_compo is None:
+            compo = getattr(self.page, self.cid)
+            self.container_compo.del_component(compo)
     
     def after_event_handling(self):
         super(Box, self).after_event_handling()

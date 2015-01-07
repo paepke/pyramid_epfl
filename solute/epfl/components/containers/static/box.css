@@ -3,24 +3,18 @@
 /* default box layout styles */
 
 .epfl_box_border {
-  border: 1px solid #E2E2E2;
-  border-radius: 4px;
-  margin: 0px 0px 20px 0px;
 }
-
-.epfl_box_headline {
-  font-size: 12px;
-  font-weight: bold;
-  padding: 5px 10px 5px 10px;
-  color: #666666;
-  background-color: #ECECEC;
+.epfl_box {
+	border: None;
+	box-shadow: None;
+	margin-bottom: 0px;
 }
-.epfl_box_border > .epfl_box_content {
-	padding-top: 10px;
-    padding-bottom: 10px;
+.epfl_box > .panel-body {
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
-.epfl_box_content {
-  padding-left: 10px;
-  padding-right: 10px;
-  overflow: hidden;
+.epfl_box_remove_button {
+	float:right;
+	margin-top: -8px;
+	margin-right: -6px;
 }
