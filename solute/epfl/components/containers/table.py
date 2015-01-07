@@ -13,7 +13,7 @@ class TextValue(epflcomponentbase.ComponentBase):
     template_name = "containers/textvalue.html"
     asset_spec = "solute.epfl.components:containers/static"
     value = None
-    component_state = ["value"]
+    compo_state = ["value"]
 
 
 class TableContainer(epflcomponentbase.ComponentContainerBase):
