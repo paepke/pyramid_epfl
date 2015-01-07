@@ -1,36 +1,18 @@
-
-
-{% macro menu_item(self, item) %}
+{% macro menu_item(compo, item) %}
     {% for subitem in item["items"] %}
         {% if subitem["visible"] %}
-            <li id="{{ subitem['label'] }}" class="{{ subitem['class'] }}"><a href="{{ self.get_href(subitem) }}" title="{{ subitem['label'] }}">{{ subitem['label'] }}</a>
+            <li id="{{ subitem['label'] }}" class="{{ subitem['class'] }}"><a href="{{ compo.get_href(subitem) }}" title="{{ subitem['label'] }}">{{ subitem['label'] }}</a>
         {% endif %}
         {% if "items" in subitem %}
         <ul>
-            {{ menu_item(self, subitem) }}
+            {{ menu_item(compo, subitem) }}
         </ul>
         {% endif %}
     {% endfor %}
 {% endmacro %}
 
-{% compodef () %}
-
-    <div epflid="{{self.cid}}" >
-        <ul id="epfl_menu">
-            {{ menu_item(self, self.menu_def) }}
-        </ul>
-    </div>
-
-{% endcompodef %}
-
-
-
-{% compopartdef js () %}
-<script>
-
-    epfl.init_component("{{self.cid}}", "MenuComponent", {})
-
-</script>
-{% endcompopartdef %}
-
-
+<div epflid="{{compo.cid}}" >
+    <ul id="epfl_menu">
+        {{ menu_item(compo, compo.menu_def) }}
+    </ul>
+</div>

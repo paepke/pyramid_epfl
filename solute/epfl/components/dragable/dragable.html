@@ -1,22 +1,14 @@
-{% compodef() %}
-<div class="list-group-item{{ " selectable" if self.selectable else "" }}{{ " selected" if self.is_selected else "" }}{{ " rename-inactive" if self.title_renamable else "" }}"
-     id="{{self.cid}}"
-     epflid="{{self.cid}}">
-    {% if not self.components %}
-    	{% if self.title_renamable %}
-			<input class="title-rename inactive" value="{{ self.title }}" data-oldtitle="{{ self.title }}" />
+<div class="list-group-item col-sm-12{{ " selectable" if compo.selectable else "" }}{{ " selected" if compo.is_selected else "" }}{{ " rename-inactive" if compo.title_renamable else "" }}"
+     id="{{compo.cid}}"
+     epflid="{{compo.cid}}">
+    {% if not compo.components %}
+    	{% if compo.title_renamable %}
+			<input class="title-rename inactive" value="{{ compo.title }}" data-oldtitle="{{ compo.title }}" />
 		{% else %}
-			<span class="plain-title">{{ self.title if self.title != None else self.id }}</span>
+			<span class="plain-title">{{ compo.title if compo.title != None else compo.id }}</span>
 		{% endif %}
     {% endif %}
-    {% for compo_obj in self.components %}
+    {% for compo_obj in compo.components %}
         {{ compo_obj.render() }}
     {% endfor %}
 </div>
-{% endcompodef %}
-
-{% compopart js () %}
-<script>
-    epfl.init_component("{{self.cid}}", "DragableComponent", {type: "{{self.type}}"});
-</script>
-{% endcompopart %}

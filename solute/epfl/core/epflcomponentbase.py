@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from pprint import pprint
+from collections2 import OrderedDict as odict
 
 import types, copy, string, inspect, uuid
 
@@ -53,7 +54,8 @@ class UnboundComponent(object):
 
     __valid_subtypes__ = [bool, int, long, float, complex,
                           str, unicode, bytearray, xrange,
-                          type, types.FunctionType, CallableWrapper]
+                          type, types.FunctionType, CallableWrapper,
+                          types.NoneType]
     __debugging_on__ = False
     __dynamic_class_store__ = None
 
@@ -207,7 +209,8 @@ class ComponentBase(object):
                                                               # The base-component only defines the "access"-permission.
                                                               # If not given the component is not rendered.
 
-    template_name = "empty.html" # filename of the template for this component (if any)
+    template_name = "empty.html" # filenames of the templates for this component (if any)
+    js_parts = [] # filenames of the js-parts of this component
     js_name = [] # filenames of the js-files for this component (if any)
     css_name = [] # filenames of the css-files for this component (if any)
     compo_state = [] # which attributes of the object are persisted into the transaction
@@ -219,6 +222,7 @@ class ComponentBase(object):
     # This should never be None, if it is and something breaks because of it the parameter has not been correctly passed
     # through the __new__/UnboundComponent pipe.
     __unbound_component__ = None
+    struct_dict = None
 
 
     base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
@@ -251,7 +255,6 @@ class ComponentBase(object):
         self.deleted = False
 
         self.template = None
-        self.parts = None
         self.macros = None
         self.__config = config
 
@@ -267,6 +270,9 @@ class ComponentBase(object):
             if attr_name in config:
                 config_value = config[attr_name]
                 setattr(self, attr_name, copy.deepcopy(config_value))
+
+        self.cid = args[1]
+        self._set_page_obj(args[0])
 
         return self
 
@@ -289,37 +295,23 @@ class ComponentBase(object):
 
 
     def get_component_info(self):
-        if self.container_compo:
-            container_id = self.container_compo.cid
-        else:
-            container_id = None
         return {"class": self.__unbound_component__,
                 "config": self.__config,
                 "cid": self.cid,
-                "slot": self.container_slot,
-                "cntrid": container_id}
+                "slot": self.container_slot}
 
     @classmethod
-    def create_by_compo_info(cls, page, compo_info):
-        compo_obj = cls(__instantiate__=True, **compo_info["config"])
-        if compo_info["cntrid"]:
-            container_compo = page.components[compo_info["cntrid"]] # container should exist before thier content
+    def create_by_compo_info(cls, page, compo_info, container_id):
+        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
+        if container_id:
+            container_compo = page.components[container_id] # container should exist before their content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
 
-
-    def set_component_id(self, id):
-        """ Tells the component its component-id. The component-id is the name of the attribute of the page object to which
-        the component was assined.
-        This function is called by the __setattr__-function of the page-object
-        """
-        self.cid = id
-
-    def set_page_obj(self, page_obj):
-        """ Will be called by epflpage.Page by the __setattr__-trick.
-        Multiple initialisation-routines are called from here, so a component is only
-        correctly setup AFTER is was assined to its page.
+    def _set_page_obj(self, page_obj):
+        """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
+        set up after being assigned its page.
         """
         self.page = page_obj
         self.page_request = page_obj.page_request
@@ -335,14 +327,27 @@ class ComponentBase(object):
         env = self.request.get_epfl_jinja2_environment()
         self.template = env.get_template(self.template_name)
         self.macros = jinja_helpers.MacroAccessor(self.template)
-        self.parts = ComponentPartAccessor(self) # this one does all the inline-compo/compo-part-inheritance magic!
 
         # now we can setup the component-state
         self.setup_component_state()
 
-    def set_container_compo(self, compo_obj, slot):
+    def set_container_compo(self, compo_obj, slot, position=None):
+        # TODO: Can be handled without traversal due to container_compo having a struct_dict reference.
         self.container_compo = compo_obj
         self.container_slot = slot
+
+        # Traverse upwards in the structure to set the correct position for this component in transaction.
+        def traverse(compo):
+            container = getattr(compo, 'container_compo', None)
+            structure_dict = self.page.transaction.setdefault("compo_struct", odict())
+            if container:
+                structure_dict = traverse(container)
+            return structure_dict.setdefault(compo.cid, odict())
+
+        if position is not None:
+            self.struct_dict = traverse(self.container_compo).insert(self.cid, odict(), position)
+        else:
+            self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
 
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
@@ -391,18 +396,15 @@ class ComponentBase(object):
         If check_parents is True, it also checks if the template-element-parents are all visible - so it checks
         if this compo is "really" visible to the user.
         """
+
         if not self.visible:
             return False
-        elif check_parents:
-            if self.has_access():
-                for compo_obj in self.get_template_parentelements():
-                    if not compo_obj.is_visible():
-                        return False
-                return True
-            else:
-                return False
-        else:
-            return self.has_access()
+        if not self.has_access():
+            return False
+        if check_parents:
+            return not self.container_compo or self.container_compo.is_visible()
+
+        return self.has_access()
 
 
     def add_ajax_response(self, resp_string):
@@ -518,7 +520,6 @@ class ComponentBase(object):
         """
 
         values = {}
-
         for attr_name in self.compo_state + self.base_compo_state:
             value = getattr(self, attr_name)
             values[self.cid + "$" + attr_name] = value
@@ -565,7 +566,8 @@ class ComponentBase(object):
 
         event_handler = getattr(self, "handle_" + event_name, None)
         if event_handler is None:
-            raise Exception('Received None as event handler, have you setup an event handler?')
+            raise Exception('Received None as event handler, have you setup an '
+                            'event handler for %s in %s?' % (event_name, self.__class__))
         elif not hasattr(event_handler, '__call__'):
             raise Exception('Received non callable for event handling.')
         event_handler(**event_params)
@@ -578,7 +580,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def pre_render(self):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
@@ -586,9 +587,17 @@ class ComponentBase(object):
 
         epflutil.add_extra_contents(self.response, obj = self)
 
+    def render_templates(self, env, templates):
+        out = []
+        if type(templates) is not list:
+            templates = [templates]
 
+        for template in templates:
+            jinja_template = env.get_template(template)
+            out.append(jinja_template.render(compo=self))
+        return out
 
-    def render(self, *args, **kwargs):
+    def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
         It returns HTML.
@@ -600,23 +609,30 @@ class ComponentBase(object):
 
         self.is_rendered = True
 
-        # the "main"-html of this component:
-        for_redraw = kwargs.pop("for_redraw", False)
-        if for_redraw:
-            main_macro = self.parts.redraw_main
-        else:
-            main_macro = self.parts.main
-        return main_macro(*args, **kwargs)
+        # Prepare the environment and output of the render process.
+        env = self.request.get_epfl_jinja2_environment()
 
-    def get_js_part(self):
+        out = ''
+        if target == 'js':
+            js_out = ''.join(self.render_templates(env, self.js_parts))
+            if len(js_out) > 0:
+                out += '<script type="text/javascript">%s</script>' % js_out
+        elif target == 'js_raw':
+            out += ''.join(self.render_templates(env, self.js_parts))
+        elif target == 'main':
+            out += ''.join(self.render_templates(env, self.template_name))
+
+        return jinja2.Markup(out)
+
+    def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
 
         if not self.is_visible():
             # this js cleans up the browser for this component
             return self.js_call("epfl.destroy_component", self.cid)
-
-        init_js_macro = self.parts.js
-        return init_js_macro()
+        if raw:
+            return self.render('js_raw')
+        return self.render('js')
 
     def notify_render_inline(self):
         """ This one is called from the modified template (by the epfl-component-jinja-extension).
@@ -632,9 +648,8 @@ class ComponentBase(object):
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        for compo_obj in self.get_template_parentelements():
-            if "main" in compo_obj.redraw_requested: # TODO: compo-parts!
-                return # a parent of me already needs redrawing!
+        if self.container_compo and "main" in self.container_compo.redraw_requested: # TODO: compo-parts!
+            return # a parent of me already needs redrawing!
 
         if type(parts) is list:
             self.redraw_requested.update(set(parts))
@@ -655,13 +670,10 @@ class ComponentBase(object):
         parts = {}
 
         if "main" in self.redraw_requested:
-            parts["main"] = self.render(for_redraw = True)
-        else:
-            for part_name in self.redraw_requested:
-                parts[part_name] = self.parts[part_name]()
+            parts["main"] = self.render()
 
         if self.redraw_requested or self.is_rendered:
-            parts["js"] = self.get_js_part()
+            parts["js"] = self.get_js_part(raw=True)
 
         return parts
 
@@ -670,67 +682,13 @@ class ComponentBase(object):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
         return self.render(*args, **kwargs)
 
-    def get_template_subelements(self):
-        """ Returns all subelements of this component rendered by the template.
-        Subelements are other components or widgets. Only container-like components have subelements.
-        This is done by using the template-reflection.
+    def compo_destruct(self):
+        """ Called before destruction of this component by a container component.
+
+        [request-processing-flow]
         """
+        pass
 
-        out = []
-
-        ri = self.page.get_template_reflection_info()
-        compo_ri = ri.get_element_by_name(self.page, self.cid)
-
-        if not compo_ri:
-            return out
-
-        for el in compo_ri.get_subelements():
-            compo_accessor, part_accessor = el.get_accessors()
-            compo_obj = self.page.components.get(compo_accessor)
-            if compo_obj:
-                template_element = compo_obj._get_template_element(part_accessor)
-                if template_element and template_element not in out:
-                    out.append(template_element)
-
-        return out
-
-    def get_template_parentelements(self):
-        """ Returns all the template-elements of this component up to the root-template-element.
-        Parent-Elements only can be container-like components.
-        This is done by using the template-reflection.
-        """
-
-        out = []
-
-        ri = self.page.get_template_reflection_info()
-        compo_ri = ri.get_element_by_name(self.page, self.cid)
-
-        if not compo_ri:
-            return []
-
-        parent_ri = compo_ri
-        while True:
-            parent_ri = parent_ri.get_parent()
-            if not parent_ri:
-                break
-
-            compo_accessor, part_accessor = parent_ri.get_accessors()
-            compo_obj = self.page.components.get(compo_accessor)
-            if compo_obj:
-                out.append(compo_obj)
-
-        return out
-
-    def _get_template_element(self, part_accessor):
-        """ A method used by "get_template_subelements". Here the component must implement the logic to access
-        its subelements (e.g. the form has widgets)
-        """
-        return self
-
-    def overwrite_compopart(self, name, part):
-        """ Is called from the template by "{% %}"
-        """
-        setattr(self.template.module, "compopart_" + name, part)
 
     def switch_component(self, target, cid, slot=None, position=None):
         """
@@ -743,172 +701,19 @@ class ComponentBase(object):
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
 
-        self.page.transaction["compo_info"].remove(compo.get_component_info())
-
-        position_index = -1
-        counter = -1
-        for key, value in enumerate(self.page.transaction["compo_info"]):
-            if value.get('cid', None) == self.cid and position is not None:
-                counter += 1
-            if value.get('cntrid', None) == self.cid and position is not None:
-                counter += 1
-            if counter > position:
-                position_index = key
-                break
-
+        struct_dict = source.struct_dict.pop(cid)
         source.components.remove(compo)
+
         compo.set_container_compo(target, slot)
         if position is None:
-            position = -1
-        target.components.insert(position, compo)
-
-        self.page.transaction["compo_info"].insert(position_index, compo.get_component_info())
-        self.assure_hierarchical_order()
+            target.struct_dict[cid] = struct_dict
+            target.components.append(compo)
+        else:
+            target.struct_dict.insert(cid, struct_dict, position)
+            target.components.insert(position, compo)
 
         target.redraw()
         source.redraw()
-
-    def assure_hierarchical_order(self):
-        """
-        Recursively applies the correct order on all compo_info dicts in the transaction. This has to be used after
-        changing component order to ensure that all container components are initialized before their respective content
-        components.
-        """
-        def order_recursive(input, seen_key=set()):
-            if len(input) == 0:
-                return []
-            new_seen_key = set()
-            output = []
-            withheld = []
-            for v in input:
-                if v['cntrid'] is None or v['cntrid'] in seen_key:
-                    output.append(v)
-                    new_seen_key.add(v['cid'])
-                else:
-                    withheld.append(v)
-            seen_key.update(new_seen_key)
-
-            output += order_recursive(withheld, seen_key)
-            return output
-        self.page.transaction["compo_info"] = order_recursive(self.page.transaction["compo_info"])
-
-
-class ComponentPartAccessor(object):
-    """ Used to access the component-part-macros inside a template. If the macro is not defined, a nice error will be raised.
-    Access the macros in dict-style.
-    It implements the fall-thou-logic from inline-definition to component-definition of parts
-    """
-
-    def __init__(self, compo_obj):
-        self.compo_obj = compo_obj
-        self.compo_template = compo_obj.template
-        self.debug = compo_obj.request.registry.settings["epfl.debug"]
-
-    def __getitem__(self, key):
-        return getattr(self, key)
-
-    def parseAttributeError(self, excep):
-        """ Parse the message of an AttributeError-Exception.
-        """
-        tokens = excep.message.split()
-        return {"missing_attribute": tokens[-1].strip("'")}
-
-    def snip_script_tags(self, data):
-        data = data.strip()
-        if data.startswith("<script"):
-            data = data[data.index(">") + 1:]
-        if data.endswith("</script>"):
-            data = data[:-9]
-        return data
-
-
-    def get_macro(self, template_obj, macro_name):
-        if self.debug:
-            try:
-                return getattr(template_obj.module, macro_name)
-            except AttributeError, e:
-                info = self.parseAttributeError(e)
-                raise AttributeError, "Template '{0}' has no component-part named '{1}'. Please define {{% compopartdef {1} () %}}!".format(template_obj.filename, info["missing_attribute"][10:])
-        else:
-            return getattr(template_obj.module, macro_name)
-
-    def get_redraw_template(self):
-        template_name = self.compo_obj.page.template + " redraw:" + self.compo_obj.cid
-        if self.compo_obj.request.is_template_marked_as_not_found(template_name):
-            return None
-
-        try:
-            env = self.compo_obj.request.get_epfl_jinja2_environment()
-            template = env.get_template(template_name)
-        except TemplateNotFound:
-            self.compo_obj.request.mark_template_as_not_found(template_name)
-            return None
-        else:
-            return template
-
-
-    def __getattr__(self, key):
-        """ Access the macro as dict-style-attribute """
-
-        macro = None
-        redraw_template = None
-
-        if self.compo_template:
-            # now looking throu the component-template (if there is one)
-
-            if key == "main":
-                # the "main" macro is named "main" and defined in the component-template
-                macro = self.get_macro(self.compo_template, "main")
-            elif key == "redraw_main":
-                # the macro for redrawing a component may be defined in the page-template named "redraw_CID"...
-                redraw_template = self.get_redraw_template() # a lot of magic!
-                if not redraw_template:
-                    # ... or it's simply the main-macro of the compo-template
-                    macro = self.get_macro(self.compo_template, "main")
-            else:
-                # everything else is a part of the compo defined in the compo-template
-                macro = self.get_macro(self.compo_template, "compopart_" + key)
-
-        if macro:
-
-            def macro_wrapper(*args, **kwargs):
-                """ this one does the rendering (zwiebeld because of the 'self' parameter of the macro).
-                The rendering of a single part of a component marks the component as "rendered".
-                This implies the rendering of the js-part of this component. """
-
-                if "caller" in kwargs:
-                    has_caller = True
-                else:
-                    has_caller = False
-
-                self.compo_obj.is_rendered = True # please render my js-part!
-                if key == "js":
-                    js = macro(self.compo_obj, has_caller, *args, **kwargs)
-                    return self.snip_script_tags(js) + ";"
-                else:
-#                    import pdb; pdb.set_trace()
-                    return macro(self.compo_obj, has_caller, *args, **kwargs)
-
-            return macro_wrapper
-
-        elif redraw_template:
-
-            def template_wrapper(*args, **kwargs):
-                """ this one does the rendering (zwiebeld because this is not a macro but a template).
-                The rendering of a single part of a component marks the component as "rendered".
-                This implies the rendering of the js-part of this component. """
-
-                self.compo_obj.is_rendered = True # please render my js-part!
-
-                ctx = self.compo_obj.page.get_template_ctx()
-
-                return redraw_template.render(**ctx)
-
-            return template_wrapper
-
-        else:
-
-            raise AttributeError, key
 
 
 class ComponentContainerBase(ComponentBase):
@@ -921,12 +726,60 @@ class ComponentContainerBase(ComponentBase):
     """
     template_name = 'tree_base.html'
     node_list = []
+    compo_state = ['row_offset', 'row_limit', 'row_count']
+
+    default_child_cls = None
+    row_offset = 0
+    row_limit = 30
+    row_data = 30
+    row_count = 30
+
+    __update_children_done__ = False
 
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
             self.setup_component_slots()
+
         return self
+
+    def after_event_handling(self):
+        super(ComponentContainerBase, self).after_event_handling()
+        self.update_children(force=True)
+
+    def update_children(self, force=False):
+        """If a default_child_cls has been set this updates all child components to reflect the current state from
+        get_data(). Will raise an exception if called twice without the force parameter present."""
+
+        if self.__update_children_done__ and not force:
+            raise Exception('update_children called twice without force parameter for component %s.' % self.cid)
+        self.__update_children_done__ = True
+
+        if self.default_child_cls is None:
+            return
+        data = self.get_data(self.row_offset, self.row_limit, self.row_data)
+        for i, d in enumerate(data):
+            if i < len(self.components) and self.components[i].id == d['id']:
+                continue
+            if i < len(self.components):
+                self.replace_component(self.components[i], self.default_child_cls(**d))
+            else:
+                self.add_component(self.default_child_cls(**d), position=i)
+            self.redraw()
+
+        for compo in self.components[len(data):]:
+            self.del_component(compo)
+            self.redraw()
+
+    def get_data(self, row_offset=None, row_limit=None, row_data=None):
+        """ Overwrite this method to automatically provide data to this components children.
+
+        The list must comprise of dict like data objects with an id key. The data objects will be used as parameters for
+        the creation of a default_child_cls component."""
+        return []
+
+    def handle_set_row(self, row_offset, row_limit, row_data=None):
+        self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
 
     def init_struct(self):
         return self.node_list
@@ -939,27 +792,39 @@ class ComponentContainerBase(ComponentBase):
         for node in self.node_list:
             cid, slot = node.position
 
-            self.add_component(node(__instantiate__=True), slot=slot, cid=cid)
+            self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
+        self.update_children(force=True)
 
-    def add_component(self, compo_obj, slot = None, cid = None):
-        """ You can call this function to add a component to its container. Optional is the slot-name. 
+    def replace_component(self, old_compo_obj, new_compo_obj):
+        """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
+        cid = old_compo_obj.cid
+        position = self.components.index(old_compo_obj)
+        self.del_component(old_compo_obj)
+        compo = self.add_component(new_compo_obj(cid=cid), position=position)
+        self.redraw()
+        return compo
+
+    def add_component(self, compo_obj, slot = None, cid = None, position=None):
+        """ You can call this function to add a component to its container.
+        slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
+        compo_obj, position can be used to insert at a specific location.
         """
 
         if isinstance(compo_obj, UnboundComponent):
             cid, slot = compo_obj.position
-            compo_obj = compo_obj(__instantiate__=True)
+            compo_obj = compo_obj(self.page, cid, __instantiate__=True)
 
         # we have no nice cid, so use a UUID
         if not cid:
             cid = str(uuid.uuid4())
         # assign the container
-        compo_obj.set_container_compo(self, slot)
+        compo_obj.set_container_compo(self, slot, position=position)
         # handle the static part
         self.page.add_static_component(cid, compo_obj)
         # now remember it
-        self.page.transaction["compo_info"].append(compo_obj.get_component_info())
+        self.page.transaction["compo_info"][cid] = compo_obj.get_component_info()
         # and make it available in this container
-        self.add_component_to_slot(compo_obj, slot)
+        self.add_component_to_slot(compo_obj, slot, position=position)
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
         self.page.handle_transaction()
@@ -971,14 +836,24 @@ class ComponentContainerBase(ComponentBase):
         container-component provides to accumulate components """
         self.components = []
 
-    def add_component_to_slot(self, compo_obj, slot):
+    def add_component_to_slot(self, compo_obj, slot, position=None):
         """ This method must fill the correct slot with the component """
-        self.components.append(compo_obj)
+        if position is not None:
+            self.components.insert(position, compo_obj)
+        else:
+            self.components.append(compo_obj)
 
     def del_component(self, compo_obj, slot=None):
         """ Removes the component from the slot and form the compo_info """
+        compo_obj.compo_destruct()
+        if hasattr(compo_obj, 'components'):
+            for compo in compo_obj.components[:]:
+                compo_obj.del_component(compo)
         self.components.remove(compo_obj)
-
-        # remove it from the compo_info
-        self.page.transaction["compo_info"] = [ci for ci in self.page.transaction["compo_info"]
-                                               if ci["cid"] != compo_obj.cid]
+        if self.struct_dict is None:
+            self.page.transaction['compo_struct'][self.cid].pop(compo_obj.cid)
+        else:
+            self.struct_dict.pop(compo_obj.cid)
+        self.page.transaction['compo_info'].pop(compo_obj.cid)
+        self.page.components.pop(compo_obj.cid)
+        self.page.__dict__.pop(compo_obj.cid)

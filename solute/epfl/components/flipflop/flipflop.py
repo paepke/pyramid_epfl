@@ -11,6 +11,7 @@ class FlipFlopDragable(Dragable):
 
 class FlipFlop(Droppable):
 
+
     compo_state = ["components_order"]
 
     compo_config = []

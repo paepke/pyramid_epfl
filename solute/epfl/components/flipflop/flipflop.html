@@ -1,16 +1,5 @@
-{% compodef() %}
-    <div class="epfl_flipflop" epflid="{{self.cid}}" role="flipflop">
-	    	{% for compo_obj in self.components %}
+<div class="epfl_flipflop" epflid="{{compo.cid}}" role="flipflop">
+	    	{% for compo_obj in compo.components %}
 	    	    {{ compo_obj.render() }}
 	    	{% endfor %}
-    </div>
-{% endcompodef %}
-
-
-
-{% compopart js () %}
-<script>
-    epfl.init_component("{{self.cid}}", "FlipFlopComponent",{});
-</script>
-{% endcompopart %}
-
+</div>

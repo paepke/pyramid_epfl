@@ -1,5 +1,4 @@
-{% compodef() %}
-<nav class="nav navbar-default" role="navigation" epflid="{{ self.cid }}">
+<nav class="nav navbar-default" role="navigation" epflid="{{ compo.cid }}">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -9,14 +8,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {% if self.title %}
-            <a class="navbar-brand" href="/">{{ self.title }}</a>
+            {% if compo.title %}
+            <a class="navbar-brand" href="/">{{ compo.title }}</a>
             {% endif %}
         </div>
 
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-            {% for name, href in self.links %}
+            {% for name, href in compo.links %}
                 <li>
                     <a href="{{ href }}">{{ name }}</a>
                 </li>
@@ -25,8 +24,3 @@
         </div>
     </div>
 </nav>
-{% endcompodef %}
-
-
-{% compopart js () %}
-{% endcompopart %}

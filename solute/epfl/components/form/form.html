@@ -2,15 +2,15 @@
 <!-- the main template -->
 {% compodef () %}
 
-    <form id="{{ self.cid }}" method="POST" action="{{ self.action }}" epflid="{{self.cid}}" >
+    <form id="{{ compo.cid }}" method="POST" action="{{ compo.action }}" epflid="{{compo.cid}}" >
         {% if has_caller %}
     	   {{ caller() }}
         {% else %}
-            {% for field in self.get_fields_by_type("field") %}
+            {% for field in compo.get_fields_by_type("field") %}
                 <label class="control-label">{{field.label}}{{ field.validator_visual }}</label>
                 {{ field }}
             {% endfor %}
-            {% for field in self.get_fields_by_type("button") %}
+            {% for field in compo.get_fields_by_type("button") %}
                 {{ field }}
             {% endfor %}
         {% endif %}
@@ -116,7 +116,7 @@
 {% compopartdef js () %}
    <script>
 
-    epfl.init_component("{{self.cid}}", "FormComponent", {});
+    epfl.init_component("{{compo.cid}}", "FormComponent", {});
 
    </script>
 {% endcompopartdef %}

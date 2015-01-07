@@ -3,6 +3,7 @@ from solute.epfl.core import epflcomponentbase
 
 class Dragable(epflcomponentbase.ComponentContainerBase):
     template_name = "dragable/dragable.html"
+    js_parts = "dragable/dragable.js"
     asset_spec = "solute.epfl.components:dragable/static"
 
     css_name = ["dragable.css"]
@@ -17,9 +18,6 @@ class Dragable(epflcomponentbase.ComponentContainerBase):
     title_renamable = False
     is_selected = False
     selectable=False
-    
-    def __init__(self, **extra_params):
-        super(Dragable, self).__init__()
 
     @classmethod
     def generate_from_id(cls, id):

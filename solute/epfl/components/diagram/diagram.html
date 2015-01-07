@@ -1,14 +1,1 @@
-{% compodef() %}
-    <div epflid="{{self.cid}}" class="col-sm-12"></div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-<script>
-$(function () {
-	 epfl.init_component("{{self.cid}}"
-                      , "DiagramComponent",
-                      {{ self.get_params()|tojson }});
-});
-</script>
-{% endcompopart %}
+<div epflid="{{compo.cid}}" class="col-sm-12"></div>

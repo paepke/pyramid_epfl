@@ -1,16 +1,16 @@
-{% compodef() %}
-    <div epflid="{{self.cid}}"
-         class="{{ 'col-sm-10' if self.label else 'col-sm-12' }}{{ ' has-error' if self.validation_error else '' }}">
 
-        {% if self.input_type == "textarea" %}
+    <div epflid="{{compo.cid}}"
+         class="{{ 'col-sm-10' if compo.label else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
+
+        {% if compo.input_type == "textarea" %}
             <div epfl-type="textarea">
-                <textarea class="form-control" id="{{self.cid}}" name="{{self.name}}" >{{self.value}}</textarea>
+                <textarea class="form-control" id="{{compo.cid}}" name="{{compo.name}}" style="{{ compo.style if compo.style is defined else '' }}">{{compo.value}}</textarea>
             </div>
 
-        {%  elif self.input_type == "select" %}
+        {%  elif compo.input_type == "select" %}
             <div epfl-type="select">
-                <select class="form-control" id="{{self.cid}}" name="{{self.name}}">
-                {% for option in self.options %}
+                <select class="form-control" id="{{compo.cid}}" name="{{compo.name}}">
+                {% for option in compo.options %}
                     {% if option is string %}
                     {% set value = option %}
                     {% set visual = option %}
@@ -29,15 +29,15 @@
                           {% endif %}
                     {% endif %}
                 {% endif %}
-                    <option value="{{ value }}" {% if self.value == value %} selected="selected" {% endif %} >{{ visual }}</option>
+                    <option value="{{ value }}" {% if compo.value == value %} selected="selected" {% endif %} >{{ visual }}</option>
                 {% endfor %}
                 </select>
             </div>
 
-        {%  elif self.input_type == "radio" %}
+        {%  elif compo.input_type == "radio" %}
 
-            <div class="form-control" id="{{self.cid}}" name="{{self.name}}" epfl-type="radiobuttongroup">
-            {% for option in self.options %}
+            <div class="form-control" id="{{compo.cid}}" name="{{compo.name}}" epfl-type="radiobuttongroup">
+            {% for option in compo.options %}
                 {% if option is string %}
                     {% set value = option %}
                     {% set visual = option %}
@@ -57,14 +57,13 @@
                     {% endif %}
                 {% endif %}
 
-
-                <input type="radio" value="{{ value }}" name="{{self.cid}}" {% if self.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
+                <input type="radio" value="{{ value }}" name="{{compo.cid}}" {% if compo.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
             {% endfor %}
             </div>
 
-        {%  elif self.input_type == "buttonset" %}
-            <div id="{{self.cid}}" name="{{self.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
-            {% for option in self.options %}
+        {%  elif compo.input_type == "buttonset" %}
+            <div id="{{compo.cid}}" name="{{compo.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
+            {% for option in compo.options %}
                 {% if option is string %}
                     {% set value = option %}
                     {% set visual = option %}
@@ -83,45 +82,37 @@
                           {% endif %}
                     {% endif %}
                 {% endif %}
-
-                <label for="{{ self.cid }}_{{ value }}"
-                           class="btn btn-default blue {{ "active" if self.value == value else "" }}">
+                <label for="{{ compo.cid }}_{{ value }}"
+                           class="btn btn-default blue {{ "active" if compo.value == value else "" }}">
                      <input type="radio"
-                           id="{{ self.cid }}_{{ value }}"
+                           id="{{ compo.cid }}_{{ value }}"
                            value="{{ value }}"
-                           name="{{self.cid}}"
+                           name="{{compo.cid}}"
                            class="toggle"
-                            {% if self.value == value %} checked="checked" {% endif %}>
+                            {% if compo.value == value %} checked="checked" {% endif %}>
                     {{ visual }}
                 </label>
 
             {% endfor %}
             </div>
 
-        {%  elif self.input_type == "toggle" %}
+        {%  elif compo.input_type == "toggle" %}
         <div class="toggle" epfl-type="toggle">
-            <input type="checkbox" id="{{self.cid}}" name="{{self.name}}" data-on-text="{{ self.on_text }}" data-off-text="{{ self.off_text }}"  value="{{self.value}}"/>
+            <input type="checkbox" id="{{compo.cid}}" name="{{compo.name}}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{compo.value}}"/>
         </div>
 
-        {%  elif self.input_type == "checkbox" %}
+        {%  elif compo.input_type == "checkbox" %}
             <div epfl-type="checkbox">
-                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" />
+                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value}}" />
             </div>
 
         {% else %}
             <div epfl-type="defaultinput">
-                <input class="form-control" type="{{self.input_type}}" id="{{self.cid}}" name="{{self.name}}" value="{{self.value}}" {{ "data-provide='typeahead'"|safe if self.typeahead else "" }}/>
+                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value}}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
             </div>
         {% endif %}
 
-        {% if self.validation_error %}
-            <small class="help-block has-error">{{ self.validation_error }}</small>
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}
     </div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-{% import 'form_components/form_macros.html' as form %}
-{{ form.register_field_js(self.cid) }}
-{% endcompopart %}

@@ -1,47 +1,41 @@
-{% compodef() %}
-<div class="container{{ '-fluid' if not self.constrained else '' }}" epflid="{{ self.cid }}">
-    {% if self.cardinal_components('north') %}
+<div class="container{{ '-fluid' if not compo.constrained else '' }}" epflid="{{ compo.cid }}">
+    {% if compo.cardinal_components('north') %}
     <div class="row">
         <div class="col-sm-12">
-            {% for compo_obj in self.cardinal_components('north') %}
+            {% for compo_obj in compo.cardinal_components('north') %}
                 {{ compo_obj.render() }}
             {% endfor %}
         </div>
     </div>
     {% endif %}
     <div class="row">
-    {% if self.cardinal_components('west') %}
+    {% if compo.cardinal_components('west') %}
         <div class="col-sm-2">
-            {% for compo_obj in self.cardinal_components('west') %}
+            {% for compo_obj in compo.cardinal_components('west') %}
                 {{ compo_obj.render() }}
             {% endfor %}
         </div>
     {% endif %}
-        <div class="col-sm-{{ 12 - 2 * self.has_cardinal('east') - 2 * self.has_cardinal('west') }}">
-            {% for compo_obj in self.cardinal_components() %}
+        <div class="col-sm-{{ 12 - 2 * compo.has_cardinal('east') - 2 * compo.has_cardinal('west') }}">
+            {% for compo_obj in compo.cardinal_components() %}
                 {{ compo_obj.render() }}
             {% endfor %}
         </div>
-    {% if self.cardinal_components('east') %}
+    {% if compo.cardinal_components('east') %}
         <div class="col-sm-2">
-            {% for compo_obj in self.cardinal_components('east') %}
+            {% for compo_obj in compo.cardinal_components('east') %}
                 {{ compo_obj.render() }}
             {% endfor %}
         </div>
     {% endif %}
     </div>
-    {% if self.cardinal_components('south') %}
+    {% if compo.cardinal_components('south') %}
     <div class="row">
         <div class="col-sm-12">
-            {% for compo_obj in self.cardinal_components('south') %}
+            {% for compo_obj in compo.cardinal_components('south') %}
                 {{ compo_obj.render() }}
             {% endfor %}
         </div>
     </div>
     {% endif %}
 </div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-{% endcompopart %}

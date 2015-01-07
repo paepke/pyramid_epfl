@@ -1,16 +1,12 @@
-{% compodef() %}
-<div class="list-group" epflid="{{ self.cid }}">
-    {% for compo_obj in self.components %}
-    <div class="list-group-item">
+<div class="list-group row" epflid="{{ compo.cid }}">
+    {% for compo_obj in compo.components %}
+    {% if compo_obj.is_visible() %}
+    <div class="list-group-item col-sm-12">
         {{ compo_obj.render() }}
     </div>
+    {% endif %}
     {% endfor %}
-    {% for name, href in self.links %}
-    <a class="list-group-item" href="{{ href }}">{{ name }}</a>
+    {% for name, href in compo.links %}
+    <a class="list-group-item col-sm-12" href="{{ href }}">{{ name }}</a>
     {% endfor %}
 </div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-{% endcompopart %}

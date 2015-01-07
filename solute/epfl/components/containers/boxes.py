@@ -35,13 +35,11 @@ class Box(epflcomponentbase.ComponentContainerBase):
         # calculate visibility by checking all sub-element's visibility
         if self.auto_visibility:
 
-            els = self.get_template_subelements()
-
-            if not els:
+            if not self.components:
                 return True # No subelements -> I am visible!
 
             some_visible = False
-            for el in els:
+            for el in self.components:
                 if el.is_visible():
                     some_visible = True # at least one subelement is visible -> I am visible!
                     break

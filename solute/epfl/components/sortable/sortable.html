@@ -1,19 +1,17 @@
-
-{% compodef () %}
-    <div  epflid="{{self.cid}}" >
-        <ul id="{{self.cid}}">
+<div  epflid="{{compo.cid}}" >
+        <ul id="{{compo.cid}}">
             {% if has_caller %}
                 {{ caller() }}
             {% else %}
-                {% for component in self.child_components %}
+                {% for component in compo.child_components %}
                    {% call rowdef(component.name) %}
                         {{ component.element() }}
                     {% endcall %}
                 {% endfor %}
             {% endif %}
         </ul>
-    </div>
-{% endcompodef %}
+</div>
+
 
 
 {% macro rowdef(rowid) %}
@@ -22,11 +20,3 @@
         <div class="listele">{{caller()}}</div>
     </li>
 {% endmacro %}
-
-
-{% compopart js () %}
-   <script>
-       epfl.init_component("{{self.cid}}", "SortableComponent", {});
-   </script>
-{% endcompopart %}
-

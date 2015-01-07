@@ -1,24 +1,15 @@
-{% compodef() %}
-<div epflid="{{ self.cid }}" class="row">
-	{% for select in self.components %}
+<div epflid="{{ compo.cid }}" class="row">
+	{% for select in compo.components %}
 	{% if not loop.first %}
 	<div class="col-sm-1">
 	<button class="form-control multi_select_move_forward" type="button" data-selectindex="{{ loop.index0-1 }}"><i class="fa fa-angle-right"></i></button><br/>
 	<button class="form-control multi_select_move_back" type="button" data-selectindex="{{ loop.index0-1 }}"><i class="fa fa-angle-left"></i></button>
 	</div>
 	{% endif %}
-	<div class="{{ "col-sm-5" if self.number_of_selects == 2 else ("col-sm-3" if self.number_of_selects == 3 else "col-sm-2") }}">
+	<div class="{{ "col-sm-5" if compo.number_of_selects == 2 else ("col-sm-3" if compo.number_of_selects == 3 else "col-sm-2") }}">
 	
 	{{ select() }}
 	</div>
 	
 	{% endfor %}
  </div>
-{% endcompodef %}
-
-
-{% compopart js () %}
-$(function () {
-	 epfl.init_component("{{self.cid}}", "FormMultiSelectComponent");
-});
-{% endcompopart %}

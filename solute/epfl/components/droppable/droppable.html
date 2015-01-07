@@ -1,28 +1,18 @@
-{% compodef() %}
-<div epflid="{{self.cid}}">
-	{% if self.title %}
-		{% if self.collapsable %}
-		<a href="#" class="toggle-list"><i class="fa fa-{{ "minus" if not self.is_collapsed else "plus" }}"></i></a>
+<div epflid="{{compo.cid}}">
+	{% if compo.title %}
+		{% if compo.collapsable %}
+		<a href="#" class="toggle-list"><i class="fa fa-{{ "minus" if not compo.is_collapsed else "plus" }}"></i></a>
 		{% endif %}
-		{% if self.title_renamable %}
-		<input class="title-rename inactive" value="{{ self.title }}" data-oldtitle="{{ self.title }}" />
+		{% if compo.title_renamable %}
+		<input class="title-rename inactive" value="{{ compo.title }}" data-oldtitle="{{ compo.title }}" />
 		{% else %}
-		<span class="plain-title">{{ self.title }}</span>
+		<span class="plain-title">{{ compo.title }}</span>
 		{% endif %}
 		
 	{% endif %}
-	<div class="list-group {{ self.get_valid_types() }}" id="{{self.cid}}" style="{{ "display: none;" if self.collapsable and self.is_collapsed else "" }}">
-	    {% for compo in self.components %}
+	<div class="list-group row {{ compo.get_valid_types() }}" id="{{compo.cid}}" style="{{ "display: none;" if compo.collapsable and compo.is_collapsed else "" }}">
+	    {% for compo in compo.components %}
 	        {{ compo() }}
 	    {% endfor %}
 	</div>
 </div>
-{% endcompodef %}
-
-{% compopart js () %}
-<script>
-    epfl.init_component("{{self.cid}}",
-                        "DroppableComponent",
-                        {type: {{ self.get_valid_types(True)|safe }}});
-</script>
-{% endcompopart %}

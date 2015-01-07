@@ -13,9 +13,15 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
 
     css_name = ["bootstrap.min.css"]
 
-    compo_state = ['links']
+    compo_state = epflcomponentbase.ComponentContainerBase.compo_state[:]
+    compo_state.append('links')
 
     links = []
 
     def __init__(self, node_list=[], links=[], **extra_params):
         super(ListLayout, self).__init__()
+
+
+class PaginatedListLayout(ListLayout):
+    template_name = "layout/paginated_list.html"
+    js_parts = ['layout/paginated_list.js']
