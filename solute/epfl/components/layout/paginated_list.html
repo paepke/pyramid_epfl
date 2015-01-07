@@ -9,37 +9,37 @@
     {% for name, href in compo.links %}
         <a class="list-group-item col-sm-12" href="{{ href }}">{{ name }}</a>
     {% endfor %}
-    {% if compo.row_offset > 0 %}
-        <a class="list-group-item col-sm-1" onclick=""><i class="fa fa-chevron-left pull-left"></i></a>
-    {% else %}
-        <div class="col-sm-1"></div>
-    {% endif %}
-    <div class="col-sm-10"></div>
-    {% if compo.row_offset + compo.row_limit < compo.row_count %}
-        <a class="list-group-item col-sm-1"><i class="fa fa-chevron-right pull-right"></i></a>
-    {% else %}
-        <div class="col-sm-1"></div>
-    {% endif %}
-    <script type="text/javascript">
-        window.setTimeout(function () {
-
-            $('[epflid={{ compo.cid }}] .fa-chevron-right').parent().click(function () {
-                var event = epfl.make_component_event('{{ compo.cid }}',
-                                                      'set_row',
-                                                      {row_offset: {{ compo.row_offset + compo.row_limit }},
-                                                       row_limit: {{ compo.row_limit }},
-                                                       row_data: 0});
-                epfl.send(event);
-            });
-
-            $('[epflid={{ compo.cid }}] .fa-chevron-left').parent().click(function () {
-                var event = epfl.make_component_event('{{ compo.cid }}',
-                                                      'set_row',
-                                                      {row_offset: {{ compo.row_offset - compo.row_limit }},
-                                                       row_limit: {{ compo.row_limit }},
-                                                       row_data: 0});
-                epfl.send(event);
-            });
-        }, 0);
-    </script>
+    <div class="col-sm-12 text-center">
+        <ul class="pagination">
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset - compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
+                <span aria-hidden="true">&laquo;</span>
+            </li>
+            {% for i in range(0, compo.row_count, compo.row_limit) %}
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ i }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ 'active' if i == compo.row_offset else '' }}">
+                <span>{{ (i/compo.row_limit + 1)|round(method='ceil')|int }}</span>
+            </li>
+            {% endfor %}
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset + compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
+                <span aria-hidden="true">&raquo;</span>
+            </li>
+        </ul>
+    </div>
 </div>

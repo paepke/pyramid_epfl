@@ -757,14 +757,20 @@ class ComponentContainerBase(ComponentBase):
 
         if self.default_child_cls is None:
             return
-
-        for i, data in enumerate(self.get_data(self.row_offset, self.row_limit, self.row_data)):
+        data = self.get_data(self.row_offset, self.row_limit, self.row_data)
+        for i, data in enumerate(data):
             if i < len(self.components) and self.components[i].id == data['id']:
                 continue
             if i < len(self.components):
                 self.replace_component(self.components[i], self.default_child_cls(**data))
             else:
                 self.add_component(self.default_child_cls(**data), position=i)
+
+        for i, compo in enumerate(self.components):
+            if i <= len(data):
+                continue
+            self.del_component(compo)
+            self.redraw()
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         """ Overwrite this method to automatically provide data to this components children.
