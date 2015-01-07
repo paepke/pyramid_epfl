@@ -33,9 +33,8 @@ class Box(epflcomponentbase.ComponentContainerBase):
     is_removable = False
     
     def handle_removed(self):
-        if not self.container_compo is None:
-            compo = getattr(self.page, self.cid)
-            self.container_compo.del_component(compo)
+        if self.container_compo is not None:
+            self.container_compo.del_component(self)
     
     def after_event_handling(self):
         super(Box, self).after_event_handling()

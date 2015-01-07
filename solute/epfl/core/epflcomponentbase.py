@@ -857,3 +857,4 @@ class ComponentContainerBase(ComponentBase):
         self.page.transaction['compo_info'].pop(compo_obj.cid)
         self.page.components.pop(compo_obj.cid)
         self.page.__dict__.pop(compo_obj.cid)
+        self.redraw()
