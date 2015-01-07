@@ -234,6 +234,18 @@ class Page(object):
 
         return cls.__name
 
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __delitem__(self, key):
+        return self.__delattr__(key)
+
+    def __delattr__(self, key):
+        value = getattr(self, key)
+        if isinstance(value, epflcomponentbase.ComponentBase):
+            self.components.pop(key)
+        self.__dict__.pop(key)
+
     def __setattr__(self, key, value):
         """ This is the way, the components get thier name:
         By assigning the components as attributes to the page, we can register them here as components,
