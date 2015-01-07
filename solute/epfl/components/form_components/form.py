@@ -392,6 +392,9 @@ class Form(epflcomponentbase.ComponentContainerBase):
     def __init__(self, node_list=None, validate_hidden_fields=False, **extra_params):
         super(Form, self).__init__()
 
+    def handle_submit(self, params):
+        pass
+
     def register_field(self, field):
         self._registered_fields.append(field.cid)
 
