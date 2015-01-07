@@ -12,12 +12,14 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     js_name = ["droppable.js"]
 
     compo_config = ["valid_types"]
-    compo_state = ["elements", "is_collapsed", "title"]
+    compo_state = ["elements", "is_collapsed", "title", "is_selected"]
 
     valid_types = [Dragable]
     elements = []
-    collapsable=False
+    collapsable = False
     title_renamable = False
+    is_selected = False
+    selectable = False
     is_collapsed=False
     title=None
     deactivate_on_drop=False # if set to true, a child cannot be dragged once it has been placed inside the droppable

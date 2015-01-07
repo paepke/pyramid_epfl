@@ -2,6 +2,7 @@ epfl.DroppableComponent = function (cid, params) {
     var blocked_compos = {};
     var compo = this;
     this.blocked = 0;
+    var delay = 700, clicks = 0, timer = null;
     epfl.ComponentBase.call(this, cid, params);
     $('#' + cid)
         .sortable({
@@ -41,7 +42,44 @@ epfl.DroppableComponent = function (cid, params) {
   			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
         	epfl.send(ev);
         });
-        $('[epflid="'+cid+'"] > .plain-title').bind('dblclick', function(event) {
+        
+        
+        // handle selectable and double-click collapsable events
+        // handle both clicks and double clicks on plain title here
+        $('[epflid="'+cid+'"] > .plain-title').on("click", function(event){
+        	event.stopImmediatePropagation();
+        	event.preventDefault();
+	        clicks++;  //count clicks
+	        my_elem = $(this);
+	        if(clicks === 1) {
+	            timer = setTimeout(function() {
+	                //perform single-click action
+	                if (my_elem.hasClass("selectable")) {
+	                
+	                	if (my_elem.hasClass("selected")) {
+	                		var ev = compo.make_event("unselected",{});
+	    					epfl.send(ev);
+	    				} else {
+	    					var ev = compo.make_event("selected",{});
+	    					epfl.send(ev);
+	    				}
+	                }
+	                
+	                clicks = 0;             //after action performed, reset counter
+	            }, delay);
+	        } else {
+	            clearTimeout(timer);    //prevent single-click action
+	            
+	            //perform double-click action
+	            $('#'+cid).toggle().sortable('disable').sortable('enable');
+	        	$('[epflid="'+cid+'"] > .toggle-list').children('i').toggleClass('fa-minus').toggleClass('fa-plus');
+	  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
+	        	epfl.send(ev);
+	        	
+	            clicks = 0;             //after action performed, reset counter
+	        }
+	    })
+        $('[epflid="'+cid+'"] > .plain-titleXX').bind('dblclick', function(event) {
         	event.stopImmediatePropagation();
         	event.preventDefault();
         	$('#'+cid).toggle().sortable('disable').sortable('enable');
