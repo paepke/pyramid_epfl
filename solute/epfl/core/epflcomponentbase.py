@@ -359,7 +359,7 @@ class ComponentBase(object):
 
         for attr_name in self.compo_state + self.base_compo_state:
             del self.page.transaction[self.cid + "$" + attr_name]
-        self.add_js_response('epfl.destroy_component("%s")' % self.cid)
+        self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
         del self.page[self.cid]
 
@@ -510,7 +510,7 @@ class ComponentBase(object):
         Displays a box with "ok" and "cancel" to the user.
         If the user clicks "ok" the event named in "cmd_ok" will be fired.
         """
-##todo        msg = epfli18n.get_text(msg)
+        ##todo: msg = epfli18n.get_text(msg)
         js = """if (confirm(%s)) {
                     var ev = epfl.make_component_event("%s", "%s", {});
                     epfl.send(ev);
@@ -766,9 +766,11 @@ class ComponentContainerBase(ComponentBase):
                 self.replace_component(self.components[i], self.default_child_cls(**d))
             else:
                 self.add_component(self.default_child_cls(**d), position=i)
+            self.redraw()
 
         for compo in self.components[len(data):]:
             compo.delete_component()
+            self.redraw()
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         """ Overwrite this method to automatically provide data to this components children.
@@ -800,6 +802,7 @@ class ComponentContainerBase(ComponentBase):
         position = self.components.index(old_compo_obj)
         old_compo_obj.delete_component()
         compo = self.add_component(new_compo_obj(cid=cid), position=position)
+        compo.redraw()
         return compo
 
     def add_component(self, compo_obj, slot = None, cid = None, position=None):
@@ -826,7 +829,6 @@ class ComponentContainerBase(ComponentBase):
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
         self.page.handle_transaction()
-        self.redraw()
 
         return compo_obj
 

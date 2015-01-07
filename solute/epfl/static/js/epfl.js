@@ -53,18 +53,17 @@ epfl_module = function() {
         for (var part_name in parts) {
             if (part_name == "js") continue;
             var part_html = parts[part_name];
-              if (part_name == "main") {
-                  var epflid = cid;
-              } else {
-                  var epflid = cid + "$" + part_name;
-              };
-              var el = $("[epflid='" + epflid + "']");
-              if (el.length == 0) {
-                  alert("Element with epflid='" + epflid + "' not found!");
-                  return;
-              };
-              el.replaceWith(part_html);
-        };
+            var epflid = cid;
+            if (part_name != "main") {
+                epflid = cid + "$" + part_name;
+            }
+            var el = $("[epflid='" + epflid + "']");
+            if (el.length == 0) {
+                alert("Element with epflid='" + epflid + "' not found!");
+                return;
+            }
+            el.replaceWith(part_html);
+        }
         eval(parts["js"]);
     };
 
