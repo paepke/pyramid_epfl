@@ -13,7 +13,7 @@ from flipflop.flipflop import FlipFlop
 from containers.boxes import Box
 from sortable.sortable import Sortable
 from containers.panel import Panel
-from droppable.droppable import Droppable
+from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
 from form_components.form import Button as cfButton
 from form_components.form import Input as cfInput

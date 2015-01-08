@@ -8,7 +8,8 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     js_parts = "droppable/droppable.js"
     asset_spec = "solute.epfl.components:droppable/static"
 
-    css_name = ["droppable.css", "bootstrap.min.css", "css/font-awesome/css/font-awesome.min.css"]
+    css_name = ["droppable.css", "bootstrap.min.css",
+                "css/font-awesome/css/font-awesome.min.css"]
     js_name = ["droppable.js"]
 
     compo_config = ["valid_types"]
@@ -20,10 +21,12 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     title_renamable = False
     is_selected = False
     selectable = False
-    is_collapsed=False
-    title=None
-    deactivate_on_drop=False # if set to true, a child cannot be dragged once it has been placed inside the droppable
-        
+    is_collapsed = False
+    title = None
+    # if set to true, a child cannot be dragged once it has been placed inside
+    # the droppable
+    deactivate_on_drop = False
+
     def init_transaction(self):
         super(Droppable, self).init_transaction()
         if (self.collapsable == True) and (self.title is None):
@@ -38,14 +41,47 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
 
     def handle_add_dragable(self, cid, position):
         self.switch_component(self.cid, cid, position=position)
-        
+
     def handle_toggle_collapse(self, collapsed):
         self.is_collapsed = collapsed
-        
+
     def handle_rename_title(self, title):
         self.title = title
 
     def get_valid_types(self, dotted=False):
         if dotted:
             return json.dumps(['.droppable_type_%s' % t.type for t in self.valid_types])
+        return ' '.join(['droppable_type_%s' % t.type for t in self.valid_types])
+
+
+class SimpleDroppable(epflcomponentbase.ComponentContainerBase):
+    template_name = "droppable/simpledroppable.html"
+    js_parts = "droppable/simpledroppable.js"
+    asset_spec = "solute.epfl.components:droppable/static"
+
+    css_name = ["simpledroppable.css", "bootstrap.min.css",
+                "css/font-awesome/css/font-awesome.min.css"]
+    js_name = ["simpledroppable.js"]
+
+    compo_config = ["valid_types"]
+    compo_state = ["elements", "title"]
+
+    valid_types = [Dragable]
+    elements = []
+
+    title = None
+    is_content_removable = False
+
+    def handle_remove_content(self):
+        if len(self.components) > 0:
+            for comp in self.components:
+                comp.delete_component()
+
+    def get_valid_types(self, dotted=False, as_json=False):
+        if dotted:
+            if as_json:
+                return json.dumps(['.droppable_type_%s' % t.type for t in self.valid_types])
+            return ' '.join(['.droppable_type_%s' % t.type for t in self.valid_types])
+        if as_json:
+            return json.dumps(['droppable_type_%s' % t.type for t in self.valid_types])
         return ' '.join(['droppable_type_%s' % t.type for t in self.valid_types])

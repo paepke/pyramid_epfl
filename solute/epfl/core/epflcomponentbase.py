@@ -359,6 +359,7 @@ class ComponentBase(object):
 
         for attr_name in self.compo_state + self.base_compo_state:
             del self.page.transaction[self.cid + "$" + attr_name]
+        del self.page.transaction[self.cid + "$__inited__"]
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
         del self.page[self.cid]
