@@ -79,15 +79,6 @@ epfl.DroppableComponent = function (cid, params) {
 	            clicks = 0;             //after action performed, reset counter
 	        }
 	    })
-        $('[epflid="'+cid+'"] > .plain-titleXX').bind('dblclick', function(event) {
-        	event.stopImmediatePropagation();
-        	event.preventDefault();
-        	$('#'+cid).toggle().sortable('disable').sortable('enable');
-        	$('[epflid="'+cid+'"] > .toggle-list').children('i').toggleClass('fa-minus').toggleClass('fa-plus');
-        	
-  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
-        	epfl.send(ev);
-        });
         // handle title renaming
         $('[epflid="'+cid+'"] > .title-rename.inactive').bind('dblclick keyup', function(event) {
         	if ((event.type == "keyup") && (event.keyCode != 113)) { // F2
