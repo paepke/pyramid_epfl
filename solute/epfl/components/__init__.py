@@ -41,6 +41,7 @@ from layout.tabs import TabsLayout
 from containers.table import TableContainer
 from datagrid.datagrid import DataGrid
 from simpletable.simpletable import SimpleTable
+from datatable.datatable import DataTable
 
 def add_routes(config):
     Form.add_pyramid_routes(config)
@@ -61,6 +62,7 @@ def add_routes(config):
     ColLayout.add_pyramid_routes(config)
     DataGrid.add_pyramid_routes(config)
     SimpleTable.add_pyramid_routes(config)
+    DataTable.add_pyramid_routes(config)
 
     
 
