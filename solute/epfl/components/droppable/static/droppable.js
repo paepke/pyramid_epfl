@@ -8,8 +8,9 @@ epfl.DroppableComponent = function (cid, params) {
         .sortable({
             connectWith: params.type,
             placeholder: "ui-state-highlight",
-            forcePlaceholderSize: true
-            
+            forcePlaceholderSize: true,
+            distance: 10,
+            helper: "clone"
         })
         .on('sortstop', function (event, ui) {
             if (epfl.components[$(this).attr('id')].block_cid(ui.item.attr('epflid'))) {
@@ -23,12 +24,12 @@ epfl.DroppableComponent = function (cid, params) {
             epfl.send(evt);
         })
         .on('sortactivate', function (event, ui) {
-            $(this).addClass('list-group-active');
+//            $(this).addClass('list-group-active');
             $(this).css('min-height', ui.item.height() + 'px');
 //            $(this).css('padding-bottom', Math.max(ui.item.height(), 20) + 'px');
         })
         .on('sortdeactivate', function (event, ui) {
-            $(this).removeClass('list-group-active');
+//            $(this).removeClass('list-group-active');
             $(this).css('min-height', '');
 //            $(this).css('padding-bottom', '');
         });

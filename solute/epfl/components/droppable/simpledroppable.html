@@ -7,7 +7,7 @@
 	</div>
 	{% else %}
 	{% if compo.is_content_removable %}
-		<a href="#" class="simpledroppable-remove-button"><i class="fa fa-lg fa-plus"></i></a>
+		<a href="#" class="simpledroppable-remove-button"><i class="fa fa-lg fa-times-circle-o"></i></a>
 	{% endif %}
 	<div class="list-group row {{ compo.get_valid_types() }}" id="{{compo.cid}}">
 	    {% for compo in compo.components %}
