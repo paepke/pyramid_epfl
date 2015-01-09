@@ -12,3 +12,13 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
         });
     epfl.send(event);
 };
+
+$('#' + '{{ compo.cid }}_search').keypress(function (e) {
+    if (e.key == 'Enter') {
+        epfl.paginated_list_goto($(this),
+                                 "{{ compo.cid }}",
+                                 parseInt({{ compo.row_offset }}),
+                                 parseInt({{ compo.row_limit }}),
+                                 {search: $(this).val()});
+    }
+});

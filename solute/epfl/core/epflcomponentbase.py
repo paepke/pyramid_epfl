@@ -763,6 +763,7 @@ class ComponentContainerBase(ComponentBase):
         if self.default_child_cls is None:
             return
         data = self.get_data(self.row_offset, self.row_limit, self.row_data)
+        # TODO: data may change without the actually displayed element changing!
         for i, d in enumerate(data):
             if i < len(self.components) and self.components[i].id == d['id']:
                 continue
@@ -805,9 +806,7 @@ class ComponentContainerBase(ComponentBase):
         cid = old_compo_obj.cid
         position = self.components.index(old_compo_obj)
         old_compo_obj.delete_component()
-        compo = self.add_component(new_compo_obj(cid=cid), position=position)
-        compo.redraw()
-        return compo
+        return self.add_component(new_compo_obj(cid=cid), position=position)
 
     def add_component(self, compo_obj, slot = None, cid = None, position=None):
         """ You can call this function to add a component to its container.
