@@ -1,5 +1,6 @@
-{% macro render(compo) %}
-<li>
-    {{ caller() }}
-</li>
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <li>
+        {{ caller() }}
+    </li>
 {% endmacro %}

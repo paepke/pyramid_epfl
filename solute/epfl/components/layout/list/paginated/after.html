@@ -1,4 +1,5 @@
-{% macro render(compo) %}
+{% macro render() %}
+    {% set compo = kwargs.compo %}
     {% if compo.row_count > compo.row_limit %}
     <div class="col-sm-12 text-center">
         <ul class="pagination" style="margin: 5px 0; ">

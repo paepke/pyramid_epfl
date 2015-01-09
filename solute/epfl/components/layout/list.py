@@ -36,11 +36,20 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
         return env.get_template('%s/%s' % (self.theme_path_default, target))
 
     def get_render_environment(self, env):
-        result = {'compo': self}
-        result.update({'container': self.get_themed_template(env, 'container.html').module.render,
-                       'row': self.get_themed_template(env, 'row.html').module.render,
-                       'before': self.get_themed_template(env, 'before.html').module.render,
-                       'after': self.get_themed_template(env, 'after.html').module.render})
+        result = {}
+
+        def wrap(cb):
+            def _cb(*args, **kwargs):
+                extra_kwargs = result.copy()
+                extra_kwargs.update(kwargs)
+                return cb(*args, **extra_kwargs)
+            return _cb
+
+        result.update({'compo': self,
+                       'container': wrap(self.get_themed_template(env, 'container.html').module.render),
+                       'row': wrap(self.get_themed_template(env, 'row.html').module.render),
+                       'before': wrap(self.get_themed_template(env, 'before.html').module.render),
+                       'after': wrap(self.get_themed_template(env, 'after.html').module.render)})
         return result
 
 
@@ -51,4 +60,9 @@ class PrettyListLayout(ListLayout):
 
 class PaginatedListLayout(PrettyListLayout):
     theme_path = ['layout/list/pretty', 'layout/list/paginated']
+    js_parts = ['layout/list/paginated.js']
+
+
+class LinkListLayout(PrettyListLayout):
+    theme_path = ['layout/list/pretty', 'layout/list/paginated', 'layout/list/link']
     js_parts = ['layout/list/paginated.js']
