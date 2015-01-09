@@ -1,0 +1,24 @@
+<tr epflid="{{ compo.cid }}">
+    {% for cell in compo.data %}
+        <td>
+            {% if cell.type == 'text' %}
+                {{ cell.data }}
+            {% elif cell.type == 'icon' %}
+                <i class="fa fa-{{ cell.data.icon }} fa-{{ cell.data.size }}x"></i> {{ cell.data.text }}
+            {% elif cell.type == 'progress' %}
+                <div class="progress">
+                    {% for bar in cell.data %}
+                        <div class="progress-bar {% if bar.color is defined %}progress-bar-{{ bar.color }}{% endif %}" style="width: {{ bar.width }}">
+                            <span>{{ bar.text }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elif cell.type == 'button' %}
+                <button type='button' class='btn btn-default'
+                        onclick='epfl.DataTableComponent.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
+            {% endif %}
+        </td>
+    {% endfor %}
+
+</tr>
+

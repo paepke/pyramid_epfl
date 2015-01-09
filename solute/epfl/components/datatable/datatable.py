@@ -4,6 +4,14 @@ from solute.epfl.core import epflcomponentbase,epflutil
 from pyramid.response import Response
 import json
 
+
+class Row(epflcomponentbase.ComponentBase):
+    template_name = "datatable/row.html"
+    asset_spec = "solute.epfl.components:datatable/static"
+
+    def setup_component(self):
+        super(Row,self).setup_component()
+
 class DataTable(epflcomponentbase.ComponentContainerBase):
 
     template_name = "datatable/datatable.html"
@@ -14,27 +22,12 @@ class DataTable(epflcomponentbase.ComponentContainerBase):
     js_name = []
     css_name = ["bootstrap.min.css"]
 
-    compo_state = ["table_data","table_head","title"]
+    compo_state = ["table_head","title"]
 
     compo_config = []
 
-    table_data = []
     table_head = []
     title = ""
 
-    def get_data(self, row_offset=None, row_limit=None, row_data=None):
-        print "DataTable.get_data"
-        data = []
-        for i in range(0,1000):
-            data.append({"id":i,"data":"data " +str(i)})
+    default_child_cls=Row()
 
-        return data
-
-    def init_struct(self):
-        pass
-
-class TextValue(epflcomponentbase.ComponentBase):
-    template_name = "containers/textvalue.html"
-    asset_spec = "solute.epfl.components:containers/static"
-    value = None
-    compo_state = ["value"]

@@ -1,20 +1,45 @@
-<div class="datatable" epflid="{{ compo.cid }}">
-
- <div class="panel panel-default">
-	{% if compo.title %}
-	<div class="panel-heading">{{ compo.title }}</div>
-	{% endif %}
-	<table class="table">
-	{% for head in compo.table_head %}
-	    <th>{{ head }}</th>
-	{% endfor %}
-	    {% for row in compo.table_data %}
-	        <tr>
-	        {% for data in row %}
-	            <td>{{ data }}</td>
-	            {% endfor %}
-	        </tr>
-	    {% endfor %}
-	</table>
- </div>
+<div epflid="{{ compo.cid }}">
+<table class="table">
+{% for head in compo.table_head %}
+    <th>{{ head }}</th>
+{% endfor %}
+    {% for compo_obj in compo.components %}
+		{{ compo_obj.render() }}
+    {% endfor %}
+</table>
+    {% if compo.row_count > compo.row_limit %}
+    <div class="col-sm-12 text-center">
+        <ul class="pagination" style="margin: 5px 0; ">
+            <li onclick="epfl.DataTableComponent.goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset - compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
+                <span aria-hidden="true">&laquo;</span>
+            </li>
+            {% for i in range(0, compo.row_count, compo.row_limit) %}
+            <li onclick="epfl.DataTableComponent.goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ i }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ 'active' if i == compo.row_offset else '' }}">
+                <span>{{ (i/compo.row_limit + 1)|round(method='ceil')|int }}</span>
+            </li>
+            {% endfor %}
+            <li onclick="epfl.DataTableComponent.goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset + compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {})"
+                class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
+                <span aria-hidden="true">&raquo;</span>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
 </div>
