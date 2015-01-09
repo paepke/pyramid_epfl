@@ -1,14 +1,4 @@
-<div class="list-group row" epflid="{{ compo.cid }}">
-    {% for compo_obj in compo.components %}
-        {% if compo_obj.is_visible() %}
-            <div class="list-group-item col-sm-12">
-                {{ compo_obj.render() }}
-            </div>
-        {% endif %}
-    {% endfor %}
-    {% for name, href in compo.links %}
-        <a class="list-group-item col-sm-12" href="{{ href }}">{{ name }}</a>
-    {% endfor %}
+{% macro render(compo) %}
     {% if compo.row_count > compo.row_limit %}
     <div class="col-sm-12 text-center">
         <ul class="pagination" style="margin: 5px 0; ">
@@ -44,4 +34,4 @@
         </ul>
     </div>
     {% endif %}
-</div>
+{% endmacro %}

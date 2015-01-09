@@ -596,8 +596,11 @@ class ComponentBase(object):
 
         for template in templates:
             jinja_template = env.get_template(template)
-            out.append(jinja_template.render(compo=self))
+            out.append(jinja_template.render(**self.get_render_environment(env)))
         return out
+
+    def get_render_environment(self, env):
+        return {'compo': self}
 
     def render(self, target='main'):
         """ Called to render the complete component.
