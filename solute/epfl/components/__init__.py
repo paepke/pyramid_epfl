@@ -42,6 +42,7 @@ from containers.table import TableContainer
 from datagrid.datagrid import DataGrid
 from simpletable.simpletable import SimpleTable
 from datatable.datatable import DataTable
+from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 def add_routes(config):
     Form.add_pyramid_routes(config)
@@ -63,6 +64,6 @@ def add_routes(config):
     DataGrid.add_pyramid_routes(config)
     SimpleTable.add_pyramid_routes(config)
     DataTable.add_pyramid_routes(config)
-
+    MultiSelect.add_pyramid_routes(config)
     
 
