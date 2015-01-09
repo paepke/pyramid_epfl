@@ -1,4 +1,4 @@
-<div class="container{{ '-fluid' if not compo.constrained else '' }}" epflid="{{ compo.cid }}">
+<div class="{{ 'col-sm-12' if compo.container_compo else ('container' if compo.constrained else 'container-fluid') }}" epflid="{{ compo.cid }}">
     {% if compo.cardinal_components('north') %}
     <div class="row">
         <div class="col-sm-12">

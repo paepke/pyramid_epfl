@@ -1,0 +1,24 @@
+<div epflid="{{compo.cid}}">
+	{% if compo.show_search %}
+	<input type="text" class="form-control multiselect-search-input" placeholder="Suchen..." value="{{ compo.search_string }}"><br/>
+	{% endif %}
+	{% if compo.max_height is defined %}
+	{% set list_style = "max-height: " + compo.max_height|string + "px; overflow-x: hidden;" %} 
+	{% endif %}
+	<ul class="list-group" style="{{ list_style if list_style is defined else "" }}">
+	{% for child_compo in compo.components %}
+        <li class="list-group-item
+        {% if compo.grouped %}
+        	{% if child_compo.multiselect_group is defined %}multiselect-group
+        	{% else %}
+        		in-multiselect-group{{ " multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else " multiselect-selectable" }}
+        	{% endif %}	
+        {% else %}
+        	{{ "multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else "multiselect-selectable" }}
+        {% endif %}
+        {{ "hidden" if (child_compo.cid in compo.hidden_child_cids) else "" }}">
+        	{{ child_compo() }}
+        </li>
+    {% endfor %}
+    </ul>
+</div>

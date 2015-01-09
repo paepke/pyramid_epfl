@@ -1,1 +1,1 @@
-{{ compo.value }}
+{% if compo.verbose is defined %}<span epflid="{{ compo.cid }}">{{ compo.value }}</span>{% else %}{{ compo.value }}{% endif %}
