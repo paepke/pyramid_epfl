@@ -14,22 +14,26 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
 };
 
 
-var {{ compo.cid }}_timeout;
-$('#' + '{{ compo.cid }}_search').keypress(function (e) {
-    var elm = this;
-    function submit() {
-        epfl.paginated_list_goto($(elm),
-                                 "{{ compo.cid }}",
-                                 parseInt({{ compo.row_offset }}),
-                                 parseInt({{ compo.row_limit }}),
-                                 {search: $(elm).val()});
-    }
+var search_{{ compo.cid }}_timeout;
+var search_{{ compo.cid }} = $('#' + '{{ compo.cid }}_search');
+search_{{ compo.cid }}
+    .keypress(function (e) {
+        var elm = this;
+        function submit() {
+            epfl.paginated_list_goto($(elm),
+                                     "{{ compo.cid }}",
+                                     parseInt({{ compo.row_offset }}),
+                                     parseInt({{ compo.row_limit }}),
+                                     {search: $(elm).val()});
+        }
 
-    if (e.key == 'Enter') {
-        submit();
-    }
-    if ({{ compo.cid }}_timeout) {
-        clearTimeout({{ compo.cid }}_timeout);
-    }
-    {{ compo.cid }}_timeout = window.setTimeout(submit, 500);
-});
+        if (e.key == 'Enter') {
+            submit();
+        }
+        if (search_{{ compo.cid }}_timeout) {
+            clearTimeout(search_{{ compo.cid }}_timeout);
+        }
+        search_{{ compo.cid }}_timeout = window.setTimeout(submit, 500);
+    })
+    .focus()[0]
+    .setSelectionRange(search_{{ compo.cid }}.val().length, search_{{ compo.cid }}.val().length);
