@@ -11,6 +11,7 @@ class Row(epflcomponentbase.ComponentBase):
 
     def setup_component(self):
         super(Row,self).setup_component()
+        self.id,self.data
 
 class DataTable(epflcomponentbase.ComponentContainerBase):
 
@@ -22,12 +23,14 @@ class DataTable(epflcomponentbase.ComponentContainerBase):
     js_name = []
     css_name = ["bootstrap.min.css"]
 
-    compo_state = ["table_head","title"]
+    compo_state = ["table_head","title","search"]
 
     compo_config = []
 
     table_head = []
     title = ""
 
-    default_child_cls=Row()
+    search = True
+
+    default_child_cls=Row
 

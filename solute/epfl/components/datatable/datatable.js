@@ -2,10 +2,25 @@ epfl.DataTableComponent = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
 
-   epfl.DataTableComponent.buttonClickHandler = function(eventname){
-       var evt = compo.make_event(eventname,{});
-       epfl.send(evt);
-   }
+    epfl.DataTableComponent.buttonClickHandler = function (eventname) {
+        var evt = compo.make_event(eventname, {});
+        epfl.send(evt);
+    }
+
+    var search = $("#"+cid+"_search");
+
+    search.keyup(function () {
+        var searchtext= search.val();
+
+        var event = compo.make_event(
+        'set_row',
+        {
+            row_offset: {{ compo.row_offset }},
+            row_limit: {{ compo.row_limit }},
+            row_data: {search:searchtext}
+        });
+    epfl.send(event);
+    });
 };
 
 epfl.DataTableComponent.inherits_from(epfl.ComponentBase);
