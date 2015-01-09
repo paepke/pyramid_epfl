@@ -50,6 +50,5 @@ class PrettyListLayout(ListLayout):
 
 
 class PaginatedListLayout(PrettyListLayout):
-    theme_path = PrettyListLayout.theme_path[:]
-    theme_path.append('layout/list/paginated')
+    theme_path = ['layout/list/pretty', 'layout/list/paginated']
     js_parts = ['layout/list/paginated.js']
