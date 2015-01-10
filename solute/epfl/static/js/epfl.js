@@ -52,6 +52,7 @@ epfl_module = function() {
     epfl.replace_component = function(cid, parts) {
         for (var part_name in parts) {
             if (part_name == "js") continue;
+            if (part_name == "prefetch") continue;
             var part_html = parts[part_name];
             var epflid = cid;
             if (part_name != "main") {
@@ -62,7 +63,15 @@ epfl_module = function() {
                 alert("Element with epflid='" + epflid + "' not found!");
                 return;
             }
-            el.replaceWith(part_html);
+            var parts_jq = $(part_html);
+            if (parts["prefetch"]) {
+                parts_jq
+                    .hide()
+                    .appendTo(document.body);
+                $.ajax(parts["prefetch"], {async: false});
+                parts_jq.show();
+            }
+            el.replaceWith(parts_jq);
         }
         eval(parts["js"]);
     };
