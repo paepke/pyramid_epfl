@@ -3,7 +3,7 @@
     {% set compo_obj = kwargs.compo_obj %}
     {% if compo_obj.event_name is defined
        and compo_obj.event_target is defined %}
-    <a class="list-group-item col-sm-12" cid="{{ compo.cid }}"
+    <a class="list-group-item col-sm-12" epflid="{{ compo_obj.cid }}"
        onclick="epfl.link_list_click(this,
                                      '{{ compo_obj.event_name }}',
                                  {% if compo_obj.event_target is defined and compo_obj.event_target == '__self__' %}

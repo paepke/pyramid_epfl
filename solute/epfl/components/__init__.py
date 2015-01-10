@@ -38,6 +38,7 @@ from layout.list import ListLayout
 from layout.list import PrettyListLayout
 from layout.list import PaginatedListLayout
 from layout.list import LinkListLayout
+from layout.list import HoverLinkListLayout
 from layout.nav import NavLayout
 from layout.tabs import TabsLayout
 from containers.table import TableContainer

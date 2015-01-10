@@ -66,3 +66,7 @@ class PaginatedListLayout(PrettyListLayout):
 class LinkListLayout(PrettyListLayout):
     theme_path = ['layout/list/pretty', 'layout/list/paginated', 'layout/list/link']
     js_parts = ['layout/list/paginated.js', 'layout/list/link_list.js']
+
+
+class HoverLinkListLayout(LinkListLayout):
+    js_parts = ['layout/list/paginated.js', 'layout/list/link_list.js', 'layout/list/hover.js']
