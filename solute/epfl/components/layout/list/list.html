@@ -1,11 +1,11 @@
-{% call container(compo=compo) %}
-    {{ before(compo=compo) }}
+{% call container() %}
+    {{ before() }}
     {% for compo_obj in compo.components %}
         {% if compo_obj.is_visible() %}
-            {% call row(compo=compo, compo_obj=compo_obj) %}
+            {% call row(compo_obj=compo_obj) %}
                 {{ compo_obj.render() }}
             {% endcall %}
         {% endif %}
     {% endfor %}
-    {{ after(compo=compo) }}
+    {{ after() }}
 {% endcall %}
