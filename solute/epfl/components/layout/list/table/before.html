@@ -1,0 +1,8 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    {% from "layout/list/paginated/before.html" import render as before with context %}
+    <tr><td colspan="0">
+        {{ before(**kwargs) }}
+    </td></tr>
+
+{% endmacro %}

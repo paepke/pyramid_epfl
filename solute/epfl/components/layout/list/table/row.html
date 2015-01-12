@@ -1,0 +1,6 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <tr>
+        {{ caller() }}
+    </tr>
+{% endmacro %}

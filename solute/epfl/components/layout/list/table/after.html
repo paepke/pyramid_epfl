@@ -1,0 +1,8 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    {% from "layout/list/paginated/after.html" import render as after with context %}
+    <tr><td colspan="0">
+        {{ after(**kwargs) }}
+    </td></tr>
+
+{% endmacro %}
