@@ -6,12 +6,25 @@
 Welcome
 =======
 
+Hello dear visitor! It is my pleasure to welcome you here on the documentation of the EPFL Python Frontend Logic
+Project!
+
+The following resources might be of special interest to you:
+
+:ref:`quickstart_users`
+
+:ref:`quickstart_component_developers`
+
+:ref:`quickstart_core_developers`
+
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   installation
+   quickstart
    intro
    users/index
    developers/index
@@ -21,8 +34,6 @@ Contents:
    todo
    other_software
    license
-
-:class:`solute.epfl.core.epflcomponentbase.UnboundComponent`
 
 
 
