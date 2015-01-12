@@ -5,7 +5,6 @@
 The components must be imported in the namespace of this library.
 """
 
-from form.form import Form    # A web-form component based on WTForms
 from table.table import Table # A data-table component
 from menu.menu import Menu # A menu component
 from canvas.canvas import Canvas # A canvas component
@@ -39,7 +38,7 @@ from layout.list import PrettyListLayout
 from layout.list import PaginatedListLayout
 from layout.list import LinkListLayout
 from layout.list import HoverLinkListLayout
-from layout.list import TableListLayout
+from layout.table import TableListLayout
 from layout.nav import NavLayout
 from layout.tabs import TabsLayout
 from containers.table import TableContainer
@@ -47,7 +46,6 @@ from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 def add_routes(config):
-    Form.add_pyramid_routes(config)
     Table.add_pyramid_routes(config)
     Menu.add_pyramid_routes(config)
     Canvas.add_pyramid_routes(config)
