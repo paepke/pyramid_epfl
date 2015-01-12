@@ -26,6 +26,7 @@ Contents:
 
    quickstart
    intro
+   design
    users/index
    developers/index
 
