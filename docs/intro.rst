@@ -1,59 +1,78 @@
-====================
-Introducing the EPFL
-====================
-
-
-----------
-When EPFL?
-----------
-
-The **E**\ PFL **P**\ ython **F**\ rontend **L**\ ogic is a framework for creating web applications.
-EPFL is very specialized on **form based** web applications.
-
-So it very suitable for something like this:
-
-.. image:: _static/epfl_form.png
-    :width: 50%
-    :align: center
-
-
-But not for this:
-
-.. image:: _static/billigerde_screen.png
-    :width: 50%
-    :align: center
-
-
-
-Because of it's design and the "server-side-state"-feature the number of concurrent sessions is directly related to it's memory usage. (Maybe 10k per session and 8h-24h session TTL) So again, an edit-frontend for company wide data is it's strength, a website accessible for everybody from the internet maybe not.
+================
+Introducing EPFL
+================
 
 ---------
 Why EPFL?
 ---------
 
-EPFL stands for EPFL Python Frontend Logic. It is the attempt to ease the pain of business application development. Implementing Data-Models (in terms of MVC) is very well addressed these days, there are a remarkable number of libraries helping to tame databases and thier data in a number of ways. But when it comes to creating nice and usable user interfaces, there are some gaps to fill. On the browser-end you have fancy javascript-libraries to make rich GUIs, but the glue between the model and the view is up to you! And that glue is not a piece of cake! It is the EPFL!
+**E**\ PFL **P**\ ython **F**\ rontend **L**\ ogic is a framework for creating form based web applications. Its purpose
+is to create easy to use business application frontends.
 
+
+.. |epflform| image:: _static/epfl_form.png
+    :width: 100%
+
+.. |eftext| replace:: So it's very suitable for something like this, ...
+
+.. |bdeimg| image:: _static/billigerde_screen.png
+    :width: 100%
+
+.. |bdetext| replace:: ... and definitely not suitable for anything like this.
+
++------------+-----------+
+| |eftext|   | |bdetext| |
+| |epflform| | |bdeimg|  |
++------------+-----------+
+
+
+Due to its design and the "server-side-state"-feature EPFL is somewhat memory intensive. The number of concurrent
+sessions is directly related to its memory usage. Therefore keep in mind: EPFLs purpose is to serve as an edit-frontend
+for company wide data, not as a website for the general public.
+
+All of todays fancy frameworks are primarily general purpose tools supporting:
+ - MVC Development
+ - Responsive design
+ - Interactivity
+
+While all of these are important, none addresses the need for simple tools in case of repetitive development tasks.
+
+EPFL fills that gap with:
+ - Freedom of boilerplate*
+ - Component driven development
+ - Compatibility with any data source
+
+\* almost, but who reads qualifiers anyways?
+
+EPFL allows developers to focus on their logical workflows instead of the tassels on the handlebar. If the usecase
+exists in your internal workflows then there's an EPFL Component for it. If there is no EPFL Component for it it's easy
+to build one once and then reuse it everywhere.
+
+EPFL has the flexibility you need without forcing you to jump through all the hoops other frameworks force you through.
 
 -------------
 What is EPFL?
 -------------
 
-The EPFL provides you a server-side-only programming experience and structures your application-UI into pages and components. Components can interact - even across pages. It provides a number of base components like table, tree, form that you can customize and use in your application.
+EPFL provides you a server-side-only programming experience and structures your application-UI into pages and
+components. Components can interact - even across pages. It provides a number of base components like table, tree, form
+that you can customize and use in your application.
 
-The EPFL is written as pyramid extension and released under the repoze (http://repoze.org/license.html) license.
+EPFL is written as pyramid extension and released under the repoze (http://repoze.org/license.html) license.
 
-The key ideas are:
+EPFL comes with:
 
-- batteries included! (a rich set of components and features you really need)
-    - provide a set of reusable components -> speed up development
-- fewer options, or: one way to do it right(tm)!
-    - give flexibility - but only where needed
-- few building blocks (pages and components)
-- locality
-    - aspects of the application should not be spread over multiple locations -> easy to understand and find functionality
-- event driven programming model
-- server side state (every user input is available anytime on the server)
-- no javascript coding necessary
+- KISS:
+    Offer one way to do it right but give flexibility as needed.
+- Batteries included:
+    It offers you a rich set of features you really need and provides you with reusable components to speed up
+    development.
+- Location:
+    One Page per activity, one component per task, you see what you get and you find what you need.
+- No jumping through hoops:
+    If you really need to write Javascript, HTML or CSS you can, but you really don't need to.
+- Event Driven Programming
+- Server Side State
 
 
 ---------------
