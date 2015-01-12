@@ -1,1 +1,0 @@
-epfl_dynamics_demo README

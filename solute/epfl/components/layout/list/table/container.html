@@ -1,0 +1,12 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <div class="panel panel-default" epflid="{{ compo.cid }}">
+        <div class="panel-heading">{{ compo.title }}</div>
+        <table class="table">
+            {{ caller() }}
+        </table>
+    </div>
+{% endmacro %}
+
+
+

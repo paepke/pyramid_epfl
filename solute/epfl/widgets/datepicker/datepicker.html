@@ -1,8 +1,0 @@
-{% macro main(ds) %}
-    <input type="text" id="{{ ds.wid }}" name="{{ ds.name }}" value="{{ ds.value|e }}">
-{% endmacro %}
-
-{% macro init_js(ds) %}
-    epfl.components["{{ds.cid}}"].init_widget("{{ds.wid}}", "DatepickerWidget", {typ:"{{ds.widget.name}}", name:"{{ds.name}}", params: {{ds.params|tojson}}});
-{% endmacro %}
-
