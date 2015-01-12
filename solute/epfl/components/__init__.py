@@ -43,9 +43,7 @@ from layout.list import TableListLayout
 from layout.nav import NavLayout
 from layout.tabs import TabsLayout
 from containers.table import TableContainer
-from datagrid.datagrid import DataGrid
 from simpletable.simpletable import SimpleTable
-from datatable.datatable import DataTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 def add_routes(config):
@@ -65,9 +63,7 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
-    DataGrid.add_pyramid_routes(config)
     SimpleTable.add_pyramid_routes(config)
-    DataTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
     
 

@@ -7,10 +7,8 @@ import ujson as json # package abstraction
 from jinja2 import StrictUndefined
 
 from solute.epfl.core.epflpage import Page # shortcut
-from solute.epfl import fields # shortcut
 
 import components
-import widgets
 
 from solute.epfl.jinja import jinja_reflection
 from solute.epfl.jinja import jinja_extensions
@@ -146,9 +144,7 @@ def includeme(config):
 
     config.add_jinja2_search_path("solute.epfl:templates")
     config.add_jinja2_search_path("solute.epfl.components:")
-    config.add_jinja2_search_path("solute.epfl.widgets:")
 
     # static routes
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
     components.add_routes(config)
-    widgets.add_routes(config)
