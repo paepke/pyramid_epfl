@@ -20,16 +20,16 @@ from jinja2.exceptions import TemplateNotFound
 
 class UnboundComponent(object):
     """
-    This is one of two main classes used by epfl users, though few will notice. Any ComponentBase derived subclass will
-    return an UnboundComponent wrapping it, unless specifically instructed to return an instance. See
-    ComponentBase.__new__ for further details.
+    This is one of two main classes used by epfl users, though probably few will notice. Any
+    :class:`.ComponentBase` derived subclass will return an :class:`.UnboundComponent` wrapping it, unless specifically
+    instructed to return an instance. See :func:`.ComponentBase.__new__` for further details.
 
     Warning: Instantiation should be handled by the epfl core!
 
-    If you encounter an UnboundComponent you are likely trying to access a component in an untimely manner. Assign it a
-    cid and access that component via page.cid after init_transaction() is done by ComponentContainerBase.
-    ComponentContainerBase's add_component will return the actually instantiated component if it is called with an
-    UnboundComponent.
+    If you encounter an :class:`.UnboundComponent` you are likely trying to access a component in an untimely manner.
+    Assign it a cid and access that component via page.cid after init_transaction() is done by
+    :class:`.ComponentContainerBase`. :func:`ComponentContainerBase.add_component` will return the actually
+    instantiated component if it is called with an :class:`.UnboundComponent`.
     """
 
     __valid_subtypes__ = [bool, int, long, float, complex,
@@ -41,10 +41,8 @@ class UnboundComponent(object):
 
     def __init__(self, cls, config):
         """
-        Unbound components handle:
-        1. Dynamic class creation with inheritance from cls and attributes on the new class as defined in config.
-        2. Dynamic cid generation for unbound components without a cid entry in config.
-        3. Sanity checks for all attributes if epfl.debug mode is enabled.
+        Create dynamic cid for unbound components without a cid entry in config, store the calling class and create a
+        copy of the config.
         """
         self.__unbound_cls__ = cls
         self.__unbound_config__ = config.copy()
@@ -55,9 +53,8 @@ class UnboundComponent(object):
 
     def __call__(self, *args, **kwargs):
         """
-        With this helper the UnboundComponent can be pseudo instantiated to return a new UnboundComponent from it's base
-        class. Additionally this can be used to generate an instance if one is needed if the __instantiate__ keyword is
-        set to True.
+        Pseudo instantiation helper that returns a new UnboundComponent by updating the config. This can also be used to
+        generate an instantiated Component if one is needed with the __instantiate__ keyword set to True.
         """
         if kwargs.pop('__instantiate__', None) is None:
             config = self.__unbound_config__.copy()
@@ -74,8 +71,8 @@ class UnboundComponent(object):
     @property
     def __dynamic_class__(self):
         """
-        If the config contains entries besides cid and slot a dynamic class is generated.
-        This feature offers just in time creation of the actual class object to be used by epfl.
+        If the config contains entries besides cid and slot a dynamic class is returned. This offers just in time
+        creation of the actual class object to be used by epfl.
         """
         if self.__dynamic_class_store__:
             return self.__dynamic_class_store__
@@ -97,11 +94,10 @@ class UnboundComponent(object):
 
     def create_by_compo_info(self, *args, **kwargs):
         """
-        Expose the ComponentBase class method in order to allow storing UnboundComponent instances instead of raw
-        classes. This is required in order to have dynamic classes at all with a pickling session store, since only
-        static classes can be pickled.
-
-        The class needs to be setup with all dynamic attributes
+        Expose the :func:`ComponentBase.create_by_compo_info` in order to allow storing UnboundComponent instances
+        instead of raw classes. This is required in order to have dynamic classes at all with a pickling session store,
+        since only static classes can be pickled. The class is setup with all dynamic attributes by
+        :func:`__dynamic_class__`.
         """
         return self.__dynamic_class__.create_by_compo_info(*args, **kwargs)
 
@@ -123,6 +119,7 @@ class UnboundComponent(object):
     def assure_valid_subtype(param):
         """
         Raise an exception if param is not among the valid subtypes or contains invalid subtypes.
+
         ***epfl.debug***: This test is skipped if epfl.debug is set to False in the config.
         """
 
@@ -152,7 +149,7 @@ class UnboundComponent(object):
 
     def __eq__(self, other):
         """
-        Equality checking for an UnboundComponent means checking the class and config.
+        Checks class and config equality.
         """
         if type(other) is not UnboundComponent\
                 or other.__unbound_cls__ != self.__unbound_cls__\
@@ -163,34 +160,37 @@ class UnboundComponent(object):
 
 
 class ComponentBase(object):
-    """ The base Class of all epfl Components
-    Components are the building-blocks of any page (epflpage.Page) containing python, html, css and javascript.
-    They can send ajax-events from its js-parts to the server-side py-parts. The py-parts can respond by
-    sending back js-snipplets which will be executed in the browser.
+    """
+    Components are the building-blocks of any :class:`.epflpage.Page` containing python, html, css and javascript.
+    Ajax-events are sent by javascript to the server-side python-parts. They can respond by sending back javascript
+    which will be executed in the browser.
 
     There are two kinds of html, css and javascript associated with any component: Static and dynamic.
-    Static code will be loaded into the browser once per transaction (epfltransaction.Transaction), this is normally
+    Static code will be loaded into the browser once per :class:`.epfltransaction.Transaction`, this is normally
     used for css and javascript. The css and javascript files are taken from the Components css_name and js_name
     respectively, both being lists of strings that are resolved via jinja2.
     Dynamic code will be loaded everytime a component is rendered to be inserted or reinserted into a new or existing
-    transaction (epfltransaction.Transaction), this is normally used for html and javascript. The html and javascript
+    :class:`.epfltransaction.Transaction`, this is normally used for html and javascript. The html and javascript
     files are taken from the Components string template_name and js_parts respectively, the latter being a list of
     strings that are resolved via jinja2.
 
-    Components are instantiated every request, their state is managed by the page (epflpage.Page) and stored in the
-    transaction (epfltransaction.Transaction). To facilitate this, every component must define which of its attributes
-    is to be stored in the transaction (epfltransaction.Transaction) and which to be used as it is by default. To notify
-    the page how to store and reinstantiate a Component there are two attributes: compo_state and compo_config
+    Components are instantiated every request, their state is managed by the :class:`.epflpage.Page` and stored in the
+    :class:`.epfltransaction.Transaction`. To facilitate this, every component must define which of its attributes
+    is to be stored in the :class:`.epfltransaction.Transaction` and which to be used as it is by default. To notify
+    the :class:`.epflpage.Page` how to store and reinstantiate a Component there are two attributes: compo_state and
+    compo_config
 
     compo_state is a list of strings naming attributes whose current and up to date value is stored into the
-    transaction (epfltransaction.Transaction) at the end of a  request by the page (epflpage.Page) and loaded from the
-    transaction (epfltransaction.Transaction) at the  beginning of a request.
+    :class:`.epfltransaction.Transaction` at the end of a  request by the :class:`.epflpage.Page` and loaded from the
+    :class:`.epfltransaction.Transaction` at the  beginning of a request.
 
-    An example would be a forms input field whose value may change multiple times during a
-    transaction (epfltransaction.Transaction), each request being changes uploaded via ajax.
+    As an example see the following forms input field whose value may change multiple times during an
+    :class:`.epfltransaction.Transaction`, requests for example being changes uploaded via ajax.
 
-    class InputField(ComponentBase):
-        compo_state = ['value']
+    .. code:: python
+
+        class InputField(ComponentBase):
+            compo_state = ['value']
 
 
     compo_config: By default everything that is not in the compo_state will be the result of pythons instantiation process, all
@@ -200,24 +200,24 @@ class ComponentBase(object):
 
     """
 
-    __acl__ = [(security.Allow, security.Everyone, 'access')] # a pyramid acl that defines the permissions for this component
-                                                              # it only affects the has_access()-method.
-                                                              # The base-component only defines the "access"-permission.
-                                                              # If not given the component is not rendered.
+    #: a pyramid acl that defines the permissions for this component it only affects the has_access()-method. The
+    #: base-component only defines the "access"-permission. If not given the component is not rendered.
+    __acl__ = [(security.Allow, security.Everyone, 'access')]
 
-    template_name = "empty.html" # filenames of the templates for this component (if any)
-    js_parts = [] # filenames of the js-parts of this component
-    js_name = [] # filenames of the js-files for this component (if any)
-    css_name = [] # filenames of the css-files for this component (if any)
-    compo_state = [] # which attributes of the object are persisted into the transaction
-    compo_config = [] # all attributes declared here will be transformed into instance-variables
-                      # (so it is safe to modify them during a request)
+    template_name = "empty.html"  #: Filename of the template for this component (if any).
+    js_parts = []  #: List of files to be parsed as js-parts of this component.
+    js_name = []  #: List of javascript files to be statically loaded with this component.
+    css_name = []  #: List of css files to be statically loaded with this component.
+    compo_state = []  #: List of object attributes to be persisted into the :class:`.epfltransaction.Transaction`.
+    compo_config = []  #: List of attributes to be copied into instance-variables using :func:`copy.deepcopy`.
 
-    visible = True # Is the component visible or not?
+    visible = True  #: Flag for component rendering. Use via :func:`set_visible` and :func:`set_hidden`.
 
-    # This should never be None, if it is and something breaks because of it the parameter has not been correctly passed
-    # through the __new__/UnboundComponent pipe.
+    #: Internal reference to this Components :class:`UnboundComponent`. If it is None and something breaks because of it
+    #  this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
     __unbound_component__ = None
+
+    #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
     struct_dict = None
 
 

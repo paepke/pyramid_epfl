@@ -22,6 +22,9 @@ Contents:
    other_software
    license
 
+:class:`solute.epfl.core.epflcomponentbase.UnboundComponent`
+
+
 
 Indices and tables
 ==================
@@ -29,4 +32,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
