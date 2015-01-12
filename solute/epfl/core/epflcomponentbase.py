@@ -18,43 +18,23 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
-class CallableWrapper(object):
-    cls, name = None, ''
-    _function = None
-
-    def __init__(self, *args):
-        self.__setstate__(args)
-
-    def __getstate__(self):
-        return self.cls, self.name
-
-    def __setstate__(self, state):
-        self.cls, self.name = state
-
-    def __call__(self, *args, **kwargs):
-        if not self._function:
-            self._function = getattr(self.cls, self.name)
-        return self._function(*args, **kwargs)
-
-
 class UnboundComponent(object):
     """
-    This is one of two main classes used by epfl users. Any ComponentBase derived subclass will yield an
-    UnboundComponent wrapping it, unless specifically instructed to yield a real instance. See ComponentBase.__new__ for
-    further details.
+    This is one of two main classes used by epfl users, though few will notice. Any ComponentBase derived subclass will
+    return an UnboundComponent wrapping it, unless specifically instructed to return an instance. See
+    ComponentBase.__new__ for further details.
 
-    Instantiation should normally be handled by the epfl core!
+    Warning: Instantiation should be handled by the epfl core!
 
     If you encounter an UnboundComponent you are likely trying to access a component in an untimely manner. Assign it a
-    cid and access that component via page.cid after init_transaction() is done by ComponentTreeBase.
-
-    Both ComponentTreeBase and ComponentContainerBase's add_component will return the actually instantiated component if
-    they are called with an UnboundComponent.
+    cid and access that component via page.cid after init_transaction() is done by ComponentContainerBase.
+    ComponentContainerBase's add_component will return the actually instantiated component if it is called with an
+    UnboundComponent.
     """
 
     __valid_subtypes__ = [bool, int, long, float, complex,
                           str, unicode, bytearray, xrange,
-                          type, types.FunctionType, CallableWrapper,
+                          type, types.FunctionType,
                           types.NoneType]
     __debugging_on__ = False
     __dynamic_class_store__ = None
@@ -75,7 +55,7 @@ class UnboundComponent(object):
 
     def __call__(self, *args, **kwargs):
         """
-        With this helper the UnboundComponent can be pseudo instantiated to yield a new UnboundComponent from it's base
+        With this helper the UnboundComponent can be pseudo instantiated to return a new UnboundComponent from it's base
         class. Additionally this can be used to generate an instance if one is needed if the __instantiate__ keyword is
         set to True.
         """
@@ -126,11 +106,17 @@ class UnboundComponent(object):
         return self.__dynamic_class__.create_by_compo_info(*args, **kwargs)
 
     def __getstate__(self):
+        """
+        Pickling helper.
+        """
         for param in self.__unbound_config__:
             self.assure_valid_subtype(self.__unbound_config__[param])
         return self.__unbound_cls__, self.__unbound_config__, self.position
 
     def __setstate__(self, state):
+        """
+        Pickling helper.
+        """
         self.__unbound_cls__, self.__unbound_config__, self.position = state
 
     @staticmethod
@@ -165,6 +151,9 @@ class UnboundComponent(object):
         raise Exception('Tried adding unsupported %r to an unbound class.' % param)
 
     def __eq__(self, other):
+        """
+        Equality checking for an UnboundComponent means checking the class and config.
+        """
         if type(other) is not UnboundComponent\
                 or other.__unbound_cls__ != self.__unbound_cls__\
                 or other.__unbound_config__ != self.__unbound_config__:
@@ -174,33 +163,40 @@ class UnboundComponent(object):
 
 
 class ComponentBase(object):
-
-    """ The base of all epfl-components
-    Components are logical building-blocks of a page (epflpage.Page). It consists of html, python, css and js-parts.
-    Components can send ajax-events from its js-parts to the server-side py-parts. The py-parts can respond by
+    """ The base Class of all epfl Components
+    Components are the building-blocks of any page (epflpage.Page) containing python, html, css and javascript.
+    They can send ajax-events from its js-parts to the server-side py-parts. The py-parts can respond by
     sending back js-snipplets which will be executed in the browser.
 
-    this is a lie!!!
-##    The Jinja-Template is exposed throu its "main"-macro - a jinja-macro which is called "main" defined in the component-template.
-##    All other jinja-macros are exposed throu self.macros.*, so the page-layout can use parts of the component or rearrange them as needed by the
-##    html-layout.
-    explain component-layout inheritance and inline-components and component-parts
+    There are two kinds of html, css and javascript associated with any component: Static and dynamic.
+    Static code will be loaded into the browser once per transaction (epfltransaction.Transaction), this is normally
+    used for css and javascript. The css and javascript files are taken from the Components css_name and js_name
+    respectively, both being lists of strings that are resolved via jinja2.
+    Dynamic code will be loaded everytime a component is rendered to be inserted or reinserted into a new or existing
+    transaction (epfltransaction.Transaction), this is normally used for html and javascript. The html and javascript
+    files are taken from the Components string template_name and js_parts respectively, the latter being a list of
+    strings that are resolved via jinja2.
 
-    Since all component-instances only survive one request, you can not use "normal" object-attributes to save the state of your component.
-    The state may be the index of the first row that is currently displayed to the user of a table, or the currenlty selected row.
-    To solve this problem you can declare object-attributes as part of the "component-state". Just list the names of the attributes in the
-    "compo_state"-class-variable.
+    Components are instantiated every request, their state is managed by the page (epflpage.Page) and stored in the
+    transaction (epfltransaction.Transaction). To facilitate this, every component must define which of its attributes
+    is to be stored in the transaction (epfltransaction.Transaction) and which to be used as it is by default. To notify
+    the page how to store and reinstantiate a Component there are two attributes: compo_state and compo_config
 
-    compo_state = ["start_row", "selcted_rows"]
+    compo_state is a list of strings naming attributes whose current and up to date value is stored into the
+    transaction (epfltransaction.Transaction) at the end of a  request by the page (epflpage.Page) and loaded from the
+    transaction (epfltransaction.Transaction) at the  beginning of a request.
 
-    Now you can use self.start_row just as a normal object-attribute. But the framework stores and restores its value into the page-transaction. These
-    attributes are also exposed as GET/POST-Parameters (prefixed with the component-id).
+    An example would be a forms input field whose value may change multiple times during a
+    transaction (epfltransaction.Transaction), each request being changes uploaded via ajax.
 
-    Since a component is a class and since component-config are class variables they are shared between all requests. This is maybe not what you want!
-    To define a class variable as a component-config-variable (this means the class-variable will be transformed in an instance-variable) put it's name
-    into the compo_config - list.
+    class InputField(ComponentBase):
+        compo_state = ['value']
 
-    compo_state vs. compo_config: all attributes named in compo_state are persisted in the transaction, the compo_config's are not!
+
+    compo_config: By default everything that is not in the compo_state will be the result of pythons instantiation process, all
+    attributes being references to the attributes of the components class. For non trivial attributes this means that
+    changes to class attributes will affect all instances of this class. compo_config offers an easy way to avoid this
+    behaviour, by copying the attribute using copy.deepcopy from the class to the instance.
 
     """
 
