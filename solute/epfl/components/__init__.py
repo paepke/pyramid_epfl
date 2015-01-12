@@ -46,7 +46,13 @@ from containers.table import TableContainer
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
+
 def add_routes(config):
+    """
+    Called once per thread start, in order to call
+    :func:`solute.epfl.core.epflcomponentbase.ComponentBase.add_pyramid_routes` for every component provided by epfl
+    through this package.
+    """
     Form.add_pyramid_routes(config)
     Table.add_pyramid_routes(config)
     Menu.add_pyramid_routes(config)

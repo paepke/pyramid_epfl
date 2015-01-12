@@ -227,14 +227,11 @@ class ComponentBase(object):
 
     def __new__(cls, *args, **config):
         """
-        epfl wraps component creation at this stage to allow custom __init__ functions without interfering with
-        component creation by the system.
+        Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
+        __instantiate__=True has been passed as a keyword argument.
 
-        Calling a class derived from ComponentBase will normally yield an UnboundComponent unless __instantiate__=True
-        has been passed as a keyword argument.
-
-        Any component developer may thus overwrite the __init__ method without causing any problems in order to expose
-        runtime settable attributes for code completion and documentation purposes.
+        Any component developer may thus overwrite the :func:`__init__` method without causing any problems in order to
+        expose runtime settable attributes for code completion and documentation purposes.
         """
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
@@ -244,8 +241,8 @@ class ComponentBase(object):
         if self.__unbound_component__ is None:
             self.__unbound_component__ = cls()
 
-        self.is_rendered = False # whas this componend rendered (so was the self.render-method called?
-        self.redraw_requested = set() # all these parts of the component (or "main") want to be redrawn
+        self.is_rendered = False  # was this component rendered (so was the self.render-method called?
+        self.redraw_requested = set()  # all these parts of the component (or "main") want to be redrawn
         self.container_compo = None
         self.container_slot = None
         self.deleted = False
@@ -260,7 +257,7 @@ class ComponentBase(object):
             else:
                 config_value = getattr(self, attr_name)
 
-            setattr(self, attr_name, copy.deepcopy(config_value)) # copy from class to instance
+            setattr(self, attr_name, copy.deepcopy(config_value))  # copy from class to instance
 
         for attr_name in self.compo_state + self.base_compo_state:
             if attr_name in config:
@@ -274,13 +271,14 @@ class ComponentBase(object):
 
     def __init__(self, *args, **kwargs):
         """
-        Overwrite-me for auto completion features on component level.
+        Overwrite this for auto completion features on component level.
         """
         pass
 
     @classmethod
     def add_pyramid_routes(cls, config):
-        """ Adds the routes needed by this component """
+        """ Adds the static pyramid routes needed by this component. This only works for native components stored in
+        :mod:`solute.epfl.components`. """
         fn = inspect.getfile(cls)
         pos = fn.index("/epfl/components/")
         epos = fn.index("/", pos + 17)
