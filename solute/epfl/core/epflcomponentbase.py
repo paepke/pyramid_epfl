@@ -163,7 +163,7 @@ class UnboundComponent(object):
 
 
 class ComponentBase(object):
-    """ The base of all epfl-components
+    """ The base Class of all epfl Components
     Components are the building-blocks of any page (epflpage.Page) containing python, html, css and javascript.
     They can send ajax-events from its js-parts to the server-side py-parts. The py-parts can respond by
     sending back js-snipplets which will be executed in the browser.
