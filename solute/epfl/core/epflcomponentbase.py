@@ -18,25 +18,6 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
-class CallableWrapper(object):
-    cls, name = None, ''
-    _function = None
-
-    def __init__(self, *args):
-        self.__setstate__(args)
-
-    def __getstate__(self):
-        return self.cls, self.name
-
-    def __setstate__(self, state):
-        self.cls, self.name = state
-
-    def __call__(self, *args, **kwargs):
-        if not self._function:
-            self._function = getattr(self.cls, self.name)
-        return self._function(*args, **kwargs)
-
-
 class UnboundComponent(object):
     """
     This is one of two main classes used by epfl users. Any ComponentBase derived subclass will yield an
@@ -54,7 +35,7 @@ class UnboundComponent(object):
 
     __valid_subtypes__ = [bool, int, long, float, complex,
                           str, unicode, bytearray, xrange,
-                          type, types.FunctionType, CallableWrapper,
+                          type, types.FunctionType,
                           types.NoneType]
     __debugging_on__ = False
     __dynamic_class_store__ = None
