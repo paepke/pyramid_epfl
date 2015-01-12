@@ -19,12 +19,20 @@ var search_{{ compo.cid }} = $('#' + '{{ compo.cid }}_search');
 search_{{ compo.cid }}
     .keypress(function (e) {
         var elm = this;
+
         function submit() {
+            var row_data = {search: $(elm).val()};
+
+            if ($("#{{ compo.cid }}_orderby").length && $("#{{ compo.cid }}_ordertype").length) {
+                row_data.orderby = $("#{{ compo.cid }}_orderby option:selected").val();
+                row_data.ordertype = $("#{{ compo.cid }}_ordertype option:selected").val();
+            }
+
             epfl.paginated_list_goto($(elm),
-                                     "{{ compo.cid }}",
-                                     parseInt({{ compo.row_offset }}),
-                                     parseInt({{ compo.row_limit }}),
-                                     {search: $(elm).val()});
+                "{{ compo.cid }}",
+                parseInt({{ compo.row_offset }}),
+                parseInt({{ compo.row_limit }}),
+                row_data);
         }
 
         if (e.key == 'Enter') {

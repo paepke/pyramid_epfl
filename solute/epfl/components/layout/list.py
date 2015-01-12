@@ -73,12 +73,3 @@ class HoverLinkListLayout(LinkListLayout):
 
 
 
-class TableLayoutRow(epflcomponentbase.ComponentBase):
-    template_name = "layout/TableRow.html"
-    asset_spec = "solute.epfl.components:layout/static"
-
-
-class TableListLayout(ListLayout):
-    theme_path = [ 'layout/list/paginated', 'layout/list/table']
-    js_parts = ['layout/list/paginated.js','layout/list/table.js',]
-    default_child_cls = TableLayoutRow

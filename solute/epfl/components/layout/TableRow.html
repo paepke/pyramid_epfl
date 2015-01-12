@@ -19,6 +19,8 @@
             {% elif cell.type == 'button' %}
                 <button type='button' class='btn btn-default'
                         onclick='epfl.TableLayout.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
+            {% elif cell.type == 'component' %}
+                {{ compo.get_next_component()() }}
             {% endif %}
         </td>
     {% endif %}

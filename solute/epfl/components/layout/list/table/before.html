@@ -1,8 +1,27 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% from "layout/list/paginated/before.html" import render as before with context %}
-    <tr><td colspan="0">
-        {{ before(**kwargs) }}
-    </td></tr>
+    <tr>
+        <td colspan="0">
+            <div class="row">
+                <div class="col-sm-8">
+                    {{ before(**kwargs) }}
+                </div>
+                <div class="col-sm-2" id="{{ compo.cid }}_orderby">
+                    <select class="form-control">
+                        {% for order in compo.order_by %}
+                            <option value="{{ order }}">{{ order }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-2" id="{{ compo.cid }}_ordertype">
+                    <select class="form-control">
+                        <option value="asc">aufsteigend</option>
+                        <option value="desc">absteigend</option>
+                    </select>
+                </div>
+            </div>
+        </td>
+    </tr>
 
 {% endmacro %}
