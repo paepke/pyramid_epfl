@@ -18,6 +18,10 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
+class MissingEventHandlerException(Exception):
+    pass
+
+
 class UnboundComponent(object):
     """
     This is one of two main classes used by epfl users, though probably few will notice. Any
@@ -210,6 +214,9 @@ class ComponentBase(object):
     css_name = []  #: List of css files to be statically loaded with this component.
     compo_state = []  #: List of object attributes to be persisted into the :class:`.epfltransaction.Transaction`.
     compo_config = []  #: List of attributes to be copied into instance-variables using :func:`copy.deepcopy`.
+
+    event_sink = False  #: Flag this component as event sink, meaning any events will stop here, wether it has an
+                        #: appropriate handler or not.
 
     visible = True  #: Flag for component rendering. Use via :func:`set_visible` and :func:`set_hidden`.
 
@@ -561,12 +568,20 @@ class ComponentBase(object):
         """
 
         event_handler = getattr(self, "handle_" + event_name, None)
-        if event_handler is None:
-            raise Exception('Received None as event handler, have you setup an '
-                            'event handler for %s in %s?' % (event_name, self.__class__))
-        elif not hasattr(event_handler, '__call__'):
-            raise Exception('Received non callable for event handling.')
-        event_handler(**event_params)
+        try:
+            if event_handler is None:
+                raise MissingEventHandlerException('Received None as event handler, have you setup an '
+                                                   'event handler for %s in %s?' % (event_name, self.__class__))
+            elif not hasattr(event_handler, '__call__'):
+                raise MissingEventHandlerException('Received non callable for event handling.')
+            event_handler(**event_params)
+        except MissingEventHandlerException:
+            if self.container_compo is not None:
+                self.container_compo.handle_event(event_name, event_params)
+            elif self.event_sink is True:
+                pass
+            else:
+                raise
 
     def request_handle_submit(self, params):
         """
