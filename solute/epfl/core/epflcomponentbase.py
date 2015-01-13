@@ -8,7 +8,7 @@ import types, copy, string, inspect, uuid
 from pyramid import security
 from pyramid import threadlocal
 
-from solute.epfl.core import epflclient, epflutil, epflexceptions
+from solute.epfl.core import epflclient, epflutil, epflexceptions, epflassets
 from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl import json
@@ -728,6 +728,8 @@ class ComponentContainerBase(ComponentBase):
     compo_state = ['row_offset', 'row_limit', 'row_count']
 
     default_child_cls = None
+    data_interface = {'id': None}
+
     row_offset = 0
     row_limit = 30
     row_data = 30
@@ -756,7 +758,7 @@ class ComponentContainerBase(ComponentBase):
 
         if self.default_child_cls is None:
             return
-        data = self.get_data(self.row_offset, self.row_limit, self.row_data)
+        data = self._get_data(self.row_offset, self.row_limit, self.row_data)
         # TODO: data may change without the actually displayed element changing!
         for i, d in enumerate(data):
             if i < len(self.components) and self.components[i].id == d['id']:
@@ -770,6 +772,11 @@ class ComponentContainerBase(ComponentBase):
         for compo in self.components[len(data):]:
             compo.delete_component()
             self.redraw()
+
+    def _get_data(self, *args, **kwargs):
+        if type(self.get_data) is str and  self.page.model is not None:
+            return self.page.model[(self.get_data, (args, kwargs), self.data_interface)]
+        return self.get_data(*args, **kwargs)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         """ Overwrite this method to automatically provide data to this components children.

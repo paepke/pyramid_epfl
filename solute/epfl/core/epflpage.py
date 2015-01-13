@@ -74,6 +74,8 @@ class Page(object):
     __name = None # cached value from get_name()
     _active_initiations = 0
 
+    model = None
+
     def __init__(self, request, transaction = None):
         """ The optional parameter "transaction" is needed when creating page_objs manually.
         So the transaction is not the same as the requests one.
@@ -82,6 +84,8 @@ class Page(object):
         self.request = request
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
+        if self.model is not None:
+            self.model = self.model()
 
         self.__parent = None
 
