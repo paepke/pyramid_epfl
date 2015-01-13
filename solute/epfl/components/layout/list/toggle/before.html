@@ -1,0 +1,8 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    {% if compo.show_children %}
+        <i class="fa fa-minus"></i>
+    {% else %}
+        <i class="fa fa-plus"></i>
+    {% endif %}
+{% endmacro %}

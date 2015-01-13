@@ -54,8 +54,25 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
 
 
 class PrettyListLayout(ListLayout):
-    template_prefix = ListLayout.template_prefix
     theme_path = ['layout/list/pretty']
+
+
+class ToggleListLayout(PrettyListLayout):
+    theme_path = ['layout/list/pretty', 'layout/list/toggle']
+    js_parts = ['layout/list/toggle.js']
+
+    compo_state = PrettyListLayout.compo_state[:]
+    compo_state.extend(['show_children'])
+
+    show_children = True
+
+    def handle_show(self):
+        self.show_children = True
+        self.redraw()
+
+    def handle_hide(self):
+        self.show_children = False
+        self.redraw()
 
 
 class PaginatedListLayout(PrettyListLayout):

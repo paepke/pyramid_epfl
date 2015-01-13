@@ -162,6 +162,9 @@ class UnboundComponent(object):
 
         return True
 
+    def __repr__(self):
+        return '<UnboundComponent of {cls} with config {conf}>'.format(cls=self.__unbound_cls__, conf=self.__unbound_config__)
+
 
 class ComponentBase(object):
     """
