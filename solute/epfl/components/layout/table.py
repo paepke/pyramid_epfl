@@ -4,6 +4,10 @@ from solute.epfl.components.layout.list import ListLayout
 class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
     template_name = "layout/TableRow.html"
     asset_spec = "solute.epfl.components:layout/static"
+    compo_state = ["current_compo"]
+
+    current_compo = 0
+
 
     def init_struct(self):
         super(TableLayoutRow,self).init_struct()
@@ -19,6 +23,7 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
         super(TableLayoutRow,self).setup_component()
         for compo in self.components:
             compo.row_data = self.data
+        self.current_compo = 0
 
     def get_next_component(self):
         compo = self.components[self.current_compo]
@@ -33,7 +38,6 @@ class TableListLayout(ListLayout):
     default_child_cls = TableLayoutRow
 
     compo_state = ["orderby","ordertype","search"]
-
 
     orderby = ""
     ordertype = "asc"

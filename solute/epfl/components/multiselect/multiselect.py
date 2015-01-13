@@ -1,6 +1,9 @@
 from solute.epfl.core import epflcomponentbase
 import json
 
+class MultiSelectEntry(epflcomponentbase.ComponentBase):
+    template_name = "multiselect/multiselect_entry.html"
+    asset_spec = "solute.epfl.components:multiselect/static"
 
 class MultiSelect(epflcomponentbase.ComponentContainerBase):
     """
@@ -31,6 +34,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     compo_state.append("scroll_position")
     compo_state.append("search_string")
     
+    default_child_cls = MultiSelectEntry
     selected_child_cids = set()
     hidden_child_cids = set()
     scroll_position = 0
@@ -38,6 +42,25 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     search_string = ""
     
     grouped = False
+    
+    
+    def send(self, child_id):
+        """
+        Overwrite me!
+        
+        Called when the user wants to move selected entries from this multiselect to another one. 
+        
+        """
+        pass
+
+    def receive(self, child_id):
+        """
+        Overwrite me!
+        
+        Called when the user wants to move selected entries from another multiselect to this one. 
+        
+        """
+        pass
     
     def handle_selected(self, child_cid):
         if not child_cid in self.selected_child_cids:
@@ -55,27 +78,36 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         self.scroll_position = scroll_position
     
     def _handle_search_simple(self):
+        searchstring = self.search_string.lower()
         for compo in self.components:
-            if not self.search_string in compo.value.lower():
-                self.hidden_child_cids.add(compo.cid)
-                # this component is also not selected anymore
-                try:
-                    self.selected_child_cids.remove(compo.cid)
-                except KeyError:
+            try:
+                if not searchstring in compo.data["value"].lower():
+                    self.hidden_child_cids.add(compo.cid)
+                    # this component is also not selected anymore
+                    try:
+                        self.selected_child_cids.remove(compo.cid)
+                    except KeyError:
+                        pass
+            except KeyError:
                     pass
     
     def _handle_search_grouped(self):
         number_of_matched_entries_for_group = 0
         current_group_cid = None
         current_group_matched = False
+        searchstring = self.search_string.lower()
         for compo in self.components:
-            if hasattr(compo, 'multiselect_group'):
+            if "multiselect_group" in compo.data:
                 if (not current_group_cid is None) and (current_group_matched == False) and (number_of_matched_entries_for_group == 0):
                     self.hidden_child_cids.add(current_group_cid)
-                if not self.search_string in compo.value.lower():
+                try:
+                    if not searchstring in compo.data["value"].lower():
+                        current_group_matched = False
+                    else:
+                        current_group_matched = True
+                except KeyError:
                     current_group_matched = False
-                else:
-                    current_group_matched = True
+                
                 current_group_cid = compo.cid
                 number_of_matched_entries_for_group = 0
             else:
@@ -83,22 +115,25 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
                     # if the group matches, we don't hide this group member
                     number_of_matched_entries_for_group += 1
                     continue
-                if not self.search_string in compo.value.lower():
-                    self.hidden_child_cids.add(compo.cid)
-                    # this component is also not selected anymore
-                    try:
-                        self.selected_child_cids.remove(compo.cid)
-                    except KeyError:
-                        pass
-                else:
-                    number_of_matched_entries_for_group += 1
+                try:
+                    if not searchstring in compo.data["value"].lower():
+                        self.hidden_child_cids.add(compo.cid)
+                        # this component is also not selected anymore
+                        try:
+                            self.selected_child_cids.remove(compo.cid)
+                        except KeyError:
+                            pass
+                    else:
+                        number_of_matched_entries_for_group += 1
+                except KeyError as e:
+                    pass
         # check for the last group
         if (not current_group_cid is None) and (current_group_matched == False) and (number_of_matched_entries_for_group == 0):
             self.hidden_child_cids.add(current_group_cid)
                     
     
     def handle_search(self, search_string):
-        self.search_string = search_string.strip().lower()
+        self.search_string = search_string.strip()
         self.hidden_child_cids.clear()
         if self.grouped == False:
             self._handle_search_simple()
@@ -130,6 +165,7 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
         source_multiselect = self.page.components[self.source_multi_select_cid]
         target_multiselect = self.page.components[self.target_multi_select_cid]
         for cid in source_multiselect.selected_child_cids:
+            source_multiselect.send(self.page.components[cid].id)
             target_multiselect.switch_component(target_multiselect.cid, cid)
             target_multiselect.selected_child_cids.add(cid)
         source_multiselect.selected_child_cids.clear()

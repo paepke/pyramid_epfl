@@ -6,7 +6,7 @@
             {% if cell.type == 'text' %}
                 {{ cell.data }}
             {% elif cell.type == 'icon' %}
-                <i class="fa fa-{{ cell.data.icon }} fa-{{ cell.data.size }}x"></i> {{ cell.data.text }}
+                <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i> {{ cell.text }}
             {% elif cell.type == 'progress' %}
                 <div class="progress">
                     {% for bar in cell.data %}
@@ -21,6 +21,8 @@
                         onclick='epfl.TableLayout.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
             {% elif cell.type == 'component' %}
                 {{ compo.get_next_component()() }}
+            {% elif cell.type == 'badge' %}
+                {{ cell.text }} <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
             {% endif %}
         </td>
     {% endif %}
