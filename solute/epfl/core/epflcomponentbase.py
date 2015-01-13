@@ -22,7 +22,7 @@ class UnboundComponent(object):
     """
     This is one of two main classes used by epfl users, though probably few will notice. Any
     :class:`.ComponentBase` derived subclass will return an :class:`.UnboundComponent` wrapping it, unless specifically
-    instructed to return an instance. See :func:`.ComponentBase.__new__` for further details.
+    instructed to return an instance. See :func:`ComponentBase.__new__` for further details.
 
     Warning: Instantiation should be handled by the epfl core!
 

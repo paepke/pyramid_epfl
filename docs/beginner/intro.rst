@@ -1,3 +1,5 @@
+.. _introducing:
+
 ================
 Introducing EPFL
 ================
@@ -10,12 +12,12 @@ Why EPFL?
 is to create easy to use business application frontends.
 
 
-.. |epflform| image:: _static/epfl_form.png
+.. |epflform| image:: ../_static/epfl_form.png
     :width: 100%
 
 .. |eftext| replace:: So it's very suitable for something like this, ...
 
-.. |bdeimg| image:: _static/billigerde_screen.png
+.. |bdeimg| image:: ../_static/billigerde_screen.png
     :width: 100%
 
 .. |bdetext| replace:: ... and definitely not suitable for anything like this.
@@ -75,9 +77,11 @@ EPFL comes with:
 - Server Side State
 
 
----------------
-The EPFL design
----------------
+--------------------------
+What makes EPFL different?
+--------------------------
+
+If you want to know what makes EPFL so special, you can take a look here:
 
 .. toctree::
    :maxdepth: 2
