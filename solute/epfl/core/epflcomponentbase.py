@@ -576,10 +576,10 @@ class ComponentBase(object):
                 raise MissingEventHandlerException('Received non callable for event handling.')
             event_handler(**event_params)
         except MissingEventHandlerException:
-            if self.container_compo is not None:
-                self.container_compo.handle_event(event_name, event_params)
-            elif self.event_sink is True:
+            if self.event_sink is True:
                 pass
+            elif self.container_compo is not None:
+                self.container_compo.handle_event(event_name, event_params)
             else:
                 raise
 
