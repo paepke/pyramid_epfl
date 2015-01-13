@@ -4,12 +4,12 @@
     <tr>
         <td colspan="0">
             <div class="row">
-                <div class="col-sm-7">
+                <div class="col-sm-6">
                     {{ before(**kwargs) }}
                 </div>
                 <div class="col-sm-2" id="{{ compo.cid }}_orderby">
                     <select class="form-control">
-                        {% for order in compo.order_by %}
+                        {% for order in compo.order_by_options %}
                             <option value="{{ order }}">{{ order }}</option>
                         {% endfor %}
                     </select>
@@ -20,12 +20,11 @@
                         <option value="desc">absteigend</option>
                     </select>
                 </div>
-                <div class="col-sm-1" >
+                <div class="col-sm-2" >
                     <button  class="btn btn-default" id="{{ compo.cid }}_csv">
                         <i class="fa fa-list"></i> CSV</button>
                 </div>
             </div>
         </td>
     </tr>
-
 {% endmacro %}
