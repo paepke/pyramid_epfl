@@ -725,6 +725,8 @@ class ComponentContainerBase(ComponentBase):
     """
     template_name = 'tree_base.html'
     node_list = []
+
+    compo_config = ['node_list']
     compo_state = ['row_offset', 'row_limit', 'row_count']
 
     default_child_cls = None
@@ -775,7 +777,7 @@ class ComponentContainerBase(ComponentBase):
 
     def _get_data(self, *args, **kwargs):
         if type(self.get_data) is str and  self.page.model is not None:
-            return self.page.model[(self.get_data, (args, kwargs), self.data_interface)]
+            return self.page.model[(self, self.get_data, (args, kwargs), self.data_interface)]
         return self.get_data(*args, **kwargs)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):

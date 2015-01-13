@@ -1,18 +1,20 @@
-# * coding: utf8
 
 
 class ModelBase(object):
     def __getitem__(self, item):
-        key, row, interface = item
+        compo, key, row, data_interface = item
         args, kwargs = row
-        print key, interface, args, kwargs
         output = []
-        for row in getattr(self, 'load_' + key)(*args, **kwargs):
-            tmp_data = interface.copy()
-            for k in tmp_data:
-                try:
-                    tmp_data[k] = row[k]
-                except KeyError:
+        for row in getattr(self, 'load_' + key)(compo, *args, **kwargs):
+            tmp_data = data_interface.copy()
+            for k, v in tmp_data.items():
+                if type(v) is str:
+                    try:
+                        v.format()
+                        tmp_data[k] = getattr(row, tmp_data[k])
+                    except KeyError:
+                        tmp_data[k] = v.format(**row.__dict__)
+                else:
                     tmp_data[k] = getattr(row, k)
 
             output.append(tmp_data)
