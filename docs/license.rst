@@ -1,6 +1,34 @@
-=======
+===============
+The Necessities
+===============
+----------
+Built with
+----------
+
+**Standing on the shoulders of giants:**
+
+Core:
+
+- python (http://www.python.org)
+- pyramid (http://www.pylonsproject.org/)
+- ujson (https://pypi.python.org/pypi/ujson)
+- Jinja2 (http://jinja.pocoo.org/)
+- pyramid_jinja2 (https://github.com/Pylons/pyramid_jinja2)
+
+Components:
+
+- jquery.js (http://www.jquery.com)
+- jquery-ui.js (https://jqueryui.com/)
+- json2.js (https://github.com/douglascrockford/JSON-js)
+- jqGrid (http://www.trirand.com/blog/)
+- ckeditor (http://ckeditor.com/)
+- Highcharts JS (http://www.highcharts.com/)
+
+*Thanks a lot for your great effort to make web development easier!*
+
+-------
 License
-=======
+-------
 
 A copyright notice accompanies this license document that identifies the copyright holders.
 
@@ -8,9 +36,15 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions in source code must retain the accompanying copyright notice, this list of conditions, and the following disclaimer. Redistributions in binary form must reproduce the accompanying copyright notice, this list of conditions, and the following disclaimer in the documentation and/or other materials provided with the distribution. Names of the copyright holders must not be used to endorse or promote products derived from this software without prior written permission from the copyright holders. If any files are modified, you must cause the modified files to carry prominent notices stating that you changed the files and the date of any change.
 
-----------
+``````
+Notice
+``````
+This software contains a Highsoft software product (Highcharts JS) that is not free for commercial use
+(http://www.highcharts.com/license). For more information, visit http://www.highcharts.com/
+
+``````````
 Disclaimer
-----------
+``````````
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *Source:* http://repoze.org/license.html

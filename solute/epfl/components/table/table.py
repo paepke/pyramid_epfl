@@ -15,25 +15,6 @@ http://www.trirand.com/jqgridwiki/doku.php?id=wiki%3aoptions
 If you need something new, you must modify the table.html-template (especially the init_js-part) yourself (and introduce new class-attributes for your
 changes of course!)
 
-
-TODO:
-
-Save state for:
-    display/hide-table
-    scroll_pos
-
-Data-Types
-    str vs html
-    Date
-    icon
-    checkbox
-    button
-editing?
-action-buttons
-row-clicks
-selecting
-
-
 """
 
 import math

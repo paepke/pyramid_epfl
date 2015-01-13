@@ -8,5 +8,6 @@ Contents:
    :maxdepth: 2
 
    components
+   pages_and_components
 
 

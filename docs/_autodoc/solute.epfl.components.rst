@@ -10,8 +10,6 @@ Subpackages
     solute.epfl.components.button
     solute.epfl.components.canvas
     solute.epfl.components.containers
-    solute.epfl.components.datagrid
-    solute.epfl.components.datatable
     solute.epfl.components.diagram
     solute.epfl.components.dragable
     solute.epfl.components.droppable
@@ -24,7 +22,6 @@ Subpackages
     solute.epfl.components.progress
     solute.epfl.components.simpletable
     solute.epfl.components.sortable
-    solute.epfl.components.tab
     solute.epfl.components.table
 
 Module contents

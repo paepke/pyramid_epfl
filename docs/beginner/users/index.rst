@@ -11,8 +11,7 @@ Contents:
    app_design
    l10n_i18n
    limitations
-
-   /components/index
+   concepts
 
 
 This part of the documentation is intended for complete newcomers to EPFL to be read step by step. After reading it you
