@@ -4,19 +4,60 @@ EPFL design decisions
 Server side state
 -----------------
 
-What is the main idea behind server side state?
+In webapplications there are many ways to transport data between client and server. Picking between the different
+containers, transport methods, request methods is unnecessary in case of most business applications. The same holds true
+for temporarily persisting data.
 
-In webapplications there are many ways to transport data from the client to the server and back. You can submit forms, use ajax-requests, replace data in templates, use JSON, not use JSON, ... Additionally if you want to persist data for a certain live time (e.g. the timespan you edit a object with a form), you could save the data in the session, use hidden form fields, manipulate URLs on client and/or server side, use cookies. It gets worse if you combine some of these possibilities. You often find this mixture in real life projects, because all of these technologies have thier down- and up-sides and often the way data is transported and logical transactions are handeled is not very well focussed and regulated in today's frameworks.
+Server side state is the EPFL choice to achieve the following:
+1. Communication between client and server is standardized and done by EPFL.
+2. All data is stored server side.
+3. All data is manipulated server side.
+4. All data manipulation is done in python.
 
-The issue arrises when unexpected effects occur because of misunderstood ways the client and the server handle thier state. Suddenly a client-side state manipulation is interfering with server side persistance of the same variable.
-
-Server side state adresses this issue:
-
-1. The way all state is transfered between client and server is standardized and only done by the framework
-2. There is only one place where state is persisted: at the server
-3. There is only one place where state is manipulated by the application: the server
-4. There is only one language state manipulation is done (by the application): python
-
-Because it is easy and convenient for the developer to have all state at server side automatically available there is no need to spread the business logic all over the place.
+Thus business logic is centralized in one place. Easy to use and convenient to access and change by the developer.
 
 
+Self rendering trees
+--------------------
+
+While there are numerous ways to structure a website, the default use case in business applications itself follows a
+mostly strict tree structure. Activities have tasks, tasks have sub tasks and so on.
+
+EPFL supports this by exploiting the self rendering capabilities of its components in order to automatically generate
+even the most complex of structures and keeping them up to date.
+
+The task of a developer using EPFL is to provide the general structure of Components, handle events and manipulate data,
+while EPFL and its Components deal with showing the results and providing the interface to the user.
+
+EPFL provides you with:
+ - Builtin pagination
+ - Builtin search
+ - Components for every purpose, be it...
+    ... showing pretty graphs
+
+    ... listing data
+
+    ... manipulating lists
+
+    ... editing data
+
+    ... and many more
+
+
+Dynamic extension of classes
+----------------------------
+
+If you toyed around with the examples you will have noticed the somewhat strange notation EPFL uses to define a pages
+structure. The reason behind this is a simple principle: *Every Component can be used to seamlessly create slightly
+altered copies of itself.* You can provide values for new attributes, you can provide new functions, you can even change
+default values of attributes up to and including functions to whatever you desire.
+
+At the core of this lies the :class:`solute.epfl.core.epflcomponentbase.UnboundComponent` and its twin brother, albeit
+non-identical, :class:`solute.epfl.core.epflcomponentbase.ComponentBase`.
+
+Inside the EPFL core those UnboundComponents are converted just in time into ComponentBase instances. The first being
+used to define structures and persist data, the latter being used in the lifecycle driven request-flow of
+:class:`solute.epfl.core.epflpage.Page`.
+
+This allows the developer to create abstractions of base classes, allowing him to change the way a Component works
+dramatically. All with little to no effort and without making complex jumps of thought through multiple layers of code.
