@@ -81,7 +81,7 @@ class NoteBox(Box):
 
 
 class MyModel(ModelBase):
-    data_store = {'_id_counter': 0}
+    data_store = {'_id_counter': 1}
 
     def add_note(self, note):
         note['id'] = self.data_store['_id_counter']
@@ -105,21 +105,23 @@ class FirstStepRoot(epfl.components.CardinalLayout):
     constrained = True
 
     node_list = [NavLayout(slot='north',
-                           links=[],
-                           title='Demo Notes App'),
-                 Box(title='My first box',
-                     node_list=[MyFirstForm(cid='my_first_form')]),
-                 LinkListLayout(get_data='notes',
-                                data_interface={'id': None,
-                                                'url': 'note?id={id}',
-                                                'text': 'title'},
-                                slot='west'),
-                 Box(title='My notes',
-                     default_child_cls=NoteBox,
-                     data_interface={'id': None,
-                                     'text': None,
-                                     'title': None},
-                     get_data='notes')]
+                           links=[('Second Step', '/second')],
+                           title='Demo Notes App')]
+
+    def init_struct(self):
+        self.node_list.extend([Box(title='My first box',
+                                   node_list=[MyFirstForm(cid='my_first_form')]),
+                               LinkListLayout(get_data='notes',
+                                              data_interface={'id': None,
+                                                              'url': 'note?id={id}',
+                                                              'text': 'title'},
+                                              slot='west'),
+                               Box(title='My notes',
+                                   default_child_cls=NoteBox,
+                                   data_interface={'id': None,
+                                                   'text': None,
+                                                   'title': None},
+                                   get_data='notes')])
 
 
 @view_config(route_name='FirstStep')

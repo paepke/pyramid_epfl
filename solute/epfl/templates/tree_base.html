@@ -1,5 +1,11 @@
-<div epflid="{{ compo.cid }}">
+{% call container() %}
+    {% call before() %}
+    {% endcall %}
     {% for compo_obj in compo.components %}
-        {{ compo_obj.render() }}
+        {% call row(compo_obj=compo_obj) %}
+            {{ compo_obj.render() }}
+        {% endcall %}
     {% endfor %}
-</div>
+    {% call after() %}
+    {% endcall %}
+{% endcall %}

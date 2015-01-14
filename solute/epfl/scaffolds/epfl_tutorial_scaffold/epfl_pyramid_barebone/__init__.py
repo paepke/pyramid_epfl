@@ -17,7 +17,6 @@ def main(global_config, **settings):
     config.include("solute.epfl")
 
     config.add_route('FirstStep', '/')
-    config.add_route('FirstStep', '/first')
     config.add_route('SecondStep', '/second')
 
     session_factory = session_factory_from_settings(settings)
