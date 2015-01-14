@@ -831,21 +831,34 @@ class ComponentContainerBase(ComponentBase):
         if self.default_child_cls is None:
             return
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
-        # TODO: data may change without the actually displayed element changing!
-        for i, d in enumerate(data):
-            if i < len(self.components) and self.components[i].id == d['id']:
-                for k, v in d.items():
-                    if getattr(self.components[i], k) != v:
-                        setattr(self.components[i], k, v)
-                        self.components[i].redraw()
+        tipping_point = 0
+        for i, c in enumerate(self.components):
+            if hasattr(c, 'id'):
+                tipping_point = i
                 continue
-            if i < len(self.components):
-                self.replace_component(self.components[i], self.default_child_cls(**d))
+            if getattr(c, 'static_align', 'top') == 'top':
+                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point)
+                tipping_point += 1
+            elif c.static_align == 'bottom':
+                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None))
+
+        for i, d in enumerate(data):
+            if i + tipping_point < len(self.components) \
+                    and getattr(self.components[i + tipping_point], 'id', None) == d['id']:
+                for k, v in d.items():
+                    if getattr(self.components[i + tipping_point], k) != v:
+                        setattr(self.components[i + tipping_point], k, v)
+                        self.components[i + tipping_point].redraw()
+                continue
+            if i + tipping_point < len(self.components) and hasattr(self.components[i + tipping_point], 'id'):
+                self.replace_component(self.components[i + tipping_point], self.default_child_cls(**d))
             else:
-                self.add_component(self.default_child_cls(**d), position=i)
+                self.add_component(self.default_child_cls(**d), position=i + tipping_point)
             self.redraw()
 
-        for compo in self.components[len(data):]:
+        for compo in self.components[len(data) + tipping_point:]:
+            if not hasattr(compo, 'id'):
+                continue
             compo.delete_component()
             self.redraw()
 
