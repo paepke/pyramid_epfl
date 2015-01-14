@@ -42,6 +42,9 @@ search_{{ compo.cid }}
             clearTimeout(search_{{ compo.cid }}_timeout);
         }
         search_{{ compo.cid }}_timeout = window.setTimeout(submit, 500);
-    })
-    .focus()[0]
-    .setSelectionRange(search_{{ compo.cid }}.val().length, search_{{ compo.cid }}.val().length);
+    });
+if (search_{{ compo.cid }}.length > 0) {
+    search_{{ compo.cid }}
+        .focus()[0]
+        .setSelectionRange(search_{{ compo.cid }}.val().length, search_{{ compo.cid }}.val().length);
+}
