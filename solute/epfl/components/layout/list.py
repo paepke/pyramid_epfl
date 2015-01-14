@@ -28,28 +28,54 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
         super(ListLayout, self).__init__()
 
     def get_themed_template(self, env, target):
-        for theme_path in reversed(self.theme_path):
+        theme_paths = self.theme_path
+        if type(theme_paths) is dict:
+            theme_paths = theme_paths.get(target, theme_paths['default'])
+        render_funcs = []
+        direction = '<'
+        for theme_path in reversed(theme_paths):
             try:
-                return env.get_template('%s/%s' % (theme_path, target))
+                if theme_path[0] in ['<', '>']:
+                    direction = theme_path[0]
+                    render_funcs.insert(0, env.get_template('%s/%s.html' % (theme_path[1:], target)).module.render)
+                    continue
+                render_funcs.append(env.get_template('%s/%s.html' % (theme_path, target)).module.render)
+                # print 'success', target, render_funcs
+                return direction, render_funcs
             except TemplateNotFound:
                 continue
-        return env.get_template('%s/%s' % (self.theme_path_default, target))
+
+        render_funcs.append(env.get_template('%s/%s.html' % (self.theme_path_default, target)).module.render)
+        # print 'default', target, render_funcs
+        return direction, render_funcs
 
     def get_render_environment(self, env):
         result = {}
 
-        def wrap(cb):
+        def wrap(cb, parent=None):
+            if type(cb) is tuple:
+                direction, cb = cb
+                if len(cb) == 1:
+                    return wrap(cb[0])
+                if direction == '<':
+                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
+                return wrap(cb[0], parent=wrap((direction, cb[1:])))
+
             def _cb(*args, **kwargs):
                 extra_kwargs = result.copy()
                 extra_kwargs.update(kwargs)
-                return cb(*args, **extra_kwargs)
+                out = cb(*args, **extra_kwargs)
+                if parent is not None:
+                    extra_kwargs['caller'] = lambda: out
+                    out = parent(*args, **extra_kwargs)
+                return out
             return _cb
 
         result.update({'compo': self,
-                       'container': wrap(self.get_themed_template(env, 'container.html').module.render),
-                       'row': wrap(self.get_themed_template(env, 'row.html').module.render),
-                       'before': wrap(self.get_themed_template(env, 'before.html').module.render),
-                       'after': wrap(self.get_themed_template(env, 'after.html').module.render)})
+                       'container': wrap(self.get_themed_template(env, 'container')),
+                       'row': wrap(self.get_themed_template(env, 'row')),
+                       'before': wrap(self.get_themed_template(env, 'before')),
+                       'after': wrap(self.get_themed_template(env, 'after'))})
         return result
 
 
@@ -58,7 +84,8 @@ class PrettyListLayout(ListLayout):
 
 
 class ToggleListLayout(PrettyListLayout):
-    theme_path = ['layout/list/pretty', 'layout/list/toggle']
+    theme_path = {'default': ['layout/list/pretty', '<layout/list/toggle'],
+                  'container': ['layout/list/pretty', '>layout/list/toggle']}
     js_parts = ['layout/list/toggle.js']
 
     compo_state = PrettyListLayout.compo_state[:]

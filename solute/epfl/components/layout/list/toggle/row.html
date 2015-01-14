@@ -2,10 +2,7 @@
     {% set compo = kwargs.compo %}
     {% set compo_obj = kwargs.compo_obj %}
     {% set previous_caller = caller %}
-    {% from 'layout/list/pretty/row.html' import render as row %}
     {% if compo.show_children == True %}
-        {% call row(compo_obj=compo_obj) %}
-            {{ previous_caller() }}
-        {% endcall %}
+        {{ caller() }}
     {% endif %}
 {% endmacro %}
