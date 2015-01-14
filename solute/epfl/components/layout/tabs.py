@@ -1,6 +1,4 @@
-
 from solute.epfl.core import epflcomponentbase
-
 
 
 class TabsLayout(epflcomponentbase.ComponentContainerBase):
@@ -15,5 +13,5 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
 
     active_tab_cid = ""
 
-    def handle_toggleTab(self, selected_compo_cid):
+    def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid

@@ -742,6 +742,9 @@ class ComponentContainerBase(ComponentBase):
     transaction instead of one static list for the lifetime of the epfl service.
     """
     template_name = 'tree_base.html'
+    theme_path_default = 'layout/container/default'
+    theme_path = []
+
     node_list = []
 
     compo_config = ['node_list']
@@ -763,6 +766,55 @@ class ComponentContainerBase(ComponentBase):
             self.setup_component_slots()
 
         return self
+
+    def get_themed_template(self, env, target):
+        theme_paths = self.theme_path
+        if type(theme_paths) is dict:
+            theme_paths = theme_paths.get(target, theme_paths['default'])
+        render_funcs = []
+        direction = '<'
+        for theme_path in reversed(theme_paths):
+            try:
+                if theme_path[0] in ['<', '>']:
+                    direction = theme_path[0]
+                    render_funcs.insert(0, env.get_template('%s/%s.html' % (theme_path[1:], target)).module.render)
+                    continue
+                render_funcs.append(env.get_template('%s/%s.html' % (theme_path, target)).module.render)
+                return direction, render_funcs
+            except TemplateNotFound:
+                continue
+
+        render_funcs.append(env.get_template('%s/%s.html' % (self.theme_path_default, target)).module.render)
+        return direction, render_funcs
+
+    def get_render_environment(self, env):
+        result = {}
+
+        def wrap(cb, parent=None):
+            if type(cb) is tuple:
+                direction, cb = cb
+                if len(cb) == 1:
+                    return wrap(cb[0])
+                if direction == '<':
+                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
+                return wrap(cb[0], parent=wrap((direction, cb[1:])))
+
+            def _cb(*args, **kwargs):
+                extra_kwargs = result.copy()
+                extra_kwargs.update(kwargs)
+                out = cb(*args, **extra_kwargs)
+                if parent is not None:
+                    extra_kwargs['caller'] = lambda: out
+                    out = parent(*args, **extra_kwargs)
+                return out
+            return _cb
+
+        result.update({'compo': self,
+                       'container': wrap(self.get_themed_template(env, 'container')),
+                       'row': wrap(self.get_themed_template(env, 'row')),
+                       'before': wrap(self.get_themed_template(env, 'before')),
+                       'after': wrap(self.get_themed_template(env, 'after'))})
+        return result
 
     def after_event_handling(self):
         super(ComponentContainerBase, self).after_event_handling()
@@ -809,12 +861,12 @@ class ComponentContainerBase(ComponentBase):
         self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
 
     def init_struct(self):
-        return self.node_list
+        pass
 
     def init_transaction(self):
         super(ComponentContainerBase, self).init_transaction()
 
-        self.node_list = self.init_struct()
+        self.node_list = self.init_struct() or self.node_list  # if init_struct returns None, keep original value.
 
         for node in self.node_list:
             cid, slot = node.position

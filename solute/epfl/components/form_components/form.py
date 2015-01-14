@@ -46,7 +46,7 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
         result, text = False, ''
         if self.validation_type == 'text':
             result, text = type(
-                self.converted_value) is str, 'Value did not validate as text.'
+                self.converted_value) is str and len(self.converted_value) > 0, 'Value did not validate as text.'
         elif self.validation_type == 'number':
             result, text = type(
                 self.converted_value) is int, 'Value did not validate as number.'
@@ -387,6 +387,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     fields = []
     _registered_fields = []
+    validation_errors = []
 
     validate_hidden_fields = False
 
@@ -421,4 +422,11 @@ class Form(epflcomponentbase.ComponentContainerBase):
             if not self.validate_hidden_fields and not field.is_visible():
                 continue
             result.append(field.validate())
-        return not False in result, result
+
+        if False in result:
+            self.validation_errors = result
+
+        return not False in result
+
+    def get_errors(self):
+        return self.validation_errors

@@ -3,7 +3,7 @@ epfl.TabsComponent = function(cid, params) {
     var compo = this;
     $('#' + cid + '_tabmenu a').click(function () {
     	selected_compo_cid = $(this).data('tab-compo-cid');
-  		var ev = compo.make_event("toggleTab",{"selected_compo_cid":selected_compo_cid});
+  		var ev = compo.make_event("toggle_tab",{"selected_compo_cid":selected_compo_cid});
         epfl.send(ev); 
 	});
 	window.setTimeout(function() {
