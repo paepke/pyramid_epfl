@@ -362,8 +362,8 @@ class ComponentBase(object):
         self.container_compo.del_component(self, self.container_slot)
 
         for attr_name in self.compo_state + self.base_compo_state:
-            del self.page.transaction[self.cid + "$" + attr_name]
-        del self.page.transaction[self.cid + "$__inited__"]
+            self.page.transaction.pop(self.cid + "$" + attr_name, None)
+        self.page.transaction.pop(self.cid + "$__inited__", None)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
         del self.page[self.cid]
@@ -831,16 +831,20 @@ class ComponentContainerBase(ComponentBase):
         if self.default_child_cls is None:
             return
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
-        tipping_point = 0
+        tipping_point = None
         for i, c in enumerate(self.components):
             if hasattr(c, 'id'):
-                tipping_point = i
+                if tipping_point is None:
+                    tipping_point = i
                 continue
-            if getattr(c, 'static_align', 'top') == 'top':
+            elif getattr(c, 'static_align', 'top') == 'top':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point)
                 tipping_point += 1
             elif c.static_align == 'bottom':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None))
+
+        if tipping_point is None:
+            tipping_point = 0
 
         for i, d in enumerate(data):
             if i + tipping_point < len(self.components) \
