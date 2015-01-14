@@ -52,11 +52,14 @@ class ToggleListLayout(PrettyListLayout):
 
 
 class PaginatedListLayout(PrettyListLayout):
+    show_pagination = True
+    show_search = True
+
     theme_path = ['layout/list/pretty', 'layout/list/paginated']
     js_parts = ['layout/list/paginated.js']
 
 
-class LinkListLayout(PrettyListLayout):
+class LinkListLayout(PaginatedListLayout):
     default_child_cls = epflcomponentbase.ComponentBase
     data_interface = {'id': None,
                       'text': None,

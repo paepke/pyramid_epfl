@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {% if compo.row_count > compo.row_limit %}
+    {% if compo.row_count > compo.row_limit and compo.show_pagination %}
     <div class="col-sm-12 text-center">
         <ul class="pagination" style="margin: 5px 0; ">
             <li onclick="epfl.paginated_list_goto(
