@@ -834,6 +834,10 @@ class ComponentContainerBase(ComponentBase):
         # TODO: data may change without the actually displayed element changing!
         for i, d in enumerate(data):
             if i < len(self.components) and self.components[i].id == d['id']:
+                for k, v in d.items():
+                    if getattr(self.components[i], k) != v:
+                        setattr(self.components[i], k, v)
+                        self.components[i].redraw()
                 continue
             if i < len(self.components):
                 self.replace_component(self.components[i], self.default_child_cls(**d))

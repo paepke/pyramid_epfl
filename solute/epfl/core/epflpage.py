@@ -271,11 +271,13 @@ class Page(object):
         if self.request.registry.settings.get('epfl.debug', 'false') == 'true' \
                 and self.__dict__.has_key(cid) and not overwrite:
             raise Exception('A component with CID %(cid)s is already present in this page!\n'
-                            'Existing component: %(existing_compo)r\n'
-                            'New component: %(new_compo)r\n'
+                            'Existing component: %(existing_compo)r of type %(existing_compo_unbound)r\n'
+                            'New component: %(new_compo)r of type %(new_compo_unbound)r\n'
                             'Call epfl.page.add_static_component(cid, compo_obj, overwrite=True) instead of page.cid = '
                             'compo_obj if you really want to do this.' % {'cid': cid,
                                                                           'existing_compo': self.__dict__[cid],
+                                                                          'existing_compo_unbound': self.__dict__[cid].__unbound_component__,
+                                                                          'new_compo_unbound': compo_obj.__unbound_component__,
                                                                           'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
         self.components[cid] = compo_obj

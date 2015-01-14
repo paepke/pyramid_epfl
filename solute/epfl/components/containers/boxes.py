@@ -27,7 +27,8 @@ class Box(epflcomponentbase.ComponentContainerBase):
                            # if none of them (compos or form-fields) are visible the box to is not visible
                            # else the box is visible
 
-    compo_config = ["auto_visibility"]
+    compo_config = epflcomponentbase.ComponentContainerBase.compo_config[:]
+    compo_config.append("auto_visibility")
 
     box_shown = True
     is_removable = False

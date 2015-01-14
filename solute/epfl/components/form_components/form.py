@@ -412,6 +412,12 @@ class Form(epflcomponentbase.ComponentContainerBase):
             values[field.name] = field.converted_value
         return values
 
+    def set_value(self, key, value):
+        for field in self.registered_fields:
+            if field.name == key:
+                field.value = value
+                return
+
     def validate(self):
         result = []
         for field in self.registered_fields[:]:
