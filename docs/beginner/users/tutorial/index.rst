@@ -11,3 +11,4 @@ In the second part, the notes app is extended with more powerful features (such 
 .. toctree::
 
     tutorial_1
+    tutorial_2
