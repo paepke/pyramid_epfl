@@ -20,7 +20,7 @@ from .first_step import FirstStepRoot
 
 
 class NoteForm(cfForm):
-    node_list = [cfNumber(label='Parent',
+    node_list = [cfNumber(label='Parent note id',
                           name='parent'),
                  cfText(label='Title',
                         name='title'),
@@ -115,8 +115,9 @@ class NoteModel(ModelBase):
 
     def remove_note(self, note_id):
         self.data_store['notes'] = [note for note in self.data_store['notes'] if note['id'] != note_id]
-        parent = self.data_store['_id_lookup'].pop(note_id)['parent']
-        self.get_note(parent)['children'].remove(note_id)
+        parent_id = self.data_store['_id_lookup'].pop(note_id)['parent']
+        if parent_id != 0:
+            self.get_note(parent_id)['children'].remove(note_id)
 
     def get_note(self, note_id):
         return self.data_store['_id_lookup'][note_id]
