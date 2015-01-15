@@ -77,6 +77,8 @@ class NoteBox(Box):
 
     def handle_removed(self):
         super(NoteBox, self).handle_removed()
+        if self.page.note_form.id == self.id:
+            self.page.note_form.clean_form()
         self.page.model.remove_note(self.id)
 
 
