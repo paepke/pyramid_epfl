@@ -40,11 +40,12 @@ class TableListLayout(ListLayout):
     show_pagination = True
     show_search = True
 
-    compo_state = ["orderby", "ordertype", "search"]
+    compo_state = ["orderby", "ordertype", "search","height"]
 
     orderby = ""
     ordertype = "asc"
     search = ""
+    height = None
 
     @staticmethod
     def HeadRow(headings):

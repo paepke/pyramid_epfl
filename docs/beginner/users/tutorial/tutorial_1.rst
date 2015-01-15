@@ -1,3 +1,5 @@
+.. _tutorial_1:
+
 Tutorial Part 1: Basic Notes App
 ================================
 
@@ -189,10 +191,10 @@ In order to have all data management methods at hand that are needed in this tut
 	    def load_notes(self, calling_component, *args, **kwargs):
 	        return self.data_store.get('notes', [])
 
-The NoteModel class stores nodes as dict objects in an in-memory list and provides methods for adding, removing, getting and updating a notes,
+The NoteModel class stores notes as dict objects in an in-memory list and provides methods for adding, removing, getting and updating a notes,
 as well as for obtaining the complete list of notes.
 
-Every component has access to the page it is located in by using self.page. Hence, every component has access to the NodesModel as well.
+Every component has access to the page it is located in by using self.page. Hence, every component has access to the NoteModel as well.
 We can now call add_note() on the model in the handle_submit method of our form: 
 
 .. code-block:: python
@@ -204,7 +206,7 @@ We can now call add_note() on the model in the handle_submit method of our form:
 	    self.page.model.add_note({'title': values['title'],
 	                              'text': values['text']})
 
-The node is now persisted in memory. Ok, but how can we display it? Let's add a component that displays all created notes in a list.
+The note is now persisted in memory. Ok, but how can we display it? Let's add a component that displays all created notes in a list.
 
 This component will use a different way to retrieve its data values: Up to now, we directly set and read component attributes to handle component data.
 For example, label, name and default value of the note form fields have been set in the constructor of the corresponding cfText and cfTextarea classes.
@@ -285,7 +287,7 @@ different view that displays a note in detail). This only takes 8 lines of code:
 	                                              slot='west'))
 
 We used the predefined LinkListLayout component that renders its children as links.
-For displaying the data, we bind the component again to nodes with get_data, and set the predefined text attribute of the link to the title attribute
+For displaying the data, we bind the component again to notes with get_data, and set the predefined text attribute of the link to the title attribute
 of the note data struct.
 
 The list also expects an URL attribute. Here, we construct the target url with the ID of the note as parameter, which we can access with {id} inside the string.
@@ -311,7 +313,7 @@ Since these notes list children ares getting more complex now, we move the child
 	    def handle_edit_note(self):
 	        pass
 	        
-	...
+	    ...
 	
 	class HomeRoot(epfl.components.CardinalLayout):
 	
@@ -327,7 +329,7 @@ Since these notes list children ares getting more complex now, we move the child
 
 Note that we have already added a button to each note display component in the note list for editing the note.
 And, since we moved the component for rendering the note in the list one level deeper inside the new box NoteBox,
-we have to adapt its jinja template node.html. The component now has to access id, title, and text of the note from its parent class: 
+we have to adapt its jinja template note.html. The component now has to access id, title, and text of the note from its parent class: 
 
 .. code-block:: jinja
 
@@ -339,7 +341,7 @@ we have to adapt its jinja template node.html. The component now has to access i
 	</div>
 	
 Now, we have to fill the "Edit note" form with note data once the edit button is clicked.
-We first add a load_note() method on our form which fills the form with the data of an existing node:
+We first add a load_note() method on our form which fills the form with the data of an existing note:
 
 .. code-block:: python
 
@@ -355,7 +357,7 @@ We first add a load_note() method on our form which fills the form with the data
 	        
 Note that we have to call self.redraw(), otherwise the UI would not get updated when the form receives new data.
 
-Now, we simply have to call the form's load_note() method inside the handler of the edit button in our node list box:
+Now, we simply have to call the form's load_note() method inside the handler of the edit button in our note list box:
 
 .. code-block:: python
 
@@ -370,7 +372,7 @@ Let's fix an annoying glitch: Every time we click on "Submit" in the form, a new
 Our app does not know if a component already exists.
 
 To fix this, we simply have to add an attribute "id" for our form which stores the id of the currently displayed note.
-If it is none, a new note is created if submit is clicked and the form contents are valid, otherwise, an existing node is updated.
+If it is none, a new note is created if submit is clicked and the form contents are valid, otherwise, an existing note is updated.
 And since we are there, we implement a method clean_form() which empties the form (which we also want to call upon submit()):
 
 .. code-block:: python
@@ -422,8 +424,8 @@ has to be created or an existing one has to be updated.
 Finally, the clean_form() method cleans the form and is called upon handle_submit() completes. 
 
 As a last step, we want to delete existing notes.
-We can easily provide this functionality since notes are displayed in Box components in the nodes list, and Box supports self-removing.
-We set the corresponding attribute on NodeBox and implement the corresponding event handler method:
+We can easily provide this functionality since notes are displayed in Box components in the notes list, and Box supports self-removing.
+We set the corresponding attribute on NoteBox and implement the corresponding event handler method:
 
 .. code-block:: python
 
@@ -441,4 +443,4 @@ We set the corresponding attribute on NodeBox and implement the corresponding ev
 
 That's it! We have implemented functionality to create, display, edit, and delete notes.
 The first part of the tutorial is completed.
-In the second part, we extend our notes model with notes that can contain other notes, and extend the nodes list by a tree that displays nested forms.
+In the second part, we extend our notes model with notes that can contain other notes, and extend the noes list by a tree that displays nested forms.
