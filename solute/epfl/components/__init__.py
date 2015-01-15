@@ -9,7 +9,7 @@ from table.table import Table # A data-table component
 from menu.menu import Menu # A menu component
 from canvas.canvas import Canvas # A canvas component
 from flipflop.flipflop import FlipFlop
-from containers.boxes import Box
+from box.box import Box
 from sortable.sortable import Sortable
 from containers.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
@@ -31,7 +31,7 @@ from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image, ImageList
-from layout.col import ColLayout
+from col_layout.col_layout import ColLayout
 from layout.cardinal import CardinalLayout
 from layout.list import ListLayout
 from layout.list import PrettyListLayout
@@ -41,7 +41,7 @@ from layout.list import LinkListLayout
 from layout.list import HoverLinkListLayout
 from layout.table import TableListLayout
 from layout.nav import NavLayout
-from layout.tabs import TabsLayout
+from tabs_layout.tabs_layout import TabsLayout
 from containers.table import TableContainer
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
@@ -67,8 +67,10 @@ def add_routes(config):
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
+    
+    TabsLayout.add_pyramid_routes(config)
+    ListLayout.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
-    
 

@@ -16,10 +16,10 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
-    asset_spec = "solute.epfl.components:containers/static"
-    theme_path = ['layout/container/box']
+    asset_spec = "solute.epfl.components:box/static"
+    theme_path = ['box/theme']
 
-    js_parts = ["containers/box.js"]
+    js_parts = ["box/box.js"]
     css_name = ["box.css"]
     js_name = ["box.js"]
 

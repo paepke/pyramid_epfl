@@ -1,4 +1,4 @@
-epfl.TabsComponent = function(cid, params) {
+epfl.TabsLayoutComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
     $('#' + cid + '_tabmenu a').click(function () {
@@ -11,9 +11,9 @@ epfl.TabsComponent = function(cid, params) {
 	},0);
 	
 };
-epfl.TabsComponent.inherits_from(epfl.ComponentBase);
+epfl.TabsLayoutComponent.inherits_from(epfl.ComponentBase);
 
-epfl.TabsComponent.prototype.fire_event = function(event_name, params, callback_fn) {
+epfl.TabsLayoutComponent.prototype.fire_event = function(event_name, params, callback_fn) {
     if (!params) {
         params = {}
     };
