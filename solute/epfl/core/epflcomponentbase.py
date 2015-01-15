@@ -839,7 +839,7 @@ class ComponentContainerBase(ComponentBase):
                 continue
             elif getattr(c, 'static_align', 'top') == 'top':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point)
-                tipping_point += 1
+                tipping_point = (tipping_point or 0) + 1
             elif c.static_align == 'bottom':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None))
 
