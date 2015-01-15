@@ -44,24 +44,6 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     grouped = False
     
     
-    def send(self, child_id):
-        """
-        Overwrite me!
-        
-        Called when the user wants to move selected entries from this multiselect to another one. 
-        
-        """
-        pass
-
-    def receive(self, child_id):
-        """
-        Overwrite me!
-        
-        Called when the user wants to move selected entries from another multiselect to this one. 
-        
-        """
-        pass
-    
     def handle_selected(self, child_cid):
         if not child_cid in self.selected_child_cids:
             self.selected_child_cids.add(child_cid)
@@ -144,10 +126,9 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     
 class MultiSelectTransfer(epflcomponentbase.ComponentBase):
     """
+    Provides functionality to move items from one multi select to another.
     
-    Provides functionality to move items from one multi select to another
-    
-    
+        
     """
     
     template_name = "multiselect/multiselecttransfer.html"
@@ -162,8 +143,16 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
     
         
     def handle_transfer(self):
+        """
+        Called when transfer button is clicked.
+        Overwrite this method if source or target component is a smart component!
+        """
+        
         source_multiselect = self.page.components[self.source_multi_select_cid]
         target_multiselect = self.page.components[self.target_multi_select_cid]
+        if source_multiselect.is_smart() or target_multiselect.is_smart():
+            # do nothing, source/target component is smart. This method has to be overwritten.
+            return
         for cid in source_multiselect.selected_child_cids:
             source_multiselect.send(self.page.components[cid].id)
             target_multiselect.switch_component(target_multiselect.cid, cid)

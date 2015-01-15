@@ -13,7 +13,7 @@
         	{% else %}
         		in-multiselect-group{{ " multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else " multiselect-selectable" }}
         	{% endif %}	
-        {% else %}
+        {% else %}{{ compo.selected_child_cids  }}
         	{{ "multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else "multiselect-selectable" }}
         {% endif %}
         {{ "hidden" if (child_compo.cid in compo.hidden_child_cids) else "" }}">
