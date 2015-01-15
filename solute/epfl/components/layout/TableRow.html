@@ -2,8 +2,10 @@
     {% if cell.type == "head" %}
         <th>{{ cell.data }}</th>
     {% else %}
-        <td>
+        <td >
+        <div style="height:15px; padding: 0px; margin: 0px">
             {% if cell.type == 'text' %}
+
                 {{ cell.data }}
             {% elif cell.type == 'icon' %}
                 <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i> {% if cell.text is defined %}{{ cell.text }}{% endif %}
@@ -24,6 +26,7 @@
             {% elif cell.type == 'badge' %}
                 {{ cell.text }} <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
             {% endif %}
+        </div>
         </td>
     {% endif %}
 {% endfor %}
