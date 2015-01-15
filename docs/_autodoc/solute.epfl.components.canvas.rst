@@ -4,14 +4,9 @@ solute.epfl.components.canvas package
 Submodules
 ----------
 
-solute.epfl.components.canvas.canvas module
--------------------------------------------
+.. toctree::
 
-.. automodule:: solute.epfl.components.canvas.canvas
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   solute.epfl.components.canvas.canvas
 
 Module contents
 ---------------

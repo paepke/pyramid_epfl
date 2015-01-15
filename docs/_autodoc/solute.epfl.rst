@@ -8,6 +8,7 @@ Subpackages
 
     solute.epfl.components
     solute.epfl.core
+    solute.epfl.jinja
     solute.epfl.scaffolds
 
 Module contents

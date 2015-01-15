@@ -4,30 +4,11 @@ solute.epfl.components.containers package
 Submodules
 ----------
 
-solute.epfl.components.containers.boxes module
-----------------------------------------------
+.. toctree::
 
-.. automodule:: solute.epfl.components.containers.boxes
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-solute.epfl.components.containers.panel module
-----------------------------------------------
-
-.. automodule:: solute.epfl.components.containers.panel
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-solute.epfl.components.containers.table module
-----------------------------------------------
-
-.. automodule:: solute.epfl.components.containers.table
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   solute.epfl.components.containers.boxes
+   solute.epfl.components.containers.panel
+   solute.epfl.components.containers.table
 
 Module contents
 ---------------

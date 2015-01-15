@@ -4,14 +4,9 @@ solute.epfl.components.table package
 Submodules
 ----------
 
-solute.epfl.components.table.table module
------------------------------------------
+.. toctree::
 
-.. automodule:: solute.epfl.components.table.table
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   solute.epfl.components.table.table
 
 Module contents
 ---------------

@@ -4,14 +4,9 @@ solute.epfl.components.menu package
 Submodules
 ----------
 
-solute.epfl.components.menu.menu module
----------------------------------------
+.. toctree::
 
-.. automodule:: solute.epfl.components.menu.menu
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   solute.epfl.components.menu.menu
 
 Module contents
 ---------------

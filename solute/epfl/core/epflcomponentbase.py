@@ -820,6 +820,10 @@ class ComponentContainerBase(ComponentBase):
         super(ComponentContainerBase, self).after_event_handling()
         self.update_children(force=True)
 
+    def is_smart(self):
+        """True if component uses get_data scheme."""
+        return self.default_child_cls is not None
+
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -828,7 +832,7 @@ class ComponentContainerBase(ComponentBase):
             raise Exception('update_children called twice without force parameter for component %s.' % self.cid)
         self.__update_children_done__ = True
 
-        if self.default_child_cls is None:
+        if not self.is_smart():
             return
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
 

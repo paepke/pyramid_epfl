@@ -1,11 +1,11 @@
 # coding: utf-8
 
 
-from solute.epfl.core import epflcomponentbase
+from solute.epfl.core.epflcomponentbase import ComponentBase
 from solute.epfl.core import epflutil
 
 
-class Badge(epflcomponentbase.ComponentBase):
+class Badge(ComponentBase):
 
     template_name = "badge/badge.html"
     js_name = "badge/badge.js"

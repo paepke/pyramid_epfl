@@ -5,5 +5,6 @@ This is an overview over the complete EPFL API. It is a technical documentation,
 examples see the other sections of this documentation.
 
 .. toctree::
+    :hidden:
 
-    epfl/index
+    ../_autodoc/modules

@@ -10,7 +10,6 @@ EPFL World easy and enjoyable.
     intro
 
     users/index
-    components/index
 
     design
     epfl_scaffolds

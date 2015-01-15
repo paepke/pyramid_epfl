@@ -24,7 +24,7 @@ Contents:
    advanced/index
    professional/index
 
-   _autodoc/modules
+   api/index
 
    license
 

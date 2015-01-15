@@ -51,7 +51,7 @@ clean:
 	rm -rf _autodoc
 
 html:
-	sphinx-apidoc -f -o _autodoc ../solute ../solute/epfl/test ../solute/epfl/jinja
+	sphinx-apidoc -e -T -o _autodoc ../solute ../solute/epfl/test
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
