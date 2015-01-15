@@ -6,7 +6,7 @@
             {% if cell.type == 'text' %}
                 {{ cell.data }}
             {% elif cell.type == 'icon' %}
-                <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i> {{ cell.text }}
+                <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i> {% if cell.text is defined %}{{ cell.text }}{% endif %}
             {% elif cell.type == 'progress' %}
                 <div class="progress">
                     {% for bar in cell.data %}
