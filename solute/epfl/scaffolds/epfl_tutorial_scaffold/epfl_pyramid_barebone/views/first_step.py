@@ -16,7 +16,7 @@ from solute.epfl.core.epflassets import ModelBase
 from solute.epfl.core.epflcomponentbase import ComponentBase
 
 
-class MyFirstForm(cfForm):
+class NoteForm(cfForm):
     node_list = [cfText(label='Title',
                         name='title',
                         default='Insert a title here!'),
@@ -73,14 +73,14 @@ class NoteBox(Box):
                                        event_name='edit_note'))
 
     def handle_edit_note(self):
-        self.page.my_first_form.load_note(self.id)
+        self.page.note_form.load_note(self.id)
 
     def handle_removed(self):
         super(NoteBox, self).handle_removed()
         self.page.model.remove_note(self.id)
 
 
-class MyModel(ModelBase):
+class NoteModel(ModelBase):
     data_store = {'_id_counter': 1}
 
     def add_note(self, note):
@@ -109,8 +109,14 @@ class FirstStepRoot(epfl.components.CardinalLayout):
                            title='Demo Notes App')]
 
     def init_struct(self):
-        self.node_list.extend([Box(title='My first box',
-                                   node_list=[MyFirstForm(cid='my_first_form')]),
+        self.node_list.extend([Box(title='Edit note',
+                                   node_list=[NoteForm(cid='note_form')]),
+                               Box(title='My notes',
+                                   default_child_cls=NoteBox,
+                                   data_interface={'id': None,
+                                                   'text': None,
+                                                   'title': None},
+                                   get_data='notes'),
                                LinkListLayout(get_data='notes',
                                               show_pagination=False,
                                               show_search=False,
@@ -122,16 +128,10 @@ class FirstStepRoot(epfl.components.CardinalLayout):
                                               data_interface={'id': None,
                                                               'url': 'note?id={id}',
                                                               'text': 'title'},
-                                              slot='west'),
-                               Box(title='My notes',
-                                   default_child_cls=NoteBox,
-                                   data_interface={'id': None,
-                                                   'text': None,
-                                                   'title': None},
-                                   get_data='notes')])
+                                              slot='west')])
 
 
 @view_config(route_name='FirstStep')
 class FirstStepPage(epfl.Page):
     root_node = FirstStepRoot()
-    model = MyModel
+    model = NoteModel
