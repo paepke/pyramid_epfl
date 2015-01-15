@@ -831,6 +831,7 @@ class ComponentContainerBase(ComponentBase):
         if self.default_child_cls is None:
             return
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
+
         tipping_point = None
         for i, c in enumerate(self.components):
             if hasattr(c, 'id'):
@@ -838,7 +839,7 @@ class ComponentContainerBase(ComponentBase):
                     tipping_point = i
                 continue
             elif getattr(c, 'static_align', 'top') == 'top':
-                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point)
+                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point or 0)
                 tipping_point = (tipping_point or 0) + 1
             elif c.static_align == 'bottom':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None))

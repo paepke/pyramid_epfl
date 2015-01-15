@@ -23,7 +23,6 @@ Subpackages
     solute.epfl.components.simpletable
     solute.epfl.components.sortable
     solute.epfl.components.table
-    solute.epfl.components.tree
 
 Module contents
 ---------------
