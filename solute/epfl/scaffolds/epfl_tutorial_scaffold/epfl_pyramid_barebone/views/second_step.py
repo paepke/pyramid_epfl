@@ -19,7 +19,7 @@ from solute.epfl.core.epflcomponentbase import ComponentBase
 from .first_step import FirstStepRoot
 
 
-class MyFirstForm(cfForm):
+class NoteForm(cfForm):
     node_list = [cfNumber(label='Parent',
                           name='parent'),
                  cfText(label='Title',
@@ -88,14 +88,16 @@ class NoteBox(Box):
         self.default_child_cls = NoteBox
 
     def handle_edit_note(self):
-        self.page.my_first_form.load_note(self.id)
+        self.page.note_form.load_note(self.id)
 
     def handle_removed(self):
         super(NoteBox, self).handle_removed()
+        if self.page.note_form.id == self.id:
+            self.page.note_form.clean_form()
         self.page.model.remove_note(self.id)
 
 
-class MyModel(ModelBase):
+class NoteModel(ModelBase):
     data_store = {'_id_counter': 1,
                   '_id_lookup': {}}
 
@@ -132,8 +134,8 @@ class MyModel(ModelBase):
 
 class SecondStepRoot(FirstStepRoot):
     def init_struct(self):
-        self.node_list.extend([Box(title='My first box',
-                                   node_list=[MyFirstForm(cid='my_first_form')]),
+        self.node_list.extend([Box(title='Edit note',
+                                   node_list=[NoteForm(cid='note_form')]),
                                LinkListLayout(get_data='notes',
                                               show_pagination=False,
                                               show_search=False,
@@ -155,4 +157,4 @@ class SecondStepRoot(FirstStepRoot):
 @view_config(route_name='SecondStep')
 class SecondStepPage(epfl.Page):
     root_node = SecondStepRoot()
-    model = MyModel
+    model = NoteModel

@@ -81,12 +81,11 @@ Now it's time to fill the form with live. We add form components to the form by 
 
     from solute.epfl.components import cfText, cfTextarea, cfButton
 
-
     class HomeRoot(epfl.components.CardinalLayout):
 
 	    def init_struct(self):
-	        self.node_list.extend([Box(title='My first box',
-	                                   node_list=[cfForm(cid='my_first_form', node_list=[
+	        self.node_list.extend([Box(title='Edit note',
+	                                   node_list=[cfForm(cid='note_form', node_list=[
 	                                       cfText(label='Title',
 	                                              name='title',
 	                                              default='Insert a title here!'),
@@ -109,8 +108,8 @@ The easiest way to handle this event is by using an inherited class from cfForm:
 
 .. code-block:: python
 
-    class MyFirstForm(cfForm):
-
+    class NoteForm(cfForm):
+	
         node_list = [cfText(label='Title',
                             name='title',
                             default='Insert a title here!'),
@@ -120,10 +119,10 @@ The easiest way to handle this event is by using an inherited class from cfForm:
                               event_name='submit')]
                               
 	class HomeRoot(epfl.components.CardinalLayout):
-
+	
 	    def init_struct(self):
-	        self.node_list.extend([Box(title='My first box',
-	                                   node_list=[MyFirstForm(cid = 'my_first_form')])])
+	        self.node_list.extend([Box(title='Edit note',
+	                                   node_list=[NoteForm(cid = 'note_form')])])
 
 Nothing has changed so far, we have just moved the form to our own subclass from cfForm.
 
@@ -133,10 +132,10 @@ method in our FirstFormClass:
 
 .. code-block:: python
 
-	class MyFirstForm(cfForm):
+	class NoteForm(cfForm):
 	
-		...
-    
+	    ...
+	
 	    def handle_submit(self):
 	        if not self.validate():
 	            self.page.show_fading_message('An error occurred in validating the form!', 'error')
@@ -156,69 +155,290 @@ We first create our class MyModel that will serve for storing, loading and remov
 .. code-block:: python
 
 	from solute.epfl.core.epflassets import ModelBase
+	
+	class NoteModel(ModelBase):
+	    pass
+	
+	@view_config(route_name='home')
+	class HomePage(epfl.Page):
+	    root_node = HomeRoot(
+	    	constrained=True, node_list=[NavLayout(slot='north', title='Demo Notes App')])
+	    model = NoteModel
 
-    class MyModel(ModelBase):
-        pass
-
-    @view_config(route_name='home')
-    class HomePage(epfl.Page):
-        root_node = HomeRoot(
-        	constrained=True, node_list=[NavLayout(slot='north', title='Demo Notes App')])
-        model = MyModel
-
-
-.. code-block:: python
-
-    def handle_submit(self):
-        if not self.validate():
-            self.page.show_fading_message('An error occurred in validating the form!', 'error')
-            return
-        values = self.get_values()
-        self.page.model.add_note({'title': values['title'],
-                                  'text': values['text']})
-
+In order to have all data management methods at hand that are needed in this tutorial, we implement the complete functionality of MyModel straight away.  
 
 .. code-block:: python
 
-    def add_note(self, note):
-        note['id'] = self.data_store['_id_counter']
-        self.data_store['_id_counter'] += 1
-        self.data_store['notes'].append(note)
+	class NoteModel(ModelBase):
+	    data_store = {'_id_counter': 1}
+	
+	    def add_note(self, note):
+	        note['id'] = self.data_store['_id_counter']
+	        self.data_store['_id_counter'] += 1
+	        self.data_store.setdefault('notes', []).append(note)
+	
+	    def remove_note(self, note_id):
+	        self.data_store['notes'] = [note for note in self.data_store['notes'] if note['id'] != note_id]
+	
+	    def get_note(self, note_id):
+	        return [note for note in self.data_store['notes'] if note['id'] == note_id][0]
+	
+	    def set_note(self, note_id, value):
+	        self.get_note(note_id).update(value)
+	
+	    def load_notes(self, calling_component, *args, **kwargs):
+	        return self.data_store.get('notes', [])
+
+The NoteModel class stores nodes as dict objects in an in-memory list and provides methods for adding, removing, getting and updating a notes,
+as well as for obtaining the complete list of notes.
+
+Every component has access to the page it is located in by using self.page. Hence, every component has access to the NodesModel as well.
+We can now call add_note() on the model in the handle_submit method of our form: 
 
 .. code-block:: python
 
-    def load_notes(self, calling_component, *args, **kwargs):
-        print self.data_store.get('notes', [])
-        return self.data_store.get('notes', [])
+	def handle_submit(self):
+	    if not self.validate():
+	        self.page.show_fading_message('An error occurred in validating the form!', 'error')
+	    values = self.get_values()
+	    self.page.model.add_note({'title': values['title'],
+	                              'text': values['text']})
+
+The node is now persisted in memory. Ok, but how can we display it? Let's add a component that displays all created notes in a list.
+
+This component will use a different way to retrieve its data values: Up to now, we directly set and read component attributes to handle component data.
+For example, label, name and default value of the note form fields have been set in the constructor of the corresponding cfText and cfTextarea classes.
+While this is perfect for small amount of data or static data structures, it is not suited for complex data access operations.
+Instead, we will use the get_data attribute, which enables us to create components dynamically based on the data its parent component receives.
+
+Lets start by adding a simple Box below or "Edit note" box:
 
 .. code-block:: python
 
-    node_list = [Box(title='My first box',
-                     node_list=[MyFirstForm()]),
-                 LinkListLayout(get_data='notes',
-                                data_interface={'id': None,
-                                                'url': 'note?id={id}',
-                                                'text': 'title'},
-                                slot='west')]
+	from solute.epfl.core.epflcomponentbase import ComponentBase
+
+	class HomeRoot(epfl.components.CardinalLayout):
+	
+	    def init_struct(self):
+	        ...
+	        self.node_list.append(Box(title='My notes',
+	                                   default_child_cls=ComponentBase(),
+	                                   get_data='notes'))
+
+We have provided two new attributes for this Box: get_data="notes" tells the component to use a method load_notes() on the model to obtain the data,
+and default_child_cls is used to tell the component which child to create for rendering each tem of the list that load_notes() returned.
+
+Currently, we use an empty ComponentBase object, the basic component provided by EPFL which currently does nothing.
+However, with two more little tools, we can easily make this component smart enough to display its note data:
 
 .. code-block:: python
 
-    Box(title='My notes',
-        default_child_cls=ComponentBase(template_name='epfl_pyramid_barebone:templates/my_template.html'),
-        get_data='notes')
+	class HomeRoot(epfl.components.CardinalLayout):
+
+	    def init_struct(self):
+	        ...
+	        self.node_list.append(Box(title='My notes',
+	                                   default_child_cls=ComponentBase(template_name='epfl_pyramid_barebone:templates/note.html'),
+	                                   data_interface={'id': None,
+	                                                   'text': None,
+	                                                   'title': None},
+	                                   get_data='notes'))
+
+We added the data_interface dict to the box that defines the fields which are available on a date object for each child.
+And for the child, we set the path to the template which will be used to render the child component's contents. To make that work,
+we have to put the template under demo_app/epf_pyramid_barebone/template/note.py and fill it with the following contents:
+
+.. code-block:: jinja
+
+	<div epflid="{{ compo.cid }}">
+	    <h2>{{ compo.title }} ({{ compo.id }})</h2>
+	    <pre>
+	        {{ compo.text }}
+	    </pre>
+	</div>
+	
+All we have done here is that we added a div with the epflid attribute set (this should always be done for the outermost html element of the component), and
+added a h2 and pre block to this div which we fill with title and id as well as with the text attribute of the component.
+These attributes (id, title, and text) are set by the get_data method with the note data, and we can directly access it within the jinja template,
+where the component instance is available as the compo variable.
+
+If you try the code now, you will see that every creation of a new note leads to a corresponding block in the "My notes" box displaying the component information!
+
+What's next? We can easily create another component that serves as a left-hand menu which also displays the created notes (for example, to provide links to a
+different view that displays a note in detail). This only takes 8 lines of code: We extend the node_list of our root component:
 
 .. code-block:: python
 
-.. code-block:: python
+	from solute.epfl.components import LinkListLayout
+
+	class HomeRoot(epfl.components.CardinalLayout):
+
+	    def init_struct(self):
+	        ...
+	        self.node_list.append(LinkListLayout(get_data='notes',
+	                                              show_pagination=False,
+	                                              show_search=False,
+	                                              node_list=[ComponentBase(url='/', text='Home')],
+	                                              data_interface={'id': None,
+	                                                              'url': 'note?id={id}',
+	                                                              'text': 'title'},
+	                                              slot='west'))
+
+We used the predefined LinkListLayout component that renders its children as links.
+For displaying the data, we bind the component again to nodes with get_data, and set the predefined text attribute of the link to the title attribute
+of the note data struct.
+
+The list also expects an URL attribute. Here, we construct the target url with the ID of the note as parameter, which we can access with {id} inside the string.
+Of course the route for the target URL is missing, but we don't care about those links right now.
+
+Next, we want to use the note form not only for creating new notes, but also for editing existing notes.
+First, how do we want to edit notes? Well, lets just provide an edit button in our list of notes.
+Currently, our notes list containes of basic ComponentBase components which we have directly defined as default_child_cls of our notes list box.
+Since these notes list children ares getting more complex now, we move the child component class to its own subclass of Box:   
 
 .. code-block:: python
 
-.. code-block:: python
+	class NoteBox(Box):
+	    data_interface = {'id': None,
+	                      'text': None,
+	                      'title': None}
+	
+	    def init_struct(self):
+	        self.node_list.append(ComponentBase(template_name='epfl_pyramid_barebone:templates/note.html'))
+	        self.node_list.append(cfButton(value='Edit this note',
+	                                       event_name='edit_note'))
+	
+	    def handle_edit_note(self):
+	        pass
+	        
+	...
+	
+	class HomeRoot(epfl.components.CardinalLayout):
+	
+	    def init_struct(self):
+	        ...
+	        self.node_list.append(Box(title='My notes',
+	                               default_child_cls=NoteBox,
+	                               data_interface={'id': None,
+	                                               'text': None,
+	                                               'title': None},
+	                               get_data='notes'))
+	        ...
+
+Note that we have already added a button to each note display component in the note list for editing the note.
+And, since we moved the component for rendering the note in the list one level deeper inside the new box NoteBox,
+we have to adapt its jinja template node.html. The component now has to access id, title, and text of the note from its parent class: 
+
+.. code-block:: jinja
+
+	<div epflid="{{ compo.cid }}">
+	    <h2>{{ compo.container_compo.title }} ({{ compo.container_compo.id }})</h2>
+	    <pre>
+	        {{ compo.container_compo.text }}
+	    </pre>
+	</div>
+	
+Now, we have to fill the "Edit note" form with note data once the edit button is clicked.
+We first add a load_note() method on our form which fills the form with the data of an existing node:
 
 .. code-block:: python
 
-.. code-block:: python
+	class NoteForm(cfForm):
+	
+	    ...
+	        
+	    def load_note(self, note_id):
+	        note = self.page.model.get_note(note_id)
+	        self.set_value('title', note['title'])
+	        self.set_value('text', note['text'])
+	        self.redraw()
+	        
+Note that we have to call self.redraw(), otherwise the UI would not get updated when the form receives new data.
+
+Now, we simply have to call the form's load_note() method inside the handler of the edit button in our node list box:
 
 .. code-block:: python
 
+	class NoteBox(Box):
+	    
+	    ...
+	
+	    def handle_edit_note(self):
+	        self.page.note_form.load_note(self.id)
+
+Let's fix an annoying glitch: Every time we click on "Submit" in the form, a new note is created.
+Our app does not know if a component already exists.
+
+To fix this, we simply have to add an attribute "id" for our form which stores the id of the currently displayed note.
+If it is none, a new note is created if submit is clicked and the form contents are valid, otherwise, an existing node is updated.
+And since we are there, we implement a method clean_form() which empties the form (which we also want to call upon submit()):
+
 .. code-block:: python
+
+	class NoteForm(cfForm):
+	
+	    node_list = ...
+	    
+	    compo_state = cfForm.compo_state[:]
+	    compo_state.append('id')
+	    id = None
+	    
+	    def clean_form(self):
+	        self.id = None
+	        self.set_value('title', '')
+	        self.set_value('text', '')
+	        self.redraw()
+	
+	    def handle_submit(self):
+	        if not self.validate():
+	            self.page.show_fading_message('An error occurred in validating the form!', 'error')
+	            return
+	        values = self.get_values()
+	        note_value = {'title': values['title'],
+	                      'text': values['text']}
+	        if self.id is None:
+	            self.page.model.add_note(note_value)
+	        else:
+	            self.page.model.set_note(self.id, note_value)
+	        self.clean_form()
+	        
+	    def load_note(self, note_id):
+	        note = self.page.model.get_note(note_id)
+	        self.id = note['id']
+	        self.set_value('title', note['title'])
+	        self.set_value('text', note['text'])
+	        self.redraw()
+	        
+Here, we did the following:
+
+We added an attribute "id" to NoteForm. This attribute has to be persisted in the server-side state of EPFL. Otherwise, a page refresh
+would yield in the form title and text values being restored, but the id of the form's current note would not be available anymore.
+We do this by adding "id" to the compo_state list, a list that is provided by the base component where all fields are stored which are persisted 
+in the EPFL transaction.
+
+We then set the id attribute when loading a note in the load_note() method, and we query the id attribute upon submit to decide whether a new note 
+has to be created or an existing one has to be updated.
+
+Finally, the clean_form() method cleans the form and is called upon handle_submit() completes. 
+
+As a last step, we want to delete existing notes.
+We can easily provide this functionality since notes are displayed in Box components in the nodes list, and Box supports self-removing.
+We set the corresponding attribute on NodeBox and implement the corresponding event handler method:
+
+.. code-block:: python
+
+	class NoteBox(Box):
+	    
+	    ...
+	    
+	    is_removable = True
+	    
+	    def handle_removed(self):
+	        super(NoteBox, self).handle_removed()
+	        if self.page.note_form.id == self.id:
+	            self.page.note_form.clean_form()
+	        self.page.model.remove_note(self.id)
+
+That's it! We have implemented functionality to create, display, edit, and delete notes.
+The first part of the tutorial is completed.
+In the second part, we extend our notes model with notes that can contain other notes, and extend the nodes list by a tree that displays nested forms.
