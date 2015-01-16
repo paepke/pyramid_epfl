@@ -230,6 +230,8 @@ class ComponentBase(object):
     #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
     struct_dict = None
 
+    epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle_ methods
+
 
     base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
 
@@ -571,18 +573,37 @@ class ComponentBase(object):
         """
 
         event_handler = getattr(self, "handle_" + event_name, None)
+        epfl_event_trace = event_params.pop('epfl_event_trace', [])
         try:
             if event_handler is None:
                 raise MissingEventHandlerException('Received None as event handler, have you setup an '
-                                                   'event handler for %s in %s?' % (event_name, self.__class__))
+                                                   'event handler for %s in %s? %s' % (event_name,
+                                                                                       self.__class__,
+                                                                                       epfl_event_trace))
             elif not hasattr(event_handler, '__call__'):
                 raise MissingEventHandlerException('Received non callable for event handling.')
+
+            # Special handling for drag_stop event in order to provide a stable position argument.
+            if event_name == 'drag_stop':
+                if len(epfl_event_trace) > 0:
+                    last_compo = getattr(self.page, epfl_event_trace[-1])
+                    compo = getattr(self.page, event_params['cid'])
+                    position = self.components.index(last_compo)
+                    if compo in self.components and self.components.index(compo) < position:
+                        position -= 1
+                    event_params.setdefault('position', position)
+
+            self.epfl_event_trace = epfl_event_trace
             event_handler(**event_params)
+            self.epfl_event_trace = None
         except MissingEventHandlerException:
             if self.event_sink is True:
                 pass
             elif self.container_compo is not None:
+                event_params.setdefault('epfl_event_trace', epfl_event_trace).append(self.cid)
                 self.container_compo.handle_event(event_name, event_params)
+            elif event_name == 'drag_stop':
+                pass
             else:
                 raise
 
@@ -706,7 +727,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def switch_component(self, target, cid, slot=None, position=None):
         """
         Switches a component from its current location (whatever component it may reside in at that time) and move it to
@@ -717,6 +737,11 @@ class ComponentBase(object):
         compo = getattr(self.page, cid)
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
+
+        if getattr(source, 'struct_dict', None) is None:
+            source.struct_dict = self.page.transaction['compo_struct'][source.cid]
+        if getattr(target, 'struct_dict', None) is None:
+            target.struct_dict = self.page.transaction['compo_struct'][target.cid]
 
         struct_dict = source.struct_dict.pop(cid)
         source.components.remove(compo)
@@ -742,7 +767,7 @@ class ComponentContainerBase(ComponentBase):
     transaction instead of one static list for the lifetime of the epfl service.
     """
     template_name = 'tree_base.html'
-    theme_path_default = 'layout/container/default'
+    theme_path_default = 'container/default_theme'
     theme_path = []
 
     node_list = []
@@ -757,6 +782,8 @@ class ComponentContainerBase(ComponentBase):
     row_limit = 30
     row_data = 30
     row_count = 30
+
+    auto_update_children = True  #: Updates are triggered every request in after_event_handling if True.
 
     __update_children_done__ = False
 
@@ -822,7 +849,7 @@ class ComponentContainerBase(ComponentBase):
 
     def is_smart(self):
         """True if component uses get_data scheme."""
-        return self.default_child_cls is not None
+        return self.default_child_cls is not None and self.auto_update_children
 
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from

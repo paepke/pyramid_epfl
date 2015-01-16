@@ -437,24 +437,35 @@ class Page(object):
         for cid, compo in self.components.items():
             compo.after_event_handling()
 
-
-        other_pages = self.page_request.get_handeled_pages()
-        all_compos = [(self, cid, compo_obj) for cid, compo_obj in self.components.items()]
-        for other_page in other_pages:
-            all_compos.extend([(other_page, cid, compo_obj) for cid, compo_obj in other_page.components.items()])
-
-        for page_obj, cid, compo_obj in all_compos:
-            if compo_obj.is_visible(check_parents = True):
-                redraw_parts = compo_obj.get_redraw_parts()
-                if redraw_parts:
-                    js = "epfl.replace_component('{cid}', {parts})".format(cid = cid,
-                                                                           parts = json.encode(redraw_parts))
-                    page_obj.add_js_response(js)
-            else:
-                page_obj.add_js_response("epfl.hide_component('{cid}')".format(cid = cid))
+        pages = self.page_request.get_handeled_pages()[:]
+        pages.append(self)
+        for page in pages:
+            page.traversing_redraw()
 
         return True
 
+    def traversing_redraw(self, item=None, js_only=False):
+        if item is None:
+            for item in self.transaction['compo_struct'].iteritems():
+                self.traversing_redraw(item)
+            return
+
+        cid, struct_dict = item
+        compo_obj = getattr(self, cid)
+        if compo_obj.is_visible(check_parents=True):
+            redraw_parts = compo_obj.get_redraw_parts()
+            if redraw_parts:
+                if js_only:
+                    redraw_parts = {'js': redraw_parts.get('js', None)}
+                js = "epfl.replace_component('{cid}', {parts})".format(cid=cid,
+                                                                       parts=json.encode(redraw_parts))
+                self.add_js_response(js)
+                js_only = True
+
+            for child in struct_dict.iteritems():
+                self.traversing_redraw(child, js_only=js_only)
+        else:
+            self.add_js_response("epfl.hide_component('{cid}')".format(cid=cid))
 
     def handle_redraw_all(self):
         for compo in self.components.values():
