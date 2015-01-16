@@ -571,18 +571,29 @@ class ComponentBase(object):
         """
 
         event_handler = getattr(self, "handle_" + event_name, None)
+        epfl_event_trace = event_params.pop('epfl_event_trace', [])
         try:
             if event_handler is None:
                 raise MissingEventHandlerException('Received None as event handler, have you setup an '
-                                                   'event handler for %s in %s?' % (event_name, self.__class__))
+                                                   'event handler for %s in %s? %s' % (event_name,
+                                                                                       self.__class__,
+                                                                                       epfl_event_trace))
             elif not hasattr(event_handler, '__call__'):
                 raise MissingEventHandlerException('Received non callable for event handling.')
-            event_handler(**event_params)
+            try:
+                event_handler(epfl_event_trace=epfl_event_trace, **event_params)
+            except TypeError as e:
+                if "got an unexpected keyword argument 'epfl_event_trace'" not in e.message:
+                    raise
+                event_handler(**event_params)
         except MissingEventHandlerException:
             if self.event_sink is True:
                 pass
             elif self.container_compo is not None:
+                event_params.setdefault('epfl_event_trace', epfl_event_trace).append(self.cid)
                 self.container_compo.handle_event(event_name, event_params)
+            elif event_name == 'drag_stop':
+                pass
             else:
                 raise
 
@@ -706,7 +717,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def switch_component(self, target, cid, slot=None, position=None):
         """
         Switches a component from its current location (whatever component it may reside in at that time) and move it to
@@ -717,6 +727,11 @@ class ComponentBase(object):
         compo = getattr(self.page, cid)
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
+
+        if getattr(source, 'struct_dict', None) is None:
+            source.struct_dict = self.page.transaction['compo_struct'][source.cid]
+        if getattr(target, 'struct_dict', None) is None:
+            target.struct_dict = self.page.transaction['compo_struct'][target.cid]
 
         struct_dict = source.struct_dict.pop(cid)
         source.components.remove(compo)
