@@ -52,8 +52,8 @@ class UnboundComponent(object):
         self.__unbound_config__ = config.copy()
 
         # Copy config and create a cid if none exists.
-        self.position = (self.__unbound_config__.get('cid', None) or uuid.uuid4().hex,
-                         self.__unbound_config__.get('slot', None))
+        self.position = (self.__unbound_config__.pop('cid', None) or uuid.uuid4().hex,
+                         self.__unbound_config__.pop('slot', None))
 
     def __call__(self, *args, **kwargs):
         """
