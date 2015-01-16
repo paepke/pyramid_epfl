@@ -30,6 +30,8 @@ from button.button import Button
 from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image, ImageList
+from text.text import Text
+
 from tabs_layout.tabs_layout import TabsLayout
 from nav_layout.nav_layout import NavLayout
 from col_layout.col_layout import ColLayout
@@ -42,7 +44,7 @@ from link_list_layout.link_list_layout import LinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
 
-from containers.table import TextValue
+
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
@@ -86,6 +88,5 @@ def add_routes(config):
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
-    
-    TextValue.add_pyramid_routes(config)
+    Text.add_pyramid_routes(config)
 
