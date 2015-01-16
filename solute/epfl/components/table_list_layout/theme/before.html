@@ -1,0 +1,30 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    {% from "paginated_list_layout/theme/before.html" import render as before with context %}
+    <tr>
+        <td colspan="100">
+            <div class="row" style="height:10px; padding: 0px; margin: 0px">
+                <div class="col-sm-6">
+                    {{ before(**kwargs) }}
+                </div>
+                <div class="col-sm-2" id="{{ compo.cid }}_orderby">
+                    <select class="form-control">
+                        {% for order in compo.order_by_options %}
+                            <option value="{{ order }}">{{ order }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-2" id="{{ compo.cid }}_ordertype">
+                    <select class="form-control">
+                        <option value="asc">aufsteigend</option>
+                        <option value="desc">absteigend</option>
+                    </select>
+                </div>
+                <div class="col-sm-2" >
+                    <button  class="btn btn-default" id="{{ compo.cid }}_csv">
+                        <i class="fa fa-list"></i> CSV</button>
+                </div>
+            </div>
+        </td>
+    </tr>
+{% endmacro %}

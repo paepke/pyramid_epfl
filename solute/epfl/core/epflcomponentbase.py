@@ -742,7 +742,7 @@ class ComponentContainerBase(ComponentBase):
     transaction instead of one static list for the lifetime of the epfl service.
     """
     template_name = 'tree_base.html'
-    theme_path_default = 'layout/container/default'
+    theme_path_default = 'container/default_theme'
     theme_path = []
 
     node_list = []
