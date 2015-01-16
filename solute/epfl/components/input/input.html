@@ -101,17 +101,17 @@
 	
 	        {%  elif compo.input_type == "toggle" %}
 	        <div class="toggle" epfl-type="toggle">
-	            <input type="checkbox" id="{{compo.cid}}" name="{{compo.name}}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{compo.value}}"/>
+	            <input type="checkbox" id="{{compo.cid}}" name="{{compo.name}}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{compo.value if compo.value is not none else ''  }}"/>
 	        </div>
 	
 	        {%  elif compo.input_type == "checkbox" %}
 	            <div epfl-type="checkbox">
-	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value}}" />
+	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value if compo.value is not none else ''  }}" />
 	            </div>
 	
 	        {% else %}
 	            <div epfl-type="defaultinput">
-	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value}}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
+	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value if compo.value is not none else ''  }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
 	            </div>
 	        {% endif %}
 	
