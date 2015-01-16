@@ -1,28 +1,18 @@
-# coding: utf-8
+from solute.epfl.components.form.form import FormBaseComponent
 
-
-from solute.epfl.core import epflcomponentbase
-from solute.epfl.core import epflutil
-
-
-class Button(epflcomponentbase.ComponentBase):
-
+class Button(FormBaseComponent):
     template_name = "button/button.html"
     js_parts = "button/button.js"
 
-    asset_spec = "solute.epfl.components:button/static"
-    js_name = ["button.js"]
+    label = None
+    value = None
+    event_name = None
+    event_target = None
+    is_submit = False
 
-    css_name = ["button.css", "bootstrap.min.css"]
-
-    compo_state = []
-
-    compo_config = []
-    
-    label = ""
-
-    # Overwrite me
-    def handle_on_click(self):
-        pass
-    
-
+    def __init__(self, label=None, value=None, event_name=None, event_target=None, is_submit=False, **extra_params):
+        super(Button, self).__init__()
+        if not self.event_name:
+            raise Exception('Missing event_name for Button component. %s' % self.cid)
+        if not self.event_target:
+            self.event_target = self.cid

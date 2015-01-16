@@ -1,8 +1,0 @@
-<div epflid="{{compo.cid}}">
-    {% if compo.label %}
-        <label for="{{compo.cid}}" class="col-sm-2 control-label">{{compo.label}}</label>
-    {% endif %}
-    {% for compo in compo.components %}
-        {{ compo.render() }}
-    {% endfor %}
-</div>
