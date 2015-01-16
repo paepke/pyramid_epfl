@@ -21,6 +21,8 @@ class LinkListLayout(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state[:]
     compo_state.extend(['links'])
+    
+    links = []
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         for i, link in enumerate(self.links):
