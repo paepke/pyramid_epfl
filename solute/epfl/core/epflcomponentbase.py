@@ -783,6 +783,8 @@ class ComponentContainerBase(ComponentBase):
     row_data = 30
     row_count = 30
 
+    auto_update_children = True  #: Updates are triggered every request in after_event_handling if True.
+
     __update_children_done__ = False
 
     def __new__(cls, *args, **kwargs):
@@ -847,7 +849,7 @@ class ComponentContainerBase(ComponentBase):
 
     def is_smart(self):
         """True if component uses get_data scheme."""
-        return self.default_child_cls is not None
+        return self.default_child_cls is not None and self.auto_update_children
 
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from

@@ -1,13 +1,4 @@
 $('[epflid=' + '{{ compo.cid }}]').mousedown(function (e) {
-    e.preventDefault();
-    var elm = $(this);
-
-    var style_before = {position: elm.css('position'),
-                        left: elm.css('left'),
-                        top: elm.css('top')}
-    var x = e.clientX;
-    var y = e.clientY;
-
     function reset_css() {
         elm.css('position', style_before['position']);
         elm.css('left', style_before['left']);
@@ -32,9 +23,18 @@ $('[epflid=' + '{{ compo.cid }}]').mousedown(function (e) {
         return cid;
     }
 
+    var elm = $(this);
+
+    var style_before = {position: elm.css('position'),
+                        left: elm.css('left'),
+                        top: elm.css('top')}
+    var x = e.clientX;
+    var y = e.clientY;
+
     if (get_epflid(e.target) != elm.attr('epflid')) {
         return;
     }
+    e.preventDefault();
 
     $(document).mousemove(function (e) {
         e.preventDefault();
