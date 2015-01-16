@@ -230,6 +230,8 @@ class ComponentBase(object):
     #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
     struct_dict = None
 
+    epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle_ methods
+
 
     base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
 
@@ -580,21 +582,20 @@ class ComponentBase(object):
                                                                                        epfl_event_trace))
             elif not hasattr(event_handler, '__call__'):
                 raise MissingEventHandlerException('Received non callable for event handling.')
-            try:
-                # Special handling for drag_stop event in order to provide a stable position argument.
-                if event_name == 'drag_stop':
-                    if len(epfl_event_trace) > 0:
-                        last_compo = getattr(self.page, epfl_event_trace[-1])
-                        compo = getattr(self.page, event_params['cid'])
-                        position = self.components.index(last_compo)
-                        if compo in self.components and self.components.index(compo) < position:
-                            position -= 1
-                        event_params.setdefault('position', position)
-                event_handler(epfl_event_trace=epfl_event_trace, **event_params)
-            except TypeError as e:
-                if "got an unexpected keyword argument 'epfl_event_trace'" not in e.message:
-                    raise
-                event_handler(**event_params)
+
+            # Special handling for drag_stop event in order to provide a stable position argument.
+            if event_name == 'drag_stop':
+                if len(epfl_event_trace) > 0:
+                    last_compo = getattr(self.page, epfl_event_trace[-1])
+                    compo = getattr(self.page, event_params['cid'])
+                    position = self.components.index(last_compo)
+                    if compo in self.components and self.components.index(compo) < position:
+                        position -= 1
+                    event_params.setdefault('position', position)
+
+            self.epfl_event_trace = epfl_event_trace
+            event_handler(**event_params)
+            self.epfl_event_trace = None
         except MissingEventHandlerException:
             if self.event_sink is True:
                 pass
