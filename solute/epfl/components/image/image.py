@@ -32,6 +32,7 @@ class Image(epflcomponentbase.ComponentBase):
     image_path = ""
     show_dominant_color = False
     show_additional_colors = False
+    height = None
 
     def get_image_path(self):
         return self.image_path

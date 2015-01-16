@@ -108,7 +108,19 @@
 
         {% else %}
             <div epfl-type="defaultinput">
-                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value}}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
+
+                {% set styles = "" %}
+                {% if compo.size == "large"%}{% set styles = styles + " input-lg" %}{% endif %}
+                {% if compo.size == "small"%}{% set styles = styles + " input-sm" %}{% endif %}
+                {% if compo.textalign %}{% set styles = styles + " text-"+compo.textalign %}{% endif %}
+
+                <input class="form-control{{ styles }}"
+                       type="{{compo.input_type}}"
+                       id="{{compo.cid}}"
+                       name="{{compo.name}}"
+                       value="{{compo.value}}"
+                        {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}
+                        placeholder="{% if compo.placeholder %}{{ compo.placeholder }}{% endif %}"/>
             </div>
         {% endif %}
 

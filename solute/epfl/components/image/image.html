@@ -1,5 +1,5 @@
 <div epflid="{{compo.cid}}">
-<img src="{{ compo.get_image_path() }}" class="epfl-img-component-image" />
+<img src="{{ compo.get_image_path() }}" class="epfl-img-component-image" {% if compo.height %}height="{{ compo.height }}"{% endif %}/>
 <div class="row">
 	{% if compo.show_dominant_color %}
 	<div style="float:left">Dominante Farbe:<br>
