@@ -5,7 +5,7 @@ class Input(FormBaseComponent):
 
     compo_state = FormBaseComponent.compo_state[:]
     compo_state.extend(['label', 'input_type'])
-    js_parts = "input/input.js"
+    js_parts = ["input/input.js"]
     js_name = ["bootstrap3-typeahead.min.js"]
     css_name = ["form.css"]
 
