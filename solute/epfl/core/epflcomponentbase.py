@@ -259,8 +259,6 @@ class ComponentBase(object):
         self.container_slot = None
         self.deleted = False
 
-        self.template = None
-        self.macros = None
         self.__config = config
 
         for attr_name in self.compo_config:
@@ -328,11 +326,6 @@ class ComponentBase(object):
 
         if not self.template_name:
             raise epflexceptions.ConfigurationError, "You did not setup the 'self.template_name' in " + repr(self)
-
-
-        env = self.request.get_epfl_jinja2_environment()
-        self.template = env.get_template(self.template_name)
-        self.macros = jinja_helpers.MacroAccessor(self.template)
 
         # now we can setup the component-state
         self.setup_component_state()

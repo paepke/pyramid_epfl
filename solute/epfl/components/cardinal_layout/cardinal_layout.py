@@ -10,6 +10,7 @@ from solute.epfl.core import epflcomponentbase
 class CardinalLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "cardinal_layout/cardinal_layout.html"
     asset_spec = "solute.epfl.components:cardinal_layout/static"
+    css_name = ['bootstrap.min.css']
 
     _cardinal_components = None
 
