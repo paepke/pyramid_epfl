@@ -85,7 +85,14 @@ class Page(object):
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
         if self.model is not None:
-            self.model = self.model()
+            if type(self.model) is list:
+                for i,m in enumerate(self.model):
+                    self.model[i] = m()
+            elif type(self.model) is dict:
+                for k,v in self.model.items():
+                    self.model[k] = v()
+            else:
+                self.model = self.model()
 
         self.__parent = None
 
