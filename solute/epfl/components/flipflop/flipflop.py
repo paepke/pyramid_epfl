@@ -12,9 +12,7 @@ class FlipFlopDragable(Dragable):
 class FlipFlop(Droppable):
 
 
-    compo_state = ["components_order"]
-
-    compo_config = []
+    compo_state = Droppable.compo_state + ["components_order"]
     
     components_order = []
 

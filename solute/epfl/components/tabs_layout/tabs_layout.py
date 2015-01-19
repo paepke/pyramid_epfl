@@ -3,7 +3,9 @@ from solute.epfl.core import epflcomponentbase
 
 class TabsLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "tabs_layout/tabs_layout.html"
-    js_parts = "tabs_layout/tabs_layout.js"
+    
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["tabs_layout/tabs_layout.js"]
+    
     asset_spec = "solute.epfl.components:tabs_layout/static"
 
     js_name = ["js/jquery-1.8.2.min.js", "bootstrap.tab.js", "tabs_layout.js"]

@@ -2,7 +2,7 @@ from solute.epfl.components.form.form import FormBaseComponent
 
 class Button(FormBaseComponent):
     template_name = "button/button.html"
-    js_parts = "button/button.js"
+    js_parts = FormBaseComponent.js_parts + ["button/button.js"]
 
     label = None
     value = None

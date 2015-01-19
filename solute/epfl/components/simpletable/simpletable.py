@@ -7,7 +7,8 @@ import json
 class SimpleTable(epflcomponentbase.ComponentBase):
 
     template_name = "simpletable/simpletable.html"
-    js_parts = "simpletable/simpletable.js"
+    
+    js_parts = epflcomponentbase.ComponentBase.js_parts + ["simpletable/simpletable.js"]
 
     asset_spec = "solute.epfl.components:simpletable/static"
 

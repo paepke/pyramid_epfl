@@ -19,7 +19,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     asset_spec = "solute.epfl.components:box/static"
     theme_path = ['box/theme']
 
-    js_parts = ["box/box.js", "box/drag.js"]
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["box/box.js", "box/drag.js"]
     css_name = ["box.css"]
     js_name = ["box.js"]
 

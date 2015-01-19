@@ -6,8 +6,7 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
     template_name = "table_list_layout/table_row.html"
     asset_spec = "solute.epfl.components:table_list_layout/static"
     
-    compo_state = epflcomponentbase.ComponentContainerBase.compo_state[:]
-    compo_state.append("current_compo")
+    compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ["current_compo"]
 
     current_compo = 0
 
@@ -38,7 +37,9 @@ class TableListLayout(ListLayout):
     
     # TODO: is there a better way to make use of paginated layout stuff? Inheriting from PaginatedListLayout?
     theme_path = ['paginated_list_layout/theme', 'table_list_layout/theme']
-    js_parts = ['paginated_list_layout/paginated_list_layout.js', 'table_list_layout/table_list_layout.js', ]
+    
+    js_parts = ListLayout.js_parts[:]
+    js_parts.extend(['paginated_list_layout/paginated_list_layout.js', 'table_list_layout/table_list_layout.js'])
     default_child_cls = TableLayoutRow
 
     show_pagination = True

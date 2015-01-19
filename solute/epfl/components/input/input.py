@@ -3,11 +3,15 @@ from solute.epfl.components.form.form import FormBaseComponent
 class Input(FormBaseComponent):
     template_name = "input/input.html"
 
-    compo_state = FormBaseComponent.compo_state[:]
-    compo_state.extend(['label', 'input_type'])
-    js_parts = ["input/input.js"]
-    js_name = ["bootstrap3-typeahead.min.js"]
-    css_name = ["form.css"]
+    compo_state = FormBaseComponent.compo_state + ['label', 'input_type']
+    js_parts = FormBaseComponent.js_parts + ["input/input.js"]
+    
+    #js_name = [("solute.epfl.components:form/static", "bootstrap3-typeahead.min.js")]
+    #js_name = [("solute.epfl.components:input/static", "bootstrap3-typeahead.min.js")]
+    #css_name = ["form.css"]
+    
+    js_name = FormBaseComponent.js_name + [("solute.epfl.components:input/static", "bootstrap3-typeahead.min.js")]
+    css_name = FormBaseComponent.css_name + [("solute.epfl.components:input/static", "input.css")]
 
     label = None
     name = None
