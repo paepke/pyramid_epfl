@@ -5,8 +5,8 @@
 The components must be imported in the namespace of this library.
 """
 
-from menu.menu import Menu # A menu component
-from canvas.canvas import Canvas # A canvas component
+from menu.menu import Menu  # A menu component
+from canvas.canvas import Canvas  # A canvas component
 from flipflop.flipflop import FlipFlop
 from box.box import Box
 from sortable.sortable import Sortable
@@ -43,6 +43,7 @@ from paginated_list_layout.paginated_list_layout import PaginatedListLayout
 from link_list_layout.link_list_layout import LinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
+from tree_layout.tree_layout import TreeLayout
 
 
 from simpletable.simpletable import SimpleTable
@@ -55,8 +56,7 @@ def add_routes(config):
     :func:`solute.epfl.core.epflcomponentbase.ComponentBase.add_pyramid_routes` for every component provided by epfl
     through this package.
     """
-    
-    
+
     Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
     TabsLayout.add_pyramid_routes(config)
@@ -64,7 +64,7 @@ def add_routes(config):
     ColLayout.add_pyramid_routes(config)
     CardinalLayout.add_pyramid_routes(config)
     Panel.add_pyramid_routes(config)
-    
+
     ListLayout.add_pyramid_routes(config)
     PrettyListLayout.add_pyramid_routes(config)
     ToggleListLayout.add_pyramid_routes(config)
@@ -72,8 +72,8 @@ def add_routes(config):
     LinkListLayout.add_pyramid_routes(config)
     HoverLinkListLayout.add_pyramid_routes(config)
     TableListLayout.add_pyramid_routes(config)
-    
-    
+    TreeLayout.add_pyramid_routes(config)
+
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
     Menu.add_pyramid_routes(config)
@@ -81,7 +81,7 @@ def add_routes(config):
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
-    
+
     cfForm.add_pyramid_routes(config)
     cfButton.add_pyramid_routes(config)
     cfText.add_pyramid_routes(config)
@@ -93,10 +93,9 @@ def add_routes(config):
     cfToggle.add_pyramid_routes(config)
     cfCheckbox.add_pyramid_routes(config)
     cfSelect.add_pyramid_routes(config)
-    
+
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Text.add_pyramid_routes(config)
-
