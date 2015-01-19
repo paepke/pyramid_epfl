@@ -12,8 +12,7 @@ class HoverLinkListLayout(LinkListLayout):
                       'src': None,
                       'url': None}
     
-    js_parts = LinkListLayout.js_parts[:]
-    js_parts.append('hover_link_list_layout/hover_link_list_layout.js')
+    js_parts = LinkListLayout.js_parts + ["hover_link_list_layout/hover_link_list_layout.js"]
 
 
 

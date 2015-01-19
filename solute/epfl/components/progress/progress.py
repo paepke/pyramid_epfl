@@ -4,7 +4,8 @@ from solute.epfl.core import epflcomponentbase
 class Progress(epflcomponentbase.ComponentBase):
 
     template_name = "progress/progress.html"
-    js_parts = "progress/progress.js"
+    
+    js_parts = epflcomponentbase.ComponentBase.js_parts + ["progress/progress.js"]
 
     asset_spec = "solute.epfl.components:progress/static"
     js_name = ["progress.js"]

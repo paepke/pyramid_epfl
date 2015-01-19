@@ -5,6 +5,7 @@ from odict import odict
 
 class FormBaseComponent(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form/static"
+    
 
     compo_state = ['name', 'value', 'validation_error']
 
@@ -93,7 +94,8 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
 class Form(epflcomponentbase.ComponentContainerBase):
     template_name = "form/form.html"
-    js_parts = "form/form.js"
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts[:]
+    js_parts.append("form/form.js")
 
     asset_spec = "solute.epfl.components:form/static"
 

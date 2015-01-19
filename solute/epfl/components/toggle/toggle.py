@@ -5,10 +5,11 @@ class Toggle(Input):
     
     input_type = 'toggle'
     validation_type = 'bool'
-    css_name = Input.css_name[:]
-    css_name.append("bootstrap-switch.min.css")
-    js_name = Input.js_name[:]
-    js_name.append("bootstrap-switch.min.js")
+    
+    
+    js_name = Input.js_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.js")]
+    css_name = Input.css_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.css")]
+    
     on_text = "an"
     off_text = "aus"
     default = False

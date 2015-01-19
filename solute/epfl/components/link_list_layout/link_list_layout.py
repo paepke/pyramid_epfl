@@ -13,14 +13,11 @@ class LinkListLayout(PaginatedListLayout):
                       'text': None,
                       'url': None}
     
-    theme_path = PaginatedListLayout.theme_path[:]
-    theme_path.append('link_list_layout/theme')
+    theme_path = PaginatedListLayout.theme_path + ['link_list_layout/theme']
         
-    js_parts = PaginatedListLayout.js_parts[:]
-    js_parts.append('link_list_layout/link_list_layout.js')
+    js_parts = PaginatedListLayout.js_parts + ['link_list_layout/link_list_layout.js']
 
-    compo_state = PaginatedListLayout.compo_state[:]
-    compo_state.extend(['links'])
+    compo_state = PaginatedListLayout.compo_state + ['links']
     
     links = []
 

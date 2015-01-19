@@ -5,15 +5,15 @@ import json
 
 class Droppable(epflcomponentbase.ComponentContainerBase):
     template_name = "droppable/droppable.html"
-    js_parts = "droppable/droppable.js"
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["droppable/droppable.js"]
     asset_spec = "solute.epfl.components:droppable/static"
 
     css_name = ["droppable.css", "bootstrap.min.css",
                 "css/font-awesome/css/font-awesome.min.css"]
     js_name = ["droppable.js"]
 
-    compo_config = ["valid_types"]
-    compo_state = ["elements", "is_collapsed", "title", "is_selected"]
+    compo_config = epflcomponentbase.ComponentContainerBase.compo_config + ["valid_types"]
+    compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ["elements", "is_collapsed", "title", "is_selected"]
 
     valid_types = [Dragable]
     elements = []
@@ -56,7 +56,8 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
 
 class SimpleDroppable(epflcomponentbase.ComponentContainerBase):
     template_name = "droppable/simpledroppable.html"
-    js_parts = "droppable/simpledroppable.js"
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts[:]
+    js_parts.append("droppable/simpledroppable.js")
     asset_spec = "solute.epfl.components:droppable/static"
 
     css_name = ["simpledroppable.css", "bootstrap.min.css",

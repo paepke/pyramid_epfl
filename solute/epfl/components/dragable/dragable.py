@@ -3,7 +3,7 @@ from solute.epfl.core import epflcomponentbase
 
 class Dragable(epflcomponentbase.ComponentContainerBase):
     template_name = "dragable/dragable.html"
-    js_parts = "dragable/dragable.js"
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["dragable/dragable.js"]
     asset_spec = "solute.epfl.components:dragable/static"
 
     css_name = ["dragable.css"]
