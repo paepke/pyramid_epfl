@@ -14,12 +14,14 @@ epfl.BoxComponent = function(cid, params) {
 		        elm.css('position', style_before['position']);
 		        elm.css('left', style_before['left']);
 		        elm.css('top', style_before['top']);
+		        elm.css('z-index', style_before['zIndex']);
 		    }
 		
 		    function update_css(x, y) {
 		        elm.css('position', 'fixed');
 		        elm.css('left', x + 'px');
 		        elm.css('top', y + 'px');
+		        elm.css('z-index', 100);
 		    }
 		
 		    function get_epflid(containing_elm) {
@@ -38,7 +40,8 @@ epfl.BoxComponent = function(cid, params) {
 		
 		    var style_before = {position: elm.css('position'),
 		                        left: elm.css('left'),
-		                        top: elm.css('top')}
+		                        top: elm.css('top'),
+		                        zIndex: elm.css('z-index')}
 		    var x = e.clientX;
 		    var y = e.clientY;
 		

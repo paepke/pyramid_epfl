@@ -43,7 +43,7 @@ Subpackages
     solute.epfl.components.textarea
     solute.epfl.components.toggle
     solute.epfl.components.toggle_list_layout
-    solute.epfl.components.tree
+    solute.epfl.components.tree_layout
 
 Module contents
 ---------------
