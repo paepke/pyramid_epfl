@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "BoxComponent", {});
+epfl.init_component("{{compo.cid}}", "BoxComponent", {is_draggable: {{ compo.is_draggable|int }}});

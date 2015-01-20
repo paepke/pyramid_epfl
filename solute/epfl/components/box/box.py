@@ -19,7 +19,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     asset_spec = "solute.epfl.components:box/static"
     theme_path = ['box/theme']
 
-    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["box/box.js", "box/drag.js"]
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["box/box.js"]
     css_name = ["box.css"]
     js_name = ["box.js"]
 
@@ -32,6 +32,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
     box_shown = True
     is_removable = False
+    is_draggable = False
     
     def handle_removed(self):
         self.delete_component()
