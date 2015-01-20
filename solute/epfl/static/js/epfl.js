@@ -132,9 +132,10 @@ epfl_module = function() {
                         epfl.hide_please_wait(true);
                     },
                     error: function(httpRequest, message, errorThrown) {
+                        console.log('wtf?', httpRequest, message, errorThrown);
                         epfl.hide_please_wait(true);
                         epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
-                        console.log(httpRequest)
+                        console.log(httpRequest);
                         //throw errorThrown;
                     }
             });

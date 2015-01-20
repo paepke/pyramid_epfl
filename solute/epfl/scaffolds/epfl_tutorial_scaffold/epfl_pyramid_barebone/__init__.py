@@ -19,6 +19,7 @@ def main(global_config, **settings):
     config.add_route('FirstStep', '/')
     config.add_route('SecondStep', '/second')
     config.add_route('ThirdStep', '/third')
+    config.add_route('FourthStep', '/fourth')
 
     session_factory = session_factory_from_settings(settings)
     config.set_session_factory(session_factory)

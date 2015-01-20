@@ -578,7 +578,7 @@ class ComponentBase(object):
                 raise MissingEventHandlerException('Received non callable for event handling.')
 
             # Special handling for drag_stop event in order to provide a stable position argument.
-            if event_name == 'drag_stop':
+            if event_name in ['drag_stop', 'drop_accepts']:
                 if len(epfl_event_trace) > 0:
                     last_compo = getattr(self.page, epfl_event_trace[-1])
                     compo = getattr(self.page, event_params['cid'])
@@ -596,7 +596,7 @@ class ComponentBase(object):
             elif self.container_compo is not None:
                 event_params.setdefault('epfl_event_trace', epfl_event_trace).append(self.cid)
                 self.container_compo.handle_event(event_name, event_params)
-            elif event_name == 'drag_stop':
+            elif event_name in ['drag_stop', 'drop_accepts', 'drop_update_position']:
                 pass
             else:
                 raise

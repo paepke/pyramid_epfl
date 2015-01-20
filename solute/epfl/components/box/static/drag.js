@@ -40,25 +40,38 @@ epfl.make_compo_dragable = function (cid) {
         }
         e.preventDefault();
 
-        $(document).mousemove(function (e) {
-            e.preventDefault();
-            if (e.clientX - x < 5 && e.clientX - x > -5
-                && e.clientY - y < 5 && e.clientY - y > -5) {
-                return reset_css();
-            }
-            update_css(e.clientX + 5, e.clientY + 5);
-        });
-        $(document).mouseup(function (e) {
-            var containing_elm = $(e.target);
-            $(document).unbind('mousemove');
-            $(document).unbind('mouseup');
-            var cid = get_epflid(e.target);
-            if (cid
-                && (e.clientX - x >= 5 || e.clientX - x <= -5
-                || e.clientY - y >= 5 || e.clientY - y <= -5) ) {
-                epfl.send(epfl.make_component_event(cid, 'drag_stop', {cid: elm.attr('epflid')}));
-            }
-            reset_css();
-        });
+        $(document)
+            .mousemove(function (e) {
+                e.preventDefault();
+                if (e.clientX - x < 5 && e.clientX - x > -5
+                    && e.clientY - y < 5 && e.clientY - y > -5) {
+                    return reset_css();
+                }
+                update_css(e.clientX + 5, e.clientY + 5);
+            })
+            .mouseup(function (e) {
+                var containing_elm = $(e.target);
+                $(document).unbind('mousemove');
+                $(document).unbind('mouseover');
+                $(document).unbind('mouseup');
+                var cid = get_epflid(e.target);
+                if (cid
+                    && (e.clientX - x >= 5 || e.clientX - x <= -5
+                    || e.clientY - y >= 5 || e.clientY - y <= -5) ) {
+                    epfl.send(epfl.make_component_event(cid, 'drag_stop', {cid: elm.attr('epflid')}));
+                }
+                reset_css();
+            })
+            .mouseover(function (e) {
+                if (!epfl.set_drop_zone_parent) {
+                    return;
+                }
+                var cid = get_epflid(e.target);
+                if (!cid) {
+                    return;
+                }
+                e.stopImmediatePropagation();
+                epfl.set_drop_zone_parent(e.target, elm);
+            });
     });
 };
