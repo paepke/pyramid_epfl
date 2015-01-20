@@ -32,7 +32,6 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
     box_shown = True
     is_removable = False
-    is_draggable = False
     
     def handle_removed(self):
         self.delete_component()

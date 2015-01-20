@@ -45,9 +45,10 @@ from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
 from tree_layout.tree_layout import TreeLayout
 
-
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
+
+from drag_box.drag_box import DragBox
 
 
 def add_routes(config):
@@ -99,3 +100,5 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Text.add_pyramid_routes(config)
+    
+    DragBox.add_pyramid_routes(config)
