@@ -557,6 +557,7 @@ class ComponentBase(object):
 
         return string.join(js, "")
 
+    @epflassets.epfl_has_permission('access')
     def handle_event(self, event_name, event_params):
         """
         Called by the system for every ajax-event in the ajax-event-queue from the browser.

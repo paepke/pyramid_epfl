@@ -107,7 +107,8 @@ class FirstStepRoot(epfl.components.CardinalLayout):
     constrained = True
 
     node_list = [NavLayout(slot='north',
-                           links=[('Second Step', '/second')],
+                           links=[('Second Step', '/second'),
+                                  ('Third Step', '/third')],
                            title='Demo Notes App')]
 
     def init_struct(self):

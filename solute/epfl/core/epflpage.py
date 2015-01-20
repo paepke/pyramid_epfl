@@ -73,6 +73,7 @@ class Page(object):
 
     __name = None # cached value from get_name()
     _active_initiations = 0
+    remember_cookies = []
 
     model = None
 
@@ -169,10 +170,11 @@ class Page(object):
             self.request.session.save() # performance issue! should only be called, when session is modified!
             self.request.session.persist() # performance issue! should only be called, when session is modified!
 
-
-        return pyramid.response.Response(body = out.encode("utf-8"),
-                                         content_type = "text/html; charset=utf-8",
-                                         status = 200) # todo
+        response = pyramid.response.Response(body=out.encode("utf-8"),
+                                             content_type="text/html; charset=utf-8",
+                                             status=200,
+                                             headers=self.remember_cookies)  # todo
+        return response
 
     def create_components(self):
         """ Calling self.setup_components once and remember the compos as compo_info """
@@ -690,6 +692,12 @@ class Page(object):
         for overlay in overlays:
             transaction = epfltransaction.Transaction(self.request, overlay["tid"])
             transaction.delete()
+
+    def remember(self, userid):
+        self.remember_cookies = pyramid.security.remember(self.request, userid)
+
+    def forget(self):
+        self.remember_cookies = pyramid.security.forget(self.request)
 
 
 
