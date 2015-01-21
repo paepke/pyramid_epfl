@@ -8,6 +8,9 @@ def get_item_or_attr(obj, key):
 
 
 class ModelBase(object):
+    def __init__(self, request):
+        self.request = request
+
     def __getitem__(self, item):
         compo, key, row, data_interface = item
         args, kwargs = row

@@ -81,19 +81,18 @@ class Page(object):
         """ The optional parameter "transaction" is needed when creating page_objs manually.
         So the transaction is not the same as the requests one.
         """
-
         self.request = request
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
         if self.model is not None:
             if type(self.model) is list:
                 for i,m in enumerate(self.model):
-                    self.model[i] = m()
+                    self.model[i] = m(self.request)
             elif type(self.model) is dict:
                 for k,v in self.model.items():
-                    self.model[k] = v()
+                    self.model[k] = v(self.request)
             else:
-                self.model = self.model()
+                self.model = self.model(self.request)
 
         self.__parent = None
 
