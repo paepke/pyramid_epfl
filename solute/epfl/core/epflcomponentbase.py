@@ -9,15 +9,12 @@ from pyramid import security
 from pyramid import threadlocal
 
 from solute.epfl.core import epflclient, epflutil, epflexceptions, epflassets
-from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl import json
 
 import jinja2
 import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
-from inspect import getmembers
-from inspect import ismethod
 
 
 class MissingEventHandlerException(Exception):
@@ -157,15 +154,16 @@ class UnboundComponent(object):
         """
         Checks class and config equality.
         """
-        if type(other) is not UnboundComponent\
-                or other.__unbound_cls__ != self.__unbound_cls__\
+        if type(other) is not UnboundComponent \
+                or other.__unbound_cls__ != self.__unbound_cls__ \
                 or other.__unbound_config__ != self.__unbound_config__:
             return False
 
         return True
 
     def __repr__(self):
-        return '<UnboundComponent of {cls} with config {conf}>'.format(cls=self.__unbound_cls__, conf=self.__unbound_config__)
+        return '<UnboundComponent of {cls} with config {conf}>'.format(cls=self.__unbound_cls__,
+                                                                       conf=self.__unbound_config__)
 
 
 class ComponentBase(object):
@@ -234,10 +232,9 @@ class ComponentBase(object):
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle_ methods
 
+    base_compo_state = ["visible"]  # these are the compo_state-names for this ComponentBase-Class
 
-    base_compo_state = ["visible"] # these are the compo_state-names for this ComponentBase-Class
-
-    is_template_element = True # Needed for template-reflection: this makes me a template-element (like a form-field)
+    is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
 
     def __new__(cls, *args, **config):
         """
@@ -294,10 +291,10 @@ class ComponentBase(object):
         fn = inspect.getfile(cls)
         pos = fn.index("/epfl/components/")
         epos = fn.index("/", pos + 17)
-        compo_path_part = fn[pos + 17 : epos]
+        compo_path_part = fn[pos + 17: epos]
 
-        config.add_static_view(name = "epfl/components/" + compo_path_part,
-                               path = "solute.epfl.components:" + compo_path_part + "/static")
+        config.add_static_view(name="epfl/components/" + compo_path_part,
+                               path="solute.epfl.components:" + compo_path_part + "/static")
 
 
     def get_component_info(self):
@@ -310,7 +307,7 @@ class ComponentBase(object):
     def create_by_compo_info(cls, page, compo_info, container_id):
         compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
         if container_id:
-            container_compo = page.components[container_id] # container should exist before their content
+            container_compo = page.components[container_id]  # container should exist before their content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
@@ -397,7 +394,7 @@ class ComponentBase(object):
         self.visible = False
         return current_visibility
 
-    def is_visible(self, check_parents = False):
+    def is_visible(self, check_parents=False):
         """ Checks wether the component should be displayed or not. This is affected by "has_access" and
         the "visible"-component-attribute.
         If check_parents is True, it also checks if the template-element-parents are all visible - so it checks
@@ -485,7 +482,6 @@ class ComponentBase(object):
         pass
 
 
-
     def _get_compo_state_attribute(self, attr_name):
         transaction = self.page.transaction
         if self.cid + "$" + attr_name in transaction:
@@ -495,13 +491,13 @@ class ComponentBase(object):
             return copy.deepcopy(getattr(self, attr_name))
 
 
-    def show_fading_message(self, msg, typ = "ok"):
+    def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
         typ = "info" | "ok" | "error"
         """
         return self.page.show_fading_message(msg, typ)
 
-    def show_message(self, msg, typ = "info"):
+    def show_message(self, msg, typ="info"):
         """ Shortcut to epflpage.show_message(msg, typ)
         typ = "info" | "ok" | "error"
         """
@@ -616,7 +612,7 @@ class ComponentBase(object):
         Overwrite me!!!
         """
 
-        epflutil.add_extra_contents(self.response, obj = self)
+        epflutil.add_extra_contents(self.response, obj=self)
 
     def render_templates(self, env, templates):
         out = []
@@ -639,7 +635,7 @@ class ComponentBase(object):
 
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
-            return jinja2.Markup("<div epflid='{cid}'></div>".format(cid = self.cid))
+            return jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
 
         self.is_rendered = True
 
@@ -664,9 +660,7 @@ class ComponentBase(object):
         return jinja2.Markup(out)
 
     def get_handles(self):
-        return [name[7:]
-                for name, method in getmembers(self, ismethod)
-                if name.startswith('handle_') and name != 'handle_event']
+        return [name[7:] for name in dir(self) if name.startswith('handle_') and name != 'handle_event']
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
@@ -685,15 +679,15 @@ class ComponentBase(object):
         """
         self.is_rendered = True
 
-    def redraw(self, parts = None):
+    def redraw(self, parts=None):
         """ This requests a redraw. All components that are requested to be redrawn are redrawn when
         the ajax-response is generated (namely page.handle_ajax_request()).
         You can specify the parts that need to be redrawn (as string, as list or None for the complete component).
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        if self.container_compo and "main" in self.container_compo.redraw_requested: # TODO: compo-parts!
-            return # a parent of me already needs redrawing!
+        if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
+            return  # a parent of me already needs redrawing!
 
         if type(parts) is list:
             self.redraw_requested.update(set(parts))
@@ -840,6 +834,7 @@ class ComponentContainerBase(ComponentBase):
                     extra_kwargs['caller'] = lambda: out
                     out = parent(*args, **extra_kwargs)
                 return out
+
             return _cb
 
         result.update({'compo': self,
@@ -905,7 +900,7 @@ class ComponentContainerBase(ComponentBase):
             self.redraw()
 
     def _get_data(self, *args, **kwargs):
-        if type(self.get_data) is str and  self.page.model is not None:
+        if type(self.get_data) is str and self.page.model is not None:
             return self.page.model[(self, self.get_data, (args, kwargs), self.data_interface)]
         return self.get_data(*args, **kwargs)
 
@@ -940,7 +935,7 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    def add_component(self, compo_obj, slot = None, cid = None, position=None):
+    def add_component(self, compo_obj, slot=None, cid=None, position=None):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
         compo_obj, position can be used to insert at a specific location.
