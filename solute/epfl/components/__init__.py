@@ -25,6 +25,8 @@ from select.select import Select as cfSelect
 from radio.radio import Radio as cfRadio
 from buttonradio.buttonradio import ButtonRadio as cfButtonradio
 from toggle.toggle import Toggle as cfToggle
+from sidebar.sidebar import Sidebar
+from headbar.headbar import Headbar
 
 from badge.badge import Badge
 from diagram.diagram import Diagram
@@ -100,5 +102,7 @@ def add_routes(config):
     Progress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Text.add_pyramid_routes(config)
-    
+    Sidebar.add_pyramid_routes(config)
+    Headbar.add_pyramid_routes(config)
+
     DragBox.add_pyramid_routes(config)
