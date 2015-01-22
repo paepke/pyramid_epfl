@@ -16,6 +16,7 @@ from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl.core import epflclient, epflutil
 
+
 def dummy_decorator(func):
     return func
 
@@ -52,32 +53,31 @@ class Page(object):
 
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
-               "css/font-awesome/css/font-awesome.min.css" ]
+                "css/font-awesome/css/font-awesome.min.css"]
 
-
-    template = "page.html" # the name of the template used to render this page
+    template = "page.html"  # the name of the template used to render this page
     base_html = 'base.html'
 
     title = 'Empty Page'
 
-    overlay_title = "Overlay" # If this page is displayed as overlay, use this title.
+    overlay_title = "Overlay"  # If this page is displayed as overlay, use this title.
 
-    overlay_options = None # Mandatory, if this page is displayed as overlay.
-                           # Use these options:
-                           # {"resizeable": True,
-                           #  "modal": True,
-                           #  "draggable": True,
-                           #  "height": 400,
-                           #  "width": 600,
-                           #  "position": "center"}
+    overlay_options = None  # Mandatory, if this page is displayed as overlay.
+                            # Use these options:
+                            # {"resizeable": True,
+                            # "modal": True,
+                            # "draggable": True,
+                            #  "height": 400,
+                            #  "width": 600,
+                            #  "position": "center"}
 
-    __name = None # cached value from get_name()
+    __name = None  # cached value from get_name()
     _active_initiations = 0
     remember_cookies = []
 
     model = None
 
-    def __init__(self, request, transaction = None):
+    def __init__(self, request, transaction=None):
         """ The optional parameter "transaction" is needed when creating page_objs manually.
         So the transaction is not the same as the requests one.
         """
@@ -86,10 +86,10 @@ class Page(object):
         self.response = epflclient.EPFLResponse(self)
         if self.model is not None:
             if type(self.model) is list:
-                for i,m in enumerate(self.model):
+                for i, m in enumerate(self.model):
                     self.model[i] = m(self.request)
             elif type(self.model) is dict:
-                for k,v in self.model.items():
+                for k, v in self.model.items():
                     self.model[k] = v(self.request)
             else:
                 self.model = self.model(self.request)
@@ -102,20 +102,16 @@ class Page(object):
                                                          # e.g.
                                                          # page.data["something"] = some_object
 
-        self.components = odict() # all registered components of this page
+        self.components = odict()  # all registered components of this page
         env = request.get_epfl_jinja2_environment()
         self.jinja_template = env.get_template(self.template)
         env.globals['epfl_base_html'] = self.base_html
         env.globals['epfl_base_title'] = self.title
 
-        self.jinja_template.module # this access triggers the parsing of the template
-                                   # this is neccessary because this parsing
-                                   # collects additional meta-data from the template via
-                                   # the epfl-jinja-component-extension (jinja_extensions.py)
-
-##        request.register_template_usage(self.template, self) # tells the request which page is in use
-
-
+        self.jinja_template.module  # this access triggers the parsing of the template
+                                    # this is neccessary because this parsing
+                                    # collects additional meta-data from the template via
+                                    # the epfl-jinja-component-extension (jinja_extensions.py)
 
         if transaction:
             self.transaction = transaction
@@ -166,8 +162,8 @@ class Page(object):
                 if self.transaction.tid_new:
                     out += 'epfl.new_tid("%s");' % self.transaction.tid_new
 
-            self.request.session.save() # performance issue! should only be called, when session is modified!
-            self.request.session.persist() # performance issue! should only be called, when session is modified!
+            self.request.session.save()  # performance issue! should only be called, when session is modified!
+            self.request.session.persist()  # performance issue! should only be called, when session is modified!
 
         response = pyramid.response.Response(body=out.encode("utf-8"),
                                              content_type="text/html; charset=utf-8",
@@ -212,14 +208,13 @@ class Page(object):
 
         ptid = self.transaction.get_pid()
         if not ptid:
-            raise ValueError, "No parent page connected to this page"
+            raise ValueError("No parent page connected to this page")
 
         parent_transaction = epfltransaction.Transaction(self.request, ptid)
         parent_page_name = parent_transaction.get_page_name()
         parent_page_class = epflutil.get_page_class_by_name(self.request, parent_page_name)
 
         parent_page_obj = parent_page_class(self.request, parent_transaction)
-##        parent_page_obj.setup_components()
 
         self.page_request.add_handeled_page(parent_page_obj)
 
@@ -272,7 +267,7 @@ class Page(object):
         # if isinstance(value, epflcomponentbase.UnboundComponent):
         #     self.add_static_component(key, value(__instantiate__=True))
         else:
-            self.__dict__[key] = value # mimic "normal" behaviour
+            self.__dict__[key] = value  # mimic "normal" behaviour
 
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
@@ -284,7 +279,8 @@ class Page(object):
                             'Call epfl.page.add_static_component(cid, compo_obj, overwrite=True) instead of page.cid = '
                             'compo_obj if you really want to do this.' % {'cid': cid,
                                                                           'existing_compo': self.__dict__[cid],
-                                                                          'existing_compo_unbound': self.__dict__[cid].__unbound_component__,
+                                                                          'existing_compo_unbound': self.__dict__[
+                                                                              cid].__unbound_component__,
                                                                           'new_compo_unbound': compo_obj.__unbound_component__,
                                                                           'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
@@ -333,7 +329,6 @@ class Page(object):
     def get_template_ctx(self):
         """ Returns a freshly created dict with all the global variables for the template rendering """
 
-
         ctx = {"epfl": {},
                "page": self,
                "components": self.components.as_dict()}
@@ -352,13 +347,13 @@ class Page(object):
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
 
-##   todo     self.request.assert_page_access(page_obj=self)
+        ##   todo     self.request.assert_page_access(page_obj=self)
 
-        self.__reopen_overlays() # if any overlays - reopen them!
+        self.__reopen_overlays()  # if any overlays - reopen them!
 
         self.add_js_response(self.get_page_init_js())
 
-        epflutil.add_extra_contents(self.response, obj = self)
+        epflutil.add_extra_contents(self.response, obj=self)
 
         # pre-render all components
         for component_name, component_obj in self.components.items():
@@ -416,7 +411,7 @@ class Page(object):
         for event in ajax_queue:
             event_type = event["t"]
 
-            if event_type == "ce": # component-event
+            if event_type == "ce":  # component-event
                 event_id = event["id"]
                 cid = event["cid"]
                 event_name = event["e"]
@@ -425,7 +420,7 @@ class Page(object):
                 component_obj = self.components[cid]
                 component_obj.handle_event(event_name, event_params)
 
-            elif event_type == "pe": # page-event
+            elif event_type == "pe":  # page-event
                 event_id = event["id"]
                 event_name = event["e"]
                 event_params = event["p"]
@@ -433,7 +428,7 @@ class Page(object):
                 event_handler = getattr(self, "handle_" + event_name)
                 event_handler(**event_params)
 
-            elif event_type == "upl": # upload-event
+            elif event_type == "upl":  # upload-event
                 event_id = event["id"]
                 cid = event["cid"]
                 component_obj = self.components[cid]
@@ -510,7 +505,7 @@ class Page(object):
         else:
             self.response.add_extra_content(epflclient.JSBlockContent(js_string))
 
-    def show_fading_message(self, msg, typ = "info"):
+    def show_fading_message(self, msg, typ="info"):
         """ Shows a message to the user. The message is non evasive - it will show up and fade away nicely.
         typ = "info" | "ok" | "error"
         """
@@ -528,12 +523,11 @@ class Page(object):
         self.add_js_response(js)
 
 
-
     def get_css_imports(self):
         """ This function delivers the <style src=...>-tags for all stylesheets needed by this page and it's components.
         It is available in the template by the jinja-variable {{ css_imports() }}
         """
-        return self.response.render_extra_content(target = "head")
+        return self.response.render_extra_content(target="head")
 
     def get_js_imports(self):
         """ This function delivers the <script src=...>-tags for all js needed by this page and it's components.
@@ -548,7 +542,7 @@ class Page(object):
                 init_js = epflclient.JSBlockContent(init_js)
                 self.response.add_extra_content(init_js)
 
-        return self.response.render_extra_content(target = "footer")
+        return self.response.render_extra_content(target="footer")
 
     def reload(self):
         """ Reloads the complete page.
@@ -578,7 +572,7 @@ class Page(object):
         js = "epfl.jump_extern('" + target_url + "', '" + target + "');"
         self.add_js_response(js)
 
-    def go_next(self, route = None, target_url = None, **route_params):
+    def go_next(self, route=None, target_url=None, **route_params):
         """ Jumps to a new page and relates the transactions as parent/child.
         So in the new page-object you can access the current page-object as self.parent .
         The target is given as route/route_params or as target_url.
@@ -604,7 +598,7 @@ class Page(object):
                     "width": 600,
                     "position": "center"}
 
-    def open_overlay(self, route = None, target_url = None, **route_params):
+    def open_overlay(self, route=None, target_url=None, **route_params):
         """ Opens an overlay. The target is given as route/route_params or as target_url.
         If the route denominates an EPFL-Page, the overlay options will be taken from there.
         The transactions of the new page and the current page are connected as parent/child.
@@ -617,7 +611,7 @@ class Page(object):
         if route:
             page_classes = epflutil.get_page_classes_from_route(self.request, route)
             if page_classes:
-                page_class = page_classes[0] # if we have multiple page_objs, just take the first one...
+                page_class = page_classes[0]  # if we have multiple page_objs, just take the first one...
 
             target_url = self.request.route_url(route, **(route_params or {}))
 
@@ -625,7 +619,7 @@ class Page(object):
             raise ValueError, "view-controller not found for route '" + route + "'"
 
         # getting the overlay-opts
-        overlay_name = page_class.__name__ # the name is the page-class-name: to be discussed (e.g. multi-window)
+        overlay_name = page_class.__name__  # the name is the page-class-name: to be discussed (e.g. multi-window)
         overlay_opts = page_class.get_overlay_options()
         overlay_title = page_class.overlay_title
 
@@ -633,25 +627,27 @@ class Page(object):
         new_transaction = epfltransaction.Transaction(self.request)
         new_transaction.set_pid(self.transaction.get_id())
         new_transaction.set_page_obj(page_class)
-        target_url = epflutil.URL(target_url).update_query(tid = new_transaction.get_id()) # adjust the url and add the TID
+
+        # adjust the url and add the TID
+        target_url = epflutil.URL(target_url).update_query(tid=new_transaction.get_id())
 
         # open the overlay
         js = epflclient.make_js_call("epfl.open_overlay", overlay_name,
-                                                          target_url,
-                                                          overlay_title,
-                                                          overlay_opts,
-                                                          True)
+                                     target_url,
+                                     overlay_title,
+                                     overlay_opts,
+                                     True)
 
         self.add_js_response(js)
 
-        # remeber this overlay (for full-page redraw of this parent page)
+        # remember this overlay (for full-page redraw of this parent page)
         self.transaction["overlays"].append({"tid": new_transaction.get_id(),
                                              "name": page_class.get_name(),
-                                             "target_url": target_url}) # the url with the TID
+                                             "target_url": target_url})  # the url with the TID
 
     def close_overlay(self):
         """ Closes the current overlay. To be called from the overlay-page it self. """
-        overlay_name = self.__class__.__name__ # the name is the page-class-name: to be discussed (e.g. multi-window)
+        overlay_name = self.__class__.__name__  # the name is the page-class-name: to be discussed (e.g. multi-window)
         js = epflclient.make_js_call("epfl.close_overlay", overlay_name)
         self.add_js_response(js)
 
@@ -662,17 +658,17 @@ class Page(object):
         overlays = self.transaction["overlays"]
 
         for overlay in overlays:
-
             transaction = epfltransaction.Transaction(self.request, overlay["tid"])
             page_class = epflutil.get_page_class_by_name(self.request, transaction.get_page_name())
             overlay_opts = page_class.get_overlay_options()
             overlay_title = page_class.overlay_title
 
-            js = epflclient.make_js_call("epfl.open_overlay", overlay["name"],
-                                                              overlay["target_url"], # TID is already included
-                                                              overlay_title,
-                                                              overlay_opts,
-                                                              False)
+            js = epflclient.make_js_call("epfl.open_overlay",
+                                         overlay["name"],
+                                         overlay["target_url"],  # TID is already included
+                                         overlay_title,
+                                         overlay_opts,
+                                         False)
 
             self.add_js_response(js)
 
@@ -699,7 +695,6 @@ class Page(object):
         self.remember_cookies = pyramid.security.forget(self.request)
 
 
-
 class PageRequest(object):
     """
     A Class containing the request-data specific to a specific page.
@@ -723,7 +718,7 @@ class PageRequest(object):
             try:
                 self.params = request.json_body
             except:
-                #TODO: Bad bad hack fix this
+                # TODO: Bad bad hack fix this
                 pass
         else:
             self.params = request.params
@@ -741,7 +736,7 @@ class PageRequest(object):
             return self.params["q"]
 
 
-    def get(self, key, default = None):
+    def get(self, key, default=None):
         return self.params.get(key, default)
 
     def getall(self, key):
