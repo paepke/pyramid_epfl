@@ -58,20 +58,21 @@ epfl.make_compo_dragable = function (cid) {
                 if (cid
                     && (e.clientX - x >= 5 || e.clientX - x <= -5
                     || e.clientY - y >= 5 || e.clientY - y <= -5) ) {
-                    epfl.send(epfl.make_component_event(cid, 'drag_stop', {cid: elm.attr('epflid')}));
+                    epfl.dispatch_event(cid, 'drag_stop', {cid: elm.attr('epflid'),
+                                                           over_cid: get_epflid(containing_elm)});
                 }
                 reset_css();
             })
             .mouseover(function (e) {
-                if (!epfl.set_drop_zone_parent) {
-                    return;
-                }
                 var cid = get_epflid(e.target);
                 if (!cid) {
                     return;
                 }
                 e.stopImmediatePropagation();
-                epfl.set_drop_zone_parent(e.target, elm);
+
+                epfl.dispatch_event(cid, 'drop_accepts', {cid: elm.attr('epflid'),
+                                                          elm: elm,
+                                                          originalEvent: e});
             });
     });
 };

@@ -1,14 +1,6 @@
 (function () {
     function get_epflid(containing_elm) {
-        containing_elm = $(containing_elm);
-        var cid = containing_elm.attr('epflid');
-        if (!cid) {
-            cid = containing_elm.parent().attr('epflid');
-        }
-        if (!cid) {
-            cid = containing_elm.parentsUntil('[epflid]').parent().attr('epflid');
-        }
-        return cid;
+        return $(containing_elm).closest('[epflid]').attr('epflid');
     }
 
     function line_marker() {
@@ -23,50 +15,53 @@
             .css('margin-top', '-10px')
             .css('overflow', 'show')
             .css('border-top', '1px solid black')
-            .addClass('drop-line-marker')
-            .mouseover(function (e) {
-                e.stopPropagation();
-            });
+            .addClass('drop-line-marker');
     }
 
-    epfl.add_drop_zone = function (cid, position) {
-        var done = false;
-        var elm = $('[epflid=' + position[0] + ']');
-        var parent = $('[epflid=' + cid + ']');
-
-        if (!position[0]) {
-            line_marker()
-                .appendTo(parent);
-        } else if (position[1]) {
-            line_marker()
-                .insertBefore(elm);
-        } else {
-            line_marker()
-                .insertAfter(elm);
-        }
-
-        function mouseout(e) {
-            if ($(e.target).attr('epflid') != parent.attr('epflid')) {
-                return;
-            }
-            $(this).unbind('mouseout', mouseout);
-            $('.drop-line-marker').remove();
-        }
-
-        parent.mouseout(mouseout);
+    var drag_stop = function(cid) {
+        return function (elm, type, data) {
+            data.over_cid = $('[epflid=' + data.over_cid + ']')
+                .closest('[epflid][data-parent-epflid=' + cid + ']').attr('epflid');
+            return true;
+        };
     };
 
-    var old_cid = '';
+    var remove_line_marker = function() {
+        $('.drop-line-marker').remove();
+    };
 
-    epfl.set_drop_zone_parent = function (elm, dragged) {
-        var drop_zone_parent = $(elm);
-        var dragged_element = $(dragged);
+    var drop_accepts = function(cid) {
+        return function (elm, type, data) {
+            var target_elm = $(data.originalEvent.target).closest('[epflid][data-parent-epflid=' + cid + ']');
+            var target_cid = target_elm.attr('epflid');
 
-        var cid = get_epflid(drop_zone_parent);
-        if (cid == old_cid) {
-            return;
-        }
-        old_cid = cid;
-        epfl.send(epfl.make_component_event(cid, 'drop_accepts', {cid: dragged_element.attr('epflid')}));
+            delete data.originalEvent;
+            delete data.elm;
+
+            if (target_cid) {
+                line_marker()
+                    .insertBefore($('[epflid=' + target_cid + ']'));
+            } else {
+                line_marker()
+                    .appendTo($('[epflid=' + cid + ']'));
+            }
+
+            elm.mouseout(function (e) {
+                var elem = $(e.target);
+                if (elem.attr('epflid') != cid) {
+                    return;
+                }
+                $(this).unbind('mouseout');
+                remove_line_marker();
+            });
+        };
+    };
+
+    epfl.set_drop_zone = function (cid) {
+        var elm = $('[epflid=' + cid + ']');
+
+        epfl.set_component_info(cid, 'before_send_event', 'drop_accepts', drop_accepts(cid));
+        epfl.set_component_info(cid, 'before_send_event', 'drag_stop', drag_stop(cid));
+        epfl.set_component_info(cid, 'callback_send_event', 'drag_stop', remove_line_marker);
     };
 })();

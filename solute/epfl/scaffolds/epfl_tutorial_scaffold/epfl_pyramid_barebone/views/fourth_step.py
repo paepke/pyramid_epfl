@@ -16,38 +16,19 @@ class DropBox(Box):
     js_name = Box.js_name + [('epfl_pyramid_barebone:static', 'drop.js')]
     js_parts = Box.js_parts + ['epfl_pyramid_barebone:templates/drop.js']
 
-    def handle_drop_update_position(self, position):
-        position = int(position)
-        if position == -1:
-            position = None
-        self.drop_position = position
-
-    def handle_drag_stop(self, position=None, cid=None):
+    def handle_drag_stop(self, position=None, cid=None, over_cid=None):
         if position is None:
             position = self.drop_position
             if cid in self.struct_dict and self.struct_dict.key_index(cid) < position:
                 position -= 1
+        if over_cid is not None and over_cid in self.struct_dict:
+            position = self.struct_dict.key_index(over_cid)
+            if cid in self.struct_dict and self.struct_dict.key_index(cid) < position:
+                position -= 1
         self.switch_component(self.cid, cid, position=position)
 
-    def handle_drop_accepts(self, cid, position=None):
-        self.add_drop_zone(cid, position)
-
-    def add_drop_zone(self, cid, position):
-        import json
-        cids = [c.cid for c in self.components if c.cid != cid]
-
-        if position is None and cids:
-            before = False
-            position = cids[-1]
-        elif cids:
-            before = True
-            position = cids[position]
-        else:
-            before = False
-            position = False
-        self.add_js_response('epfl.add_drop_zone("%(cid)s", %(pos)s);' % {'cid': self.cid,
-                                                                          'pos': json.dumps([position,
-                                                                                             before])})
+    def handle_drop_accepts(self):
+        pass
 
 
 class FourthStepRoot(FirstStepRoot):

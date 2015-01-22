@@ -16,6 +16,8 @@ from solute.epfl import json
 import jinja2
 import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
+from inspect import getmembers
+from inspect import ismethod
 
 
 class MissingEventHandlerException(Exception):
@@ -596,7 +598,7 @@ class ComponentBase(object):
             elif self.container_compo is not None:
                 event_params.setdefault('epfl_event_trace', epfl_event_trace).append(self.cid)
                 self.container_compo.handle_event(event_name, event_params)
-            elif event_name in ['drag_stop', 'drop_accepts', 'drop_update_position']:
+            elif event_name in ['drag_stop', 'drop_accepts']:
                 pass
             else:
                 raise
@@ -653,8 +655,18 @@ class ComponentBase(object):
             out += ''.join(self.render_templates(env, self.js_parts))
         elif target == 'main':
             out += ''.join(self.render_templates(env, self.template_name))
+            set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s)'
+            handles = self.get_handles()
+            if handles:
+                self.add_js_response(set_component_info % {'cid': self.cid,
+                                                           'handles': self.get_handles()})
 
         return jinja2.Markup(out)
+
+    def get_handles(self):
+        return [name[7:]
+                for name, method in getmembers(self, ismethod)
+                if name.startswith('handle_') and name != 'handle_event']
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """

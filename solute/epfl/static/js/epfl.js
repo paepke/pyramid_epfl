@@ -10,6 +10,7 @@ epfl_module = function() {
     epfl.queue = [];
     epfl.event_id = 0;
     epfl.components = {};
+    epfl.component_data = {};
     epfl.show_please_wait_counter = 0;
     epfl.overlays = {};
     epfl.overlays_id = 0;
@@ -36,7 +37,64 @@ epfl_module = function() {
         epfl.new_tid(opts["tid"], true);
         epfl.ptid = opts["ptid"];
         $(document).attr("data:tid", epfl.tid);
+        epfl.init_struct();
+    };
 
+    epfl.dispatch_event = function (elm, type, data) {
+        setTimeout(function () {
+            if (typeof elm == 'string') {
+                elm = $('[epflid=' + elm + ']');
+            }
+            if (elm.length == 0) {
+                return;
+            }
+            var cid = elm.attr('epflid');
+            if (!cid || !epfl.component_data[cid]
+                || !epfl.component_data[cid]['handle']
+                || !epfl.component_data[cid]['handle'].indexOf
+                || epfl.component_data[cid]['handle'].indexOf(type) == -1) {
+                return epfl.dispatch_event(elm.parent(), type, data);
+            }
+            if (epfl.component_data[cid]['before_send_event']
+                && epfl.component_data[cid]['before_send_event'][type]) {
+                if (!epfl.component_data[cid]['before_send_event'][type](elm, type, data)) {
+                    return;
+                }
+            }
+
+            var callback;
+            if (epfl.component_data[cid]['callback_send_event']
+                && epfl.component_data[cid]['callback_send_event'][type]) {
+                callback = epfl.component_data[cid]['callback_send_event'][type];
+            }
+
+            epfl.send(epfl.make_component_event(cid, type, data), callback);
+        }, 0);
+    };
+
+    epfl.set_component_info = function (cid, key, value, extra_value) {
+        if (!epfl.component_data[cid]) {
+            epfl.component_data[cid] = {};
+        }
+        if (!extra_value) {
+            return epfl.component_data[cid][key] = value;
+        }
+        if (!epfl.component_data[cid][key]) {
+            epfl.component_data[cid][key] = {};
+        }
+        epfl.component_data[cid][key][value] = extra_value;
+    };
+
+    epfl.init_struct = function () {
+        if (epfl.init_struct_timeout) {
+            clearTimeout(epfl.init_struct_timeout);
+        }
+        epfl.init_struct_timeout = setTimeout(function () {
+            $('[epflid]').each(function (i, elm) {
+                elm = $(elm);
+                elm.attr('data-parent-epflid', elm.parent().closest('[epflid]').attr('epflid'));
+            });
+        }, 0);
     };
 
     epfl.init_component = function(cid, class_name, params) {
@@ -72,6 +130,7 @@ epfl_module = function() {
                 parts_jq.show();
             }
             el.replaceWith(parts_jq);
+            epfl.init_struct();
         }
         eval(parts["js"]);
     };
@@ -121,22 +180,24 @@ epfl_module = function() {
                     dataType: "script",
                     success: function(data) {
                         if (callback_func) {
+                            callback_func(data);
+                        }
+                        epfl.hide_please_wait(true);
+                    },
+                    error: function(httpRequest, message, errorThrown) {
+                        if (callback_func) {
                             try {
                                 callback_func($.parseJSON(data))
                             } catch(e) {
                                 console.log('Caught Exception when trying to parse data as JSON. Did you provide a ' +
-                                    'callback for an event without a json response?');
+                                            'callback for an event without a json response?');
                                 console.log(e);
                             }
-                        };
+                        } else {
+                            epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
+                            console.log(httpRequest);
+                        }
                         epfl.hide_please_wait(true);
-                    },
-                    error: function(httpRequest, message, errorThrown) {
-                        console.log('wtf?', httpRequest, message, errorThrown);
-                        epfl.hide_please_wait(true);
-                        epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
-                        console.log(httpRequest);
-                        //throw errorThrown;
                     }
             });
         };
