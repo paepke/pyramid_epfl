@@ -9,15 +9,12 @@ from pyramid import security
 from pyramid import threadlocal
 
 from solute.epfl.core import epflclient, epflutil, epflexceptions, epflassets
-from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl import json
 
 import jinja2
 import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
-from inspect import getmembers
-from inspect import ismethod
 
 
 class MissingEventHandlerException(Exception):
@@ -663,9 +660,7 @@ class ComponentBase(object):
         return jinja2.Markup(out)
 
     def get_handles(self):
-        return [name[7:]
-                for name, method in getmembers(self, ismethod)
-                if name.startswith('handle_') and name != 'handle_event']
+        return [name[7:] for name in dir(self) if name.startswith('handle_') and name != 'handle_event']
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
