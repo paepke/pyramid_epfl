@@ -84,7 +84,7 @@ class UnboundComponent(object):
         stripped_conf.pop('cid', None)
         stripped_conf.pop('slot', None)
         if len(stripped_conf) > 0:
-            self.__dynamic_class_store__ = type(self.__unbound_cls__.__name__ + '_auto_' + uuid.uuid4().hex,
+            self.__dynamic_class_store__ = type('%s_auto_%s' % (self.__unbound_cls__.__name__, uuid.uuid4().hex),
                                                 (self.__unbound_cls__, ),
                                                 {})
             for param in self.__unbound_config__:
@@ -218,8 +218,8 @@ class ComponentBase(object):
     compo_state = []  #: List of object attributes to be persisted into the :class:`.epfltransaction.Transaction`.
     compo_config = []  #: List of attributes to be copied into instance-variables using :func:`copy.deepcopy`.
 
-    event_sink = False  #: Flag this component as event sink, meaning any events will stop here, wether it has an
-                        #: appropriate handler or not.
+    #: Flag this component as event sink, any event will stop here if True. If no handler is found it is discarded.
+    event_sink = False
 
     visible = True  #: Flag for component rendering. Use via :func:`set_visible` and :func:`set_hidden`.
 
