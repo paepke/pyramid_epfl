@@ -149,4 +149,5 @@ def includeme(config):
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
     components.add_routes(config)
 
-    config.set_root_factory(epflassets.DefaultACLRootFactory)
+    if epflassets.DefaultACLRootFactory.__acl__:
+        config.set_root_factory(epflassets.DefaultACLRootFactory)
