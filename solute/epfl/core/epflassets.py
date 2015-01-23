@@ -1,3 +1,8 @@
+from pyramid.interfaces import IRootFactory
+from pyramid import security
+from functools import wraps
+
+
 def get_item_or_attr(obj, key):
     try:
         return obj[key]
@@ -33,11 +38,7 @@ class ModelBase(object):
         return output
 
 
-from pyramid import security
-from functools import wraps
-
-
-def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone', extend=False):
+def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone', extend=False, use_as_global=False):
     default_action = security.Deny
     if default_allow:
         default_action = security.Allow
@@ -68,6 +69,12 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
     for action, _principals in actions.items():
         for principal, _permission in _principals.items():
             acl.append((action, principal, _permission))
+
+    if use_as_global:
+        if not DefaultACLRootFactory.__acl__:
+            DefaultACLRootFactory.__acl__ = acl
+        else:
+            raise Exception('An acl has already been set to the DefaultACLRootFactory.')
 
     def wrapper(cls):
         _acl = acl
@@ -100,9 +107,21 @@ def epfl_has_permission(permission, fail_callback=None):
 
     return wrapper
 
+
 class ACL(object):
     def __init__(self, acl):
         self.__acl__ = acl
+
+
+class DefaultACLRootFactory(object):
+    __acl__ = []
+
+    def __init__(self, request):
+        self.request = request
+
+    def __call__(self, request):
+        return self
+
 
 def epfl_has_role(role, fail_callback=None):
     def wrapper(func):

@@ -16,7 +16,7 @@ from solute.epfl.jinja import jinja_helpers
 
 from zope.interface import Interface
 
-from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel, epfli18n, epfll10n
+from solute.epfl.core import epfltransaction, epflutil, epflpage, epfltempdata, epflmodel, epfli18n, epfll10n, epflassets
 
 
 class IEPFLJinja2Environment(Interface):
@@ -148,3 +148,5 @@ def includeme(config):
     # static routes
     config.add_static_view(name = "epfl/static", path = "solute.epfl:static")
     components.add_routes(config)
+
+    config.set_root_factory(epflassets.DefaultACLRootFactory)
