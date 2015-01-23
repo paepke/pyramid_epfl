@@ -52,6 +52,7 @@ class TableListLayout(ListLayout):
     ordertype = "asc"
     search = ""
     height = None
+    data_interface = {'id': None, 'data': None}
 
     @staticmethod
     def HeadRow(headings):
