@@ -11,3 +11,4 @@ class Headbar(epflcomponentbase.ComponentBase):
     titlelink = "#"
     usergroup = ""
     optionslink = "#"
+    logoutlink = "#"

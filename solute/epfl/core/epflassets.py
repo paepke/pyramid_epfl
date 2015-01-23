@@ -1,5 +1,3 @@
-
-
 def get_item_or_attr(obj, key):
     try:
         return obj[key]
@@ -74,7 +72,7 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
     def wrapper(cls):
         _acl = acl
         if extend:
-            #Retrieve any previous acl to extend if requested.
+            # Retrieve any previous acl to extend if requested.
             old_acl = getattr(cls, '__acl__', [])
             old_acl.extend(_acl)
             _acl = old_acl
@@ -82,6 +80,7 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
         setattr(cls, '__acl__', _acl)
 
         return cls
+
     return wrapper
 
 
@@ -101,12 +100,11 @@ def epfl_has_permission(permission, fail_callback=None):
 
     return wrapper
 
+class ACL(object):
+    def __init__(self, acl):
+        self.__acl__ = acl
 
 def epfl_has_role(role, fail_callback=None):
-    class ACL(object):
-        def __init__(self, acl):
-            self.__acl__ = acl
-
     def wrapper(func):
         @wraps(func)
         def wrap(*args, **kwargs):
@@ -121,3 +119,10 @@ def epfl_has_role(role, fail_callback=None):
         return wrap
 
     return wrapper
+
+
+def epfl_check_role(role, request):
+    if request.has_permission('has_role', ACL([(security.Allow, role, 'has_role')])):
+        return True
+    else:
+        return False
