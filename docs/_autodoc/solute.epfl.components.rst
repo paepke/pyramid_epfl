@@ -15,10 +15,12 @@ Subpackages
     solute.epfl.components.checkbox
     solute.epfl.components.col_layout
     solute.epfl.components.diagram
+    solute.epfl.components.drag_box
     solute.epfl.components.dragable
     solute.epfl.components.droppable
     solute.epfl.components.flipflop
     solute.epfl.components.form
+    solute.epfl.components.headbar
     solute.epfl.components.hover_link_list_layout
     solute.epfl.components.image
     solute.epfl.components.input
@@ -34,6 +36,7 @@ Subpackages
     solute.epfl.components.progress
     solute.epfl.components.radio
     solute.epfl.components.select
+    solute.epfl.components.sidebar
     solute.epfl.components.simpletable
     solute.epfl.components.sortable
     solute.epfl.components.table_list_layout
