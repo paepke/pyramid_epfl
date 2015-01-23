@@ -237,5 +237,7 @@ The code that is executed once a click is detected, creates an EPFL event for ou
 Since EPFL event handling methods have to preceded by "handle\_" in the server code, our existing "handle_edit_note" method is called and the "Edit note" form is 
 filled with the values of the selected note. Voilà!
 
-This completes our tutorial. In this part of the tutorial, you have learned to design complex nested components, to adapt themed templates,
-and to extend the Javascript part of a component to detect Browser events and send EPFL to the server. 
+This completes step 2 of our tutorial. In this part of the tutorial, you have learned to design complex nested components, to adapt themed templates,
+and to extend the Javascript part of a component to detect Browser events and send EPFL to the server.
+
+In the next step, we create a simple login dialog to demonstrate rights management in EPFL. 

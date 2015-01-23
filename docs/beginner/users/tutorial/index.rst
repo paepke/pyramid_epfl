@@ -12,3 +12,4 @@ In the second part, the notes app is extended with more powerful features (such 
 
     tutorial_1
     tutorial_2
+    tutorial_3
