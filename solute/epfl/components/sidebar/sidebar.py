@@ -1,13 +1,12 @@
-from solute.epfl.core import epflcomponentbase
+from solute.epfl.core.epflcomponentbase import ComponentBase
 
-class Sidebar(epflcomponentbase.ComponentContainerBase):
-    theme_path = ['sidebar/theme']
-    default_child_cls = epflcomponentbase.ComponentContainerBase
 
-    data_interface = {'id': None,
-                      'url': None,
-                      'name': None,
-                      'icon': None,
-                      'children':None}
+class Sidebar(ComponentBase):
+    template_name = "sidebar/sidebar.html"
 
+    asset_spec = "solute.epfl.components:sidebar/static"
+
+    compo_state = ["links"]
+
+    links = []
 
