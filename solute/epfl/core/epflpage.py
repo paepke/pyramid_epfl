@@ -59,7 +59,8 @@ class Page(object):
     _active_initiations = 0  #: Static count of currently active init cycles.
     remember_cookies = []  #: Cookies used by the authentication mechanism.
 
-    model = None  #: Put a class here, it will be instantiated each request by epfl and provided as model.
+    #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
+    model = None
 
     def __init__(self, request, transaction=None):
         """
