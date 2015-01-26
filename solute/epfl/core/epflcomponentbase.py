@@ -231,6 +231,9 @@ class ComponentBase(object):
 
     is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
 
+    is_rendered = False  #: True if this component was rendered calling :meth:`render`
+    redraw_requested = None  #: Set of parts requesting to be redrawn.
+
     def __new__(cls, *args, **config):
         """
         Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
@@ -247,8 +250,7 @@ class ComponentBase(object):
         if self.__unbound_component__ is None:
             self.__unbound_component__ = cls()
 
-        self.is_rendered = False  # was this component rendered (so was the self.render-method called?
-        self.redraw_requested = set()  # all these parts of the component (or "main") want to be redrawn
+        self.redraw_requested = set()
         self.container_compo = None
         self.container_slot = None
         self.deleted = False
@@ -324,6 +326,10 @@ class ComponentBase(object):
         self.setup_component_state()
 
     def set_container_compo(self, compo_obj, slot, position=None):
+        """
+        Set the container_compo for this component and create any required structural information in the transaction.
+        """
+
         # TODO: Can be handled without traversal due to container_compo having a struct_dict reference.
         self.container_compo = compo_obj
         self.container_slot = slot
@@ -603,6 +609,10 @@ class ComponentBase(object):
         epflutil.add_extra_contents(self.response, obj=self)
 
     def render_templates(self, env, templates):
+        """
+        Render one or many templates given as list using the given jinja2 environment env and the dict from
+        :meth:`get_render_environment` as kwargs.
+        """
         out = []
         if type(templates) is not list:
             templates = [templates]

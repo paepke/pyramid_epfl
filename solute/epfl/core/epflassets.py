@@ -4,6 +4,10 @@ from functools import wraps
 
 
 def get_item_or_attr(obj, key):
+    """
+    Helper function returning the item key from obj or, failing that the attribute key. If both do not exist an
+    Exception is raised by getattr.
+    """
     try:
         return obj[key]
     except (KeyError, TypeError):
@@ -11,6 +15,10 @@ def get_item_or_attr(obj, key):
 
 
 class ModelBase(object):
+    """
+    Use this class as a base for your own bound models. For any given method identificator a method of its nam prefiload_
+    """
+
     def __init__(self, request):
         self.request = request
 
