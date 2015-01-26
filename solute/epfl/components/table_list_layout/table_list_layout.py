@@ -1,3 +1,4 @@
+# * encoding: utf-8
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import ListLayout
 
@@ -54,14 +55,24 @@ class TableListLayout(ListLayout):
     height = None
     data_interface = {'id': None, 'data': None}
 
+
+    def handle_edit(self,id,data):
+        #Overwrite this for edit handling
+        pass
+
     @staticmethod
     def HeadRow(headings):
         headrow = {'id': 0, 'data': []}
 
         for head in headings:
-            headrow['data'].append({'data': head, 'type': 'head'})
+            headrow['data'].append(head)
 
         return headrow
+
+    @staticmethod
+    def HeadText(text,sortable=False):
+        head = {'data': text,"sortable":sortable, 'type': 'head'}
+        return head
 
     @staticmethod
     def Row(rowid, fields):
@@ -112,3 +123,7 @@ class TableListLayout(ListLayout):
         if color:
             badge['color'] = color
         return badge
+
+    @staticmethod
+    def Edit():
+        return {"type":"edit"}

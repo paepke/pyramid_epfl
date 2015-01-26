@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    <div class="panel panel-default {{ "epfl_box_border" if compo.box_shown else "epfl_box" }}" epflid="{{compo.cid}}" >
+    <div class="panel panel-default {{ "epfl_box_border" if compo.box_shown else "epfl_box" }}" epflid="{{compo.cid}}">
         {{ caller() }}
-    </div>
+    </div> 
 {% endmacro %}

@@ -6,6 +6,10 @@ epfl.TableListLayout = function (cid, params) {
         var evt = compo.make_event(eventname, {});
         epfl.send(evt);
     };
+    epfl.TableListLayout.EditClick = function (id,data) {
+        var evt = compo.make_event("edit", {'id':id,'data':data});
+        epfl.send(evt);
+    };
     var orderchange = function(){
         var orderby = $("#{{ compo.cid }}_orderby option:selected").val();
         var ordertype = $("#{{ compo.cid }}_ordertype option:selected").val();
@@ -36,4 +40,3 @@ epfl.TableListLayout.prototype.fire_event = function (event_name, params, callba
 };
 
 epfl.init_component("{{compo.cid}}", "TableListLayout", {});
-

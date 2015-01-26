@@ -1,31 +1,42 @@
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
-        <th>{{ cell.data }}</th>
-    {% else %}
-        <td >
-        <div style="height:15px; padding: 0px; margin: 0px">
-            {% if cell.type == 'text' %}
+        <th>
+            {% if cell.sortable %}
+                {{ cell.data }} <i class="fa fa-sort"></i>
+            {% else %}
                 {{ cell.data }}
-            {% elif cell.type == 'icon' %}
-                <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i> {% if cell.text is defined %}{{ cell.text }}{% endif %}
-            {% elif cell.type == 'progress' %}
-                <div class="progress">
-                    {% for bar in cell.data %}
-                        <div class="progress-bar {% if bar.color is defined %}progress-bar-{{ bar.color }}{% endif %}"
-                             style="width: {{ bar.width }}">
-                            <span>{{ bar.text }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% elif cell.type == 'button' %}
-                <button type='button' class='btn btn-default'
-                        onclick='epfl.TableLayout.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
-            {% elif cell.type == 'component' %}
-                {{ compo.get_next_component()() }}
-            {% elif cell.type == 'badge' %}
-                {{ cell.text }} <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
             {% endif %}
-        </div>
+        </th>
+    {% else %}
+        <td>
+            <div style="height:15px; padding: 0px; margin: 0px">
+                {% if cell.type == 'text' %}
+                    {{ cell.data }}
+                {% elif cell.type == 'icon' %}
+                    <i class="fa fa-{{ cell.icon }} fa-{{ cell.size }}x {% if cell.color is defined %}text-{{ cell.color }}{% endif %}"></i>
+                    {% if cell.text is defined %}{{ cell.text }}{% endif %}
+                {% elif cell.type == 'progress' %}
+                    <div class="progress">
+                        {% for bar in cell.data %}
+                            <div class="progress-bar {% if bar.color is defined %}progress-bar-{{ bar.color }}{% endif %}"
+                                 style="width: {{ bar.width }}">
+                                <span>{{ bar.text }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% elif cell.type == 'button' %}
+                    <button type='button' class='btn btn-default'
+                            onclick='epfl.TableListLayout.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
+                {% elif cell.type == 'component' %}
+                    {{ compo.get_next_component()() }}
+                {% elif cell.type == 'badge' %}
+                    {{ cell.text }}
+                    <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
+                {% elif cell.type == 'edit' %}
+                    <span><i class="fa fa-edit"
+                             onclick='epfl.TableListLayout.EditClick("{{ compo.id }}","{{ compo.data }}")'></i></span>
+                {% endif %}
+            </div>
         </td>
     {% endif %}
 {% endfor %}
