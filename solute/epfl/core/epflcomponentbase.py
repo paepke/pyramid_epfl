@@ -296,7 +296,6 @@ class ComponentBase(object):
         config.add_static_view(name="epfl/components/" + compo_path_part,
                                path="solute.epfl.components:" + compo_path_part + "/static")
 
-
     def get_component_info(self):
         return {"class": self.__unbound_component__,
                 "config": self.__config,

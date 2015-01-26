@@ -113,9 +113,6 @@ class Page(object):
         [request-processing-flow]
         """
 
-        if not self.has_access():
-            raise HTTPUnauthorized()
-
         # handling the "main"-page...
         self.create_components()
 
@@ -288,7 +285,6 @@ class Page(object):
             transaction.set_page_obj(self)
 
         return transaction
-
 
     def setup_components(self):
         """
