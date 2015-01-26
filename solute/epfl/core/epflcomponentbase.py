@@ -511,7 +511,6 @@ class ComponentBase(object):
 
         self.page.add_js_response(js)
 
-
     def finalize_component_state(self):
         """
         This function finalizes the compo_state attributes
@@ -523,7 +522,6 @@ class ComponentBase(object):
             values[self.cid + "$" + attr_name] = value
 
         self.page.transaction.update(values)
-
 
     def get_component_id(self):
         return self.cid
