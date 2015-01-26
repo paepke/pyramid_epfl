@@ -358,7 +358,6 @@ class Page(object):
     def make_new_tid(self):
         self.transaction.store_as_new()
 
-
     def handle_ajax_request(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
@@ -595,7 +594,6 @@ class PageRequest(object):
             return [self.params]
         else:
             return self.params["q"]
-
 
     def get(self, key, default=None):
         return self.params.get(key, default)
