@@ -23,10 +23,26 @@ class Transaction(MutableMapping):
     A transaction is always bound to a page-obj.
     """
 
+    #: Internal cache of the data this transaction holds.
     _data = None
+    #: Internal cache of the data this transaction held when loaded.
     _data_original = None
 
+    #: Can contain a new transaction id to be used for storing this transaction. If given, the original transaction will
+    #: be stored as locked under its original id so that it will be preserved in the state it was left in. Should be
+    #: accessed via :meth:`store_as_new`.
     tid_new = None
+
+    #: The transaction id.
+    tid = None
+
+    #: True if the Transaction was just created.
+    created = False
+
+    #: The request currently in progress.
+    request = None
+    #: The session of the request currently in progress.
+    session = None
 
     def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
@@ -47,7 +63,9 @@ class Transaction(MutableMapping):
         return self["__page__"]
 
     def is_created(self):
-        """ Is the transaction created this server-roundtrip? """
+        """
+        Returns true if the transaction was created this server-roundtrip.
+        """
         return self.created
 
     def get_id(self):
@@ -86,15 +104,29 @@ class Transaction(MutableMapping):
 
     # Internal storage handling
     def lock_transaction(self):
+        """
+        Load a copy of the current transaction, unset the flag requesting a new transaction, reset the lock status and
+        store it as locked. After calling this the transaction related to this :class:`Transaction` instance should be
+        stored under a new transaction id, else it would override the locked copy.
+        """
         old_transaction = Transaction(self.request, self.tid)
         old_transaction.tid_new = None
         old_transaction.pop('locked', None)
         old_transaction.store(lock=True)
 
     def store_as_new(self):
+        """
+        Generate a fresh transaction id using the uuid module.
+        """
         self.tid_new = uuid.uuid4().hex
 
     def store(self, lock=False):
+        """
+        Recursive storing mechanism. If no changes have occurred during this request nothing is done. If the transaction
+        is locked because it has spawned a child transaction a new transaction will be generated. If a new transaction
+        has been requested the current transaction is stored locked and a new unlocked transaction with the same content
+        is stored in its stead.
+        """
         if self.is_clean and not lock:
             return
 
@@ -118,6 +150,9 @@ class Transaction(MutableMapping):
 
     @property
     def data(self):
+        """
+        Get data from the configured storage system.
+        """
         if self._data:
             return self._data
 
@@ -148,6 +183,9 @@ class Transaction(MutableMapping):
 
     @data.deleter
     def data(self):
+        """
+        Delete the transaction from its respective Storage.
+        """
         del self._data
         del self._data_original
 
@@ -161,6 +199,9 @@ class Transaction(MutableMapping):
 
     @property
     def redis(self):
+        """
+        Redis storage abstraction layer. Returns a singleton with get, delete and set methods.
+        """
         if getattr(self.request.registry, 'transaction_redis', None) is None:
             redis_url = self.request.registry.settings.get('epfl.transaction.url')
             if not redis_url:
@@ -170,11 +211,17 @@ class Transaction(MutableMapping):
 
     @property
     def memory(self):
+        """
+        Memory storage abstraction layer. Returns a singleton dictionary.
+        """
         if getattr(self.request.registry, 'transaction_memory', None) is None:
             self.request.registry.transaction_memory = {}
         return self.request.registry.transaction_memory
 
     @property
     def is_clean(self):
+        """
+        Returns true if the transaction has not been changed.
+        """
         return self._data == self._data_original
 
