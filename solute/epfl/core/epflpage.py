@@ -96,28 +96,12 @@ class Page(object):
 
         self.__parent = None
 
-        self.data = {"css_imports": self.get_css_imports,
-                     "js_imports": self.get_js_imports}  # additional variables for page
-                                                         # use it, by assigning directly to this dictionary:
-                                                         # e.g.
-                                                         # page.data["something"] = some_object
-
         self.components = odict()  # all registered components of this page
-        env = request.get_epfl_jinja2_environment()
-        self.jinja_template = env.get_template(self.template)
-        env.globals['epfl_base_html'] = self.base_html
-        env.globals['epfl_base_title'] = self.title
-
-        self.jinja_template.module  # this access triggers the parsing of the template
-                                    # this is neccessary because this parsing
-                                    # collects additional meta-data from the template via
-                                    # the epfl-jinja-component-extension (jinja_extensions.py)
 
         if transaction:
             self.transaction = transaction
         else:
             self.transaction = self.__get_transaction_from_request()
-
 
     def __call__(self):
         """
@@ -222,7 +206,6 @@ class Page(object):
 
         return parent_page_obj
 
-
     def done_request(self):
         """ [request-processing-flow]
         The main request teardown.
@@ -234,7 +217,6 @@ class Page(object):
         other_pages = self.page_request.get_handeled_pages()
         for page_obj in other_pages:
             page_obj.done_request()
-
 
     @classmethod
     def get_name(cls):
@@ -326,23 +308,17 @@ class Page(object):
 
         return "epfl.init_page(" + json.encode(opts) + ")"
 
-    def get_template_ctx(self):
+    def get_render_environment(self):
         """ Returns a freshly created dict with all the global variables for the template rendering """
 
-        ctx = {"epfl": {},
-               "page": self,
-               "components": self.components.as_dict()}
+        ctx = {"epfl_base_html": self.base_html,
+               "epfl_base_title": self.title,
+               "css_imports": self.get_css_imports,
+               "js_imports": self.get_js_imports}
 
         ctx.update(self.components.as_dict())
-        ctx.update(self.data)
 
         return ctx
-
-    def get_template_reflection_info(self):
-        """ Returns the reflection info for the template of this page. Duh.
-        """
-        env = self.request.get_epfl_jinja2_environment()
-        return env.get_reflection_info(self.jinja_template)
 
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
@@ -366,8 +342,7 @@ class Page(object):
         if exclusive_extra_content:
             out = exclusive_extra_content
         else:
-            ctx = self.get_template_ctx()
-            out = self.response.render_jinja(self.jinja_template, **ctx)
+            out = self.response.render_jinja(self.template, **self.get_render_environment())
 
         return out
 
