@@ -165,6 +165,14 @@ class Page(object):
                 self.model = self.model(self.request)
 
     def create_components(self):
+        def traverse_compo_struct(struct=None, container_id=None):
+            if struct is None:
+                struct = self.transaction["compo_struct"]
+
+            for key, value in struct.iteritems():
+                self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
+                traverse_compo_struct(value, container_id=key)
+
         """ Calling self.setup_components once and remember the compos as compo_info """
         if not self.transaction.get("components_assigned"):
             self.setup_components()
@@ -175,15 +183,7 @@ class Page(object):
             self.transaction["compo_struct"] = better_od()
             self.transaction["components_assigned"] = True
         else:
-            self._create_components_traverse_compo_struct()
-
-    def _create_components_traverse_compo_struct(self, struct=None, container_id=None):
-        if struct is None:
-            struct = self.transaction["compo_struct"]
-
-        for key, value in struct.iteritems():
-            self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
-            self._create_components_traverse_compo_struct(value, container_id=key)
+            traverse_compo_struct()
 
     def assign_component(self, compo_info, container_id=None):
         """ Create a component from the remembered compo_info and assign it to the page """
@@ -319,14 +319,14 @@ class Page(object):
     def get_render_environment(self):
         """ Returns a freshly created dict with all the global variables for the template rendering """
 
-        ctx = {"epfl_base_html": self.base_html,
+        env = {"epfl_base_html": self.base_html,
                "epfl_base_title": self.title,
                "css_imports": self.get_css_imports,
                "js_imports": self.get_js_imports}
 
-        ctx.update(self.components.as_dict())
+        env.update([(key, value) for key, value in self.components.as_dict().items() if value.container_compo is None])
 
-        return ctx
+        return env
 
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
