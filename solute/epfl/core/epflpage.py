@@ -10,9 +10,10 @@ from pyramid import security
 
 from solute.epfl import json
 
-from solute.epfl.core import epflclient, epflutil
+from solute.epfl.core import epflclient, epflutil, epflassets
 
 
+@epflassets.epfl_acl(['access'])
 class Page(object):
     """
     Handles the request-processing-flow of EPFL requests for all its contained :class:`.epflcomponentbase.BaseComponent`
@@ -31,8 +32,6 @@ class Page(object):
         on the client by epfl.ajax_request(...) )
 
     """
-
-    __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     asset_spec = "solute.epfl:static"
 
