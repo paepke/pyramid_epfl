@@ -897,7 +897,11 @@ class ComponentContainerBase(ComponentBase):
         """ Overwrite this method to automatically provide data to this components children.
 
         The list must comprise of dict like data objects with an id key. The data objects will be used as parameters for
-        the creation of a default_child_cls component."""
+        the creation of a default_child_cls component.
+
+        May also be overwritten with a method selector string linking to a load\_ method of a page model or a tuple
+        containing a model selector and a method selector.
+        """
         return []
 
     def handle_set_row(self, row_offset, row_limit, row_data=None):
