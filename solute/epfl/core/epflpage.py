@@ -616,6 +616,3 @@ class PageRequest(object):
             return {}
         else:
             return {self.params["widget_name"]: self.request.POST[self.params["widget_name"] + "[]"]}
-
-
-
