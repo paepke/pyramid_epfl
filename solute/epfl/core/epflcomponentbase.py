@@ -409,7 +409,6 @@ class ComponentBase(object):
 
         return self.has_access()
 
-
     def add_ajax_response(self, resp_string):
         """ Adds to the response some string (ajax or js or whatever the clients expects here).
         Not to be confused with self.add_js_link (which adds a js-file to the page at full-page-request-time).
@@ -445,7 +444,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def setup_component_state(self):
         """
         This function sets up the compo_state attributes.
@@ -480,7 +478,6 @@ class ComponentBase(object):
         """
         pass
 
-
     def _get_compo_state_attribute(self, attr_name):
         transaction = self.page.transaction
         if self.cid + "$" + attr_name in transaction:
@@ -488,7 +485,6 @@ class ComponentBase(object):
             return value
         else:
             return copy.deepcopy(getattr(self, attr_name))
-
 
     def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
@@ -714,7 +710,6 @@ class ComponentBase(object):
 
         return parts
 
-
     def __call__(self, *args, **kwargs):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
         return self.render(*args, **kwargs)
@@ -900,9 +895,9 @@ class ComponentContainerBase(ComponentBase):
 
     def _get_data(self, *args, **kwargs):
         if type(self.get_data) is str and self.page.model is not None:
-            return self.page.model[(self, self.get_data, (args, kwargs), self.data_interface)]
+            return self.page.model.get(self, self.get_data, (args, kwargs), self.data_interface)
         elif type(self.get_data) is tuple and self.page.model is not None:
-            return self.page.model[self.get_data[0]][(self, self.get_data[1], (args, kwargs), self.data_interface)]
+            return self.page.model[self.get_data[0]].get(self, self.get_data[1], (args, kwargs), self.data_interface)
         return self.get_data(*args, **kwargs)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):

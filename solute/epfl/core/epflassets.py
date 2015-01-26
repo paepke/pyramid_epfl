@@ -14,8 +14,7 @@ class ModelBase(object):
     def __init__(self, request):
         self.request = request
 
-    def __getitem__(self, item):
-        compo, key, row, data_interface = item
+    def get(self, compo, key, row, data_interface):
         args, kwargs = row
         output = []
         for row in getattr(self, 'load_' + key)(compo, *args, **kwargs):
