@@ -33,9 +33,12 @@ class Page(object):
 
     """
 
+    __name = None  #: cached value from get_name()
+    __parent = None  #: cached value from parent, TODO: check if deprecated
+
     asset_spec = "solute.epfl:static"
 
-    #
+    #: JavaScript files to be statically loaded.
     js_name = ["js/jquery-1.8.2.min.js",
                "js/jquery-ui.js",
                "js/history.js",
@@ -43,26 +46,25 @@ class Page(object):
                "js/epflcomponentbase.js",
                "js/json2-min.js"]
 
+    #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
                 "css/font-awesome/css/font-awesome.min.css"]
 
-    template = "page.html"  #: the name of the template used to render this page
-    base_html = 'base.html'
+    template = "page.html"  #: The name of the template used to render this page.
+    base_html = 'base.html'  #: The template used as base for this page, given in get_render_environment.
 
-    title = 'Empty Page'
+    title = 'Empty Page'  #: Title of the page.
 
-    __name = None  #: cached value from get_name()
     _active_initiations = 0  #: Static count of currently active init cycles.
-    remember_cookies = []
+    remember_cookies = []  #: Cookies used by the authentication mechanism.
 
-    __parent = None
-    model = None
+    model = None  #: Put a class here, it will be instantiated each request by epfl and provided as model.
 
     def __init__(self, request, transaction=None):
         """
-        The optional parameter "transaction" is needed when creating page_objs manually. So the transaction is not the
-        same as the requests one.
+        The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
+        the same as the requests one.
         """
         self.request = request
         self.page_request = PageRequest(request, self)
@@ -78,10 +80,8 @@ class Page(object):
 
     def __call__(self):
         """
-        MAIN-ENTRY-POINT
-
-        The method that gets called from the outside framework to diplay this page.
-        This is the main-handler for the (framework's) request.
+        The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
+        :meth:`call_default`, :meth:`call_cleanup`.
         [request-processing-flow]
         """
 
@@ -104,6 +104,9 @@ class Page(object):
                         headers=self.remember_cookies)
 
     def call_ajax(self):
+        """
+        Sub-method of :meth:`__call__` used in case of ajax calls.
+        """
         out = self.response.render_ajax_response()
         extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
         extra_content = [s for s in extra_content
@@ -115,6 +118,9 @@ class Page(object):
         return out
 
     def call_default(self):
+        """
+        Sub-method of :meth:`__call__` used for normal requests.
+        """
         self.handle_submit_request()
         out = self.render()
 
@@ -125,6 +131,9 @@ class Page(object):
         return out
 
     def call_cleanup(self, check_tid):
+        """
+        Sub-method of :meth:`__call__` used to cleanup after a request has been handled.
+        """
         self.done_request()
         self.transaction.store()
 
@@ -138,6 +147,9 @@ class Page(object):
         return out
 
     def setup_model(self):
+        """
+        Used every request to instantiate the model.
+        """
         if self.model is not None:
             if type(self.model) is list:
                 for i, m in enumerate(self.model):
@@ -149,6 +161,11 @@ class Page(object):
                 self.model = self.model(self.request)
 
     def create_components(self):
+        """
+        Used every request to instantiate the components by traversing the transaction['compo_struct'] and once
+        initially to initialize the transaction structure.
+        """
+
         def traverse_compo_struct(struct=None, container_id=None):
             if struct is None:
                 struct = self.transaction["compo_struct"]
@@ -157,7 +174,7 @@ class Page(object):
                 self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
                 traverse_compo_struct(value, container_id=key)
 
-        """ Calling self.setup_components once and remember the compos as compo_info """
+        # Calling self.setup_components once and remember the compos as compo_info and their structure as compo_struct.
         if not self.transaction.get("components_assigned"):
             self.setup_components()
             compo_info = {}
@@ -231,9 +248,9 @@ class Page(object):
         self.__dict__.pop(key)
 
     def __setattr__(self, key, value):
-        """ This is the way, the components get thier name:
-        By assigning the components as attributes to the page, we can register them here as components,
-        and we can tell the components thier id (which is thier attribute-name).
+        """
+        By assigning components as attributes to the page, they are registered on this page object. Their name is used
+        as cid.
         """
 
         if isinstance(value, epflcomponentbase.ComponentBase):
@@ -273,6 +290,9 @@ class Page(object):
             return False
 
     def __get_transaction_from_request(self):
+        """
+        Retrieve the correct transaction for the tid this request contains.
+        """
 
         tid = self.page_request.get_tid()
         transaction = epfltransaction.Transaction(self.request, tid)
@@ -285,9 +305,10 @@ class Page(object):
     def setup_components(self):
         """
         Overwrite this function!
-        In this method all components needed by this page must be initialized and assinged to the page (self).
-        It is called only once per transaction to register the "static" components of this page.
-        No need to call this (super) method in derived classes.
+        In this method all components needed by this page must be initialized and assigned to the page (self). It is
+        called only once per transaction to register the "static" components of this page. No need to call this (super)
+        method in derived classes.
+
         [request-processing-flow]
         """
         self.root_node = self.root_node(self, 'root_node', __instantiate__=True)
@@ -353,6 +374,10 @@ class Page(object):
                 compo.setup_component()
 
     def make_new_tid(self):
+        """
+        Call this function to create a new transaction to be in effect after this request. The old transaction and its
+        state is preserved, the browser navigation allows for easy skipping between both states.
+        """
         self.transaction.store_as_new()
 
     def handle_ajax_request(self):
@@ -409,6 +434,10 @@ class Page(object):
         return True
 
     def traversing_redraw(self, item=None, js_only=False):
+        """
+        Handle redrawing components by traversing the structure as deep as necessary. Subtrees of redrawn components are
+        ignored.
+        """
         if item is None:
             for item in self.transaction['compo_struct'].iteritems():
                 self.traversing_redraw(item)
@@ -432,6 +461,9 @@ class Page(object):
             self.add_js_response("epfl.hide_component('{cid}')".format(cid=cid))
 
     def handle_redraw_all(self):
+        """
+        Trigger a redraw for all components.
+        """
         for compo in self.components.values():
             compo.redraw()
 
@@ -546,20 +578,24 @@ class Page(object):
         self.add_js_response(js)
 
     def remember(self, user_id):
+        """
+        Expose the remember function of pyramid.security for easy access to the pyramid authorization handler.
+        """
         self.remember_cookies = security.remember(self.request, user_id)
 
     def forget(self):
+        """
+        Expose the forget function of pyramid.security for easy access to the pyramid authorization handler.
+        """
         self.remember_cookies = security.forget(self.request)
 
 
 class PageRequest(object):
     """
-    A Class containing the request-data specific to a specific page.
-    This is an abstraction of the "request"-object provided by the framework.
-    The framework's request-object is global, so creating subrequests (needed when handling events
-    in page-objects other than the page-object created by the framework's request) can be hard.
-    Since all classes of EPFL only rely on this abstraction (page_request) it can be created on the fly
-    everytime such a page-object needs one specific to it.
+    Abstraction of the "request"-object provided by pyramid. The framework's request-object is global, so creating
+    sub-requests (needed when handling events in page-objects other than the page-object created by the framework's
+    request) can be hard. Since all classes of EPFL only rely on this abstraction (page_request) it can be created on
+    the fly every time such a page-object needs one specific to it.
     """
 
     def __init__(self, request, page_obj):
