@@ -1,18 +1,14 @@
 # coding: utf-8
 
-import pyramid
-import epflcomponentbase, epfltransaction, epflclient
-import types
-import string
+import epflcomponentbase, epfltransaction
 
 from odict import odict
 from collections2 import OrderedDict as better_od
 
-from pyramid.httpexceptions import HTTPUnauthorized
+from pyramid.response import Response
 from pyramid import security
 
 from solute.epfl import json
-from solute.epfl.jinja import jinja_helpers
 
 from solute.epfl.core import epflclient, epflutil
 
@@ -68,8 +64,8 @@ class Page(object):
     # "modal": True,
     # "draggable": True,
     # "height": 400,
-    #  "width": 600,
-    #  "position": "center"}
+    # "width": 600,
+    # "position": "center"}
     overlay_options = None
 
     __name = None  # cached value from get_name()
@@ -118,10 +114,10 @@ class Page(object):
         finally:
             out += self.call_cleanup(check_tid)
 
-        return pyramid.response.Response(body=out.encode("utf-8"),
-                                         content_type="text/html; charset=utf-8",
-                                         status=200,
-                                         headers=self.remember_cookies)
+        return Response(body=out.encode("utf-8"),
+                        content_type="text/html; charset=utf-8",
+                        status=200,
+                        headers=self.remember_cookies)
 
     def call_ajax(self):
         out = self.response.render_ajax_response()
@@ -260,7 +256,7 @@ class Page(object):
             self.add_static_component(key, value)
         # TODO: Check auto instantiation possibility here
         # if isinstance(value, epflcomponentbase.UnboundComponent):
-        #     self.add_static_component(key, value(__instantiate__=True))
+        # self.add_static_component(key, value(__instantiate__=True))
         else:
             self.__dict__[key] = value  # mimic "normal" behaviour
 
@@ -335,7 +331,7 @@ class Page(object):
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
 
-        ##   todo     self.request.assert_page_access(page_obj=self)
+        # #   todo     self.request.assert_page_access(page_obj=self)
 
         self.__reopen_overlays()  # if any overlays - reopen them!
 
@@ -676,10 +672,10 @@ class Page(object):
             transaction.delete()
 
     def remember(self, userid):
-        self.remember_cookies = pyramid.security.remember(self.request, userid)
+        self.remember_cookies = security.remember(self.request, userid)
 
     def forget(self):
-        self.remember_cookies = pyramid.security.forget(self.request)
+        self.remember_cookies = security.forget(self.request)
 
 
 class PageRequest(object):
