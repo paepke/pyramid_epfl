@@ -1,10 +1,12 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
+    <span class="tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
     {% if compo.show_children %}
-        <i class="fa fa-minus"></i>
+        <i class="fa {{ compo.custom_node_icon_expanded if compo.custom_node_icon_expanded else "fa-minus" }}"></i>
     {% else %}
-        <i class="fa fa-plus"></i>
+        <i class="fa {{ compo.custom_node_icon_collapsed if compo.custom_node_icon_collapsed else "fa-plus" }}"></i>
     {% endif %}
     {{ compo.label }}
+    </span>
     <div style="margin-left:10px;">
 {% endmacro %}
