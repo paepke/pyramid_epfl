@@ -1,18 +1,18 @@
-	<div epflid="{{compo.cid}}">
+	<div epflid="{{ compo.cid }}">
 		{% if compo.label %}
-		<label for="{{compo.cid}}" class="col-sm-2 control-label">{{compo.label}}</label>
+		<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
 		{% endif %}
 	    <div
-	         class="{{ 'col-sm-10' if compo.label else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
+	         class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
 	
 	        {% if compo.input_type == "textarea" %}
 	            <div epfl-type="textarea">
-	                <textarea class="form-control" id="{{compo.cid}}" name="{{compo.name}}" style="{{ compo.style if compo.style is defined else '' }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}">{{compo.value if compo.value is not none else ''  }}</textarea>
+	                <textarea class="form-control" id="{{compo.cid}}" name="{{ compo.name }}" style="{{ compo.style if compo.style is defined else '' }}" placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}">{{ compo.value if compo.value is not none else '' }}</textarea>
 	            </div>
 	
 	        {%  elif compo.input_type == "select" %}
 	            <div epfl-type="select">
-	                <select class="form-control" id="{{compo.cid}}" name="{{compo.name}}">
+	                <select class="form-control" id="{{compo.cid}}" name="{{ compo.name }}">
 	                {% for option in compo.options %}
 	                    {% if option is string %}
 	                    {% set value = option %}
@@ -39,7 +39,7 @@
 	
 	        {%  elif compo.input_type == "radio" %}
 	
-	            <div class="form-control" id="{{compo.cid}}" name="{{compo.name}}" epfl-type="radiobuttongroup">
+	            <div class="form-control" id="{{ compo.cid }}" name="{{ compo.name }}" epfl-type="radiobuttongroup">
 	            {% for option in compo.options %}
 	                {% if option is string %}
 	                    {% set value = option %}
@@ -60,12 +60,12 @@
 	                    {% endif %}
 	                {% endif %}
 	
-	                <input type="radio" value="{{ value }}" name="{{compo.cid}}" {% if compo.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
+	                <input type="radio" value="{{ value }}" name="{{ compo.cid }}" {% if compo.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
 	            {% endfor %}
 	            </div>
 	
 	        {%  elif compo.input_type == "buttonset" %}
-	            <div id="{{compo.cid}}" name="{{compo.name}}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
+	            <div id="{{compo.cid}}" name="{{ compo.name }}" epfl-type="buttonsetgroup" class="btn-group" data-toggle="buttons">
 	            {% for option in compo.options %}
 	                {% if option is string %}
 	                    {% set value = option %}
@@ -90,7 +90,7 @@
 	                     <input type="radio"
 	                           id="{{ compo.cid }}_{{ value }}"
 	                           value="{{ value }}"
-	                           name="{{compo.cid}}"
+	                           name="{{ compo.cid }}"
 	                           class="toggle"
 	                            {% if compo.value == value %} checked="checked" {% endif %}>
 	                    {{ visual }}
@@ -101,17 +101,17 @@
 	
 	        {%  elif compo.input_type == "toggle" %}
 	        <div class="toggle" epfl-type="toggle">
-	            <input type="checkbox" id="{{compo.cid}}" name="{{compo.name}}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{compo.value if compo.value is not none else ''  }}"/>
+	            <input type="checkbox" id="{{ compo.cid }}" name="{{ compo.name }}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{ compo.value if compo.value is not none else '' }}"/>
 	        </div>
 	
 	        {%  elif compo.input_type == "checkbox" %}
 	            <div epfl-type="checkbox">
-	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value if compo.value is not none else ''  }}" />
+	                <input class="form-control" type="{{ compo.input_type }}" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" />
 	            </div>
 	
 	        {% else %}
 	            <div epfl-type="defaultinput">
-	                <input class="form-control" type="{{compo.input_type}}" id="{{compo.cid}}" name="{{compo.name}}" value="{{compo.value if compo.value is not none else ''  }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
+	                <input class="form-control" type="{{ compo.input_type }}" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
 	            </div>
 	        {% endif %}
 	

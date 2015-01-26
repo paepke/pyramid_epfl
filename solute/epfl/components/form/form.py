@@ -9,13 +9,12 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
     compo_state = ['name', 'value', 'validation_error']
 
-    # An element without a name cannot have a value.
-    name = None
-    value = None
-    validation_error = ''
+    name = None #: An element without a name cannot have a value.
+    value = None #: The actual value of the form element that is posted upon form submission
+    validation_error = '' #: Set during call of :func:`validate` with an error message if validation fails.
     validation_type = None
-    validation_helper = []
-    mandatory = False
+    validation_helper = [] #: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
+    mandatory = False #: Set to true if value has to be provided for this element in order to yield a valid form. 
 
     def is_numeric(self):
         return type(self.value) in [int, float]
