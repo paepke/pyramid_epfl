@@ -544,8 +544,8 @@ class Page(object):
         js = "epfl.go_next('" + target_url + "');"
         self.add_js_response(js)
 
-    def remember(self, userid):
-        self.remember_cookies = security.remember(self.request, userid)
+    def remember(self, user_id):
+        self.remember_cookies = security.remember(self.request, user_id)
 
     def forget(self):
         self.remember_cookies = security.forget(self.request)
