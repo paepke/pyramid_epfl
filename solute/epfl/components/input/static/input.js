@@ -6,7 +6,7 @@ epfl.InputComponent = function(cid, params) {
 	
 	if (type == "defaultinput" || type == "textarea" || type == "select") {
 	    $(selector).change(function () {
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(this).val()}), "{{ compo.cid }}");
+	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
 	    });
 	
 	    provide_typeahead = $(selector).data("provide");
