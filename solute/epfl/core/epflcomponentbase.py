@@ -35,9 +35,7 @@ class UnboundComponent(object):
     instantiated component if it is called with an :class:`.UnboundComponent`.
     """
 
-    __valid_subtypes__ = [bool, int, long, float, complex,
-                          str, unicode, bytearray, xrange,
-                          type, types.FunctionType,
+    __valid_subtypes__ = [bool, int, long, float, complex, str, unicode, bytearray, xrange, type, types.FunctionType,
                           types.NoneType]
     __debugging_on__ = False
     __dynamic_class_store__ = None
@@ -166,6 +164,7 @@ class UnboundComponent(object):
                                                                        conf=self.__unbound_config__)
 
 
+@epflassets.epfl_acl(['access'])
 class ComponentBase(object):
     """
     Components are the building-blocks of any :class:`.epflpage.Page` containing python, html, css and javascript.
@@ -200,16 +199,12 @@ class ComponentBase(object):
             compo_state = ['value']
 
 
-    compo_config: By default everything that is not in the compo_state will be the result of pythons instantiation process, all
-    attributes being references to the attributes of the components class. For non trivial attributes this means that
-    changes to class attributes will affect all instances of this class. compo_config offers an easy way to avoid this
-    behaviour, by copying the attribute using copy.deepcopy from the class to the instance.
+    compo_config: By default everything that is not in the compo_state will be the result of pythons instantiation
+    process, all attributes being references to the attributes of the components class. For non trivial attributes this
+    means that changes to class attributes will affect all instances of this class. compo_config offers an easy way to
+    avoid this behaviour, by copying the attribute using copy.deepcopy from the class to the instance.
 
     """
-
-    #: a pyramid acl that defines the permissions for this component it only affects the has_access()-method. The
-    #: base-component only defines the "access"-permission. If not given the component is not rendered.
-    __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template_name = "empty.html"  #: Filename of the template for this component (if any).
     js_parts = []  #: List of files to be parsed as js-parts of this component.
@@ -224,13 +219,13 @@ class ComponentBase(object):
     visible = True  #: Flag for component rendering. Use via :func:`set_visible` and :func:`set_hidden`.
 
     #: Internal reference to this Components :class:`UnboundComponent`. If it is None and something breaks because of it
-    #  this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
+    #: this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
     __unbound_component__ = None
 
     #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
     struct_dict = None
 
-    epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle_ methods
+    epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
     base_compo_state = ["visible"]  # these are the compo_state-names for this ComponentBase-Class
 
