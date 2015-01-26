@@ -2,22 +2,14 @@ epfl.TableListLayout = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
 
-    epfl.TableListLayout.buttonClickHandler = function (eventname) {
-        var evt = compo.make_event(eventname, {});
-        epfl.send(evt);
-    };
-    epfl.TableListLayout.EditClick = function (id,data) {
-        var evt = compo.make_event("edit", {'id':id,'data':data});
-        epfl.send(evt);
-    };
-    var orderchange = function(){
+    var orderchange = function () {
         var orderby = $("#{{ compo.cid }}_orderby option:selected").val();
         var ordertype = $("#{{ compo.cid }}_ordertype option:selected").val();
         var search = $("#{{ compo.cid }}_search").val();
-        var evt = compo.make_event("set_row", {
+        var evt = epfl.make_component_event("{{ compo.cid }}", "set_row", {
             row_offset: {{ compo.row_offset }},
             row_limit: {{ compo.row_limit }},
-            row_data: {"search":search,"orderby": orderby,"ordertype": ordertype}
+            row_data: {"search": search, "orderby": orderby, "ordertype": ordertype}
         });
         epfl.send(evt);
     };
@@ -27,6 +19,51 @@ epfl.TableListLayout = function (cid, params) {
 
 
 };
+
+epfl.TableListLayout.OrderByClick = function (orderby) {
+    if (epfl.TableListLayout.CurrentOrderBy == orderby) {
+        if (epfl.TableListLayout.CurrentOrderByDirection == 'asc') {
+            epfl.TableListLayout.CurrentOrderByDirection = 'desc';
+        } else {
+            epfl.TableListLayout.CurrentOrderByDirection = 'asc';
+        }
+    } else {
+        epfl.TableListLayout.CurrentOrderByDirection = 'asc';
+        epfl.TableListLayout.CurrentOrderBy = orderby;
+    }
+    var orderby = orderby;
+    var ordertype = epfl.TableListLayout.CurrentOrderByDirection;
+    var search = $("#{{ compo.cid }}_search").val();
+
+    $("#{{ compo.cid }}_orderby [value='"+orderby+"']").attr('selected', 'selected');
+    $("#{{ compo.cid }}_ordertype [value='"+ordertype+"']").attr('selected', 'selected');
+
+    var evt = epfl.make_component_event("{{ compo.cid }}", "set_row", {
+        row_offset: {{ compo.row_offset }},
+        row_limit: {{ compo.row_limit }},
+        row_data: {"search": search, "orderby": orderby, "ordertype": ordertype}
+    });
+    epfl.send(evt);
+};
+
+
+epfl.TableListLayout.buttonClickHandler = function (eventname) {
+    var evt = epfl.make_component_event("{{ compo.cid }}", eventname, {});
+    epfl.send(evt);
+};
+epfl.TableListLayout.EditClick = function (id, data) {
+    var evt = epfl.make_component_event("{{ compo.cid }}", "edit", {'id': id, 'data': data});
+    epfl.send(evt);
+};
+
+
+epfl.TableListLayout.exportCSV = function () {
+    var evt = epfl.make_component_event("{{ compo.cid }}", "export_csv", {});
+    epfl.send(evt);
+};
+
+epfl.TableListLayout.CurrentOrderBy = null;
+epfl.TableListLayout.CurrentOrderByDirection = "asc";
 
 epfl.TableListLayout.inherits_from(epfl.ComponentBase);
 

@@ -1,14 +1,24 @@
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
-        <th>
+        <th epflid="{{ compo.cid }}">
             {% if cell.sortable %}
-                {{ cell.data }} <i class="fa fa-sort"></i>
+                <span onclick='epfl.TableListLayout.OrderByClick("{{ cell.data }}")'>{{ cell.data }}
+                    {% if cell.currentSortedBy == True %}
+                        {% if cell.direction == 'asc' %}
+                            <i class="fa fa-sort-asc"></i>
+                        {% else %}
+                            <i class="fa fa-sort-desc"></i>
+                        {% endif %}
+                    {% else %}
+                        <i class="fa fa-sort"></i>
+                    {% endif %}
+                </span>
             {% else %}
                 {{ cell.data }}
             {% endif %}
         </th>
     {% else %}
-        <td>
+        <td epflid="{{ compo.cid }}">
             <div style="height:15px; padding: 0px; margin: 0px">
                 {% if cell.type == 'text' %}
                     {{ cell.data }}
