@@ -15,7 +15,6 @@ Submodules
    solute.epfl.core.epfll10n
    solute.epfl.core.epflmodel
    solute.epfl.core.epflpage
-   solute.epfl.core.epflsome_data
    solute.epfl.core.epfltempdata
    solute.epfl.core.epfltransaction
    solute.epfl.core.epflutil

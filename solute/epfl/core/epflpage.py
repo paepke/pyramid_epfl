@@ -10,9 +10,10 @@ from pyramid import security
 
 from solute.epfl import json
 
-from solute.epfl.core import epflclient, epflutil
+from solute.epfl.core import epflclient, epflutil, epflassets
 
 
+@epflassets.epfl_acl(['access'])
 class Page(object):
     """
     Handles the request-processing-flow of EPFL requests for all its contained :class:`.epflcomponentbase.BaseComponent`
@@ -32,10 +33,9 @@ class Page(object):
 
     """
 
-    __acl__ = [(security.Allow, security.Everyone, 'access')]
-
     asset_spec = "solute.epfl:static"
 
+    #
     js_name = ["js/jquery-1.8.2.min.js",
                "js/jquery-ui.js",
                "js/history.js",
@@ -47,21 +47,22 @@ class Page(object):
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
                 "css/font-awesome/css/font-awesome.min.css"]
 
-    template = "page.html"  # the name of the template used to render this page
+    template = "page.html"  #: the name of the template used to render this page
     base_html = 'base.html'
 
     title = 'Empty Page'
 
-    __name = None  # cached value from get_name()
-    _active_initiations = 0
+    __name = None  #: cached value from get_name()
+    _active_initiations = 0  #: Static count of currently active init cycles.
     remember_cookies = []
 
     __parent = None
     model = None
 
     def __init__(self, request, transaction=None):
-        """ The optional parameter "transaction" is needed when creating page_objs manually.
-        So the transaction is not the same as the requests one.
+        """
+        The optional parameter "transaction" is needed when creating page_objs manually. So the transaction is not the
+        same as the requests one.
         """
         self.request = request
         self.page_request = PageRequest(request, self)
