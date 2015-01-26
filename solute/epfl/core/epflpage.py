@@ -62,19 +62,21 @@ class Page(object):
 
     overlay_title = "Overlay"  # If this page is displayed as overlay, use this title.
 
-    overlay_options = None  # Mandatory, if this page is displayed as overlay.
-                            # Use these options:
-                            # {"resizeable": True,
-                            # "modal": True,
-                            # "draggable": True,
-                            #  "height": 400,
-                            #  "width": 600,
-                            #  "position": "center"}
+    # Mandatory, if this page is displayed as overlay.
+    # Use these options:
+    # {"resizeable": True,
+    # "modal": True,
+    # "draggable": True,
+    # "height": 400,
+    #  "width": 600,
+    #  "position": "center"}
+    overlay_options = None
 
     __name = None  # cached value from get_name()
     _active_initiations = 0
     remember_cookies = []
 
+    __parent = None
     model = None
 
     def __init__(self, request, transaction=None):
@@ -84,24 +86,14 @@ class Page(object):
         self.request = request
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
-        if self.model is not None:
-            if type(self.model) is list:
-                for i, m in enumerate(self.model):
-                    self.model[i] = m(self.request)
-            elif type(self.model) is dict:
-                for k, v in self.model.items():
-                    self.model[k] = v(self.request)
-            else:
-                self.model = self.model(self.request)
-
-        self.__parent = None
-
         self.components = odict()  # all registered components of this page
 
         if transaction:
             self.transaction = transaction
         else:
             self.transaction = self.__get_transaction_from_request()
+
+        self.setup_model()
 
     def __call__(self):
         """
@@ -116,41 +108,65 @@ class Page(object):
         # handling the "main"-page...
         self.create_components()
 
+        check_tid = False
+        out = ''
         try:
-            check_tid = False
             if self.handle_ajax_request():
-                out = self.response.render_ajax_response()
-                extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
-                extra_content = [s for s in extra_content
-                                 if s not in self.transaction.setdefault('rendered_extra_content', set())]
-                if extra_content:
-                    out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
-                    self.transaction['rendered_extra_content'].update(extra_content)
-
-                check_tid = True
+                out, check_tid = self.call_ajax(), True
             else:
-                self.handle_submit_request()
-
-                out = self.render()
-                extra_content = set([s.render() for s in self.response.extra_content if s.enable_dynamic_rendering])
-                self.transaction['rendered_extra_content'] = self.transaction.get('rendered_extra_content', set())
-                self.transaction['rendered_extra_content'].update(extra_content)
-
+                out = self.call_default()
         finally:
-            self.done_request()
-            self.transaction.store()
-            if check_tid:
-                if self.transaction.tid_new:
-                    out += 'epfl.new_tid("%s");' % self.transaction.tid_new
+            out += self.call_cleanup(check_tid)
 
-            self.request.session.save()  # performance issue! should only be called, when session is modified!
-            self.request.session.persist()  # performance issue! should only be called, when session is modified!
+        return pyramid.response.Response(body=out.encode("utf-8"),
+                                         content_type="text/html; charset=utf-8",
+                                         status=200,
+                                         headers=self.remember_cookies)
 
-        response = pyramid.response.Response(body=out.encode("utf-8"),
-                                             content_type="text/html; charset=utf-8",
-                                             status=200,
-                                             headers=self.remember_cookies)  # todo
-        return response
+    def call_ajax(self):
+        out = self.response.render_ajax_response()
+        extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
+        extra_content = [s for s in extra_content
+                         if s not in self.transaction.setdefault('rendered_extra_content', set())]
+        if extra_content:
+            out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
+            self.transaction['rendered_extra_content'].update(extra_content)
+
+        return out
+
+    def call_default(self):
+        self.handle_submit_request()
+        out = self.render()
+
+        extra_content = set([s.render() for s in self.response.extra_content if s.enable_dynamic_rendering])
+        self.transaction['rendered_extra_content'] = self.transaction.get('rendered_extra_content', set())
+        self.transaction['rendered_extra_content'].update(extra_content)
+
+        return out
+
+    def call_cleanup(self, check_tid):
+        self.done_request()
+        self.transaction.store()
+
+        self.request.session.save()  # performance issue! should only be called, when session is modified!
+        self.request.session.persist()  # performance issue! should only be called, when session is modified!
+
+        out = ''
+        if check_tid and self.transaction.tid_new:
+            out = 'epfl.new_tid("%s");' % self.transaction.tid_new
+
+        return out
+
+    def setup_model(self):
+        if self.model is not None:
+            if type(self.model) is list:
+                for i, m in enumerate(self.model):
+                    self.model[i] = m(self.request)
+            elif type(self.model) is dict:
+                for k, v in self.model.items():
+                    self.model[k] = v(self.request)
+            else:
+                self.model = self.model(self.request)
 
     def create_components(self):
         """ Calling self.setup_components once and remember the compos as compo_info """
