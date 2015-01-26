@@ -13,10 +13,6 @@ from solute.epfl import json
 from solute.epfl.core import epflclient, epflutil
 
 
-def dummy_decorator(func):
-    return func
-
-
 class Page(object):
     """
     Handles the request-processing-flow of EPFL requests for all its contained :class:`.epflcomponentbase.BaseComponent`
