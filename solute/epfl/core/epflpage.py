@@ -36,6 +36,7 @@ class Page(object):
 
     asset_spec = "solute.epfl:static"
 
+    #
     js_name = ["js/jquery-1.8.2.min.js",
                "js/jquery-ui.js",
                "js/history.js",
@@ -47,21 +48,22 @@ class Page(object):
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
                 "css/font-awesome/css/font-awesome.min.css"]
 
-    template = "page.html"  # the name of the template used to render this page
+    template = "page.html"  #: the name of the template used to render this page
     base_html = 'base.html'
 
     title = 'Empty Page'
 
-    __name = None  # cached value from get_name()
-    _active_initiations = 0
+    __name = None  #: cached value from get_name()
+    _active_initiations = 0  #: Static count of currently active init cycles.
     remember_cookies = []
 
     __parent = None
     model = None
 
     def __init__(self, request, transaction=None):
-        """ The optional parameter "transaction" is needed when creating page_objs manually.
-        So the transaction is not the same as the requests one.
+        """
+        The optional parameter "transaction" is needed when creating page_objs manually. So the transaction is not the
+        same as the requests one.
         """
         self.request = request
         self.page_request = PageRequest(request, self)
