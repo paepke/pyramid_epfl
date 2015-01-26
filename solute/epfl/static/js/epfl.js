@@ -12,8 +12,6 @@ epfl_module = function() {
     epfl.components = {};
     epfl.component_data = {};
     epfl.show_please_wait_counter = 0;
-    epfl.overlays = {};
-    epfl.overlays_id = 0;
 
     epfl.init_page = function(opts) {
         $(".epfl_hover_image").bind_hover_border_events();
@@ -352,89 +350,9 @@ epfl_module = function() {
         win.focus();
     };
 
-    epfl.open_overlay = function(name, url, title, opts, show_please_wait) {
-        if (!epfl.overlays[name]) {
-            var overlay_id = "epfl_overlay_" + epfl.overlays_id;
-            epfl.overlays_id += 1;
-            epfl.overlays[name] = overlay_id;
-            $(document.body).append("<div id='" + overlay_id + "'></div>");
-            $("#" + overlay_id).append("<iframe id='" + overlay_id + "_iframe' src='about:blank' class='epfl-overlay-iframe'></iframe>")
-            $("#" + overlay_id).dialog({
-
-                "title": title || "Dialog",
-                "resizable": opts["resizeable"],
-                "modal": opts["modal"],
-                "closeOnEscape": true,
-                "draggable": opts["draggable"],
-                "height": opts["height"] || "auto",
-                "width": opts["width"] || "auto",
-                "position": opts["position"] || "center",
-
-                open: function() {
-                    $('.ui-widget-overlay').css('position', 'fixed'); // fix a jquery-ui-bug
-                },
-
-                close:function (event, ui) {
-                    // getting the overlays tid
-                    var ifrm = document.getElementById(overlay_id + "_iframe");
-                    ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
-                    var overlay_tid = $(ifrm.document).attr("data:tid");
-
-                    // telling the server-state to clean up
-                    var ev = epfl.make_page_event("CloseOverlay", {"overlay_tid": overlay_tid});
-                    epfl.send(ev);
-
-                    // remove the overlay
-                    epfl.overlays[name] = null;
-                    $("#" + overlay_id).remove();
-                    $('.ui-widget-overlay').css('position', 'absolute'); // fix a jquery-ui-bug
-
-                }
-            });
-
-            var ifrm = document.getElementById(overlay_id + "_iframe");
-            ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
-            ifrm.document.open();
-            ifrm.document.close();
-            if (show_please_wait) {
-                $("body", ifrm.document).append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
-            };
-            $("#epfl_please_wait", ifrm.document).css({"position": "absolute",
-                                                       "top": "50%",
-                                                       "left": "50%",
-                                                       "margin-left": "-30px",
-                                                       "margin-top": "-30px"})
-
-        } else {
-            var overlay_id = epfl.overlays[name];
-        }
-
-        setTimeout(function() {
-            $("#" + overlay_id + "_iframe").attr("src", url);
-        }, 100);
-    };
-
-    epfl.close_overlay = function(overlay_name) {
-        setTimeout(function() {
-            // delayed to allow other events to execute first.
-            window.parent.epfl.__close_overlay_by_name(overlay_name); // go up one window
-        }, 0);
-    };
-
-    epfl.__close_overlay_by_name = function(overlay_name) {
-        var overlay_id = epfl.overlays[overlay_name];
-        $("#" + overlay_id).dialog("close"); // close it by JS, let the "close" event do the server side stuff
-    };
-
     epfl.exec_in_page = function(tid, js_src, search_downwards) {
         if (epfl.tid == tid) {
             eval(js_src);
-        } else if (search_downwards) {
-            for (var i = 0; i < epfl.overlays.length; i++) {
-                var overlay_id = epfl.overlays[i];
-                var overlay_ifrm = $(overlay_id + "_iframe");
-                overlay_ifrm.get(0).epfl.exec_in_page(tid, js_src, true);
-            }
         } else {
             window.top.epfl.exec_in_page(tid, js_src, true);
         }

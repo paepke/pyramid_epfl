@@ -56,18 +56,6 @@ class Page(object):
 
     title = 'Empty Page'
 
-    overlay_title = "Overlay"  # If this page is displayed as overlay, use this title.
-
-    # Mandatory, if this page is displayed as overlay.
-    # Use these options:
-    # {"resizeable": True,
-    # "modal": True,
-    # "draggable": True,
-    # "height": 400,
-    # "width": 600,
-    # "position": "center"}
-    overlay_options = None
-
     __name = None  # cached value from get_name()
     _active_initiations = 0
     remember_cookies = []
@@ -97,7 +85,6 @@ class Page(object):
 
         The method that gets called from the outside framework to diplay this page.
         This is the main-handler for the (framework's) request.
-        The output of other handeled pages (overlays) are allready collected in place (epflclient.EPFLResponse)
         [request-processing-flow]
         """
 
@@ -330,11 +317,6 @@ class Page(object):
 
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
-
-        # #   todo     self.request.assert_page_access(page_obj=self)
-
-        self.__reopen_overlays()  # if any overlays - reopen them!
-
         self.add_js_response(self.get_page_init_js())
 
         epflutil.add_extra_contents(self.response, obj=self)
@@ -418,7 +400,7 @@ class Page(object):
                 component_obj.handle_event("UploadFile", {"widget_name": event["widget_name"]})
 
             else:
-                raise Exception, "Unknown ajax-event: " + repr(event)
+                raise Exception("Unknown ajax-event: " + repr(event))
 
         for cid, compo in self.components.items():
             compo.after_event_handling()
@@ -505,7 +487,6 @@ class Page(object):
         js = "alert(%s)" % (json.encode(msg),)
         self.add_js_response(js)
 
-
     def get_css_imports(self):
         """ This function delivers the <style src=...>-tags for all stylesheets needed by this page and it's components.
         It is available in the template by the jinja-variable {{ css_imports() }}
@@ -567,109 +548,6 @@ class Page(object):
 
         js = "epfl.go_next('" + target_url + "');"
         self.add_js_response(js)
-
-    @classmethod
-    def get_overlay_options(cls):
-        """ This classmethod returns the options for the overlays """
-        if cls.overlay_options:
-            return cls.overlay_options
-        else:
-            return {"resizeable": True,
-                    "modal": True,
-                    "draggable": True,
-                    "height": 400,
-                    "width": 600,
-                    "position": "center"}
-
-    def open_overlay(self, route=None, target_url=None, **route_params):
-        """ Opens an overlay. The target is given as route/route_params or as target_url.
-        If the route denominates an EPFL-Page, the overlay options will be taken from there.
-        The transactions of the new page and the current page are connected as parent/child.
-        So in the new page-object you can access the current page-object as self.parent .
-        """
-
-        page_class = None
-
-        # getting the target_url and the target-page-obj
-        if route:
-            page_classes = epflutil.get_page_classes_from_route(self.request, route)
-            if page_classes:
-                page_class = page_classes[0]  # if we have multiple page_objs, just take the first one...
-
-            target_url = self.request.route_url(route, **(route_params or {}))
-
-        if not page_class:
-            raise ValueError, "view-controller not found for route '" + route + "'"
-
-        # getting the overlay-opts
-        overlay_name = page_class.__name__  # the name is the page-class-name: to be discussed (e.g. multi-window)
-        overlay_opts = page_class.get_overlay_options()
-        overlay_title = page_class.overlay_title
-
-        # creating the new transaction
-        new_transaction = epfltransaction.Transaction(self.request)
-        new_transaction.set_pid(self.transaction.get_id())
-        new_transaction.set_page_obj(page_class)
-
-        # adjust the url and add the TID
-        target_url = epflutil.URL(target_url).update_query(tid=new_transaction.get_id())
-
-        # open the overlay
-        js = epflclient.make_js_call("epfl.open_overlay", overlay_name,
-                                     target_url,
-                                     overlay_title,
-                                     overlay_opts,
-                                     True)
-
-        self.add_js_response(js)
-
-        # remember this overlay (for full-page redraw of this parent page)
-        self.transaction["overlays"].append({"tid": new_transaction.get_id(),
-                                             "name": page_class.get_name(),
-                                             "target_url": target_url})  # the url with the TID
-
-    def close_overlay(self):
-        """ Closes the current overlay. To be called from the overlay-page it self. """
-        overlay_name = self.__class__.__name__  # the name is the page-class-name: to be discussed (e.g. multi-window)
-        js = epflclient.make_js_call("epfl.close_overlay", overlay_name)
-        self.add_js_response(js)
-
-
-    def __reopen_overlays(self):
-        """ If this page is reloaded (completely) this function reopens its overlays. """
-
-        overlays = self.transaction["overlays"]
-
-        for overlay in overlays:
-            transaction = epfltransaction.Transaction(self.request, overlay["tid"])
-            page_class = epflutil.get_page_class_by_name(self.request, transaction.get_page_name())
-            overlay_opts = page_class.get_overlay_options()
-            overlay_title = page_class.overlay_title
-
-            js = epflclient.make_js_call("epfl.open_overlay",
-                                         overlay["name"],
-                                         overlay["target_url"],  # TID is already included
-                                         overlay_title,
-                                         overlay_opts,
-                                         False)
-
-            self.add_js_response(js)
-
-    def handle_CloseOverlay(self, overlay_tid):
-        """ Is called by the EPFL, whenever an overlay is closed.
-        It is called from the opening page and gives the tid of the overlay to close.
-        """
-
-        transaction = epfltransaction.Transaction(self.request, overlay_tid)
-
-        # delete the page itself
-        transaction.delete()
-
-        # delete all opened overlays
-        overlays = transaction["overlays"]
-        for overlay in overlays:
-            transaction = epfltransaction.Transaction(self.request, overlay["tid"])
-            transaction.delete()
 
     def remember(self, userid):
         self.remember_cookies = security.remember(self.request, userid)

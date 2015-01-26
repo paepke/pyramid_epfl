@@ -26,9 +26,3 @@
 .clickable {
 	cursor: pointer !important;
 }
-
-.epfl-overlay-iframe {
-	border: 0;
-	width: 100%;
-	height: 100%;
-}
