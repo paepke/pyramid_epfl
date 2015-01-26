@@ -613,6 +613,9 @@ class ComponentBase(object):
         return out
 
     def get_render_environment(self, env):
+        """
+        Creates a dictionary containing a reference to the component that is used as render kwargs.
+        """
         return {'compo': self}
 
     def render(self, target='main'):
