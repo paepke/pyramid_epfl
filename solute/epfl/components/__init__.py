@@ -25,6 +25,8 @@ from select.select import Select as cfSelect
 from radio.radio import Radio as cfRadio
 from buttonradio.buttonradio import ButtonRadio as cfButtonradio
 from toggle.toggle import Toggle as cfToggle
+from password_input.password_input import PasswordInput as cfPassword
+
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
 

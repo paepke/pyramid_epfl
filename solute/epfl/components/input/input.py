@@ -15,9 +15,10 @@ class Input(FormBaseComponent):
     placeholder = None
     value = None
     input_type = None
-    mandatory = False
-    typeahead = False
-    submit_form_on_enter = False 
+    mandatory = False #: True if input field is mandatory
+    typeahead = False #: True if typeahead is supported 
+    submit_form_on_enter = False #: If true, underlying form is submitted upon enter key in this input 
+    input_focus = False #: Set focus on this input when component is displayed
 
     def __init__(self, input_type=None, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):

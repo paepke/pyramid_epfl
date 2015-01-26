@@ -62,6 +62,9 @@ epfl.InputComponent = function(cid, params) {
 			}
 		});
 	}
+	if (params["input_focus"]) {
+		$(selector).focus();
+	}
 	 
 }; 
 epfl.InputComponent.inherits_from(epfl.ComponentBase);
