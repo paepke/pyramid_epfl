@@ -6,7 +6,7 @@ from solute.epfl.components import ListLayout
 class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
     template_name = "table_list_layout/table_row.html"
     asset_spec = "solute.epfl.components:table_list_layout/static"
-    
+
     compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ["current_compo"]
 
     current_compo = 0
@@ -35,19 +35,18 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
 
 
 class TableListLayout(ListLayout):
-    
     # TODO: is there a better way to make use of paginated layout stuff? Inheriting from PaginatedListLayout?
     theme_path = ['paginated_list_layout/theme', 'table_list_layout/theme']
-    
+
     js_parts = ListLayout.js_parts[:]
     js_parts.extend(['paginated_list_layout/paginated_list_layout.js', 'table_list_layout/table_list_layout.js'])
     default_child_cls = TableLayoutRow
 
     show_pagination = True
     show_search = True
-    
+
     compo_state = ListLayout.compo_state[:]
-    compo_state.extend(["orderby", "ordertype", "search","height"])
+    compo_state.extend(["orderby", "ordertype", "search", "height"])
 
     orderby = ""
     ordertype = "asc"
@@ -56,8 +55,12 @@ class TableListLayout(ListLayout):
     data_interface = {'id': None, 'data': None}
 
 
-    def handle_edit(self,id,data):
-        #Overwrite this for edit handling
+    def handle_edit(self, id, data):
+        # Overwrite this for edit handling
+        pass
+
+    def handle_export_csv(self):
+        # Overwrite this for csv handling
         pass
 
     @staticmethod
@@ -70,8 +73,9 @@ class TableListLayout(ListLayout):
         return headrow
 
     @staticmethod
-    def HeadText(text,sortable=False):
-        head = {'data': text,"sortable":sortable, 'type': 'head'}
+    def HeadText(text, sortable=False, currentSortedBy=False, direction='asc'):
+        head = {'data': text, "sortable": sortable, "currentSortedBy": currentSortedBy, "direction": direction,
+                'type': 'head'}
         return head
 
     @staticmethod
@@ -126,4 +130,4 @@ class TableListLayout(ListLayout):
 
     @staticmethod
     def Edit():
-        return {"type":"edit"}
+        return {"type": "edit"}
