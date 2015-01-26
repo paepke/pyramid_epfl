@@ -755,8 +755,12 @@ class ComponentContainerBase(ComponentBase):
     """
     template_name = 'tree_base.html'
     theme_path_default = 'container/default_theme'
+    #: List of folders to check for additional theme parts. May inherit from or extend previous themes by using < for
+    #: extending ({{ caller() }} will be the previous template) or > for inheriting (result of the last template will be
+    #: placed as {{ caller() }} inside the previous template).
     theme_path = []
 
+    #: Used to generate the children of this component.
     node_list = []
 
     compo_config = ['node_list']
@@ -770,7 +774,8 @@ class ComponentContainerBase(ComponentBase):
     row_data = 30
     row_count = 30
 
-    auto_update_children = True  #: Updates are triggered every request in after_event_handling if True.
+    #: Updates are triggered every request in after_event_handling if True.
+    auto_update_children = True
 
     __update_children_done__ = False
 
@@ -782,6 +787,10 @@ class ComponentContainerBase(ComponentBase):
         return self
 
     def get_themed_template(self, env, target):
+        """
+        Return a list of templates in the order they should be used for rendering. Deals with template inheritance based
+        on the theme_path and the target templates found in the folders of the theme_path.
+        """
         theme_paths = self.theme_path
         if type(theme_paths) is dict:
             theme_paths = theme_paths.get(target, theme_paths['default'])
@@ -802,6 +811,10 @@ class ComponentContainerBase(ComponentBase):
         return direction, render_funcs
 
     def get_render_environment(self, env):
+        """
+        Creates a dictionary containing references to the different theme parts and the component. Theme parts are
+        wrapped as callables containing their respective inheritance chains as defined by :attr:`theme_path`.
+        """
         result = {}
 
         def wrap(cb, parent=None):
@@ -832,11 +845,15 @@ class ComponentContainerBase(ComponentBase):
         return result
 
     def after_event_handling(self):
+        """
+        After all events have been handled :meth:`update_children` is executed once for components that follow
+        the :meth:`get_data` pattern.
+        """
         super(ComponentContainerBase, self).after_event_handling()
         self.update_children(force=True)
 
     def is_smart(self):
-        """True if component uses get_data scheme."""
+        """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None and self.auto_update_children
 
     def update_children(self, force=False):
@@ -887,6 +904,10 @@ class ComponentContainerBase(ComponentBase):
             self.redraw()
 
     def _get_data(self, *args, **kwargs):
+        """
+        Internal wrapper for :meth:`get_data` to decide wether it is to be called as a function or only contains a
+        reference to a model on :attr:`.epflpage.Page.model`.
+        """
         if type(self.get_data) is str and self.page.model is not None:
             return self.page.model.get(self, self.get_data, (args, kwargs), self.data_interface)
         elif type(self.get_data) is tuple and self.page.model is not None:
@@ -905,12 +926,23 @@ class ComponentContainerBase(ComponentBase):
         return []
 
     def handle_set_row(self, row_offset, row_limit, row_data=None):
+        """
+        Default handler to deal with setting row offset, limit and data parameters.
+        """
         self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
 
     def init_struct(self):
+        """
+        Called before the :attr:`node_list` is used to create the sub structures of this component.
+        """
         pass
 
     def init_transaction(self):
+        """
+        Components derived from :class:`ComponentContainerBase` will use their :attr:`node_list` to generate their
+        children automatically. After initial setup :meth:`update_children` is executed once for components that follow
+        the :meth:`get_data` pattern.
+        """
         super(ComponentContainerBase, self).init_transaction()
 
         self.node_list = self.init_struct() or self.node_list  # if init_struct returns None, keep original value.
