@@ -1,3 +1,10 @@
+epfl.paginated_list_goto_complete = function () {
+	// remove search indicator, if present
+	if ($('#' + '{{ compo.cid }}_search').next().prop("tagName") == "SPAN") {
+		$('#' + '{{ compo.cid }}_search').next().remove();
+		$('#' + '{{ compo.cid }}_search').parent().removeClass("has-feedback");
+	}
+}
 epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_data) {
     if ($(element).hasClass('disabled')) {
         return;
@@ -10,7 +17,7 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
             row_limit: row_limit,
             row_data: row_data
         });
-    epfl.send(event);
+    epfl.send(event, epfl.paginated_list_goto_complete);
 };
 
 
@@ -21,18 +28,30 @@ search_{{ compo.cid }}
         var elm = this;
 
         function submit() {
+        	if ($(elm).next().prop("tagName") != "SPAN") {
+	        	$(elm)
+					.after($("<span></span>")
+						.addClass("form-control-feedback fa fa-spin fa-spinner")
+						.css("margin-right", "15px")
+					);
+				$(elm)
+					.parent()
+					.addClass("has-feedback");
+			}
+				
             var row_data = {search: $(elm).val()};
 
             if ($("#{{ compo.cid }}_orderby").length && $("#{{ compo.cid }}_ordertype").length) {
                 row_data.orderby = $("#{{ compo.cid }}_orderby option:selected").val();
                 row_data.ordertype = $("#{{ compo.cid }}_ordertype option:selected").val();
             }
+			epfl.paginated_list_goto($(elm),
+            "{{ compo.cid }}",
+            parseInt({{ compo.row_offset }}),
+            parseInt({{ compo.row_limit }}),
+            row_data);
 
-            epfl.paginated_list_goto($(elm),
-                "{{ compo.cid }}",
-                parseInt({{ compo.row_offset }}),
-                parseInt({{ compo.row_limit }}),
-                row_data);
+            
         }
 
         if (e.key == 'Enter') {
