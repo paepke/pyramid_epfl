@@ -1,6 +1,5 @@
 epfl.DroppableComponent = function (cid, params) {
     var blocked_compos = {};
-    var compo = this;
     this.blocked = 0;
     var delay = 700, clicks = 0, timer = null;
     epfl.ComponentBase.call(this, cid, params);
@@ -18,10 +17,8 @@ epfl.DroppableComponent = function (cid, params) {
             }
             var parent_epflid = ui.item.parent().attr('id');
             //console.log("Sort new - EPFLID: " + ui.item.attr('epflid') + " | Position: " + ui.item.index());
-            var evt = epfl.components[parent_epflid].make_event('add_dragable', {
-                cid: ui.item.attr('epflid'),
-                position: ui.item.index()});
-            epfl.send(evt);
+            epfl.dispatch_event(parent_epflid, "add_dragable", { cid: ui.item.attr('epflid'), position: ui.item.index()});
+            
         })
         .on('sortactivate', function (event, ui) {
 //            $(this).addClass('list-group-active');
@@ -40,8 +37,7 @@ epfl.DroppableComponent = function (cid, params) {
         	$('#'+cid).toggle().sortable('disable').sortable('enable');
         	$(this).children('i').toggleClass('fa-minus').toggleClass('fa-plus');
         	
-  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
-        	epfl.send(ev);
+        	epfl.dispatch_event(cid, "toggle_collapse", {"collapsed":!$('#'+cid).is(":visible")});
         });
         
         
@@ -58,11 +54,9 @@ epfl.DroppableComponent = function (cid, params) {
 	                if (my_elem.hasClass("selectable")) {
 	                
 	                	if (my_elem.hasClass("selected")) {
-	                		var ev = compo.make_event("unselected",{});
-	    					epfl.send(ev);
+	    					epfl.dispatch_event(cid, "unselected", {});
 	    				} else {
-	    					var ev = compo.make_event("selected",{});
-	    					epfl.send(ev);
+	    					epfl.dispatch_event(cid, "selected", {});
 	    				}
 	                }
 	                
@@ -74,8 +68,7 @@ epfl.DroppableComponent = function (cid, params) {
 	            //perform double-click action
 	            $('#'+cid).toggle().sortable('disable').sortable('enable');
 	        	$('[epflid="'+cid+'"] > .toggle-list').children('i').toggleClass('fa-minus').toggleClass('fa-plus');
-	  			var ev = compo.make_event("toggle_collapse",{"collapsed":!$('#'+cid).is(":visible")});
-	        	epfl.send(ev);
+	        	epfl.dispatch_event(cid, "toggle_collapse", {"collapsed":!$('#'+cid).is(":visible")});
 	        	
 	            clicks = 0;             //after action performed, reset counter
 	        }
@@ -105,8 +98,7 @@ epfl.DroppableComponent = function (cid, params) {
 			$(this).addClass("inactive");
 			if ($(this).data("oldtitle") != $(this).val()) {
 				$(this).data("oldtitle", $(this).val());
-    			var ev = compo.make_event("rename_title",{"title":$(this).val()});
-    			epfl.send(ev);
+    			epfl.dispatch_event(cid, "rename_title", {"title":$(this).val()});
     		}
 		});
 };

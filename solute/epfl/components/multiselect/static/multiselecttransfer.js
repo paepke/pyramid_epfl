@@ -4,8 +4,7 @@ epfl.MultiSelectTransferComponent = function (cid, params) {
     $('[epflid="'+cid+'"]').click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();
-    	var ev = compo.make_event("transfer",{});
-    	epfl.send(ev);
+    	epfl.dispatch_event(cid, "transfer", {});
     });
 };
 epfl.MultiSelectTransferComponent.inherits_from(epfl.ComponentBase);

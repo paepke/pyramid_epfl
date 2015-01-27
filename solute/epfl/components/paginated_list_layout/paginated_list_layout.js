@@ -9,15 +9,15 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
     if ($(element).hasClass('disabled')) {
         return;
     }
-    var event = epfl.make_component_event(
-        cid,
-        'set_row',
-        {
+    epfl.set_component_info(cid, 'callback_send_event', 'set_row', epfl.paginated_list_goto_complete);
+    epfl.dispatch_event(
+    	cid,
+    	'set_row',
+		{
             row_offset: row_offset,
             row_limit: row_limit,
             row_data: row_data
         });
-    epfl.send(event, epfl.paginated_list_goto_complete);
 };
 
 
@@ -38,7 +38,7 @@ search_{{ compo.cid }}
 					.parent()
 					.addClass("has-feedback");
 			}
-				
+			
             var row_data = {search: $(elm).val()};
 
             if ($("#{{ compo.cid }}_orderby").length && $("#{{ compo.cid }}_ordertype").length) {
@@ -50,12 +50,12 @@ search_{{ compo.cid }}
             parseInt({{ compo.row_offset }}),
             parseInt({{ compo.row_limit }}),
             row_data);
-
             
         }
 
         if (e.key == 'Enter') {
             submit();
+            return;
         }
         if (search_{{ compo.cid }}_timeout) {
             clearTimeout(search_{{ compo.cid }}_timeout);

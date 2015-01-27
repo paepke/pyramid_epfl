@@ -1,6 +1,5 @@
 epfl.DragableComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    var compo = this;
     var tmp = $('#' + cid).draggable({
         connectToSortable: '.droppable_type_' + params.type,
         cursorAt: {top: 0, left: 0},
@@ -8,12 +7,10 @@ epfl.DragableComponent = function(cid, params) {
         zIndex: 9999
     });
     $('[epflid="'+cid+'"].selectable').not('.selected').click(function(event) {
-    	var ev = compo.make_event("selected",{});
-    	epfl.send(ev);
+    	epfl.dispatch_event(cid, "selected", {});
     });
     $('[epflid="'+cid+'"].selectable.selected').click(function(event) {
-    	var ev = compo.make_event("unselected",{});
-    	epfl.send(ev);
+    	epfl.dispatch_event(cid, "unselected", {});
     });
     // handle title renaming
     $('[epflid="'+cid+'"].rename-inactive').bind('dblclick', function(event) {
@@ -47,8 +44,7 @@ epfl.DragableComponent = function(cid, params) {
 		$(this).parent().addClass("rename-inactive");
 		if ($(this).data("oldtitle") != $(this).val()) {
 			$(this).data("oldtitle", $(this).val());
-			var ev = compo.make_event("rename_title",{"title":$(this).val()});
-			epfl.send(ev);
+			epfl.dispatch_event(cid, "rename_title", {"title":$(this).val()});
 		}
 	});
 };
