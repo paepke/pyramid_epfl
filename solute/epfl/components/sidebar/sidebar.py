@@ -6,6 +6,8 @@ class Sidebar(ComponentBase):
 
     asset_spec = "solute.epfl.components:sidebar/static"
 
+    css_name = ["sidebar.css"]
+
     compo_state = ComponentBase.compo_state[:]
     compo_state.extend(["links","current_url"])
 
