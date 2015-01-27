@@ -3,24 +3,41 @@ from solute.epfl.components import Droppable, Dragable
 from odict import odict
 
 
-class FormBaseComponent(epflcomponentbase.ComponentBase):
+class FormInputBase(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form/static"
     
 
-    compo_state = ['name', 'value', 'validation_error']
+    compo_state = ['label', 'name', 'value', 'validation_error']
+    js_parts = ["form/input_base.js"]
+        
+    js_name = ["input_base.js", "bootstrap3-typeahead.min.js"]
+    css_name = ["input_base.css"]
 
+    label = None #: Optional label describing the input field.
     name = None #: An element without a name cannot have a value.
-    value = None #: The actual value of the form element that is posted upon form submission
+    value = None #: The actual value of the input element that is posted upon form submission.
+    default = None #: Default value that may be pre-set or pre-selected 
+    placeholder = None #: Placeholder text that can be displayed if supported by the input.
     validation_error = '' #: Set during call of :func:`validate` with an error message if validation fails.
     validation_type = None
     validation_helper = [] #: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
-    mandatory = False #: Set to true if value has to be provided for this element in order to yield a valid form. 
+    mandatory = False #: Set to true if value has to be provided for this element in order to yield a valid form.
+    typeahead = False #: Set to true if typeahead should be provided by the input (if supported) 
+    submit_form_on_enter = False #: If true, underlying form is submitted upon enter key in this input 
+    input_focus = False #: Set focus on this input when component is displayed
+    
+    def __init__(self, label=None, name=None, typeahead=False, default="", validation_type="",
+                 **extra_params):
+        super(FormInputBase, self).__init__() 
 
     def is_numeric(self):
         return type(self.value) in [int, float]
 
     def init_transaction(self):
-        super(FormBaseComponent, self).init_transaction()
+        super(FormInputBase, self).init_transaction()
+        
+        if self.value is None and self.default is not None:
+            self.value = self.default
 
         def get_parent_form(compo):
             if isinstance(compo, Form):
@@ -88,6 +105,11 @@ class FormBaseComponent(epflcomponentbase.ComponentBase):
 
     def handle_change(self, value):
         self.value = value
+
+        
+    def handle_typeahead(self, query):
+        pass
+        # TODO: How to return typeahead data to the caller?
 
 
 

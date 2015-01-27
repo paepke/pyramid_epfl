@@ -1,6 +1,7 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class Toggle(Input):
+
+class Toggle(FormInputBase):
     """
     A form checkbox styled as toggle.
     
@@ -12,12 +13,12 @@ class Toggle(Input):
     
     """
     
-    input_type = 'toggle'
+    template_name = "toggle/toggle.html"
+    
     validation_type = 'bool'
     
-    
-    js_name = Input.js_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.js")]
-    css_name = Input.css_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.css")]
+    js_name = FormInputBase.js_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:toggle/static", "bootstrap-switch.min.css")]
     
     on_text = "an" #: The text to be displayed if toggle is set to on.
     off_text = "aus" #: The text to be displayed if toggle is set to off.

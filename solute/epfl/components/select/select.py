@@ -1,6 +1,8 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class Select(Input):
+
+class Select(FormInputBase):
+
+    template_name = "select/select.html"
 
     validation_type = 'text'
-    input_type = 'select'

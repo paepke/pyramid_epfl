@@ -1,6 +1,7 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class TextInput(Input):
+
+class TextInput(FormInputBase):
     """
     A form text input.
     
@@ -12,5 +13,6 @@ class TextInput(Input):
     
     """
     
-    input_type = 'text'
+    template_name = "text_input/text_input.html"
+    
     validation_type = 'text'

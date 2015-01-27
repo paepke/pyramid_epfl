@@ -68,11 +68,11 @@ by extending the HomeRoot class itself. We choose the latter way:
 
 .. code-block:: python
 
-	from solute.epfl.components import Box, cfForm
+	from solute.epfl.components import Box, Form
 	
 	class HomeRoot(epfl.components.CardinalLayout):
 	    def init_struct(self):
-	        self.node_list.extend([Box(title='My first box', node_list=[cfForm(cid='my_first_form')])])
+	        self.node_list.extend([Box(title='My first box', node_list=[Form(cid='my_first_form')])])
 
 We have now added a Box to the page that contains an empty form.
 
@@ -81,19 +81,19 @@ Now it's time to fill the form with live. We add form components to the form by 
 
 .. code-block:: python
 
-    from solute.epfl.components import cfText, cfTextarea, cfButton
+    from solute.epfl.components import TextInput, Textarea, Button
 
     class HomeRoot(epfl.components.CardinalLayout):
 
 	    def init_struct(self):
 	        self.node_list.extend([Box(title='Edit note',
-	                                   node_list=[cfForm(cid='note_form', node_list=[
-	                                       cfText(label='Title',
+	                                   node_list=[Form(cid='note_form', node_list=[
+	                                       TextInput(label='Title',
 	                                              name='title',
 	                                              default='Insert a title here!'),
-	                                       cfTextarea(label='Text',
+	                                       Textarea(label='Text',
 	                                                  name='text'),
-	                                       cfButton(value='Submit',
+	                                       Button(value='Submit',
 	                                                event_name='submit')])])])
 
 If you take a look at the rendered page now, you can already see the form with its fields and the submit button. Neat!
@@ -102,22 +102,22 @@ Note that you can already experience the server-side state that EPFL provides: I
 browser's refresh button, the values of the form are kept.
 
 As a next step, we want to handle the event when the user clicks on the submit button. You can add event handling methods to any component.
-Ultimatively, we want to handle this event on our cfForm, since we have to react on the event and create a new note with the values of the form's fields.
+Ultimatively, we want to handle this event on our Form, since we have to react on the event and create a new note with the values of the form's fields.
 
 Currently, the event when clicking the button is bubbled up the form. Neither the button nor the form provide an event currently, so let's add
 event handling functionality to the form.
-The easiest way to handle this event is by using an inherited class from cfForm: 
+The easiest way to handle this event is by using an inherited class from Form: 
 
 .. code-block:: python
 
-    class NoteForm(cfForm):
+    class NoteForm(Form):
 	
-        node_list = [cfText(label='Title',
+        node_list = [Text(label='Title',
                             name='title',
                             default='Insert a title here!'),
-                     cfTextarea(label='Text',
+                     Textarea(label='Text',
                                 name='text'),
-                     cfButton(value='Submit',
+                     Button(value='Submit',
                               event_name='submit')]
                               
 	class HomeRoot(epfl.components.CardinalLayout):
@@ -126,7 +126,7 @@ The easiest way to handle this event is by using an inherited class from cfForm:
 	        self.node_list.extend([Box(title='Edit note',
 	                                   node_list=[NoteForm(cid = 'note_form')])])
 
-Nothing has changed so far, we have just moved the form to our own subclass from cfForm.
+Nothing has changed so far, we have just moved the form to our own subclass from Form.
 
 We now add the event handling method to the form. Since the button is instanciated with the value "submit"
 of its attribute "event_name", epfl expects a method "handle_submit" to call for event handling. We provide this
@@ -134,7 +134,7 @@ method in our FirstFormClass:
 
 .. code-block:: python
 
-	class NoteForm(cfForm):
+	class NoteForm(Form):
 	
 	    ...
 	
@@ -209,7 +209,7 @@ We can now call add_note() on the model in the handle_submit method of our form:
 The note is now persisted in memory. Ok, but how can we display it? Let's add a component that displays all created notes in a list.
 
 This component will use a different way to retrieve its data values: Up to now, we directly set and read component attributes to handle component data.
-For example, label, name and default value of the note form fields have been set in the constructor of the corresponding cfText and cfTextarea classes.
+For example, label, name and default value of the note form fields have been set in the constructor of the corresponding TextInput and Textarea classes.
 While this is perfect for small amount of data or static data structures, it is not suited for complex data access operations.
 Instead, we will use the get_data attribute, which enables us to create components dynamically based on the data its parent component receives.
 
@@ -307,7 +307,7 @@ Since these notes list children ares getting more complex now, we move the child
 	
 	    def init_struct(self):
 	        self.node_list.append(ComponentBase(template_name='epfl_pyramid_barebone:templates/note.html'))
-	        self.node_list.append(cfButton(value='Edit this note',
+	        self.node_list.append(Button(value='Edit this note',
 	                                       event_name='edit_note'))
 	
 	    def handle_edit_note(self):
@@ -345,7 +345,7 @@ We first add a load_note() method on our form which fills the form with the data
 
 .. code-block:: python
 
-	class NoteForm(cfForm):
+	class NoteForm(Form):
 	
 	    ...
 	        
@@ -377,12 +377,11 @@ And since we are there, we implement a method clean_form() which empties the for
 
 .. code-block:: python
 
-	class NoteForm(cfForm):
+	class NoteForm(Form):
 	
 	    node_list = ...
 	    
-	    compo_state = cfForm.compo_state[:]
-	    compo_state.append('id')
+	    compo_state = Form.compo_state + ["id"]
 	    id = None
 	    
 	    def clean_form(self):

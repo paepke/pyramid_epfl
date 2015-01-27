@@ -14,18 +14,17 @@ from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
 
-from form.form import Form as cfForm
-from button.button import Button as cfButton
-from input.input import Input as cfInput
-from text_input.text_input import TextInput as cfText
-from number_input.number_input import NumberInput as cfNumber
-from checkbox.checkbox import Checkbox as cfCheckbox
-from textarea.textarea import Textarea as cfTextarea
-from select.select import Select as cfSelect
-from radio.radio import Radio as cfRadio
-from buttonradio.buttonradio import ButtonRadio as cfButtonradio
-from toggle.toggle import Toggle as cfToggle
-from password_input.password_input import PasswordInput as cfPassword
+from form.form import Form
+from button.button import Button
+from text_input.text_input import TextInput
+from number_input.number_input import NumberInput
+from checkbox.checkbox import Checkbox
+from textarea.textarea import Textarea
+from select.select import Select
+from radio.radio import Radio
+from buttonradio.buttonradio import ButtonRadio
+from toggle.toggle import Toggle
+from password_input.password_input import PasswordInput
 
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
@@ -87,17 +86,16 @@ def add_routes(config):
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
 
-    cfForm.add_pyramid_routes(config)
-    cfButton.add_pyramid_routes(config)
-    cfText.add_pyramid_routes(config)
-    cfInput.add_pyramid_routes(config)
-    cfNumber.add_pyramid_routes(config)
-    cfTextarea.add_pyramid_routes(config)
-    cfRadio.add_pyramid_routes(config)
-    cfButtonradio.add_pyramid_routes(config)
-    cfToggle.add_pyramid_routes(config)
-    cfCheckbox.add_pyramid_routes(config)
-    cfSelect.add_pyramid_routes(config)
+    Form.add_pyramid_routes(config)
+    Button.add_pyramid_routes(config)
+    TextInput.add_pyramid_routes(config)
+    NumberInput.add_pyramid_routes(config)
+    Textarea.add_pyramid_routes(config)
+    Radio.add_pyramid_routes(config)
+    ButtonRadio.add_pyramid_routes(config)
+    Toggle.add_pyramid_routes(config)
+    Checkbox.add_pyramid_routes(config)
+    Select.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)

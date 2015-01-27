@@ -1,6 +1,7 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class Textarea(Input):
+
+class Textarea(FormInputBase):
     """
     A form multi-line text area
     
@@ -12,6 +13,6 @@ class Textarea(Input):
     
     """
     
+    template_name = "textarea/textarea.html"
 
     validation_type = 'text'
-    input_type = 'textarea'

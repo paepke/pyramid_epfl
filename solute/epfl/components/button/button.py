@@ -1,9 +1,8 @@
-from solute.epfl.components.form.form import FormBaseComponent
+from solute.epfl.core.epflcomponentbase import ComponentBase
 
-
-class Button(FormBaseComponent):
+class Button(ComponentBase):
     """
-    This component inherits from :class:`solute.epfl.components.form.form.FormBaseComponent` and provides basic button functionality.
+    This component provides basic button functionality.
     
     To use a button, a event handling method for handling button clicks has to be provided:
     
@@ -18,7 +17,7 @@ class Button(FormBaseComponent):
     """
 
     template_name = "button/button.html"
-    js_parts = FormBaseComponent.js_parts + ["button/button.js"]
+    js_parts = ["button/button.js"]
 
     label = None #: If set, the label is rendered before the button.
     value = None #: The value is used as button text if no icon is provided.

@@ -15,6 +15,7 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
         super(TableLayoutRow, self).init_struct()
         node_list = []
         for data in self.data:
+            
             if data["type"] == "component":
                 node_list.append(data["data"])
 
