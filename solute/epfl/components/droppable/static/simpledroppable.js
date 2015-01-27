@@ -1,5 +1,4 @@
 epfl.SimpleDroppableComponent = function (cid, params) {
-    var compo = this;
     this.blocked = 0;
     var my_params =  params.type;
     epfl.ComponentBase.call(this, cid, params);
@@ -23,16 +22,14 @@ epfl.SimpleDroppableComponent = function (cid, params) {
 		activeClass: "ui-state-hover",
 		hoverClass: "simpledroppable-hover",
 		drop: function( event, ui ) {
-			var evt = compo.make_event('add_dragable', {cid: ui.draggable.attr('epflid')});
-            epfl.send(evt);
+            epfl.dispatch_event(cid, "add_dragable", {cid: ui.draggable.attr('epflid')});
 		},
 		
 	});
 	$('[epflid="'+cid+'"] > .simpledroppable-remove-button').click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();
-    	var ev = compo.make_event("remove_content",{});
-    	epfl.send(ev);
+        epfl.dispatch_event(cid, "remove_content", {});
     });
 };
 epfl.SimpleDroppableComponent.inherits_from(epfl.ComponentBase);

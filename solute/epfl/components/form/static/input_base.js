@@ -13,7 +13,7 @@ epfl.FormInputBase = function(cid, params) {
 	    if (provide_typeahead == "typeahead") {
 	        $(selector).typeahead({
 	            source: function (query, process) {
-	            	res = epfl.send(compo.make_event("typeahead",{"query":query}));
+	            	epfl.dispatch_event(cid, "typeahead", {"query":query});
 	            	// todo: results have to be returned from server
 	                return process(['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']);
 	            }
@@ -56,9 +56,7 @@ epfl.FormInputBase = function(cid, params) {
 	if (params["submit_form_on_enter"]) {
 		$(selector).bind('keyup', function(event){
 			if (event.keyCode == 13) {
-				//res = epfl.send(compo.make_event("submit",{}));
-				var request = epfl.make_component_event(cid, "submit", {}); // blubbles up to form
-    			epfl.send(request);
+				epfl.dispatch_event(cid, "submit", {}); // bubbles up to form
 			}
 		});
 	}

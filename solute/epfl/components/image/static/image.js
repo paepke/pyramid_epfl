@@ -23,14 +23,6 @@ epfl.ImageComponent = function(cid, params) {
 };
 epfl.ImageComponent.inherits_from(epfl.ComponentBase);
 
-epfl.ImageComponent.prototype.fire_event = function(event_name, params, callback_fn) {
-    if (!params) {
-        params = {}
-    };
-    var evt = this.make_event(event_name, params);
-    epfl.send(evt, callback_fn)
-};
-
 $(".epfl-img-component-color").mouseover(function() {
 	$(this).css({"border-width":"2px", "border-style":"solid"});
 })

@@ -1,6 +1,5 @@
 epfl.DiagramComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    var compo = this;
     $('[epflid="'+cid+'"]').highcharts(
         params
     );
@@ -16,20 +15,8 @@ epfl.DiagramComponent = function(cid, params) {
 		    }
 		    series_visibility.push(series_json);
 		}
-		var ev = compo.make_event("visibilityChange",{"series_visibility":series_visibility});
-        epfl.send(ev); 
-    });
-    
-
+		epfl.dispatch_event(cid, "visibilityChange", {"series_visibility":series_visibility});
+    });   
 };
+
 epfl.DiagramComponent.inherits_from(epfl.ComponentBase);
-
-epfl.DiagramComponent.prototype.fire_event = function(event_name, params, callback_fn) {
-    if (!params) {
-        params = {}
-    };
-    var evt = this.make_event(event_name, params);
-    epfl.send(evt, callback_fn)
-};
-
-

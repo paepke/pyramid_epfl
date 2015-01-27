@@ -11,21 +11,12 @@ epfl.SortableComponent = function(cid, params) {
                    newOrder.push(children[i].id);
                 }
             }
-            var ev = compo.make_event("orderChanged",{"newOrder":newOrder});
-            epfl.send(ev);
+            epfl.dispatch_event(cid, "orderChanged", {"newOrder": newOrder});
         }
     });
-
-    epfl.send(compo.make_event("loadingFinished",{}));
+	epfl.dispatch_event(cid, "loadingFinished", {});
 }; 
 epfl.SortableComponent.inherits_from(epfl.ComponentBase);
-
-epfl.SortableComponent.prototype.fire_event = function(event_name, params, callback_fn) {
-    if (!params) { params = {} };
-    var evt = this.make_event(event_name, params);
-    epfl.send(evt, callback_fn)
-};
-
 
 epfl.SortableComponent.prototype.makeSortOrder = function(sort_order){
     var parent = $("li#"+sort_order[0]).parent();
