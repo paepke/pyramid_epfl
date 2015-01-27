@@ -39,12 +39,13 @@ class Page(object):
     asset_spec = "solute.epfl:static"
 
     #: JavaScript files to be statically loaded.
-    js_name = ["js/jquery-1.8.2.min.js",
+    js_name = ["js/jquery-1.11.2.min.js",
                "js/jquery-ui.js",
                "js/history.js",
                "js/epfl.js",
                "js/epflcomponentbase.js",
-               "js/json2-min.js"]
+               "js/json2-min.js",
+               "js/bootstrap.min.js"]
 
     #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",

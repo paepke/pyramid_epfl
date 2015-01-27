@@ -52,6 +52,7 @@ from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 from drag_box.drag_box import DragBox
+from modal.modal import Modal
 
 
 def add_routes(config):
@@ -106,3 +107,4 @@ def add_routes(config):
     Headbar.add_pyramid_routes(config)
 
     DragBox.add_pyramid_routes(config)
+    Modal.add_pyramid_routes(config)
