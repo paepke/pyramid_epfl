@@ -15,7 +15,8 @@ epfl_module = function() {
 
     epfl.init_page = function(opts) {
         $(".epfl_hover_image").bind_hover_border_events();
-        $("body").append("<div id='epfl_please_wait'><img src='/epfl/static/img/ajax-loader-big.gif'></div>");
+        $("body").append("<div id='epfl_please_wait'><i class='fa fa-spinner fa-spin fa-5x text-primary'></i></div>");
+
         $("#loader").remove(); // remove the std-mcp2 ajax-loader image
 
 /*        var scroll_pos = $(".epfl_scroll_pos").val(); // Restoring Scroll-Pos
