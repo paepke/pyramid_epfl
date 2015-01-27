@@ -3,7 +3,7 @@
         <div class="nav-wrapper ng-scope">
             <ul class="nav ng-scope" id="nav" style="overflow: hidden; width: auto; height: 100%;">
                 {% for link in compo.links %}
-                    <li class="">
+                    <li style="background-color: #d7d7d7;">
                         <a href="{{ link['url'] }}">
                             <i class="fa fa-{{ link['icon'] }}"></i><span>{{ link['name'] }}</span>
                         </a>
@@ -12,8 +12,7 @@
                                 {% for child in link['children'] %}
                                     <li>
                                         <a href="{{ child['url'] }}">
-                                            <span>{{ child['name'] }}</span>
-
+                                            <span {% if compo.current_url == child['url'] %}class="text-primary"{% endif %}>{{ child['name'] }}</span>
                                             <p class="pull-right"><i class="fa fa-caret-right"></i></p>
                                         </a>
                                     </li>
