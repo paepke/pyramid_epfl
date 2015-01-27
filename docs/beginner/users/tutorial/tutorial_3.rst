@@ -32,13 +32,12 @@ We do this by simply adding a login dialog to the same page:
     
         title = 'Login'
     
-        node_list = [cfForm(cid='login_form',
-                            node_list=[cfText(label='Username',
+        node_list = [Form(cid='login_form',
+                            node_list=[TextInput(label='Username',
                                               name='username'),
-                                       cfText(label='Password',
-                                              name='password',
-                                              input_type='password'),
-                                       cfButton(value='Login',
+                                       PasswordInput(label='Password',
+                                              name='password'),
+                                       Button(value='Login',
                                                 event_name='login')])]
         def handle_login(self):
             pass
@@ -125,7 +124,7 @@ and call forget() on the page (the counterpart of page.remember()) upon a click 
     class Logout(Box):
     
         title = 'Logout'
-        node_list = [cfButton(value='Logout',
+        node_list = [Button(value='Logout',
                               event_name='logout')]
     
         def handle_logout(self):

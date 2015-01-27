@@ -59,18 +59,18 @@ This is a straightforward extension of our NoteForm class:
 
 .. code-block:: python
 
-	from solute.epfl.components import cfNumber
+	from solute.epfl.components import NumberInput
 
-	class NoteForm(cfForm):
+	class NoteForm(Form):
 	
-	    node_list = [cfNumber(label='Parent note id',
+	    node_list = [NumberInput(label='Parent note id',
 	                          name='parent'),
-	                 cfText(label='Title',
+	                 TextInput(label='Title',
 	                        name='title',
 	                        default='Insert a title here!'),
-	                 cfTextarea(label='Text',
+	                 Textarea(label='Text',
 	                            name='text'),
-	                 cfButton(value='Submit',
+	                 Button(value='Submit',
 	                          event_name='submit')]
 	    ...
 		

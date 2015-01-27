@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
-from solute.epfl.components import ToggleListLayout, cfButton
+from solute.epfl.components import ToggleListLayout
 from solute.epfl.core import epflutil
 from solute.epfl.core import epfli18n
 import copy

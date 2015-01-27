@@ -1,6 +1,21 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class Select(Input):
+
+class Select(FormInputBase):
+    """
+    A form drop-down select input.
+
+    Typically, this component is used in a form:
+
+    .. code:: python
+
+        form = Form(node_list=[Select(label="Select color:",
+                                      name="color",
+                                      default="black",
+                                      options=[{"value":"white","visual":"White"},{"value":"red","visual":"Red"},{"value":"black","visual":"Black"}])])
+
+    """
+
+    template_name = "select/select.html"
 
     validation_type = 'text'
-    input_type = 'select'

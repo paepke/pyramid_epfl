@@ -1,6 +1,18 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class Radio(Input):
+
+class Radio(FormInputBase):
+    """
+    A form radio group.
+
+    Typically, this component is used in a form:
+
+    .. code:: python
+
+        form = Form(node_list=[Radio(label="Gender:", name="gender", default="male", options=["male", "female"])])
+
+    """
+
+    template_name = "radio/radio.html"
 
     validation_type = 'text'
-    input_type = 'radio'
