@@ -1,6 +1,7 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class PasswordInput(Input):
+
+class PasswordInput(FormInputBase):
     """
     A form password input. Compared to other form components, the value of this field is not rendered if the view is reloaded.
     
@@ -13,8 +14,7 @@ class PasswordInput(Input):
     """
     
     template_name = "password_input/password_input.html"
-    
-    input_type = 'password'
+
     validation_type = 'text'
     
     default = '' #: The default value of a password input should always be empty.

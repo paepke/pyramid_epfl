@@ -7,9 +7,10 @@ from pyramid import security
 from .first_step import FirstStepRoot
 
 from solute.epfl.components import Box
-from solute.epfl.components import cfForm
-from solute.epfl.components import cfText
-from solute.epfl.components import cfButton
+from solute.epfl.components import Form
+from solute.epfl.components import TextInput
+from solute.epfl.components import Button
+from solute.epfl.components import PasswordInput
 
 from solute.epfl.core.epflassets import epfl_acl, epfl_has_role
 
@@ -25,7 +26,7 @@ class Admin(Box):
 @epfl_acl([('system.Authenticated', 'access')])
 class Logout(Box):
     title = 'Logout Box'
-    node_list = [cfButton(value='Logout',
+    node_list = [Button(value='Logout',
                           event_name='logout')]
 
     def handle_logout(self):
@@ -44,12 +45,11 @@ class Login(Box):
              'someuser': '12345'}
 
     node_list = [cfForm(cid='login_form',
-                        node_list=[cfText(label='Username',
+                        node_list=[TextInput(label='Username',
                                           name='username'),
-                                   cfText(label='Password',
-                                          name='password',
-                                          input_type='password'),
-                                   cfButton(value='Login',
+                                   PasswordInput(label='Password',
+                                          name='password'),
+                                   Button(value='Login',
                                             event_name='login')])]
 
     def handle_login(self):

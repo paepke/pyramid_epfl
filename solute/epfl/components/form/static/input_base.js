@@ -1,4 +1,4 @@
-epfl.InputComponent = function(cid, params) {
+epfl.FormInputBase = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 	var compo = this;
     var selector = "#" + cid;
@@ -67,5 +67,5 @@ epfl.InputComponent = function(cid, params) {
 	}
 	 
 }; 
-epfl.InputComponent.inherits_from(epfl.ComponentBase);
+epfl.FormInputBase.inherits_from(epfl.ComponentBase);
 

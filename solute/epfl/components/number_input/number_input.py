@@ -1,5 +1,8 @@
-from solute.epfl.components import cfInput as Input
+from solute.epfl.components.form.form import FormInputBase
 
-class NumberInput(Input):
-    input_type = 'number'
+
+class NumberInput(FormInputBase):
+    
+    template_name = "number_input/number_input.html"
+    
     validation_type = 'number'
