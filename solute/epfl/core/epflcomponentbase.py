@@ -8,7 +8,7 @@ import types, copy, string, inspect, uuid
 from pyramid import security
 from pyramid import threadlocal
 
-from solute.epfl.core import epflclient, epflutil, epflexceptions, epflassets
+from solute.epfl.core import epflclient, epflutil, epflassets
 
 from solute.epfl import json
 
@@ -38,7 +38,8 @@ class UnboundComponent(object):
     __valid_subtypes__ = [bool, int, long, float, complex, str, unicode, bytearray, xrange, type, types.FunctionType,
                           types.NoneType]
     __debugging_on__ = False
-    __dynamic_class_store__ = None
+
+    __dynamic_class_store__ = None  #: Internal caching for :attr:`UnboundComponent.__dynamic_class__`
 
     def __init__(self, cls, config):
         """
@@ -320,7 +321,7 @@ class ComponentBase(object):
         # setup template
 
         if not self.template_name:
-            raise epflexceptions.ConfigurationError, "You did not setup the 'self.template_name' in " + repr(self)
+            raise Exception("You did not setup the 'self.template_name' in " + repr(self))
 
         # now we can setup the component-state
         self.setup_component_state()

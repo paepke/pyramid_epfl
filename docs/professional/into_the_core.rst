@@ -13,3 +13,5 @@ Have fun on your journey into the core of EPFL!
 .. toctree::
 
     binding_epfl
+    cycling_epfl
+    components
