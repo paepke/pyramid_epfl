@@ -11,10 +11,10 @@
         {% if compo.grouped %}
         	{% if child_compo.data.multiselect_group is defined %}multiselect-group
         	{% else %}
-        		in-multiselect-group{{ " multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else " multiselect-selectable" }}
+        		in-multiselect-group multiselect-selectable{{ " selected" if (child_compo.cid in compo.selected_child_cids) else "" }}
         	{% endif %}	
-        {% else %}{{ compo.selected_child_cids  }}
-        	{{ "multiselect-selected" if (child_compo.cid in compo.selected_child_cids) else "multiselect-selectable" }}
+        {% else %}
+        	multiselect-selectable{{ " selected" if (child_compo.cid in compo.selected_child_cids) else "" }}
         {% endif %}
         {{ "hidden" if (child_compo.cid in compo.hidden_child_cids) else "" }}">
         	{{ child_compo() }}
