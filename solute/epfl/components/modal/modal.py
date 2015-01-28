@@ -14,11 +14,24 @@ class Modal(epflcomponentbase.ComponentContainerBase):
     js_name = []
     css_name = ["bootstrap.min.css"]
 
-    compo_state = ["title"]
+    compo_state = ["title","save_button"]
 
     compo_config = []
 
     title = ""
+    save_button = False
+
+
+    def handle_save(self):
+        #Overwrite for save handling
+        pass
+
+    def open(self):
+        self.add_ajax_response("$('#"+self.cid+"_modal').modal('show');")
+
+    def close(self):
+        self.add_ajax_response("$('#"+self.cid+"_modal').modal('hide');")
+
 
 
 

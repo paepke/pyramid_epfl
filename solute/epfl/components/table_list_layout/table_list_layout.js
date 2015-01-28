@@ -49,7 +49,7 @@ epfl.TableListLayout.buttonClickHandler = function (eventname) {
     epfl.dispatch_event("{{ compo.cid }}", eventname, {});
 };
 epfl.TableListLayout.EditClick = function (id, data) {
-	epfl.dispatch_event("{{ compo.cid }}", edit, {'id': id, 'data': data});
+	epfl.dispatch_event("{{ compo.cid }}", 'edit', {'id': id, 'data': data});
 };
 
 
