@@ -1,4 +1,4 @@
-.multiselect-selected {
+.multiselect-selectable.selected {
 	background-color: #ccc;
 }
 .in-multiselect-group {
