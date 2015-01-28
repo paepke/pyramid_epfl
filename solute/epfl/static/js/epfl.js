@@ -122,11 +122,7 @@ epfl_module = function() {
             }
             var parts_jq = $(part_html);
             if (parts["prefetch"]) {
-                parts_jq
-                    .hide()
-                    .appendTo(document.body);
                 $.ajax(parts["prefetch"], {async: false});
-                parts_jq.show();
             }
             el.replaceWith(parts_jq);
             epfl.init_struct();

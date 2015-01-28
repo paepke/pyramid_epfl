@@ -10,7 +10,6 @@ Submodules
    solute.epfl.core.epflclient
    solute.epfl.core.epflcomponentbase
    solute.epfl.core.epflconfig
-   solute.epfl.core.epflexceptions
    solute.epfl.core.epfli18n
    solute.epfl.core.epfll10n
    solute.epfl.core.epflmodel

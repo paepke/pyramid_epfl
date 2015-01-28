@@ -23,7 +23,6 @@ Subpackages
     solute.epfl.components.headbar
     solute.epfl.components.hover_link_list_layout
     solute.epfl.components.image
-    solute.epfl.components.input
     solute.epfl.components.link_list_layout
     solute.epfl.components.list_layout
     solute.epfl.components.menu
@@ -32,6 +31,7 @@ Subpackages
     solute.epfl.components.number_input
     solute.epfl.components.paginated_list_layout
     solute.epfl.components.panel
+    solute.epfl.components.password_input
     solute.epfl.components.pretty_list_layout
     solute.epfl.components.progress
     solute.epfl.components.radio
