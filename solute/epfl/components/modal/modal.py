@@ -32,6 +32,9 @@ class Modal(epflcomponentbase.ComponentContainerBase):
     def close(self):
         self.add_ajax_response("$('#"+self.cid+"_modal').modal('hide');")
 
+    def handle_close(self):
+        #Overwrite for close handling
+        pass
 
 
 

@@ -13,7 +13,7 @@
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="{{ compo.cid }}_modal_close">Schließen</button>
                     {% if compo.save_button %}
                         <button type="button" class="btn btn-primary" id="{{ compo.cid }}_modal_save">Speichern</button>
                     {% endif %}

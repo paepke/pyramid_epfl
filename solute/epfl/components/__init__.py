@@ -34,6 +34,7 @@ from diagram.diagram import Diagram
 from progress.progress import Progress
 from image.image import Image, ImageList
 from text.text import Text
+from placeholder.placeholder import Placeholder
 
 from tabs_layout.tabs_layout import TabsLayout
 from nav_layout.nav_layout import NavLayout
@@ -105,6 +106,7 @@ def add_routes(config):
     Text.add_pyramid_routes(config)
     Sidebar.add_pyramid_routes(config)
     Headbar.add_pyramid_routes(config)
+    Placeholder.add_pyramid_routes(config)
 
     DragBox.add_pyramid_routes(config)
     Modal.add_pyramid_routes(config)
