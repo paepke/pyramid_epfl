@@ -4,10 +4,10 @@ from pyramid.view import view_config
 from solute import epfl
 
 from solute.epfl.components import Box
-from solute.epfl.components import cfForm
-from solute.epfl.components import cfText
-from solute.epfl.components import cfTextarea
-from solute.epfl.components import cfButton
+from solute.epfl.components import Form
+from solute.epfl.components import TextInput
+from solute.epfl.components import Textarea
+from solute.epfl.components import Button
 from solute.epfl.components import NavLayout
 
 from solute.epfl.components import LinkListLayout
@@ -16,19 +16,18 @@ from solute.epfl.core.epflassets import ModelBase
 from solute.epfl.core.epflcomponentbase import ComponentBase
 
 
-class NoteForm(cfForm):
-    node_list = [cfText(label='Title',
+class NoteForm(Form):
+    node_list = [TextInput(label='Title',
                         name='title',
                         default='Insert a title here!'),
-                 cfTextarea(label='Text',
+                 Textarea(label='Text',
                             name='text'),
-                 cfButton(value='Submit',
+                 Button(value='Submit',
                           event_name='submit'),
-                 cfButton(value='Cancel',
+                 Button(value='Cancel',
                           event_name='cancel')]
 
-    compo_state = cfForm.compo_state[:]
-    compo_state.append('id')
+    compo_state = Form.compo_state + ["id"]
     id = None
 
     def handle_submit(self):
@@ -69,7 +68,7 @@ class NoteBox(Box):
 
     def init_struct(self):
         self.node_list.append(ComponentBase(template_name='epfl_pyramid_barebone:templates/note.html'))
-        self.node_list.append(cfButton(value='Edit this note',
+        self.node_list.append(Button(value='Edit this note',
                                        event_name='edit_note'))
 
     def handle_edit_note(self):

@@ -4,11 +4,11 @@ from pyramid.view import view_config
 from solute import epfl
 
 from solute.epfl.components import Box
-from solute.epfl.components import cfForm
-from solute.epfl.components import cfNumber
-from solute.epfl.components import cfText
-from solute.epfl.components import cfTextarea
-from solute.epfl.components import cfButton
+from solute.epfl.components import Form
+from solute.epfl.components import NumberInput
+from solute.epfl.components import TextInput
+from solute.epfl.components import Textarea
+from solute.epfl.components import Button
 from solute.epfl.components import NavLayout
 
 from solute.epfl.components import LinkListLayout
@@ -19,20 +19,19 @@ from solute.epfl.core.epflcomponentbase import ComponentBase
 from .first_step import FirstStepRoot
 
 
-class NoteForm(cfForm):
-    node_list = [cfNumber(label='Parent note id',
+class NoteForm(Form):
+    node_list = [NumberInput(label='Parent note id',
                           name='parent'),
-                 cfText(label='Title',
+                 TextInput(label='Title',
                         name='title'),
-                 cfTextarea(label='Text',
+                 Textarea(label='Text',
                             name='text'),
-                 cfButton(value='Submit',
+                 Button(value='Submit',
                           event_name='submit'),
-                 cfButton(value='Cancel',
+                 Button(value='Cancel',
                           event_name='cancel')]
 
-    compo_state = cfForm.compo_state[:]
-    compo_state.append('id')
+    compo_state = Form.compo_state + ["id"]
     id = None
 
     def handle_submit(self):

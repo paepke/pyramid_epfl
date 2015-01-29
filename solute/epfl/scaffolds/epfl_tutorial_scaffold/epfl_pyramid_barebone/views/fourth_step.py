@@ -8,7 +8,6 @@ from .first_step import FirstStepRoot
 
 from solute.epfl.components import Box
 from solute.epfl.components import DragBox
-from solute.epfl.components import cfButton
 
 
 class DropBox(Box):
