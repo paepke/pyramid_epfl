@@ -1,4 +1,6 @@
 {% macro render() %}
    {% set compo = kwargs.compo %}
+   {% if compo.show_children %}
     	{{ caller() }}
+   {% endif %}
 {% endmacro %}

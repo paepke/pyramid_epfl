@@ -1,16 +1,16 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% if compo.label is defined  and not compo.label is none %}
-    <span class="tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
-    {% if compo.show_children %}
-        <i class="fa {{ compo.custom_node_icon_expanded if compo.custom_node_icon_expanded else "fa-minus" }}"></i>
+	    <span class="tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
+	    {% if compo.show_children %}
+	        <i class="fa {{ compo.custom_node_icon_expanded if compo.custom_node_icon_expanded else "fa-minus" }}"></i>
+	    {% else %}
+	        <i class="fa {{ compo.custom_node_icon_collapsed if compo.custom_node_icon_collapsed else "fa-plus" }}"></i>
+	    {% endif %}
+	    {{ compo.label }}
+	    </span>
+	    <div style="margin-left:10px;">
     {% else %}
-        <i class="fa {{ compo.custom_node_icon_collapsed if compo.custom_node_icon_collapsed else "fa-plus" }}"></i>
-    {% endif %}
-    {{ compo.label }}
-    </span>
-    <div style="margin-left:10px;">
-    {% else %}
-    <div>
+    	<div>
     {% endif %}
 {% endmacro %}
