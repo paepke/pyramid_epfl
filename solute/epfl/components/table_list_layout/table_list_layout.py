@@ -132,3 +132,7 @@ class TableListLayout(ListLayout):
     @staticmethod
     def Edit():
         return {"type": "edit"}
+
+    @staticmethod
+    def Popover(text,popover_text):
+        return {"text":text,"popover_text":popover_text,"type": "popover"}

@@ -7,25 +7,25 @@
                 <div class="col-sm-6">
                     {{ before(**kwargs) }}
                 </div>
-                <div class="col-sm-2" id="{{ compo.cid }}_orderby">
-                    <select class="form-control">
-                        {% for order in compo.order_by_options %}
-                            <option value="{{ order }}">{{ order }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-sm-2" id="{{ compo.cid }}_ordertype">
-                    <select class="form-control">
-                        <option value="asc">aufsteigend</option>
-                        <option value="desc">absteigend</option>
-                    </select>
-                </div>
-                <div class="col-sm-2" >
-                    <button  class="btn btn-default"
-                             id="{{ compo.cid }}_csv"
-                             onclick='epfl.TableListLayout.exportCSV()'>
-                        <i class="fa fa-list"></i> CSV</button>
-                </div>
+{#                <div class="col-sm-2" id="{{ compo.cid }}_orderby">#}
+{#                    <select class="form-control">#}
+{#                        {% for order in compo.order_by_options %}#}
+{#                            <option value="{{ order }}">{{ order }}</option>#}
+{#                        {% endfor %}#}
+{#                    </select>#}
+{#                </div>#}
+{#                <div class="col-sm-2" id="{{ compo.cid }}_ordertype">#}
+{#                    <select class="form-control">#}
+{#                        <option value="asc">aufsteigend</option>#}
+{#                        <option value="desc">absteigend</option>#}
+{#                    </select>#}
+{#                </div>#}
+{#                <div class="col-sm-2" >#}
+{#                    <button  class="btn btn-default"#}
+{#                             id="{{ compo.cid }}_csv"#}
+{#                             onclick='epfl.TableListLayout.exportCSV()'>#}
+{#                        <i class="fa fa-list"></i> CSV</button>#}
+{#                </div>#}
             </div>
         </td>
     </tr>

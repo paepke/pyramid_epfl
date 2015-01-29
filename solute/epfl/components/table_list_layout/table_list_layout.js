@@ -16,7 +16,9 @@ epfl.TableListLayout = function (cid, params) {
     $("#" + cid + "_orderby").change(orderchange);
     $("#" + cid + "_ordertype").change(orderchange);
 
-
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
 };
 
 epfl.TableListLayout.OrderByClick = function (orderby) {
