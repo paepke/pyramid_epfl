@@ -790,6 +790,8 @@ class ComponentContainerBase(ComponentBase):
 
     #: Updates are triggered every request in after_event_handling if True.
     auto_update_children = True
+    #: Update is triggered initially in :meth:`init_transaction` if True
+    auto_initialize_children = True
 
     __update_children_done__ = False
 
@@ -864,11 +866,12 @@ class ComponentContainerBase(ComponentBase):
         the :meth:`get_data` pattern.
         """
         super(ComponentContainerBase, self).after_event_handling()
-        self.update_children(force=True)
+        if self.auto_update_children:
+            self.update_children(force=True)
 
     def is_smart(self):
         """Returns true if component uses get_data scheme."""
-        return self.default_child_cls is not None and self.auto_update_children
+        return self.default_child_cls is not None
 
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
@@ -880,8 +883,9 @@ class ComponentContainerBase(ComponentBase):
 
         if not self.is_smart():
             return
+        
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
-
+        
         tipping_point = None
         for i, c in enumerate(self.components):
             if hasattr(c, 'id'):
@@ -965,7 +969,8 @@ class ComponentContainerBase(ComponentBase):
             cid, slot = node.position
 
             self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
-        self.update_children(force=True)
+        if self.auto_initialize_children:
+            self.update_children(force=True)
 
     def replace_component(self, old_compo_obj, new_compo_obj):
         """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
