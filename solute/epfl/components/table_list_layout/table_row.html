@@ -45,6 +45,8 @@
                 {% elif cell.type == 'edit' %}
                     <span><i class="fa fa-edit"
                              onclick='epfl.TableListLayout.EditClick("{{ compo.id }}","{{ compo.data }}")'></i></span>
+                {% elif cell.type == 'popover' %}
+                    <span data-toggle="popover" data-content="{{ cell.popover_text }}" data-placement="top">{{ cell.text }} </span>
                 {% endif %}
             </div>
         </td>
