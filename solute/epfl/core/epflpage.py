@@ -45,12 +45,14 @@ class Page(object):
                "js/epfl.js",
                "js/epflcomponentbase.js",
                "js/json2-min.js",
-               "js/bootstrap.min.js"]
+               "js/bootstrap.min.js",
+               "js/toastr.min.js"]
 
     #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
-                "css/font-awesome/css/font-awesome.min.css"]
+                "css/font-awesome/css/font-awesome.min.css",
+                "css/toastr.min.css"]
 
     template = "page.html"  #: The name of the template used to render this page.
     base_html = 'base.html'  #: The template used as base for this page, given in get_render_environment.
@@ -590,6 +592,29 @@ class Page(object):
         Expose the forget function of pyramid.security for easy access to the pyramid authorization handler.
         """
         self.remember_cookies = security.forget(self.request)
+
+    def toast(self, message, type):
+        toastr_options = """
+        toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-bottom-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        };
+        """
+
+        self.add_js_response("%s toastr.%s('%s');"% (toastr_options,type,message))
 
 
 class PageRequest(object):
