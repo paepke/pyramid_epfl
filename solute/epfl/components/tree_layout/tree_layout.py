@@ -1,12 +1,19 @@
 # coding: utf-8
 
-from solute.epfl.core.epflcomponentbase import ComponentContainerBase
+from solute.epfl.core.epflcomponentbase import ComponentContainerBase, ComponentBase
 from solute.epfl.components import ToggleListLayout
 from solute.epfl.core import epflutil
 from solute.epfl.core import epfli18n
 import copy
 from jinja2 import filters as jinja_filters
 
+
+class TreeLeafEntry(ComponentBase):
+    template_name = "tree_layout/tree_leaf_entry.html"
+    label = None
+    icon = None
+    
+    compo_state = ["label", "icon"]
 
 class TreeLayout(ComponentContainerBase):
     
