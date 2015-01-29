@@ -14,3 +14,7 @@ class Headbar(epflcomponentbase.ComponentBase):
     optionslink = "#"
     logoutlink = "#"
     logout_hover_text = "Logout"
+
+    def handle_logout(self,redirect):
+        #Overwrite me for logout handling
+        pass

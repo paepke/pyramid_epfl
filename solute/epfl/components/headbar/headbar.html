@@ -19,9 +19,10 @@
                 </ul>
                 <ul class="nav-right pull-right list-unstyled">
 
+
                     <li style="width: 120px;padding: 15px">
                         <span style="padding-left:10px;">
-                            <a href="{{ compo.logoutlink }}">
+                            <a href="#" onclick="epfl.dispatch_event('{{ compo.cid }}', 'logout',{redirect:'{{ compo.logoutlink }}'});">
                                 <i class="fa fa-sign-out" ></i>Logout
                             </a>
                         </span>
