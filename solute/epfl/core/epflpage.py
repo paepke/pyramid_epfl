@@ -65,6 +65,8 @@ class Page(object):
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
 
+    mode = 'default'
+
     def __init__(self, request, transaction=None):
         """
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
@@ -155,11 +157,14 @@ class Page(object):
         Used every request to instantiate the model.
         """
         if self.model is not None:
+            model = self.model
             if type(self.model) is list:
-                for i, m in enumerate(self.model):
+                self.model = []
+                for i, m in enumerate(model):
                     self.model[i] = m(self.request)
             elif type(self.model) is dict:
-                for k, v in self.model.items():
+                self.model = {}
+                for k, v in model.items():
                     self.model[k] = v(self.request)
             else:
                 self.model = self.model(self.request)

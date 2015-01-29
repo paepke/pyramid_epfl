@@ -1,0 +1,1 @@
+epfl.set_drop_zone("{{ compo.cid }}");
