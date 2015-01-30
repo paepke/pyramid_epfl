@@ -3,10 +3,15 @@ epfl.FormInputBase = function(cid, params) {
 	var compo = this;
     var selector = "#" + cid;
 	var type = $(selector).closest("div").attr('epfl-type');
+	var fire_change_immediately = params["fire_change_immediately"];
 	
 	if (type == "defaultinput" || type == "textarea" || type == "select") {
 	    $(selector).change(function () {
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
+	        if (fire_change_immediately) {
+	        	epfl.dispatch_event(cid, "change", {value: $(selector).val()});
+	        } else {
+	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
+	        }
 	    });
 	
 	    provide_typeahead = $(selector).data("provide");
@@ -24,7 +29,11 @@ epfl.FormInputBase = function(cid, params) {
 	    $(selector).attr('checked', $(selector).val() == 'True');
 	    $(selector).change(function () {
 	        var val = val = $(this).is(':checked');
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        if (fire_change_immediately) {
+	        	epfl.dispatch_event(cid, "change", {value: val});
+	        } else {
+	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        }
 	    });
 	
 	} else if (type == "toggle") {
@@ -32,14 +41,22 @@ epfl.FormInputBase = function(cid, params) {
 	    $(selector).bootstrapSwitch('state');
 	    $(selector).on('switchChange.bootstrapSwitch', function (event, state) {
 	        var val = $(this).closest("div").parent().hasClass("bootstrap-switch-on");
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        if (fire_change_immediately) {
+	        	epfl.dispatch_event(cid, "change", {value: val});
+	        } else {
+	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        }
 	    });
 	
 	} else if (type == "radiobuttongroup") {
 	    selector = "input[type=radio][name="+cid+"]";
 	    $(selector).change(function () {
 	        var val = $(this).val();
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        if (fire_change_immediately) {
+	        	epfl.dispatch_event(cid, "change", {value: val});
+	        } else {
+	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        }
 	    });
 	
 	} else if (type == "buttonsetgroup") {
@@ -49,7 +66,11 @@ epfl.FormInputBase = function(cid, params) {
 	        var parent = $(this).parent().parent();
 	        $(parent).find("label").removeClass("active");
 	        $(this).parent().addClass("active");
-	        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        if (fire_change_immediately) {
+	        	epfl.dispatch_event(cid, "change", {value: val});
+	        } else {
+	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
+	        }
 	    });
 	
 	}

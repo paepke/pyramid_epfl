@@ -27,7 +27,7 @@ class TreeLayout(ComponentContainerBase):
     asset_spec = "solute.epfl.components:tree_layout/static"
     css_name = ["tree_layout.css"]
 
-    compo_state = ComponentContainerBase.compo_state + ['show_children', 'tree_node_dict']
+    compo_state = ComponentContainerBase.compo_state + ['show_children', 'tree_node_dict', 'filter_key']
     js_parts = ComponentContainerBase.js_parts + ["tree_layout/tree_layout.js"]
 
     theme_path = ['tree_layout/theme']
@@ -43,6 +43,7 @@ class TreeLayout(ComponentContainerBase):
     show_children = False
     custom_node_icon_collapsed=None
     custom_node_icon_expanded=None
+    filter_key=None #: Indicates a set filter that can be used by get_data to return filtered entries only 
     tree_node_dict = {} #: This dict can store the data of the root nodes of this tree for caching: TreeModelBase respects this.
      
     # folder icons
