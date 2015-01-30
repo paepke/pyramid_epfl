@@ -883,15 +883,13 @@ class ComponentContainerBase(ComponentBase):
 
         if not self.is_smart():
             return
-        
+
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
-        
-        tipping_point = None
+
+        tipping_point = 0
         for i, c in enumerate(self.components):
             if hasattr(c, 'id'):
-                if tipping_point is None:
-                    tipping_point = i
-                continue
+                break
             elif getattr(c, 'static_align', 'top') == 'top':
                 self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point or 0)
                 tipping_point = (tipping_point or 0) + 1
@@ -901,25 +899,45 @@ class ComponentContainerBase(ComponentBase):
         if tipping_point is None:
             tipping_point = 0
 
-        for i, d in enumerate(data):
-            if i + tipping_point < len(self.components) \
-                    and getattr(self.components[i + tipping_point], 'id', None) == d['id']:
-                for k, v in d.items():
-                    if getattr(self.components[i + tipping_point], k) != v:
-                        setattr(self.components[i + tipping_point], k, v)
-                        self.components[i + tipping_point].redraw()
+        current_order = []
+        new_order = []
+
+        data_dict = {}
+        data_cid_dict = {}
+
+        for v in self.components:
+            if getattr(v, 'id', None) is None:
                 continue
-            if i + tipping_point < len(self.components) and hasattr(self.components[i + tipping_point], 'id'):
-                self.replace_component(self.components[i + tipping_point], self.default_child_cls(**d))
-            else:
-                self.add_component(self.default_child_cls(**d), position=i + tipping_point)
+            current_order.append(v.id)
+            data_cid_dict[v.id] = v.cid
+
+        for i, d in enumerate(data):
+            new_order.append(d['id'])
+            data_dict[d['id']] = d
+
+        # IDs of components no longer present in data. Their matching components are deleted.
+        for data_id in set(current_order).difference(new_order):
+            self.del_component(data_cid_dict.pop(data_id))
             self.redraw()
 
-        for compo in self.components[len(data) + tipping_point:]:
-            if not hasattr(compo, 'id'):
-                continue
-            compo.delete_component()
+        # IDs of data not yet represented by a component. Matching components are created.
+        for data_id in set(new_order).difference(current_order):
+            data_cid_dict[data_id] = self.add_component(self.default_child_cls(**data_dict[data_id])).cid
             self.redraw()
+
+        # IDs of data represented by a component. Matching components are updated.
+        for data_id in set(new_order).intersection(current_order):
+            compo = getattr(self.page, data_cid_dict[data_id])
+            for k, v in data_dict[data_id].items():
+                if getattr(compo, k) != v:
+                    setattr(compo, k, v)
+                    compo.redraw()
+
+        # Rebuild order.
+        for i, data_id in enumerate(new_order):
+            if getattr(self.components[i + tipping_point], 'id', None) != data_id:
+                self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
+                self.redraw()
 
     def _get_data(self, *args, **kwargs):
         """
@@ -1019,7 +1037,12 @@ class ComponentContainerBase(ComponentBase):
             self.components.append(compo_obj)
 
     def del_component(self, compo_obj, slot=None):
-        """ Removes the component from the slot and form the compo_info """
+        """
+        Removes the component from the slot and form the compo_info. Accepts either a component instance or a cid.
+        """
+        if type(compo_obj) is str:
+            compo_obj = getattr(self.page, compo_obj)
+
         compo_obj.compo_destruct()
         if hasattr(compo_obj, 'components'):
             for compo in compo_obj.components[:]:
