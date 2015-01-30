@@ -118,18 +118,21 @@ class Page(object):
 
         check_tid = False
         out = ''
+        content_type = "text/html"
         try:
             if self.handle_ajax_request():
                 out, check_tid = self.call_ajax(), True
+                content_type = "text/javascript"
             else:
                 out = self.call_default()
         finally:
             out += self.call_cleanup(check_tid)
 
-        return Response(body=out.encode("utf-8"),
-                        content_type="text/html; charset=utf-8",
-                        status=200,
-                        headers=self.remember_cookies)
+        response = Response(body=out.encode("utf-8"),
+                            status=200,
+                            content_type=content_type)
+        response.headerlist.extend(self.remember_cookies)
+        return response
 
     def call_ajax(self):
         """
@@ -571,11 +574,16 @@ class Page(object):
             compo.after_event_handling()
 
     def add_js_response(self, js_string):
-        """ Adds the js either to the ajax-response or to the bottom of the page - depending of the type of the request """
-        js_string += ";"
+        """
+        Adds the js either to the ajax-response or to the bottom of the page - depending of the type of the request
+        """
+        if type(js_string) is str:
+            js_string += ";"
         if self.request.is_xhr:
             self.response.add_ajax_response(js_string)
         else:
+            if type(js_string) is tuple:
+                js_string = js_string[1]
             self.response.add_extra_content(epflclient.JSBlockContent(js_string))
 
     def show_fading_message(self, msg, typ="info"):

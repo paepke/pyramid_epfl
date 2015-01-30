@@ -145,6 +145,7 @@ class EPFLResponse(object):
     The self.render_ajax_response, self.get_exclusive_extra_content and self.render_extra_content-functions
 
     """
+    _ajax_response = None
 
     def __init__(self, page_obj):
         self.page_obj = page_obj
@@ -154,10 +155,29 @@ class EPFLResponse(object):
         self.extra_content = []
         self.content_type = "text/html; charset=utf-8"
 
+    @property
+    def ajax_response(self):
+        if type(self._ajax_response) is not list:
+            return self._ajax_response
+        out = []
+        for v in self._ajax_response:
+            if type(v) is not tuple:
+                v = (0, v)
+            out.append(v)
+        out.sort(key=lambda x: x[0])
+        self._ajax_response = out
+        return [v for k, v in self._ajax_response]
+
+    @ajax_response.setter
+    def ajax_response(self, value):
+        self._ajax_response = value
+
     def add_ajax_response(self, resp_string):
-        """ Adds something to the response - in case it's a ajax-request """
-        if type(self.ajax_response) is list:
-            self.ajax_response.append(resp_string)
+        """
+        Adds a js string to the response for ajax-requests. Accepts string or (execution_order, string) tuples.
+        """
+        if type(self._ajax_response) is list:
+            self._ajax_response.append(resp_string)
 
     def answer_json_request(self, resp_obj):
         """ The response consists only of this object which will be json-encoded - in case it's an answer to a epfl.json_request.

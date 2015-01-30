@@ -653,11 +653,13 @@ class ComponentBase(object):
             out += ''.join(self.render_templates(env, self.js_parts))
         elif target == 'main':
             out += ''.join(self.render_templates(env, self.template_name))
-            set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s)'
+            set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
+            set_component_info %= {'cid': self.cid,
+                                   'handles': self.get_handles()}
             handles = self.get_handles()
             if handles:
-                self.add_js_response(set_component_info % {'cid': self.cid,
-                                                           'handles': self.get_handles()})
+                # Add with execution_order set to 1 so it will be done after the defaults.
+                self.add_js_response((1, set_component_info))
 
         return jinja2.Markup(out)
 
@@ -1041,7 +1043,7 @@ class ComponentContainerBase(ComponentBase):
         Removes the component from the slot and form the compo_info. Accepts either a component instance or a cid.
         """
         if type(compo_obj) is str:
-            compo_obj = getattr(self.page, compo_obj)
+            return getattr(self.page, compo_obj).delete_component()
 
         compo_obj.compo_destruct()
         if hasattr(compo_obj, 'components'):
