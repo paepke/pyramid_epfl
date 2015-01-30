@@ -670,7 +670,7 @@ class Page(object):
         self.remember_cookies = security.forget(self.request)
 
     def toast(self, message, type):
-        toastr_options = """
+        toastr_options = u"""
         toastr.options = {
           "closeButton": true,
           "debug": false,
@@ -690,13 +690,12 @@ class Page(object):
         };
         """
 
-        self.add_js_response("%s toastr.%s('%s');" % (toastr_options, type, message))
+        self.add_js_response(u"%s toastr.%s('%s');"% (toastr_options,type,message))
 
     def get_route_path(self, route, **kwargs):
         """
         Convenience handle for pyramid.request.route_path.
         """
-        return self.request.route_path(route, **kwargs)
 
 
 class PageRequest(object):

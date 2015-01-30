@@ -43,8 +43,7 @@
                     {{ cell.text }}
                     <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
                 {% elif cell.type == 'edit' %}
-                    <span><i class="fa fa-edit"
-                             onclick='epfl.TableListLayout.EditClick("{{ compo.id }}","{{ compo.data }}")'></i></span>
+                    <button class="btn btn-default btn-sm" style="position: relative;top:-7px" onclick='epfl.TableListLayout.EditClick("{{ compo.id }}","{{ compo.data }}")'><i class="fa fa-edit"></i> Bearbeiten</button>
                 {% elif cell.type == 'popover' %}
                     <span data-toggle="popover" data-content="{{ cell.popover_text }}" data-placement="top">{{ cell.text }} </span>
                 {% endif %}
