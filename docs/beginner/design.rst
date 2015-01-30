@@ -61,3 +61,41 @@ used to define structures and persist data, the latter being used in the lifecyc
 
 This allows the developer to create abstractions of base classes, allowing him to change the way a Component works
 dramatically. All with little to no effort and without making complex jumps of thought through multiple layers of code.
+
+Model View Controller
+---------------------
+Everyone and everyone's cat uses MVC nowadays. MVC is to frameworks what "agile" is to process management, meaning
+everyone has his own personal definition and uses it accordingly.
+
+There are two layers in EPFL that use the MVC scheme:
+ - Globally in :class:`~solute.epfl.core.epflpage.Page` there's :attr:`~solute.epfl.core.epflpage.Page.model`
+   wherein a :class:`~solute.epfl.core.epflassets.ModelBase` class is stored and instantiated every request. From the
+   perspective of a developer using EPFL the page acts primarily as model and view, while internally it takes the role
+   of a central controller as well.
+ - Locally in :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` there's
+   :attr:`~solute.epfl.core.epflcomponentbase.ComponentBase.compo_state` that gives you the ability to use any component
+   as its own model by setting up attributes to be stored in the transaction. Going by the concept your controllers are
+   event handles and the life cycle methods
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.after_event_handling`,
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.compo_destruct`,
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.finalize`,
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.init_transaction`,
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.pre_render`,
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.setup_component` and finally
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.setup_component_state` for
+   :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` and the method
+   :meth:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.init_struct` for
+   :class:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase`. Event handles are defined by writing methods
+   with the prefix handle\_ that are called when events are sent via ajax.
+
+In order to take full advantage of EPFLs automatic features (like the get_data pattern you see in the
+:doc:`users/tutorial/index`) it is highly recommended to keep those separated as much as possible. If you are in a local
+controller and want to store data that is not meant to be persisted globally you have to remain inside the component.
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentBase.compo_state` offers you flexible storage of data on a component
+level, and if that is not enough try going up through the tree via
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentBase.container_compo`.
+
+.. warning::
+
+    Storing local data in or via the global model is the first step of a trip into confusion as long as it is nasty, since
+    you have to break barriers relying heavily on understanding the EPFL Core. You will fail. Hard.
