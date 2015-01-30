@@ -631,7 +631,7 @@ class Page(object):
         use "page.go_next(...)" instead.
         """
 
-        target_url = self.request.route_url(route, **(route_params or {}))
+        target_url = self.get_route_path(route, **route_params)
 
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)
@@ -690,7 +690,13 @@ class Page(object):
         };
         """
 
-        self.add_js_response("%s toastr.%s('%s');"% (toastr_options,type,message))
+        self.add_js_response("%s toastr.%s('%s');" % (toastr_options, type, message))
+
+    def get_route_path(self, route, **kwargs):
+        """
+        Convenience handle for pyramid.request.route_path.
+        """
+        return self.request.route_path(route, **kwargs)
 
 
 class PageRequest(object):
