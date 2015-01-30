@@ -1,3 +1,6 @@
 .tree-label {
 	cursor: pointer;
 }
+.tree-drop-line-marker {
+	color: red;
+}

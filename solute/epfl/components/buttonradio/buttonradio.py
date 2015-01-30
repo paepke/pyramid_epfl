@@ -15,3 +15,4 @@ class ButtonRadio(FormInputBase):
 
     template_name = "buttonradio/buttonradio.html"
     validation_type = 'text'
+    center=False

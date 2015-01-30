@@ -1,0 +1,10 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <div epflid="{{compo.cid}}">
+        {{ caller() }}
+        {% if compo.icon %}
+		<i class="fa {{ compo.icon }}"></i>
+		{% endif %}
+		{{ compo.label }}
+    </div>
+{% endmacro %}

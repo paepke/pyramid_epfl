@@ -9,6 +9,8 @@ from menu.menu import Menu  # A menu component
 from canvas.canvas import Canvas  # A canvas component
 from flipflop.flipflop import FlipFlop
 from box.box import Box
+from drag_box.drag_box import DragBox
+from droppable_box.droppable_box import DroppableBox
 from sortable.sortable import Sortable
 from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
@@ -47,12 +49,11 @@ from paginated_list_layout.paginated_list_layout import PaginatedListLayout
 from link_list_layout.link_list_layout import LinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
-from tree_layout.tree_layout import TreeLayout, TreeLeafEntry
+from tree_layout.tree_layout import TreeLayout, TreeLeafEntry, DraggableTreeLeafEntry, DroppableTreeLayout
 
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
-from drag_box.drag_box import DragBox
 from modal.modal import Modal
 
 
@@ -65,6 +66,8 @@ def add_routes(config):
 
     Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
+    DragBox.add_pyramid_routes(config)
+    DroppableBox.add_pyramid_routes(config)
     TabsLayout.add_pyramid_routes(config)
     NavLayout.add_pyramid_routes(config)
     ColLayout.add_pyramid_routes(config)
@@ -108,5 +111,4 @@ def add_routes(config):
     Headbar.add_pyramid_routes(config)
     Placeholder.add_pyramid_routes(config)
 
-    DragBox.add_pyramid_routes(config)
     Modal.add_pyramid_routes(config)
