@@ -229,12 +229,14 @@ epfl_module = function() {
     };
 
 
-    epfl.make_component_event = function(component_id, event_name, params) {
+    epfl.make_component_event = function(component_id, event_name, params, lazy_mode) {
 
         if (!params) params = {};
+        if (!lazy_mode) lazy_mode = false;
 
         return {"id": epfl.make_event_id(),
                 "t": "ce",
+                "lazy_mode": lazy_mode,
                 "cid": component_id,
                 "e": event_name,
                 "p": params};

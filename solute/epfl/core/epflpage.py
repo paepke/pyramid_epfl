@@ -4,6 +4,7 @@ import epflcomponentbase, epfltransaction
 
 from odict import odict
 from collections2 import OrderedDict as better_od
+from collections import MutableMapping
 
 from pyramid.response import Response
 from pyramid import security
@@ -11,6 +12,18 @@ from pyramid import security
 from solute.epfl import json
 
 from solute.epfl.core import epflclient, epflutil, epflassets
+
+
+class LazyProperty(object):
+    """
+    Wrapper function used for just in time initialization of components by calling the registered callback.
+    """
+
+    def __init__(self, callback):
+        self.callback = callback
+
+    def __call__(self):
+        self.callback(overwrite=True)
 
 
 @epflassets.epfl_acl(['access'])
@@ -65,17 +78,20 @@ class Page(object):
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
 
-    mode = 'default'
+    #: If true components will be initialized just in time on being accessed.
+    lazy_mode = False
+    active_components = None
 
     def __init__(self, request, transaction=None):
         """
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
         the same as the requests one.
+        The lazy_mode is setup here if the request is an ajax request and all events in it are requesting lazy_mode.
         """
         self.request = request
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
-        self.components = odict()  # all registered components of this page
+        self.components = PageComponents(self)  # all registered components of this page
 
         if transaction:
             self.transaction = transaction
@@ -83,6 +99,12 @@ class Page(object):
             self.transaction = self.__get_transaction_from_request()
 
         self.setup_model()
+
+        if self.request.is_xhr:
+            self.lazy_mode = len([e for e in self.page_request.get_queue()
+                                  if e.get('lazy_mode', False) is not True]) == 0
+        if self.lazy_mode:
+            self.active_components = set()
 
     def __call__(self):
         """
@@ -187,7 +209,7 @@ class Page(object):
         if not self.transaction.get("components_assigned"):
             self.setup_components()
             compo_info = {}
-            for cid, compo in self.components.items():
+            for cid, compo in self.get_active_components():
                 compo_info[cid] = compo.get_component_info()
             self.transaction["compo_info"] = compo_info
             self.transaction["compo_struct"] = better_od()
@@ -196,9 +218,18 @@ class Page(object):
             traverse_compo_struct()
 
     def assign_component(self, compo_info, container_id=None):
-        """ Create a component from the remembered compo_info and assign it to the page """
-        compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
-        self.add_static_component(compo_info["cid"], compo_obj)
+        """ Create a component from the remembered compo_info and assign it to the page.
+        Deals with lazy_mode by using a wrapper method for actually creating and adding the component. This wrapper
+        method is then either called or sent to :meth:`add_lazy_component`. """
+
+        def lazy_assign(overwrite=False):
+            compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
+            self.add_static_component(compo_info["cid"], compo_obj, overwrite=overwrite)
+
+        if self.lazy_mode:
+            self.add_lazy_component(compo_info["cid"], lazy_assign)
+        else:
+            lazy_assign()
 
     @property
     def parent(self):
@@ -229,8 +260,7 @@ class Page(object):
         """ [request-processing-flow]
         The main request teardown.
         """
-
-        for compo_obj in self.components.values():
+        for compo_obj in self.get_active_components(show_cid=False):
             compo_obj.finalize()
 
         other_pages = self.page_request.get_handeled_pages()
@@ -243,6 +273,22 @@ class Page(object):
             cls.__name = cls.__module__ + ":" + cls.__name__
 
         return cls.__name
+
+    def __getattribute__(self, item):
+        """
+        Used to provide special handling for components in lazy_mode. Uses default behaviour of super otherwise. If the
+        requested value is an instance of :class:`LazyProperty` it will be called, then reloaded using the default
+        behaviour of super.
+        """
+        if item in ['components', 'lazy_mode'] \
+                or not self.lazy_mode \
+                or item not in getattr(self, 'components', {}).keys():
+            return super(Page, self).__getattribute__(item)
+        value = self.__dict__[item]
+        if isinstance(value, LazyProperty):
+            value()
+            value = super(Page, self).__getattribute__(item)
+        return value
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -261,14 +307,22 @@ class Page(object):
         By assigning components as attributes to the page, they are registered on this page object. Their name is used
         as cid.
         """
-
         if isinstance(value, epflcomponentbase.ComponentBase):
             self.add_static_component(key, value)
-        # TODO: Check auto instantiation possibility here
-        # if isinstance(value, epflcomponentbase.UnboundComponent):
-        # self.add_static_component(key, value(__instantiate__=True))
         else:
-            self.__dict__[key] = value  # mimic "normal" behaviour
+            super(Page, self).__setattr__(key, value)  # Use normal behaviour.
+
+    def add_lazy_component(self, cid, callback):
+        """
+        Create a :class:`LazyProperty` instance with the callback function given, then set everything up as normal.
+        :meth:`__getattribute__` will deal with :class:`LazyProperty` instances by calling them, thus initializing the
+        actually requested component.
+        """
+
+        lazy_obj = LazyProperty(callback)
+
+        setattr(self, cid, lazy_obj)
+        self.components[cid] = True  # Just tell the PageComponents Instance that this page has that key.
 
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
@@ -286,8 +340,25 @@ class Page(object):
                                                                           'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
         self.components[cid] = compo_obj
+        if self.active_components is not None:
+            self.active_components.add(cid)
         if not hasattr(compo_obj, 'container_compo'):
             self.transaction["compo_struct"].setdefault(cid, odict())
+
+    def get_active_components(self, show_cid=True):
+        """
+        If :attr:`active_components` is set this method returns a list of the :class:`.epflcomponentbase.ComponentBase`
+        instances that have registered there upon initialization and are still present on this page.
+        """
+        if self.active_components is None and show_cid:
+            return self.components.items()
+        elif self.active_components is None and not show_cid:
+            return self.components.values()
+        if show_cid:
+            data = [(cid, self.components[cid]) for cid in self.active_components if cid in self.components.keys()]
+        else:
+            data = [self.components[cid] for cid in self.active_components if cid in self.components.keys()]
+        return data
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this page.
@@ -338,7 +409,7 @@ class Page(object):
                "css_imports": self.get_css_imports,
                "js_imports": self.get_js_imports}
 
-        env.update([(key, value) for key, value in self.components.as_dict().items() if value.container_compo is None])
+        env.update([(key, value) for key, value in self.get_active_components() if value.container_compo is None])
 
         return env
 
@@ -349,7 +420,7 @@ class Page(object):
         epflutil.add_extra_contents(self.response, obj=self)
 
         # pre-render all components
-        for component_name, component_obj in self.components.items():
+        for component_name, component_obj in self.get_active_components():
             component_obj.pre_render()
 
         # exclusive extra-content
@@ -371,7 +442,7 @@ class Page(object):
         [request-processing-flow]
         """
 
-        for cid, compo in self.components.items():
+        for cid, compo in self.get_active_components():
             if cid + "$__inited__" not in self.transaction:
                 self._active_initiations += 1
                 self.transaction[cid + "$__inited__"] = True
@@ -379,7 +450,7 @@ class Page(object):
                 self._active_initiations -= 1
 
         if self._active_initiations == 0:
-            for cid, compo in self.components.items():
+            for cid, compo in self.get_active_components():
                 compo.setup_component()
 
     def make_new_tid(self):
@@ -432,7 +503,7 @@ class Page(object):
             else:
                 raise Exception("Unknown ajax-event: " + repr(event))
 
-        for cid, compo in self.components.items():
+        for cid, compo in self.get_active_components():
             compo.after_event_handling()
 
         pages = self.page_request.get_handeled_pages()[:]
@@ -473,7 +544,7 @@ class Page(object):
         """
         Trigger a redraw for all components.
         """
-        for compo in self.components.values():
+        for compo in self.get_active_components(show_cid=False):
             compo.redraw()
 
     def handle_submit_request(self):
@@ -493,10 +564,10 @@ class Page(object):
 
         self.handle_transaction()
 
-        for component_name, component_obj in self.components.items():
+        for component_name, component_obj in self.get_active_components():
             component_obj.request_handle_submit(dict(self.page_request.params))
 
-        for cid, compo in self.components.items():
+        for cid, compo in self.get_active_components():
             compo.after_event_handling()
 
     def add_js_response(self, js_string):
@@ -537,7 +608,7 @@ class Page(object):
         """
 
         # rendering all JS-parts of the components
-        for compo_obj in self.components.values():
+        for compo_obj in self.get_active_components(show_cid=False):
             if compo_obj.is_rendered:
                 init_js = compo_obj.get_js_part()
                 init_js = epflclient.JSBlockContent(init_js)
@@ -560,7 +631,7 @@ class Page(object):
         use "page.go_next(...)" instead.
         """
 
-        target_url = self.request.route_url(route, **(route_params or {}))
+        target_url = self.get_route_path(route, **route_params)
 
         js = "epfl.jump('" + target_url + "');"
         self.add_js_response(js)
@@ -619,7 +690,13 @@ class Page(object):
         };
         """
 
-        self.add_js_response("%s toastr.%s('%s');"% (toastr_options,type,message))
+        self.add_js_response("%s toastr.%s('%s');" % (toastr_options, type, message))
+
+    def get_route_path(self, route, **kwargs):
+        """
+        Convenience handle for pyramid.request.route_path.
+        """
+        return self.request.route_path(route, **kwargs)
 
 
 class PageRequest(object):
@@ -681,3 +758,32 @@ class PageRequest(object):
             return {}
         else:
             return {self.params["widget_name"]: self.request.POST[self.params["widget_name"] + "[]"]}
+
+
+class PageComponents(MutableMapping):
+    """
+    Wrapper dict that just holds the information which component is actually supposed to be present while leaving the
+    actual instances stored only in :attr:`Page.__dict__`.
+    Implements MutableMapping_.
+
+.. _MutableMapping: https://docs.python.org/2/library/collections.html#collections.MutableMapping
+"""
+
+    def __init__(self, page):
+        self.page = page
+        self._items = set()
+
+    def __setitem__(self, key, value):
+        self._items.add(key)
+
+    def __delitem__(self, key):
+        self._items.remove(key)
+
+    def __iter__(self):
+        return self._items.__iter__()
+
+    def __getitem__(self, key):
+        return getattr(self.page, key)
+
+    def __len__(self):
+        return len(self._items)
