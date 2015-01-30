@@ -778,14 +778,14 @@ class ComponentContainerBase(ComponentBase):
     node_list = []
 
     compo_config = ['node_list']
-    compo_state = ['row_offset', 'row_limit', 'row_count']
+    compo_state = ['row_offset', 'row_limit', 'row_count', 'row_data']
 
     default_child_cls = None
     data_interface = {'id': None}
 
     row_offset = 0
     row_limit = 30
-    row_data = 30
+    row_data = {}
     row_count = 30
 
     #: Updates are triggered every request in after_event_handling if True.
