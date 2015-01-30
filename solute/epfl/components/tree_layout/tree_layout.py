@@ -36,15 +36,11 @@ class TreeLayout(ComponentContainerBase):
     theme_path = ['tree_layout/theme']
 
     data_interface = {'id': None,
-                      #'children_ids': None,
-                      #'show_children': None,
-                      #'filter_key': None,
                       'label': None}
 
     label = None
     id = None
-    #children_ids = []
-    #show_children = False
+
     @property
     def show_children(self):
         return self.row_data.get("show_children", False)
@@ -89,13 +85,8 @@ class TreeLayout(ComponentContainerBase):
         return ComponentContainerBase.is_smart(self) and self.show_children
     
     def update_children_recursively(self):
-        #print "> CALL update_children() FOR COMP %r %r" % (self.id, self.label)
-        old_show_children = self.show_children
-        self.show_children = True
         self.update_children(force=True)
-        self.show_children = old_show_children
         
-        #print "< update_children() CALLED FOR COMP %r %r" % (self.id, self.label)
         for c in self.components:
             try:
                 c.update_children_recursively() # also a tree
