@@ -8,7 +8,9 @@
                     '{{ compo.cid }}',
                     {{ compo.row_offset - compo.row_limit }},
                     {{ compo.row_limit }},
-                    {search: '{{ compo.row_data['search'] if compo.row_data is defined and compo.row_data is mapping else '' }}'})"
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
                 class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
                 <span aria-hidden="true">&laquo;</span>
             </li>
@@ -18,7 +20,9 @@
                     '{{ compo.cid }}',
                     {{ i }},
                     {{ compo.row_limit }},
-                    {search: '{{ compo.row_data['search'] if compo.row_data is defined and compo.row_data is mapping else '' }}'})"
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
                 class="{{ 'active' if i == compo.row_offset else '' }}">
                 <span>{{ (i/compo.row_limit + 1)|round(method='ceil')|int }}</span>
             </li>
@@ -28,7 +32,9 @@
                     '{{ compo.cid }}',
                     {{ compo.row_offset + compo.row_limit }},
                     {{ compo.row_limit }},
-                    {search: '{{ compo.row_data['search'] if compo.row_data is defined and compo.row_data is mapping else '' }}'})"
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
                 class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
                 <span aria-hidden="true">&raquo;</span>
             </li>
