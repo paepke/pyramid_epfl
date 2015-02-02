@@ -1,4 +1,4 @@
-from pyramid.interfaces import IRootFactory
+from pyramid.view import view_config
 from pyramid import security
 from functools import wraps
 
@@ -152,3 +152,37 @@ def epfl_check_role(role, request):
         return True
     else:
         return False
+
+
+class EpflView(object):
+    config = None
+
+    def __init__(self, route_name=None, route_pattern=None, permission=None, route_text=None):
+        self.route_name = route_name
+        self.route_text = route_text or self.route_name
+        self.route_pattern = route_pattern
+        self.permission = permission
+
+        self._config.add_route(self.route_name, self.route_pattern)
+
+    def __call__(self, cb):
+        self._config.add_view(cb,
+                              route_name=self.route_name,
+                              permission=self.permission, )
+        return cb
+
+    @property
+    def _config(self):
+        if self.config:
+            return self.config
+        raise Exception('No config found, have you added this module to epfl.active_modules?')
+
+    @staticmethod
+    def configure(config):
+        EpflView.config = config
+
+        active_modules = [m.strip() for m in config.registry.settings.get('epfl.active_modules', '').split(',')]
+        for m in active_modules:
+            config.maybe_dotted(m)
+
+        EpflView.config = None

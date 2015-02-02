@@ -150,3 +150,5 @@ def includeme(config):
     components.add_routes(config)
 
     config.set_root_factory(epflassets.DefaultACLRootFactory)
+
+    epflassets.EpflView.configure(config)
