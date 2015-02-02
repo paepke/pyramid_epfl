@@ -8,7 +8,7 @@ import types, copy, string, inspect, uuid
 from pyramid import security
 from pyramid import threadlocal
 
-from solute.epfl.core import epflclient, epflutil, epflassets
+from solute.epfl.core import epflclient, epflutil, epflacl
 
 from solute.epfl import json
 
@@ -165,7 +165,7 @@ class UnboundComponent(object):
                                                                        conf=self.__unbound_config__)
 
 
-@epflassets.epfl_acl(['access'])
+@epflacl.epfl_acl(['access'])
 class ComponentBase(object):
     """
     Components are the building-blocks of any :class:`.epflpage.Page` containing python, html, css and javascript.
@@ -550,7 +550,7 @@ class ComponentBase(object):
 
         return string.join(js, "")
 
-    @epflassets.epfl_has_permission('access')
+    @epflacl.epfl_has_permission('access')
     def handle_event(self, event_name, event_params):
         """
         Called by the system for every ajax-event in the ajax-event-queue from the browser.

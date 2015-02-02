@@ -6,7 +6,7 @@
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import PaginatedListLayout
-from solute.epfl.core.epflassets import epfl_has_permission,epfl_acl
+from solute.epfl.core.epflacl import epfl_has_permission
 
 
 class LinkListLayout(PaginatedListLayout):

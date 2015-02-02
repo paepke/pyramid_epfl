@@ -11,7 +11,7 @@ from pyramid import security
 
 from solute.epfl import json
 
-from solute.epfl.core import epflclient, epflutil, epflassets
+from solute.epfl.core import epflclient, epflutil, epflacl
 
 
 class LazyProperty(object):
@@ -26,7 +26,7 @@ class LazyProperty(object):
         self.callback(overwrite=True)
 
 
-@epflassets.epfl_acl(['access'])
+@epflacl.epfl_acl(['access'])
 class Page(object):
     """
     Handles the request-processing-flow of EPFL requests for all its contained :class:`.epflcomponentbase.BaseComponent`
