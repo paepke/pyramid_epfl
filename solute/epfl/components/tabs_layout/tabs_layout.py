@@ -8,7 +8,7 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
     
     asset_spec = "solute.epfl.components:tabs_layout/static"
 
-    js_name = ["js/jquery-1.8.2.min.js", "bootstrap.tab.js", "tabs_layout.js"]
+    js_name = ["bootstrap.tab.js", "tabs_layout.js"]
 
     compo_state = ["active_tab_cid"]
 

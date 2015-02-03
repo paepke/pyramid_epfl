@@ -391,41 +391,43 @@ epfl_module();
 $(window).bind("beforeunload", epfl.unload_page);
 
 (function($) {
-    $.fn.highlight_hover_border = function() {
-        this.removeClass("epfl_hover_image");
-        this.addClass("epfl_hover_image_selected");
-        this.unbind_hover_border_events();
-        this.css("border-color", "blue");
-    };
-    $.fn.unhighlight_hover_border = function() {
-        this.addClass("epfl_hover_image");
-        this.removeClass("epfl_hover_image_selected");
-        this.bind_hover_border_events();
-        this.css("border-color", "transparent");
-    };
-    $.fn.unbind_hover_border_events = function() {
-        this.unbind("mouseenter mouseleave")
-    };
-    $.fn.bind_hover_border_events = function() {
-        this.hover(
+    jQuery.fn.extend({
+    	highlight_hover_border: function() {
+	    	this.removeClass("epfl_hover_image");
+	        this.addClass("epfl_hover_image_selected");
+	        this.unbind_hover_border_events();
+	        this.css("border-color", "blue");
+    	},
+    	unhighlight_hover_border: function() {
+	    	this.addClass("epfl_hover_image");
+	        this.removeClass("epfl_hover_image_selected");
+	        this.bind_hover_border_events();
+	        this.css("border-color", "transparent");
+    	},
+    	unbind_hover_border_events: function() {
+    		this.unbind("mouseenter mouseleave");
+    	},
+		bind_hover_border_events: function() {
+			this.hover(
                 function() {
                     $(this).css("border-color", "#8080ff");
                 },
                 function() {
                     $(this).css("border-color", "transparent");
                 });
-    };
-    $.fn.center = function(parent) {
-        if (parent) {
-            parent = this.parent();
-        } else {
-            parent = window;
-        }
-        this.css({
-            "position": "absolute",
-            "top": ((($(parent).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
-            "left": ((($(parent).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
-        });
-    };
+        },
+        center: function(parent) {
+	        if (parent) {
+	            parent = this.parent();
+	        } else {
+	            parent = window;
+	        }
+	        this.css({
+	            "position": "absolute",
+	            "top": ((($(parent).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
+	            "left": ((($(parent).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
+	        });
+	   }
+    });
 })(jQuery);
 
