@@ -304,21 +304,30 @@ epfl_module = function() {
     };
 
     epfl.show_fading_message = function(msg, typ) {
-        $("body").append("<div id='epfl_message'></div>");
-        if (typ == "info") {
-            $("#epfl_message").css("background", "#ffff80");
-        } else if (typ == "ok") {
-            $("#epfl_message").css("background", "#80ff80");
-        } else if (typ == "error") {
-            $("#epfl_message").css("background", "#ff8080");
+          toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-bottom-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
         };
-        $("#epfl_message").html(msg);
-        $("#epfl_message").center();
-        setTimeout(function() {
-            $("#epfl_message").fadeOut(500, function() {
-                    $(this).remove();
-            });
-        }, 2000);
+        if (typ == "info") {
+            toastr.info(msg);
+        } else if (typ == "ok") {
+            toastr.success(msg);
+        } else if (typ == "error") {
+            toastr.error(msg);
+        };
     };
 
     epfl.reload_page = function() {
