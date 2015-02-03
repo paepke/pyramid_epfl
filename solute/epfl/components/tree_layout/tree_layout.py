@@ -36,34 +36,38 @@ class TreeLayout(ComponentContainerBase):
     theme_path = ['tree_layout/theme']
 
     data_interface = {'id': None,
-                      'label': None}
+                      'label': None,
+                      'number_of_children': None}
 
     label = None
     id = None
+    #: the number of children for this tree. If the tree is collapsed, its child components 
+    # need not to be set, but this field can be used to indicate whether the node has children.
+    number_of_children = None
+    
+    max_height = None #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
+    min_height = None #: Set the min height of the tree (optional).
 
     @property
     def show_children(self):
         return self.row_data.get("show_children", False)
-    
+
     @show_children.setter
     def show_children(self, show_children):
         self.row_data["show_children"] = show_children
-        
-    @property
-    def filter_key(self):
-        return self.row_data.get("filter_key", None)
-    
-    @filter_key.setter
-    def filter_key(self, filter_key):
-        self.row_data["filter_key"] = filter_key
-     
-    
+
+    # : Specify a custom font-awesome icon class for collapsed nodes.
     custom_node_icon_collapsed = None
+    # : Specify a custom font-awesome icon class for expanded nodes.
     custom_node_icon_expanded = None
+    # : Specify a custom font-awesome icon class for empty nodes (no child components).
+    empty_node_icon = None
+
     #: Indicates a set filter that can be used by get_data to return filtered entries only
     #: This dict can store the data of the root nodes of this tree for caching: TreeModelBase respects this.
     tree_node_dict = {}
-    expanded_nodes = []  #: Store the ids of expanded nodes, can be used by model, but is not set automatically.
+    #: Store the ids of expanded nodes, can be used by model, but is not set automatically.
+    expanded_nodes = []
 
     # folder icons
     # custom_node_icon_collapsed="fa-folder-o"
@@ -83,19 +87,19 @@ class TreeLayout(ComponentContainerBase):
         In this case, all child elements returned by get_data won't be regarded
         """
         return ComponentContainerBase.is_smart(self) and self.show_children
-    
+
     def update_children_recursively(self):
         self.update_children(force=True)
-        
+
         for c in self.components:
             try:
-                c.update_children_recursively() # also a tree
+                c.update_children_recursively()  # also a tree
             except AttributeError:
                 try:
                     c.update_children(force=True)
                 except AttributeError:
-                    pass # a base component
-        
+                    pass  # a base component
+
 
 class DroppableTreeLayout(TreeLayout):
 

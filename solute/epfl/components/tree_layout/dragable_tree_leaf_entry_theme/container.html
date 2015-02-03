@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    <div epflid="{{compo.cid}}">
+    <div epflid="{{compo.cid}}" class="epfl-tree-leaf">
         {{ caller() }}
         {% if compo.icon %}
 		<i class="fa {{ compo.icon }}"></i>
