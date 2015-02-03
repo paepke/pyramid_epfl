@@ -42,7 +42,7 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
         if type(permission) is not list:
             permission = [permission]
 
-        actions.setdefault(action, {}).setdefault(principal, permission)
+        actions.setdefault(action, {}).setdefault(principal, []).extend(permission)
 
     acl = []
     for action, _principals in actions.items():
@@ -70,19 +70,22 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
     return wrapper
 
 
-def epfl_has_permission(permission, fail_callback=None):
+def epfl_has_permission(permission, fail_callback=None, obj=None):
     def wrapper(func):
         @wraps(func)
         def wrap(*args, **kwargs):
             self = args[0]
-            request = self.request
-            if not request.has_permission(permission, self):
+            _request = self.request
+            if not _request.has_permission(permission, self):
                 if fail_callback:
                     return fail_callback(*args, **kwargs)
                 return
             return func(*args, **kwargs)
 
         return wrap
+
+    if obj:
+        return obj.request.has_permission(permission, obj)
 
     return wrapper
 

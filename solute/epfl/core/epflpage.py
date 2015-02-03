@@ -704,6 +704,7 @@ class Page(object):
         """
         Convenience handle for pyramid.request.route_path.
         """
+        return self.request.route_path(route, **kwargs)
 
 
 class PageRequest(object):

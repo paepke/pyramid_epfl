@@ -137,7 +137,7 @@ def get_page_classes_from_route(request, route_name):
     return candidates
 
 
-def has_permission_for_route(request, route_name, permission):
+def has_permission_for_route(request, route_name, permission=None):
     """
     Given a request, a route-name and a permission, it checks, if the current user has this permission for at least
     one of the page-objects that are bound to this route.
@@ -149,7 +149,23 @@ def has_permission_for_route(request, route_name, permission):
         if not security.has_permission("access", resource, request):
             return False
 
-    return True
+    default = True
+
+    views = request.registry.introspector.get_category('views')
+    for related in views:
+        if related['introspectable']['route_name'] == route_name:
+            related = related['related']
+
+            for r in related:
+                if r.type_name != 'permission':
+                    continue
+                default = False
+                if security.has_permission(r['value'], request.root, request):
+                    return True
+
+            break
+
+    return default
 
 
 def get_component(request, tid, cid):

@@ -1,6 +1,9 @@
 from pyramid.view import view_config
 from pyramid import security
 from functools import wraps
+from solute.epfl.components import LinkListLayout
+
+from epflacl import epfl_acl, ACL
 
 
 def get_item_or_attr(obj, key):
@@ -46,10 +49,19 @@ class ModelBase(object):
 
 
 class EPFLView(object):
+    acl = []
+
     config = None
     register = []
+    counter = {'id': 0}
 
     def __init__(self, route_name=None, route_pattern=None, permission=None, route_text=None, rank=0):
+        """
+        Adds a route, adds the view with the given permissions to that route and creates a link that appears in
+        :meth:`get_nav_list`.
+        For future expansion the parameters of this method might be extended to allow sub-links and fine tuning of link
+        order.
+        """
         self.route_name = route_name
         self.route_text = route_text or self.route_name
         self.route_pattern = route_pattern
@@ -67,7 +79,10 @@ class EPFLView(object):
         return cb
 
     def add_link(self):
-        pass
+        self.counter['id'] += 1
+        self.register.append({'id': self.counter['id'],
+                              'url': self.route_name,
+                              'text': self.route_text})
 
     @property
     def _config(self):
@@ -79,8 +94,35 @@ class EPFLView(object):
     def configure(config):
         EPFLView.config = config
 
-        active_modules = [m.strip() for m in config.registry.settings.get('epfl.active_modules', '').split(',')]
+        active_modules = [m.strip() for m in config.registry.settings.get('epfl.active_modules', '').split(',')
+                          if m.strip()]
         for m in active_modules:
             config.maybe_dotted(m)
 
         EPFLView.config = None
+
+    @staticmethod
+    def get_nav_list():
+        """
+        Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
+        correct permissions.
+        """
+        if EPFLView.acl:
+            acl_wrapper = epfl_acl(EPFLView.acl, use_as_global=True)
+            acl_wrapper(EPFLViewLinks)
+            EPFLView.acl = None
+        return EPFLViewLinks(links=EPFLView.register)
+
+    @staticmethod
+    def register_acl(*args, **kwargs):
+        """
+        Register ACLs to be used in the navigation provided by EPFLView and as global ACLs. They will only be registered
+        as global ACLs if :meth:`the get_nav_list` is called.
+        """
+        acl = ACL([])
+        epfl_acl(*args, **kwargs)(acl)
+        EPFLView.acl.extend(acl.__acl__)
+
+
+class EPFLViewLinks(LinkListLayout):
+    pass
