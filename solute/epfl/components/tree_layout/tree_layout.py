@@ -12,6 +12,7 @@ class DraggableTreeLeafEntry(DragBox):
     theme_path = ["tree_layout/dragable_tree_leaf_entry_theme"]
     label = None
     icon = None
+    keep_orig_in_place = True
 
     compo_state = ["label", "icon"]
 

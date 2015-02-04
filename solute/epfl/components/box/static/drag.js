@@ -1,6 +1,10 @@
-epfl.make_compo_dragable = function (cid) {
+epfl.make_compo_dragable = function (cid, params) {
+	keep_in_place=params["keep_orig_in_place"];
     $('[epflid=' + cid +  ']').mousedown(function (e) {
         function reset_css() {
+        	if (elm_copy) {
+        		elm_copy.remove();
+        	}
             elm.css('position', style_before['position']);
             elm.css('left', style_before['left']);
             elm.css('top', style_before['top']);
@@ -8,10 +12,15 @@ epfl.make_compo_dragable = function (cid) {
         }
 
         function update_css(x, y) {
-            elm.css('position', 'fixed');
-            elm.css('left', x + 'px');
-            elm.css('top', y + 'px');
-            elm.css('z-index', 100);
+        	local_elm = elm;
+        	if (elm_copy) {
+        		local_elm=elm_copy;
+        		elm.removeClass("placeholder");
+        	}
+            local_elm.css('position', 'fixed');
+            local_elm.css('left', x + 'px');
+            local_elm.css('top', y + 'px');
+            local_elm.css('z-index', 100);
         }
 
         function get_epflid(containing_elm) {
@@ -25,8 +34,9 @@ epfl.make_compo_dragable = function (cid) {
             }
             return cid;
         }
-
         var elm = $(this);
+        var elm_copy;
+			
 
         var style_before = {position: elm.css('position'),
                             left: elm.css('left'),
@@ -47,6 +57,12 @@ epfl.make_compo_dragable = function (cid) {
                     && e.clientY - y < 5 && e.clientY - y > -5) {
                     return reset_css();
                 }
+                if (keep_in_place && !elm_copy) {
+					elm_copy = elm.clone().appendTo(elm.parent());
+					elm.addClass('placeholder');
+					elm_copy.addClass('dragged');
+					elm_copy.css('width', elm.width() + 'px');
+				}
                 update_css(e.clientX + 5, e.clientY + 5);
             })
             .mouseup(function (e) {
