@@ -13,7 +13,6 @@ epfl.TreeLayoutComponent = function(cid, params) {
 	    });
 	if (show_context_menu_on_hover_only) {
 		$('[epflid=' + cid + '] > .epfl-tree-label').mouseenter(function() {
-			console.log("YES!");
 			$(this).parent().parent().children('.epfl-tree-context-menu').hide();
 			$(this).children('.epfl-tree-context-menu').show();
 		})
