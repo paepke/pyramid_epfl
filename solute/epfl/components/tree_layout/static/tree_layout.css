@@ -6,6 +6,6 @@
 }
 
 .epfl-tree-context-menu {
-	position: absolute;
-	right:40px;
+	float:right;
+	margin-right:5px;
 }

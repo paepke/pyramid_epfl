@@ -20,6 +20,7 @@
 
     var drop_accepts = function(cid) {
         return function (elm, type, data) {
+        	console.log("AA");
             var target_elm = $(data.originalEvent.target).closest('[epflid][data-parent-epflid=' + cid + ']');
             var target_cid = target_elm.attr('epflid');
 
