@@ -89,6 +89,7 @@ class Page(object):
         The lazy_mode is setup here if the request is an ajax request and all events in it are requesting lazy_mode.
         """
         self.request = request
+        self.request.page = self
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
         self.components = PageComponents(self)  # all registered components of this page
