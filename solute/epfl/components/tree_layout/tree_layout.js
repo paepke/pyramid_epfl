@@ -1,9 +1,4 @@
-$('[epflid=' + '{{ compo.cid }}] > .tree-label.expanded')
-    .click(function () {
-        epfl.send(epfl.make_component_event('{{ compo.cid }}', 'hide'));
-    });
-
-$('[epflid=' + '{{ compo.cid }}] > .tree-label.collapsed')
-    .click(function () {
-        epfl.send(epfl.make_component_event('{{ compo.cid }}', 'show'));
-    });
+$(function () {
+    epfl.init_component("{{compo.cid}}", "TreeLayoutComponent",
+    					{ "label": "{{ compo.label }}", "show_context_menu_on_hover_only": {{ compo.show_context_menu_on_hover_only|format_bool }} });
+});

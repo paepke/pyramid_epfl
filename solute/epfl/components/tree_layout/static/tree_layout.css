@@ -1,6 +1,11 @@
-.tree-label {
+.epfl-tree-label {
 	cursor: pointer;
 }
 .tree-drop-line-marker {
 	color: red;
+}
+
+.epfl-tree-context-menu {
+	position: absolute;
+	right:40px;
 }

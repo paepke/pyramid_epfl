@@ -31,9 +31,11 @@ class TreeLayout(ComponentContainerBase):
 
     compo_state = ComponentContainerBase.compo_state + \
         ['tree_node_dict', 'expanded_nodes']
+    js_name = ["tree_layout.js"]
     js_parts = ComponentContainerBase.js_parts + ["tree_layout/tree_layout.js"]
 
     theme_path = ['tree_layout/theme']
+    template_name = 'tree_layout/tree_base.html'
 
     data_interface = {'id': None,
                       'label': None,
@@ -41,12 +43,35 @@ class TreeLayout(ComponentContainerBase):
 
     label = None
     id = None
-    #: the number of children for this tree. If the tree is collapsed, its child components 
+    #: the number of children for this tree. If the tree is collapsed, its child components
     # need not to be set, but this field can be used to indicate whether the node has children.
     number_of_children = None
-    
-    max_height = None #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
-    min_height = None #: Set the min height of the tree (optional).
+
+    #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
+    max_height = None
+    min_height = None  #: Set the min height of the tree (optional).
+
+    #: This dict stores the child components in its slots. All default components, i.e. all tree children nodes,
+    # end up in the "children" slot. A context menu can be placed in the "context_menu" slot.
+    _slotted_components = None
+
+    # : If set to true, the context menu is only visible when the mouse hovers over the tree entry.
+    show_context_menu_on_hover_only = False
+
+    #: Return a subset of the tree's child components, based on the given slot type.
+    def slotted_components(self, slot_type='children'):
+        # print "CALL slotted_components on comp %r, %r child compos." % (self.cid, len(self.components))
+        # print " _slotted_components: %r" % self._slotted_components
+        if self._slotted_components is None:
+            self._slotted_components = {'children': [],
+                                        'context_menu': []}
+            for compo in self.components:
+                # print "CHECK: " + str(type(compo)) + " | " + repr(getattr(compo,
+                # 'container_slot', None))
+                self._slotted_components.setdefault(
+                    getattr(compo, 'container_slot', None) or 'children', []).append(compo)
+
+        return self._slotted_components.get(slot_type, [])
 
     @property
     def show_children(self):
