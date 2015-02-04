@@ -30,10 +30,12 @@ class TreeLayout(ComponentContainerBase):
     css_name = ["tree_layout.css"]
 
     compo_state = ComponentContainerBase.compo_state + \
-        ['tree_node_dict', 'expanded_nodes']
+        ['tree_node_dict', 'expanded_nodes', 'show_children']
+    js_name = ["tree_layout.js"]
     js_parts = ComponentContainerBase.js_parts + ["tree_layout/tree_layout.js"]
 
     theme_path = ['tree_layout/theme']
+    template_name = 'tree_layout/tree_layout_base.html'
 
     data_interface = {'id': None,
                       'label': None,
@@ -41,20 +43,36 @@ class TreeLayout(ComponentContainerBase):
 
     label = None
     id = None
-    #: the number of children for this tree. If the tree is collapsed, its child components 
+    #: the number of children for this tree. If the tree is collapsed, its child components
     # need not to be set, but this field can be used to indicate whether the node has children.
     number_of_children = None
     
-    max_height = None #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
-    min_height = None #: Set the min height of the tree (optional).
+    show_children = False #: Set to true if child entries of the tree should be shown.
 
-    @property
-    def show_children(self):
-        return self.row_data.get("show_children", False)
+    #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
+    max_height = None
+    min_height = None  #: Set the min height of the tree (optional).
 
-    @show_children.setter
-    def show_children(self, show_children):
-        self.row_data["show_children"] = show_children
+    #: This dict stores the child components in its slots. All default components, i.e. all tree children nodes,
+    # end up in the "children" slot. A context menu can be placed in the "context_menu" slot.
+    _slotted_components = None
+
+    # : If set to true, the context menu is only visible when the mouse hovers over the tree entry.
+    show_context_menu_on_hover_only = False
+
+    #: Return a subset of the tree's child components, based on the given slot type.
+    def slotted_components(self, slot_type='children'):
+        #print "CALL slotted_components on comp %r, %r child compos." % (self.cid, len(self.components))
+        #print " _slotted_components: %r" % self._slotted_components
+        if self._slotted_components is None:
+            self._slotted_components = {'children': [],
+                                        'context_menu': []}
+            for compo in self.components:
+                #print "CHECK: " + str(type(compo)) + " | " + repr(getattr(compo, 'container_slot', None))
+                self._slotted_components.setdefault(
+                    getattr(compo, 'container_slot', None) or 'children', []).append(compo)
+
+        return self._slotted_components.get(slot_type, [])
 
     # : Specify a custom font-awesome icon class for collapsed nodes.
     custom_node_icon_collapsed = None
@@ -90,7 +108,11 @@ class TreeLayout(ComponentContainerBase):
 
     def update_children_recursively(self):
         self.update_children(force=True)
-
+        # don't recursively update children if component is not smart
+        # otherwise, show_children might be false, child components are not rendered
+        # but they will be updated in a recursion step here.
+        if not self.is_smart():
+            return
         for c in self.components:
             try:
                 c.update_children_recursively()  # also a tree
@@ -99,6 +121,10 @@ class TreeLayout(ComponentContainerBase):
                     c.update_children(force=True)
                 except AttributeError:
                     pass  # a base component
+    
+    def update_children(self, force=False):
+        ComponentContainerBase.update_children(self, force=force)
+        self._slotted_components = None
 
 
 class DroppableTreeLayout(TreeLayout):

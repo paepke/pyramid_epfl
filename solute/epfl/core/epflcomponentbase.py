@@ -888,18 +888,7 @@ class ComponentContainerBase(ComponentBase):
 
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
 
-        tipping_point = 0
-        for i, c in enumerate(self.components):
-            if hasattr(c, 'id'):
-                break
-            elif getattr(c, 'static_align', 'top') == 'top':
-                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None), position=tipping_point or 0)
-                tipping_point = (tipping_point or 0) + 1
-            elif c.static_align == 'bottom':
-                self.switch_component(self.cid, c.cid, slot=getattr(c, 'slot', None))
-
-        if tipping_point is None:
-            tipping_point = 0
+        tipping_point = len([c for c in self.components if not hasattr(c, 'id')])
 
         current_order = []
         new_order = []

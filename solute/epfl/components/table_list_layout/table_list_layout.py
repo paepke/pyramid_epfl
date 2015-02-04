@@ -130,8 +130,11 @@ class TableListLayout(ListLayout):
         return badge
 
     @staticmethod
-    def Edit():
-        return {"type": "edit"}
+    def Edit(disabled=False):
+        edit = {"type": "edit"}
+        if disabled:
+            edit["disabled"] = "disabled"
+        return edit
 
     @staticmethod
     def Popover(text,popover_text):
