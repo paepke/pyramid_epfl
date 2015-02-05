@@ -65,6 +65,18 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         """
         return self.value
 
+
+    def reset(self):
+        """
+        Initialize the field with its default value and clear all validation messages.
+        """
+        if self.default is not None:
+            self.value = self.default
+        else:
+            self.value = None
+        self.validation_error = ""
+            
+
     def validate(self):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
@@ -139,6 +151,11 @@ class Form(epflcomponentbase.ComponentContainerBase):
         pass
 
     def register_field(self, field):
+        """
+        Make a field known to the parent form. Since any component can reside in a form, the child components 
+        which register themselves as fields have to provide the methods reset() and validate() (see :class:`.FormInputBase`),
+        since these are called for all registered fields by the parent form.
+        """
         self._registered_fields.append(field.cid)
 
     @property
@@ -158,6 +175,14 @@ class Form(epflcomponentbase.ComponentContainerBase):
             if field.name == key:
                 field.value = value
                 return
+            
+    def reset(self):
+        """
+        Initialize all registered form fields with its default value and clear all validation messages.
+        """
+        for field in self.registered_fields:
+            field.reset()
+        self.redraw()
 
     def validate(self):
         result = []
