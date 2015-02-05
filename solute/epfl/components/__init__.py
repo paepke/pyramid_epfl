@@ -54,6 +54,7 @@ from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 from modal.modal import Modal
+from dropdown.dropdown import Dropdown
 
 
 def add_routes(config):
@@ -110,3 +111,4 @@ def add_routes(config):
     Placeholder.add_pyramid_routes(config)
 
     Modal.add_pyramid_routes(config)
+    Dropdown.add_pyramid_routes(config)
