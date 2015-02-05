@@ -20,6 +20,7 @@ class Modal(epflcomponentbase.ComponentContainerBase):
 
     title = ""
     save_button = False
+    small_modal = False
 
 
     def handle_save(self):
