@@ -7,41 +7,54 @@ A Dict-Like Object that represents a epfl-transaction
 
 
 from pprint import pprint
+from redis import StrictRedis
+import cPickle as pickle
+from copy import deepcopy
 
 import types, copy, string, uuid, time
 
 from solute.epfl import json
+from collections import MutableMapping
 
 
-class Transaction(object):
+class Transaction(MutableMapping):
     """ An object that encapsulates the transaction-access.
     The transactions are stored in the session.
     A transaction is always bound to a page-obj.
     """
 
-    def __init__(self, request, tid = None):
+    #: Internal cache of the data this transaction holds.
+    _data = None
+    #: Internal cache of the data this transaction held when loaded.
+    _data_original = None
+
+    #: Can contain a new transaction id to be used for storing this transaction. If given, the original transaction will
+    #: be stored as locked under its original id so that it will be preserved in the state it was left in. Should be
+    #: accessed via :meth:`store_as_new`.
+    tid_new = None
+
+    #: The transaction id.
+    tid = None
+
+    #: True if the Transaction was just created.
+    created = False
+
+    #: The request currently in progress.
+    request = None
+    #: The session of the request currently in progress.
+    session = None
+
+    def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
 
         self.request = request
         self.session = request.session
         self.tid = tid
+        self.created = False
 
         if not self.tid:
-            self.tid = str(uuid.uuid4())
-            self.session["TA_" + self.tid] = {}
+            self.tid = uuid.uuid4().hex
             self.created = True
-        else:
-            self.created = False
-
-        self.data = self.session["TA_" + self.tid]
-        self.pid = self.data.get("__pid__")
-
-
-        if self.created:
-            # setup new transaction
-            self["__is_transaction__"] = True
-            self["__ct__"] = time.time()
-            self["overlays"] = []
 
     def set_page_obj(self, page_obj):
         self["__page__"] = page_obj.get_name()
@@ -50,79 +63,165 @@ class Transaction(object):
         return self["__page__"]
 
     def is_created(self):
-        """ Is the transaction created this server-roundtrip? """
+        """
+        Returns true if the transaction was created this server-roundtrip.
+        """
         return self.created
 
     def get_id(self):
         return self.tid
 
-    def __get_child_tids(self):
-
-        child_tids = []
-
-        for key in self.session.keys():
-            if key.startswith("TA_") and type(self.session[key]) is dict and self.session[key].has_key("__is_transaction__"):
-                ptid = self.session[key].get("__pid__")
-                if ptid == self.tid:
-                    child_tids.append(key[3:])
-
-        return child_tids
-
-
     def get_pid(self):
-        return self.pid
+        return self.get("__pid__", None)
 
     def set_pid(self, pid):
-        self.pid = pid
         self["__pid__"] = pid
-
-    def __getitem__(self, key):
-        if self.data is None:
-            return None
-        else:
-            return self.data[key]
-
-    def __setitem__(self, key, value):
-        self.data[key] = value
-
-    def __contains__(self, key):
-        return self.has_key(key)
-
-    def get(self, key, default = None):
-        if self.has_key(key):
-            return self[key]
-        else:
-            return default
-
-    def has_key(self, key):
-        if self.data is None:
-            return False
-        return self.data.has_key(key)
-
-    def update(self, dict):
-        self.data.update(dict)
 
     def delete(self):
         """
-        Marks this transaction for deletion and all child-transactions.
+        Deletes this transaction and all child-transactions.
         """
+        del self.data
 
-        tids = self.request.get_epfl_request_aux("deleted_tas", default = [])
-        if self.tid not in tids:
-            tids.append(self.tid)
-        self.request.set_epfl_request_aux("deleted_tas", tids)
+    # MutableMapping requirements:
+    def __getitem__(self, key):
+        return self.data.__getitem__(key)
 
-        child_tids = self.__get_child_tids()
+    def __setitem__(self, key, value):
+        return self.data.__setitem__(key, value)
 
-        for tid in child_tids:
-            trans = Transaction(self.request, tid)
-            trans.delete()
+    def __delitem__(self, key):
+        return self.data.__delitem__(key)
 
+    def __contains__(self, key):
+        return self.data.__contains__(key)
 
-def kill_deleted_transactions(request):
+    def __iter__(self):
+        return self.data.__iter__()
 
-    tids = request.get_epfl_request_aux("deleted_tas", default = [])
+    def __len__(self):
+        return self.data.__len__()
 
-    for tid in tids:
-        del request.session["TA_" + tid]
+    # Internal storage handling
+    def lock_transaction(self):
+        """
+        Load a copy of the current transaction, unset the flag requesting a new transaction, reset the lock status and
+        store it as locked. After calling this the transaction related to this :class:`Transaction` instance should be
+        stored under a new transaction id, else it would override the locked copy.
+        """
+        old_transaction = Transaction(self.request, self.tid)
+        old_transaction.tid_new = None
+        old_transaction.pop('locked', None)
+        old_transaction.store(lock=True)
+
+    def store_as_new(self):
+        """
+        Generate a fresh transaction id using the uuid module.
+        """
+        self.tid_new = uuid.uuid4().hex
+
+    def store(self, lock=False):
+        """
+        Recursive storing mechanism. If no changes have occurred during this request nothing is done. If the transaction
+        is locked because it has spawned a child transaction a new transaction will be generated. If a new transaction
+        has been requested the current transaction is stored locked and a new unlocked transaction with the same content
+        is stored in its stead.
+        """
+        if self.is_clean and not lock:
+            return
+
+        if self.pop('locked', False):
+            self.store_as_new()
+
+        if lock:
+            self['locked'] = lock
+
+        if self.tid_new:
+            self.lock_transaction()
+            self.tid = self.tid_new
+
+        store_type = self.request.registry.settings.get('epfl.transaction.store')
+        if store_type == 'redis':
+            self.redis.setex('TA_%s' % self.tid, 1800, pickle.dumps(self._data))
+        elif store_type == 'memory':
+            self.memory['TA_%s' % self.tid] = self._data
+        else:
+            raise Exception('No valid transaction store found!')
+
+    @property
+    def data(self):
+        """
+        Get data from the configured storage system.
+        """
+        if self._data:
+            return self._data
+
+        if not self.tid:
+            raise Exception('Transaction store was accessed before transaction id was set.')
+
+        default_data = {"overlays": []}
+
+        store_type = self.request.registry.settings.get('epfl.transaction.store')
+        if store_type == 'redis':
+            data = self.redis.get('TA_%s' % self.tid)
+            if data:
+                self._data = pickle.loads(data)
+            else:
+                self._data = default_data
+            self._data_original = deepcopy(self._data)
+            if not self.is_clean:
+                raise Exception("what the fuck? ")
+            return self._data
+        elif store_type == 'memory':
+            self._data = deepcopy(self.memory.setdefault('TA_%s' % self.tid, default_data))
+            if self._data == default_data:
+                self.created = True
+            self._data_original = deepcopy(self._data)
+            return self._data
+        else:
+            raise Exception('No valid transaction store found!')
+
+    @data.deleter
+    def data(self):
+        """
+        Delete the transaction from its respective Storage.
+        """
+        del self._data
+        del self._data_original
+
+        store_type = self.request.registry.settings.get('epfl.transaction.store')
+        if store_type == 'redis':
+            self.redis.delete('TA_%s' % self.tid)
+        elif store_type == 'memory':
+            del self.memory['TA_%s' % self.tid]
+        else:
+            raise Exception('No valid transaction store found!')
+
+    @property
+    def redis(self):
+        """
+        Redis storage abstraction layer. Returns a singleton with get, delete and set methods.
+        """
+        if getattr(self.request.registry, 'transaction_redis', None) is None:
+            redis_url = self.request.registry.settings.get('epfl.transaction.url')
+            if not redis_url:
+                raise Exception('Transaction redis url not set!')
+            self.request.registry.transaction_redis = StrictRedis.from_url(redis_url)
+        return self.request.registry.transaction_redis
+
+    @property
+    def memory(self):
+        """
+        Memory storage abstraction layer. Returns a singleton dictionary.
+        """
+        if getattr(self.request.registry, 'transaction_memory', None) is None:
+            self.request.registry.transaction_memory = {}
+        return self.request.registry.transaction_memory
+
+    @property
+    def is_clean(self):
+        """
+        Returns true if the transaction has not been changed.
+        """
+        return self._data == self._data_original
 

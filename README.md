@@ -1,3 +1,9 @@
+====================================
+WARNING: EPFL Evolution has arrived!
+====================================
+Since Evolution is a major revision of EPFL many new features have arrived, some breaking with conventions and sadly your previous EPFL installations.
+Please check out our new and refurbished docs for further details!
+
 ==========================
 EPFL Python Frontend Logic
 ==========================
@@ -20,6 +26,13 @@ Documentation:
 
 Lives at http://pyramid-epfl.readthedocs.org/en/latest/
 
+
+Notice:
+-------
+
+This software contains a Highsoft software product (Highcharts JS) that is not free for commercial use (http://www.highcharts.com/license).
+For more information, visit http://www.highcharts.com/
+  
 
 
 

@@ -1,0 +1,20 @@
+/** formatting for Boxen
+---------------------------------------------------- */
+/* default box layout styles */
+
+.epfl_box_border {
+}
+.epfl_box {
+	border: None;
+	box-shadow: None;
+	margin-bottom: 0px;
+}
+.epfl_box > .panel-body {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+.epfl_box_remove_button {
+	float:right;
+	margin-top: -8px;
+	margin-right: -6px;
+}

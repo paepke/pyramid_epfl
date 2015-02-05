@@ -1,0 +1,16 @@
+<div epflid="{{ compo.cid }}" class="row">
+    {% if compo.label %}
+        <label for="{{compo.cid}}" class="col-sm-2 control-label">{{ compo.label }}</label>
+    {% endif %}
+
+    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}">
+        <button class="form-control epfl-button {% if compo.color is defined %}btn-{{ compo.color }}{% endif %}" type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{compo.cid}}">
+            {% if compo.icon is defined and (not compo.icon is none) %}
+
+            <i class="fa {{ compo.icon }}"></i>
+            {% else %}
+            {{ compo.value }}
+            {% endif %}
+        </button>
+    </div>
+ </div>

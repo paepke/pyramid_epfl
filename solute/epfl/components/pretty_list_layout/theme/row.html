@@ -1,0 +1,6 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <div class="list-group-item col-sm-12">
+        {{ caller() }}
+    </div>
+{% endmacro %}

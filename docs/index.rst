@@ -6,20 +6,26 @@
 Welcome
 =======
 
+Hello dear visitor! It is my pleasure to welcome you here on the documentation of the **E**\ PFL **P**\ ython
+**F**\ rontend **L**\ ogic Project!
+
+Try checking out our Quickstart for: :ref:`quickstart_users`, :ref:`quickstart_component_developers`,
+:ref:`quickstart_core_developers`
+
+
+If you are new to EPFL take a look at :ref:`introducing`
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   installation
-   intro
-   users/index
-   developers/index
+   beginner/index
+   advanced/index
+   professional/index
 
-   feature_chart
-   components/index
-   todo
-   other_software
+   api/index
+
    license
 
 
@@ -29,4 +35,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

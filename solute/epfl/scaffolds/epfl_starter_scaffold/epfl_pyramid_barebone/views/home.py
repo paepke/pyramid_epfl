@@ -1,17 +1,12 @@
-#* encoding: utf-8
+# * encoding: utf-8
 
-import pyramid
 from pyramid.view import view_config
-from pyramid import security
 from solute import epfl
-import time, datetime
 
+
+class HomeRoot(epfl.components.CardinalLayout):
+    pass
 
 @view_config(route_name='home')
 class HomePage(epfl.Page):
-
-    template = "home.html"
-
-    def setup_components(self):
-        pass
-
+    root_node = HomeRoot(constrained=True, node_list=[epfl.components.Box(title="Welcome to EPFL!")])

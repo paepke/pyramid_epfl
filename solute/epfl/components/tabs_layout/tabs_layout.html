@@ -1,0 +1,14 @@
+<div class="epfl_tab" epflid="{{compo.cid}}" role="tabpanel">
+    <ul id="{{compo.cid}}_tabmenu" class="nav nav-tabs" role="tablist">
+        {% for compo_obj in compo.components %}
+        <li role="presentation" {% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %}class="active"{% endif %}><a href="#{{ compo_obj.cid }}_tab" id="{{ compo_obj.cid }}_tabmenuentry" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" data-toggle="tab" aria-controls="{{ compo_obj.cid }}_tab" aria-expanded="true">{{ compo_obj.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <div id="{{compo.cid}}_tabcontent" class="tab-content">
+        {% for compo_obj in compo.components %}
+        <div role="tabpanel" class="fade in {% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %}active{% endif %}" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
+        {{ compo_obj.render() }}
+        </div>
+        {% endfor %}
+    </div>
+</div>

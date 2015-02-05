@@ -1,0 +1,44 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    {% if compo.row_count > compo.row_limit and compo.show_pagination %}
+    <div class="col-sm-12 text-center">
+        <ul class="pagination-sm pagination" style="margin: 5px 0; ">
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset - compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
+                class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
+                <span aria-hidden="true">&laquo;</span>
+            </li>
+            {% for i in range(0, compo.row_count, compo.row_limit) %}
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ i }},
+                    {{ compo.row_limit }},
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
+                class="{{ 'active' if i == compo.row_offset else '' }}">
+                <span>{{ (i/compo.row_limit + 1)|round(method='ceil')|int }}</span>
+            </li>
+            {% endfor %}
+            <li onclick="epfl.paginated_list_goto(
+                    this,
+                    '{{ compo.cid }}',
+                    {{ compo.row_offset + compo.row_limit }},
+                    {{ compo.row_limit }},
+                    {search: '{{ compo.row_data['search'] if compo.row_data is defined
+                                                             and compo.row_data is mapping
+                                                             and compo.row_data['search'] is defined else '' }}'})"
+                class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
+                <span aria-hidden="true">&raquo;</span>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+{% endmacro %}

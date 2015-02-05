@@ -10,12 +10,15 @@ import jinja2
 import string
 from solute.epfl import json
 
+
 def quote_escape_html(html):
     html = html.replace("\"", "\\\"")
     return '"%s"' % html
 
+
 def quote_escape_js(js):
     return json.encode(js)
+
 
 def replace_html(id, html):
     return "$('#%s').html(%s)" % (id, quote_escape_html(html))
@@ -46,13 +49,15 @@ class ExtraContent(object):
     target = None # http-header, head, footer
     exclusive = False
 
+    # Dynamic Components need to be able to push content dynamically.
+    enable_dynamic_rendering = False
+
     def __new__(cls, data):
         """ Nifty little trick: if you create an Extra-Content with a list of Extra-Content, you get a list of Extra-Content-Objects """
         if type(data) is list:
             return [cls(el) for el in data]
         else:
             return super(ExtraContent, cls).__new__(cls)
-
 
     def __init__(self, data):
         self.data = data
@@ -68,6 +73,7 @@ class ExtraContent(object):
     def render(self):
         return self.data
 
+
 class CSSContent(ExtraContent):
     """ Instances of this class can be passed to the function "wtf.response.add_jinja_extra_content".
     It will normally rendered in the template at the top of the page using {{ css_imports() }}.
@@ -76,13 +82,13 @@ class CSSContent(ExtraContent):
     target = "head"
 
 
-
 class JSContent(ExtraContent):
     """ Instances of this class can be passed to the function "wtf.response.add_jinja_extra_content".
     It will normally rendered in the template at the bottom of the page using {{ js_imports() }}.
     Links to external JS-Files go here.
     """
     target = "footer"
+
 
 class JSBlockContent(ExtraContent):
     """ Instances of this class can be passed to the function "wtf.response.add_jinja_extra_content".
@@ -108,6 +114,7 @@ class JSLink(JSContent):
     be once rendered.
     """
     target = "footer"
+    enable_dynamic_rendering = True
 
     def get_content_id(self):
         return self.data # src-path as unique-id
@@ -116,10 +123,12 @@ class JSLink(JSContent):
         """ we are a script-tag! """
         return "<script src='%s' language='javascript'></script>\r\n" % self.data
 
+
 class CSSLink(CSSContent):
     """ Same story as JSLink but for CSS """
 
     target = "head"
+    enable_dynamic_rendering = True
 
     def get_content_id(self):
         return self.data # src-path as unique-id
@@ -128,6 +137,7 @@ class CSSLink(CSSContent):
         """ we are a css-link """
         return '<link rel="stylesheet" type="text/css" href="%s"/>\r\n'  % self.data
 
+
 class EPFLResponse(object):
 
     """ Collects side-effect responses.
@@ -135,7 +145,7 @@ class EPFLResponse(object):
     The self.render_ajax_response, self.get_exclusive_extra_content and self.render_extra_content-functions
 
     """
-
+    _ajax_response = None
 
     def __init__(self, page_obj):
         self.page_obj = page_obj
@@ -145,11 +155,29 @@ class EPFLResponse(object):
         self.extra_content = []
         self.content_type = "text/html; charset=utf-8"
 
-    def add_ajax_response(self, resp_string):
-        """ Adds something to the response - in case it's a ajax-request """
-        if type(self.ajax_response) is list:
-            self.ajax_response.append(resp_string)
+    @property
+    def ajax_response(self):
+        if type(self._ajax_response) is not list:
+            return self._ajax_response
+        out = []
+        for v in self._ajax_response:
+            if type(v) is not tuple:
+                v = (0, v)
+            out.append(v)
+        out.sort(key=lambda x: x[0])
+        self._ajax_response = out
+        return [v for k, v in self._ajax_response]
 
+    @ajax_response.setter
+    def ajax_response(self, value):
+        self._ajax_response = value
+
+    def add_ajax_response(self, resp_string):
+        """
+        Adds a js string to the response for ajax-requests. Accepts string or (execution_order, string) tuples.
+        """
+        if type(self._ajax_response) is list:
+            self._ajax_response.append(resp_string)
 
     def answer_json_request(self, resp_obj):
         """ The response consists only of this object which will be json-encoded - in case it's an answer to a epfl.json_request.
@@ -195,7 +223,6 @@ class EPFLResponse(object):
                 return extra_content.render()
         return None
 
-
     def render_jinja(self, template, **kwargs):
         if type(template) is str:
             env = self.request.get_epfl_jinja2_environment()
@@ -203,10 +230,6 @@ class EPFLResponse(object):
         else:
             tpl = template
         return tpl.render(**kwargs)
-        # todo:
-        #response.content_type(charset=self._global.encoding)
-        #return tpl.render(**kwargs).encode(self._global.encoding)
-
 
     def render_extra_content(self, target):
 

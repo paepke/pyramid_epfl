@@ -1,0 +1,33 @@
+<div epflid="{{ compo.cid }}" class="row epfl-radio">
+	{% if compo.label %}
+	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
+	{% endif %}
+    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
+        <div class="form-control" id="{{ compo.cid }}" name="{{ compo.name }}" epfl-type="radiobuttongroup">
+	            {% for option in compo.options %}
+	                {% if option is string %}
+	                    {% set value = option %}
+	                    {% set visual = option %}
+	                {% else %}
+	                    {% if option[0] is defined and option[1] is defined %}
+	                        {% set value = option[0] %}
+	                        {% set visual = option[1] %}
+	                    {% endif %}
+	                    {% if option["visual"] is defined  %}
+	                          {% set visual = option["visual"] %}
+	                          {% if option["value"] is defined %}
+	                              {% set value = option["value"] %}
+	                          {% endif %}
+	                          {% if option["id"] is defined %}
+	                              {% set value = option["id"] %}
+	                          {% endif %}
+	                    {% endif %}
+	                {% endif %}
+	                <input type="radio" value="{{ value }}" name="{{ compo.cid }}" {% if compo.value == value %} checked="checked" {% endif %} >{{ visual }}</input>
+	            {% endfor %}
+		</div>
+	    {% if compo.validation_error %}
+	        <small class="help-block has-error">{{ compo.validation_error }}</small>
+	    {% endif %}
+    </div>
+</div>

@@ -1,0 +1,9 @@
+{% if compo.verbose%}
+    {% if compo.tag %}
+        <{{ compo.tag }} epflid="{{ compo.cid }}" class="{{ compo.tag_class }}">{{ compo.value }}</{{ compo.tag }}>
+    {% else %}
+        <span epflid="{{ compo.cid }}">{{ compo.value }}</span>
+    {% endif %}
+{% else %}
+    {{ compo.value }}
+{% endif %}

@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'EPFL Python Frontend Logic'
-copyright = u'2014, solute GmbH'
+copyright = u'2015, solute GmbH'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -93,7 +93,10 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['solute.epfl.',
+                          'solute.epfl.core.',
+                          'solute.epfl.components.',
+                          'solute.epfl.jinja.']
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
