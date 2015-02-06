@@ -24,3 +24,4 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         super(TabsLayout, self).del_component(compo_obj, slot)
         if position > 0:
             self.handle_toggle_tab(self.components[position-1].cid)
+            self.redraw()
