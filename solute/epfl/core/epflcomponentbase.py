@@ -10,7 +10,7 @@ from pyramid import threadlocal
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
-import json
+import ujson as json
 
 import jinja2
 import jinja2.runtime

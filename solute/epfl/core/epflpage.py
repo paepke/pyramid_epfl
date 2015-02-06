@@ -8,7 +8,7 @@ from collections import MutableMapping
 from pyramid.response import Response
 from pyramid import security
 
-import json
+import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
