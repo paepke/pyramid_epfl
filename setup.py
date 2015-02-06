@@ -40,7 +40,6 @@ setuptools.setup(
         "requests >= 2.4.3",
         "pytz >= 2014.4",
         "python-dateutil",
-        "odict",
         "collections2"
     ],
     setup_requires=[
