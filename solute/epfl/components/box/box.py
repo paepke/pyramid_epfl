@@ -31,6 +31,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     compo_config.append("auto_visibility")
 
     box_shown = True
+    show_title = True
     is_removable = False
     
     def handle_removed(self):
