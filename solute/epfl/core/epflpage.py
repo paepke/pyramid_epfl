@@ -2,8 +2,7 @@
 
 import epflcomponentbase, epfltransaction
 
-from odict import odict
-from collections2 import OrderedDict as better_od
+from collections2 import OrderedDict as odict
 from collections import MutableMapping
 
 from pyramid.response import Response
@@ -215,7 +214,7 @@ class Page(object):
             for cid, compo in self.get_active_components():
                 compo_info[cid] = compo.get_component_info()
             self.transaction["compo_info"] = compo_info
-            self.transaction["compo_struct"] = better_od()
+            self.transaction["compo_struct"] = odict()
             self.transaction["components_assigned"] = True
         else:
             traverse_compo_struct()
