@@ -1,9 +1,4 @@
 #* coding: utf-8
-
-import os
-
-import ujson as json # package abstraction
-
 from jinja2 import StrictUndefined
 
 from solute.epfl.core.epflpage import Page # shortcut

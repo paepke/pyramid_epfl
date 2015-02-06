@@ -1,6 +1,6 @@
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import Droppable, Dragable
-from odict import odict
+from collections2 import OrderedDict as odict
 
 
 class FormInputBase(epflcomponentbase.ComponentBase):

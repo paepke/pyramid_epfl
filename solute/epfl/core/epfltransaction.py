@@ -13,7 +13,6 @@ from copy import deepcopy
 
 import types, copy, string, uuid, time
 
-from solute.epfl import json
 from collections import MutableMapping
 
 

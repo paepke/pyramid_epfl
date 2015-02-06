@@ -32,15 +32,10 @@ setuptools.setup(
     install_requires=[
         "pyramid >= 1.4",
         "Jinja2 >= 2.7.2",
-        "WTForms >= 1.0.5",
         "pyramid_jinja2 >= 1.10",
         "ujson >= 1.33",
-        "python-memcached",
-        "python-magic >= 0.4.6",
-        "requests >= 2.4.3",
         "pytz >= 2014.4",
         "python-dateutil",
-        "odict",
         "collections2"
     ],
     setup_requires=[

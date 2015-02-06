@@ -99,6 +99,11 @@ class EPFLView(object):
         for m in active_modules:
             config.maybe_dotted(m)
 
+        if EPFLView.acl:
+            acl_wrapper = epfl_acl(EPFLView.acl, use_as_global=True)
+            acl_wrapper(EPFLViewLinks)
+            EPFLView.acl = None
+
         EPFLView.config = None
 
     @staticmethod
@@ -107,10 +112,6 @@ class EPFLView(object):
         Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
         correct permissions.
         """
-        if EPFLView.acl:
-            acl_wrapper = epfl_acl(EPFLView.acl, use_as_global=True)
-            acl_wrapper(EPFLViewLinks)
-            EPFLView.acl = None
         return EPFLViewLinks(links=EPFLView.register)
 
     @staticmethod
