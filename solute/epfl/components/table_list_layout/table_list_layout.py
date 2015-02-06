@@ -49,6 +49,10 @@ class TableListLayout(ListLayout):
     compo_state = ListLayout.compo_state[:]
     compo_state.extend(["orderby", "ordertype", "search", "height"])
 
+    js_name = ["table_list_layout.js"]
+    asset_spec = "solute.epfl.components:table_list_layout/static"
+
+
     orderby = ""
     ordertype = "asc"
     search = ""
