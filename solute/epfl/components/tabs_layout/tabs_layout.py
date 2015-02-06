@@ -16,3 +16,11 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
 
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid
+
+    def del_component(self, compo_obj, slot=None):
+        position = None
+        if compo_obj.cid == self.active_tab_cid:
+            position = self.components.index(compo_obj)
+        super(TabsLayout, self).del_component(compo_obj, slot)
+        if position > 0:
+            self.handle_toggle_tab(self.components[position-1].cid)
