@@ -8,7 +8,7 @@ Extra-Content-Handling is here!
 
 import jinja2
 import string
-from solute.epfl import json
+import json
 
 
 def quote_escape_html(html):
