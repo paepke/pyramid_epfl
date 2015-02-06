@@ -88,6 +88,7 @@ class Page(object):
         The lazy_mode is setup here if the request is an ajax request and all events in it are requesting lazy_mode.
         """
         self.request = request
+        self.request.page = self
         self.page_request = PageRequest(request, self)
         self.response = epflclient.EPFLResponse(self)
         self.components = PageComponents(self)  # all registered components of this page
@@ -676,7 +677,7 @@ class Page(object):
         """
         self.remember_cookies = security.forget(self.request)
 
-    def toast(self, message, type):
+    def toast(self, message, message_type):
         toastr_options = u"""
         toastr.options = {
           "closeButton": true,
@@ -697,7 +698,7 @@ class Page(object):
         };
         """
 
-        self.add_js_response(u"%s toastr.%s('%s');"% (toastr_options,type,message))
+        self.add_js_response(u"%s toastr.%s('%s');"% (toastr_options,message_type,message))
 
     def get_route_path(self, route, **kwargs):
         """

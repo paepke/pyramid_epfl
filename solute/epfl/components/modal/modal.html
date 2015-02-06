@@ -1,6 +1,6 @@
-<div epflid="{{ compo.cid }}" >
+<div epflid="{{ compo.cid }}" class="epfl-modal">
     <div class="modal fade" id="{{ compo.cid }}_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog{{ " modal-lg" if not compo.small_modal else "" }}">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span

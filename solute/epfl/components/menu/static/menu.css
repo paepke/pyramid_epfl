@@ -1,9 +1,0 @@
-/* menu */
-ul#epfl_menu{position: absolute;}
-ul#epfl_menu, #epfl_menu ul {margin:0px; padding:0px; list-style-type:none;}
-#epfl_menu li {float:left; width:90px; text-align:center;}
-#epfl_menu li ul{display:none; padding-top:3px;}
-#epfl_menu li:hover ul {display:block;}
-#epfl_menu li ul li {background-color:#eee; border-bottom:1px solid #aaa;box-shadow: 5px 5px 5px #ccc;}
-#epfl_menu li ul li a{color:#000;}
-#epfl_menu li ul li:hover {background-color:#aaa;}

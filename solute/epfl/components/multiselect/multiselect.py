@@ -52,6 +52,19 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     default_out_multiselect_transfer_cid = None
 
     grouped = False  #: Set to true if list contains grouped entries.
+    
+    def reset_state(self):
+        """
+        Reset the state if the component. This is needed if the component is reused with a different data set,
+        e.g. if the same ids is used for different data than before.
+        """
+        self.selected_child_cids.clear()
+        self.selected_child_ids.clear()
+        self.hidden_child_cids.clear()
+        self.scroll_position = 0
+        self.search_string = ""
+        for comp in self.components:
+            comp.delete_component()
 
     def handle_selected(self, child_cid):
         if not child_cid in self.selected_child_cids:

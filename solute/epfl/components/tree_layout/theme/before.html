@@ -1,16 +1,28 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {% if compo.label is defined  and not compo.label is none %}
-	    <span class="tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
-	    {% if compo.show_children %}
+    <div class="epfl-tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
+		{% if compo.slotted_components('context_menu') %}
+			<div class="epfl-tree-context-menu"{{ ' style="display:none;"'|safe if compo.show_context_menu_on_hover_only else "" }}>
+			{% for context_menu_comp in compo.slotted_components('context_menu') %}
+				{{ context_menu_comp.render() }}
+			{% endfor %}
+			</div> 
+	    {% endif %}
+    	{% if compo.label is defined  and not compo.label is none %}
+	    <span>
+	    {% if compo.number_of_children == 0 and compo.empty_node_icon %}
+	    	<i class="fa {{ compo.empty_node_icon }}"></i>
+	    {% elif compo.show_children %}
 	        <i class="fa {{ compo.custom_node_icon_expanded if compo.custom_node_icon_expanded else "fa-minus" }}"></i>
 	    {% else %}
 	        <i class="fa {{ compo.custom_node_icon_collapsed if compo.custom_node_icon_collapsed else "fa-plus" }}"></i>
 	    {% endif %}
 	    {{ compo.label }}
 	    </span>
-	    <div style="margin-left:10px;">
+	</div>
+	<div style="margin-left:10px;">
     {% else %}
-    	<div>
+    </div>
+    <div>
     {% endif %}
 {% endmacro %}
