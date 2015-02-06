@@ -2,14 +2,13 @@
 
 import epflcomponentbase, epfltransaction
 
-from odict import odict
-from collections2 import OrderedDict as better_od
+from collections2 import OrderedDict as odict
 from collections import MutableMapping
 
 from pyramid.response import Response
 from pyramid import security
 
-from solute.epfl import json
+import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
@@ -216,7 +215,7 @@ class Page(object):
             for cid, compo in self.get_active_components():
                 compo_info[cid] = compo.get_component_info()
             self.transaction["compo_info"] = compo_info
-            self.transaction["compo_struct"] = better_od()
+            self.transaction["compo_struct"] = odict()
             self.transaction["components_assigned"] = True
         else:
             traverse_compo_struct()
@@ -678,7 +677,7 @@ class Page(object):
         """
         self.remember_cookies = security.forget(self.request)
 
-    def toast(self, message, type):
+    def toast(self, message, message_type):
         toastr_options = u"""
         toastr.options = {
           "closeButton": true,
@@ -699,7 +698,7 @@ class Page(object):
         };
         """
 
-        self.add_js_response(u"%s toastr.%s('%s');"% (toastr_options,type,message))
+        self.add_js_response(u"%s toastr.%s('%s');"% (toastr_options,message_type,message))
 
     def get_route_path(self, route, **kwargs):
         """

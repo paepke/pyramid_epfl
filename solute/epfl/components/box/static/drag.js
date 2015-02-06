@@ -3,6 +3,7 @@ epfl.make_compo_dragable = function (cid, params) {
     $('[epflid=' + cid +  ']').mousedown(function (e) {
         function reset_css() {
         	if (elm_copy) {
+        		elm.removeClass("placeholder");
         		elm_copy.remove();
         	}
             elm.css('position', style_before['position']);
@@ -15,7 +16,6 @@ epfl.make_compo_dragable = function (cid, params) {
         	local_elm = elm;
         	if (elm_copy) {
         		local_elm=elm_copy;
-        		elm.removeClass("placeholder");
         	}
             local_elm.css('position', 'fixed');
             local_elm.css('left', x + 'px');

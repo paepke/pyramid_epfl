@@ -15,7 +15,9 @@
     var marked_element;
 
     var remove_line_marker = function() {
-        marked_element.removeClass('tree-drop-line-marker');
+    	if (typeof marked_element != "undefined") {
+        	marked_element.removeClass('tree-drop-line-marker');
+        }
     };
 
     var drop_accepts = function(cid) {

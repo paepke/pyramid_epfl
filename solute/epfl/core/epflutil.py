@@ -8,7 +8,6 @@ from pyramid import security
 import solute.epfl
 from pyramid import path
 from os.path import exists
-from solute.epfl import json
 from solute.epfl import core
 
 
