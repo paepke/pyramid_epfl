@@ -30,6 +30,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     compo_config = epflcomponentbase.ComponentContainerBase.compo_config[:]
     compo_config.append("auto_visibility")
 
+    hover_box = False
     box_shown = True
     show_title = True
     is_removable = False
