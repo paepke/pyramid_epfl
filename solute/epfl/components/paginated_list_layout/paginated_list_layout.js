@@ -24,7 +24,7 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
 var search_{{ compo.cid }}_timeout;
 var search_{{ compo.cid }} = $('#' + '{{ compo.cid }}_search');
 search_{{ compo.cid }}
-    .keypress(function (e) {
+    .keyup(function (e) {
         var elm = this;
 
         function submit() {
