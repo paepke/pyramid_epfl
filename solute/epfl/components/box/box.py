@@ -31,12 +31,16 @@ class Box(epflcomponentbase.ComponentContainerBase):
     compo_config.append("auto_visibility")
 
     hover_box = False
+    hover_box_remove_on_close = True
     box_shown = True
     show_title = True
     is_removable = False
     
     def handle_removed(self):
         self.delete_component()
+    
+    def handle_hide(self):
+        self.visible=False
     
     def after_event_handling(self):
         super(Box, self).after_event_handling()
