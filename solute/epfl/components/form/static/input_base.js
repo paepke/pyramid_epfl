@@ -2,7 +2,10 @@ epfl.FormInputBase = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 	var compo = this;
     var selector = "#" + cid;
+
 	var type = $(selector).closest("div").attr('epfl-type');
+
+
 	var fire_change_immediately = params["fire_change_immediately"];
 	
 	if (type == "defaultinput" || type == "textarea" || type == "select") {
@@ -49,6 +52,7 @@ epfl.FormInputBase = function(cid, params) {
 	    });
 	
 	} else if (type == "radiobuttongroup") {
+
 	    selector = "input[type=radio][name="+cid+"]";
 	    $(selector).change(function () {
 	        var val = $(this).val();
@@ -63,16 +67,12 @@ epfl.FormInputBase = function(cid, params) {
 	    selector = "input[type=radio][name="+cid+"]";
 	    $(selector).change(function () {
 	        var val = $(this).val();
-	        var parent = $(this).parent().parent();
-	        $(parent).find("label").removeClass("active");
-	        $(this).parent().addClass("active");
 	        if (fire_change_immediately) {
 	        	epfl.dispatch_event(cid, "change", {value: val});
 	        } else {
 	        	epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
 	        }
 	    });
-	
 	}
 	if (params["submit_form_on_enter"]) {
 		$(selector).bind('keyup', function(event){
