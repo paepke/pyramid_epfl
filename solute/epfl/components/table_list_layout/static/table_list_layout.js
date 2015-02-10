@@ -55,7 +55,7 @@ epfl.TableListLayout = function (cid, params) {
         epfl.dispatch_event(cid, eventname, {});
     };
     epfl.TableListLayout.EditClick = function (id, data) {
-        epfl.dispatch_event(cid, 'edit', {'id': id, 'data': data});
+        epfl.dispatch_event(cid, 'edit', {'entry_id': id, 'data': data});
     };
 
 

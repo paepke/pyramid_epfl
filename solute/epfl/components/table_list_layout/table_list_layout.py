@@ -60,7 +60,7 @@ class TableListLayout(ListLayout):
     data_interface = {'id': None, 'data': None}
 
 
-    def handle_edit(self, id, data):
+    def handle_edit(self, entry_id, data):
         # Overwrite this for edit handling
         pass
 
