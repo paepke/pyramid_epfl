@@ -167,10 +167,19 @@ class Page(object):
         """
         self.done_request()
         self.transaction.store()
-
-        self.request.session.save()  # performance issue! should only be called, when session is modified!
-        self.request.session.persist()  # performance issue! should only be called, when session is modified!
-
+        
+        
+        # TODO: the following request.session access makes use
+        # of pyramid_beaker session API. Since epfl may also be run upon a different
+        # sessions framework (e.g. pyramid_redis_sessions, these methods may not be
+        # available and don't have to be called. We currently circumvent this by
+        # catching any arising AttributeErrors, but the right way should be to
+        # encapsulate session API access properly.
+        try:
+            self.request.session.save()  # performance issue! should only be called, when session is modified!
+            self.request.session.persist()  # performance issue! should only be called, when session is modified!
+        except AttributeError:
+            pass
         out = ''
         if check_tid and self.transaction.tid_new:
             out = 'epfl.new_tid("%s");' % self.transaction.tid_new
