@@ -5,3 +5,18 @@
 .sidebar_links {
     background-color: #f9f9f9;
 }
+
+div.sidebar_heading{
+    height: 45px;
+    position: relative;
+    top:13px;
+    left:15px;
+}
+
+div.sidebar_heading span{
+    margin-left: 10px;
+}
+
+li.sidebar_links span{
+    font-weight: 100;
+}

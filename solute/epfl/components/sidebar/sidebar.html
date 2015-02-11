@@ -4,9 +4,9 @@
             <ul class="nav ng-scope" id="nav" style="overflow: hidden; width: auto; height: 100%;">
                 {% for link in compo.links %}
                     <li class="sidebar_head">
-                        <a href="{{ link['url'] }}" id="{{ link['name'] }}">
+                        <div class="sidebar_heading">
                             <i class="fa fa-{{ link['icon'] }}"></i><span>{{ link['name'] }}</span>
-                        </a>
+</div>
                         {% if link['children'] is defined %}
                             <ul class="nav ng-scope sidebar_links"  style="display:block">
                                 {% for child in link['children'] %}
