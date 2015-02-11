@@ -45,6 +45,7 @@ class TableListLayout(ListLayout):
 
     show_pagination = True
     show_search = True
+    auto_update_children = False
 
     compo_state = ListLayout.compo_state[:]
     compo_state.extend(["orderby", "ordertype", "search", "height"])
@@ -58,6 +59,11 @@ class TableListLayout(ListLayout):
     search = ""
     height = None
     data_interface = {'id': None, 'data': None}
+
+    def handle_set_row(self, row_offset, row_limit, row_data=None):
+        self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
+        self.update_children()
+        self.redraw()
 
 
     def handle_edit(self, entry_id, data):

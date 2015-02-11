@@ -2,7 +2,6 @@
  * Created by mast on 06.02.15.
  */
 epfl.TableListLayout = function (cid, params) {
-    console.log("epfl.TableListLayout", params);
     epfl.ComponentBase.call(this, cid, params);
 
     var orderchange = function () {
@@ -14,7 +13,6 @@ epfl.TableListLayout = function (cid, params) {
             row_limit: params['row_limit'],
             row_data: {"search": search, "orderby": orderby, "ordertype": ordertype}
         });
-
     };
 
     $("#" + cid + "_orderby").change(orderchange);
@@ -24,8 +22,9 @@ epfl.TableListLayout = function (cid, params) {
         $('[data-toggle="popover"]').popover()
     });
 
+    $(".tablelistlayout-sortcolumn").click(function (evt) {
+        var orderby = $(this).text().trim();
 
-    epfl.TableListLayout.OrderByClick = function (orderby) {
         if (epfl.TableListLayout.CurrentOrderBy == orderby) {
             if (epfl.TableListLayout.CurrentOrderByDirection == 'asc') {
                 epfl.TableListLayout.CurrentOrderByDirection = 'desc';
@@ -48,8 +47,7 @@ epfl.TableListLayout = function (cid, params) {
             row_limit: params['row_limit'],
             row_data: {"search": search, "orderby": orderby, "ordertype": ordertype}
         });
-    };
-
+    });
 
     epfl.TableListLayout.buttonClickHandler = function (eventname) {
         epfl.dispatch_event(cid, eventname, {});
@@ -62,7 +60,6 @@ epfl.TableListLayout = function (cid, params) {
     epfl.TableListLayout.exportCSV = function () {
         epfl.dispatch_event(cid, "export_csv", {});
     };
-
 };
 
 

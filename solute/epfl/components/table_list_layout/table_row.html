@@ -1,8 +1,8 @@
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
-        <th epflid="{{ compo.cid }}">
+        <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}>
             {% if cell.sortable %}
-                <span onclick='epfl.TableListLayout.OrderByClick("{{ cell.data }}")'>{{ cell.data }}
+                <span class="tablelistlayout-sortcolumn">{{ cell.data }}
                     {% if cell.currentSortedBy == True %}
                         {% if cell.direction == 'asc' %}
                             <i class="fa fa-sort-asc"></i>
