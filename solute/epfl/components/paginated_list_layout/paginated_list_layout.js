@@ -20,7 +20,6 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_da
         });
 };
 
-
 var search_{{ compo.cid }}_timeout;
 var search_{{ compo.cid }} = $('#' + '{{ compo.cid }}_search');
 search_{{ compo.cid }}
@@ -28,6 +27,13 @@ search_{{ compo.cid }}
         var elm = this;
 
         function submit() {
+            var lastValue = "{{ compo.row_data['search'] if compo.row_data is defined
+                                                and compo.row_data is mapping
+                                                and compo.row_data['search'] is defined else '' }}";
+            if($(elm).val() == lastValue) {
+                return;
+            }
+
         	if ($(elm).next().prop("tagName") != "SPAN") {
 	        	$(elm)
 					.after($("<span></span>")
@@ -38,7 +44,7 @@ search_{{ compo.cid }}
 					.parent()
 					.addClass("has-feedback");
 			}
-			
+
             var row_data = {search: $(elm).val()};
 
             if ($("#{{ compo.cid }}_orderby").length && $("#{{ compo.cid }}_ordertype").length) {
@@ -50,7 +56,7 @@ search_{{ compo.cid }}
             parseInt({{ compo.row_offset }}),
             parseInt({{ compo.row_limit }}),
             row_data);
-            
+
         }
 
         if (e.key == 'Enter') {
