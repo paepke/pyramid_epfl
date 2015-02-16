@@ -16,10 +16,12 @@ epfl.MultiSelectComponent = function (cid, params) {
                 //perform single-click action
             	if (my_elem.hasClass("selected")) {
 					child_cid = my_elem.children().first().attr("epflid");
-					epfl.dispatch_event(cid, "unselected", {child_cid: child_cid});
+					my_elem.removeClass("selected");
+					epfl.enqueue(epfl.make_component_event(cid, 'unselected', {child_cid: child_cid}), cid);
 				} else {
 					child_cid = my_elem.children().first().attr("epflid");
-					epfl.dispatch_event(cid, "selected", {child_cid: child_cid});
+					my_elem.addClass("selected");
+					epfl.enqueue(epfl.make_component_event(cid, 'selected', {child_cid: child_cid}), cid);
 				}
                 
                 multiselect_clicks = 0;             //after action performed, reset counter
