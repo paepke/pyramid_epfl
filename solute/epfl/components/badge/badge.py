@@ -6,6 +6,11 @@ from solute.epfl.core import epflutil
 
 
 class Badge(ComponentBase):
+    """
+    Simple Badge Compo uses bootstrap badge
+
+    example: http://getbootstrap.com/components/#badges
+    """
 
     template_name = "badge/badge.html"
     js_name = "badge/badge.js"

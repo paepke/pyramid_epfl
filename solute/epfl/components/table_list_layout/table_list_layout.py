@@ -4,6 +4,10 @@ from solute.epfl.components import ListLayout
 
 
 class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
+    """
+    Only for internal use as child compo of TableListLayout
+
+    """
     template_name = "table_list_layout/table_row.html"
     asset_spec = "solute.epfl.components:table_list_layout/static"
 
@@ -36,7 +40,63 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
 
 
 class TableListLayout(ListLayout):
-    # TODO: is there a better way to make use of paginated layout stuff? Inheriting from PaginatedListLayout?
+    """
+
+    A container component that renders the given data in a table
+
+    The visual of a cell, for example is it a text or a progress or whatever,
+    can be defined via a type tag in the data structure. For a easier handling use the static methods
+
+    * HeadRow
+    * HeadText
+    * Row
+    * Text
+    * Progress
+    * Icon
+    * Compo
+    * Badge
+    * Edit
+    * Popover
+
+    for this.
+
+    Example Data:
+
+    .. code-block:: python
+
+        data = []
+
+        data.append(TableListLayout.HeadRow([TableListLayout.HeadText(u'Kategorie'),
+                                             TableListLayout.HeadText('Live'),
+                                             TableListLayout.HeadText('Relevanz'),
+                                             TableListLayout.HeadText('FaktorRelevanz'),
+                                             TableListLayout.HeadText('Erfassung Gesamt'),
+                                             TableListLayout.HeadText('Datum'),
+                                             TableListLayout.HeadText('User'),
+                                             TableListLayout.HeadText('Aktion')]))
+
+        for rowid in range(1, 1000):
+            data.append(TableListLayout.Row(rowid, [TableListLayout.Text("Notebooks (2303)"),
+                                                    TableListLayout.Progress(
+                                                        [TableListLayout.ProgressPart("1.412", "33%", "success"),
+                                                         TableListLayout.ProgressPart("70", "1.5%", "warning"),
+                                                         TableListLayout.ProgressPart("2.852", "64%", "danger"),
+                                                         TableListLayout.ProgressPart("2", "1.5%")]),
+                                                    TableListLayout.Progress(
+                                                        [TableListLayout.ProgressPart("1.412", "33%", "success"),
+                                                         TableListLayout.ProgressPart("70", "1.5%", "warning"),
+                                                         TableListLayout.ProgressPart("2.852", "64%", "danger"),
+                                                         TableListLayout.ProgressPart("2", "1.5%")]),
+                                                    TableListLayout.Text("153,1"),
+                                                    TableListLayout.Text("364 Produkte"),
+                                                    TableListLayout.Text("24.09.2014 13:37 Uhr"),
+                                                    TableListLayout.Icon("user", "dab", "1"),
+                                                    TableListLayout.Compo(ButtonSet())
+                                                    ]))
+
+
+    """
+
     theme_path = ['paginated_list_layout/theme', 'table_list_layout/theme']
 
     js_parts = ListLayout.js_parts[:]
@@ -45,6 +105,8 @@ class TableListLayout(ListLayout):
 
     show_pagination = True
     show_search = True
+
+    #: False - You have to call update_children yourself, True - epfl call update_children automatically
     auto_update_children = False
 
     compo_state = ListLayout.compo_state[:]
@@ -67,11 +129,17 @@ class TableListLayout(ListLayout):
 
 
     def handle_edit(self, entry_id, data):
-        # Overwrite this for edit handling
+        """
+        Overwrite this for edit handling
+        This is called when you click on an edit button
+        """
         pass
 
     def handle_export_csv(self):
-        # Overwrite this for csv handling
+        """
+        Overwrite this for csv handling
+        This is called when you click on the csv button
+        """
         pass
 
     @staticmethod

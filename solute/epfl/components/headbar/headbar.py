@@ -2,19 +2,28 @@
 from solute.epfl.core import epflcomponentbase
 
 class Headbar(epflcomponentbase.ComponentBase):
+    """
+    A Headbar component which should always displayed on top.
+
+    """
     template_name = "headbar/headbar.html"
 
     compo_state = ['username', 'title','titlelink','usergroup','optionslink']
 
-    title = ""
+    title = "" #: The title shown in the left corner
     title_hover_text = None
-    username = ""
-    titlelink = "#"
-    usergroup = ""
+    username = "" #: Username shown next to title
+    titlelink = "#" #: The link when you click on title
+    usergroup = "" #: The usergroup shown next to username
     optionslink = "#"
-    logoutlink = "#"
+    logoutlink = "#" #: Where the logout goes to
     logout_hover_text = "Logout"
 
     def handle_logout(self,redirect):
-        #Overwrite me for logout handling
+        """
+        Overwrite me for logout handling
+
+        This is called when you click on logout
+
+        """
         pass
