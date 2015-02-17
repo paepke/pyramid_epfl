@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    <div class="epfl-tree-label {{ "expanded" if compo.show_children else "collapsed" }}">
+    <div class="epfl-tree-label{{ " expanded" if compo.show_children else " collapsed" }}{{ " selected" if compo.selected else "" }}">
 		{% if compo.slotted_components('context_menu') %}
 			<div class="epfl-tree-context-menu"{{ ' style="display:none;"'|safe if compo.show_context_menu_on_hover_only else "" }}>
 			{% for context_menu_comp in compo.slotted_components('context_menu') %}
