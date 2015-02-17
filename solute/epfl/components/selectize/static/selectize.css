@@ -1,0 +1,48 @@
+ul.epfl-selectize {
+    display: none;
+    border: 1px solid black;
+    list-style-type: none;
+    padding-left: 0;
+    background-clip: padding-box;
+    border-color: #DDDDDD;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+ul.epfl-selectize-innerlist {
+    list-style-type: none;
+    padding-left: 0;
+
+}
+
+li.epfl-selectize.epfl-selectize-head {
+    padding-left: 0;
+    padding-top: 1px;
+
+}
+
+li.epfl-selectize.epfl-selectize-head.selected {
+    background-color: #F5F5F5;
+}
+
+li.epfl-selectize.epfl-selectize-entry {
+    padding-left: 0;
+}
+
+li.epfl-selectize.epfl-selectize-entry.selected {
+    background-color: #DDDDDD;
+}
+
+li.epfl-selectize-divider {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+span.epfl-selectize-heading {
+    font-size: 16px;
+    font-weight: 900;
+    padding-left: 10px;
+}
+
+span.epfl-selectize-text {
+    padding-left: 20px;
+}

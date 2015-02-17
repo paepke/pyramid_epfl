@@ -22,6 +22,7 @@ from number_input.number_input import NumberInput
 from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
 from select.select import Select
+from selectize.selectize import Selectize
 from radio.radio import Radio
 from buttonradio.buttonradio import ButtonRadio
 from toggle.toggle import Toggle
@@ -100,6 +101,7 @@ def add_routes(config):
     Toggle.add_pyramid_routes(config)
     Checkbox.add_pyramid_routes(config)
     Select.add_pyramid_routes(config)
+    Selectize.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)

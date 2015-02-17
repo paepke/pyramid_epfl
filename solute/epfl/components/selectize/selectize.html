@@ -1,0 +1,24 @@
+<div epflid="{{ compo.cid }}">
+    <div class="input-group">
+        <input type="text" class="form-control epfl-selectize-input" id="selectize-input-{{ compo.cid }}">
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}"><span class="caret"></span></button>
+        </div>
+    </div>
+    <ul class="epfl-selectize" id="selectize-{{ compo.cid }}">
+        {% for entry in compo.entries %}
+            <li class="epfl-selectize epfl-selectize-head"><span
+                    class="epfl-selectize epfl-selectize-heading">{{ entry['name'] }}</span>
+                <ul class="epfl-selectize-innerlist">
+                    {% for subentry in  entry['entries'] %}
+
+                        <li class="epfl-selectize epfl-selectize-entry {{ compo.cid }}" id="selectize-entry-{{ compo.cid }}">
+                            <span class="epfl-selectize epfl-selectize-text">{{ subentry }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="epfl-selectize-divider"></li>
+        {% endfor %}
+    </ul>
+</div>
