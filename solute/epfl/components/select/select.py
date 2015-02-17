@@ -21,3 +21,4 @@ class Select(FormInputBase):
     options = [] #: A list if options for the select input.
 
     validation_type = 'text'
+    layout_vertical = False

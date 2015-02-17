@@ -1,8 +1,18 @@
+{% if compo.layout_vertical %}
+<div epflid="{{ compo.cid }}" class="epfl-select">
+	{% if compo.label %}
+	<div class="row"><label for="{{ compo.cid }}" class="col-sm-12 control-label">{{ compo.label }}</label></div>
+	{% endif %}
+	<div class="row">
+    <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">
+{% else %}
 <div epflid="{{ compo.cid }}" class="row epfl-select">
 	{% if compo.label %}
 	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
 	{% endif %}
     <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
+{% endif %}
+
         <div epfl-type="select">
             <select class="form-control" id="{{compo.cid}}" name="{{ compo.name }}">
             {% for option in compo.options %}
@@ -31,5 +41,12 @@
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}
+        
+{% if compo.layout_vertical %}
+	</div>
+	</div>
+</div>
+{% else %}
     </div>
 </div>
+{% endif %}
