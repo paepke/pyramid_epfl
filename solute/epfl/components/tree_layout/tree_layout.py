@@ -31,7 +31,7 @@ class TreeLayout(ComponentContainerBase):
     css_name = ["tree_layout.css"]
 
     compo_state = ComponentContainerBase.compo_state + \
-        ['tree_node_dict', 'expanded_nodes', 'show_children']
+        ['tree_node_dict', 'expanded_nodes', 'show_children', 'selected']
     js_name = ["tree_layout.js"]
     js_parts = ComponentContainerBase.js_parts + ["tree_layout/tree_layout.js"]
 
@@ -49,6 +49,7 @@ class TreeLayout(ComponentContainerBase):
     number_of_children = None
     
     show_children = False #: Set to true if child entries of the tree should be shown.
+    selected = False #: Set to true if element should be marked as selected.
 
     #: Set the max height of the tree (optional). If the tree has more contents, scroll bars are used
     max_height = None
