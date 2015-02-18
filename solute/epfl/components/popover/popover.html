@@ -1,13 +1,13 @@
 <div epflid="{{ compo.cid }}">
-    <button type="button"
+    <a class="btn-icon btn-icon-sm bg-info epfl-popover"
             id="{{ compo.cid }}_popover"
-            class="btn btn-default"
             {% if compo.title %}title="{{ compo.title }}"{% endif %}
             data-container="body"
             data-toggle="popover"
             data-placement="{{ compo.position }}"
             data-content="{{ compo.text }}">
-  <i class="fa fa-question-circle"></i> Hilfe
-</button>
+  	{% if compo.icon is not none %}
+  	<i class="fa {{ compo.icon }}"></i>
+  	{% endif %}{{ compo.label if compo.label is not none else '' }}
+	</a>
 </div>
-
