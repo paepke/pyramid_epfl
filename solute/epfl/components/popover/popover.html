@@ -1,0 +1,13 @@
+<div epflid="{{ compo.cid }}">
+    <button type="button"
+            id="{{ compo.cid }}_popover"
+            class="btn btn-default"
+            {% if compo.title %}title="{{ compo.title }}"{% endif %}
+            data-container="body"
+            data-toggle="popover"
+            data-placement="{{ compo.position }}"
+            data-content="{{ compo.text }}">
+  <i class="fa fa-question-circle"></i> Hilfe
+</button>
+</div>
+
