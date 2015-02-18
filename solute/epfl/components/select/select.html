@@ -17,23 +17,23 @@
             <select class="form-control" id="{{compo.cid}}" name="{{ compo.name }}">
             {% for option in compo.options %}
                 {% if option is string %}
-                {% set value = option %}
-                {% set visual = option %}
-            {% else %}
-                {% if option[0] is defined and option[1] is defined %}
-                    {% set value = option[0] %}
-                    {% set visual = option[1] %}
-                {% endif %}
-                {% if option["visual"] is defined  %}
-                      {% set visual = option["visual"] %}
-                      {% if option["value"] is defined %}
-                          {% set value = option["value"] %}
-                      {% endif %}
-                      {% if option["id"] is defined %}
-                          {% set value = option["id"] %}
-                      {% endif %}
-                {% endif %}
-            {% endif %}
+	                {% set value = option %}
+	                {% set visual = option %}
+	            {% else %}
+	                {% if option[0] is defined and option[1] is defined %}
+	                    {% set value = option[0] %}
+	                    {% set visual = option[1] %}
+	                {% endif %}
+	                {% if option["visual"] is defined  %}
+	                      {% set visual = option["visual"] %}
+	                      {% if option["value"] is defined %}
+	                          {% set value = option["value"] %}
+	                      {% endif %}
+	                      {% if option["id"] is defined %}
+	                          {% set value = option["id"] %}
+	                      {% endif %}
+	                {% endif %}
+	            {% endif %}
                 <option value="{{ value }}" {% if compo.value == value %} selected="selected" {% endif %} >{{ visual }}</option>
             {% endfor %}
             </select>
