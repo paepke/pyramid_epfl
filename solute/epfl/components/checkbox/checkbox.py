@@ -2,6 +2,7 @@ from solute.epfl.components.form.form import FormInputBase
 
 
 class Checkbox(FormInputBase):
+
     """
     A form checkbox input.
 
@@ -19,3 +20,7 @@ class Checkbox(FormInputBase):
     validation_helper = FormInputBase.validation_helper[:]
     validation_helper.append(
         (lambda x: ((not x.mandatory) or x.value), 'Mandatory field not checked.'))
+
+    #: If set to True, label and checkbox are not splitted to different bootstrap rows,
+    # but placed directly next to each other.
+    compact = False
