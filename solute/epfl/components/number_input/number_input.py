@@ -14,5 +14,9 @@ class NumberInput(FormInputBase):
     """
     
     template_name = "number_input/number_input.html"
+    compo_state = FormInputBase.compo_state + ['min_value', 'max_value']
     
     validation_type = 'number'
+    layout_vertical = False
+    min_value = None #: If set, the minimum value to be supported by the control.
+    max_value = None #: If set, the maximum value to be supported by the control.
