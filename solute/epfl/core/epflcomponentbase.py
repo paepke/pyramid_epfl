@@ -922,7 +922,7 @@ class ComponentContainerBase(ComponentBase):
             for k, v in data_dict[data_id].items():
                 if getattr(compo, k) != v:
                     setattr(compo, k, v)
-                    compo.redraw()
+                    self.redraw()
 
         # Rebuild order.
         for i, data_id in enumerate(new_order):

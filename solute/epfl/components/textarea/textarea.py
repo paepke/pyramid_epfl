@@ -16,4 +16,3 @@ class Textarea(FormInputBase):
     template_name = "textarea/textarea.html"
 
     validation_type = 'text'
-    layout_vertical = False

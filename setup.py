@@ -36,6 +36,7 @@ setuptools.setup(
         "ujson >= 1.33",
         "pytz >= 2014.4",
         "python-dateutil",
+        "redis",
         "collections2"
     ],
     setup_requires=[
