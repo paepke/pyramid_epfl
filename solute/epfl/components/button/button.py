@@ -18,6 +18,7 @@ class Button(ComponentBase):
 
     template_name = "button/button.html"
     js_parts = ["button/button.js"]
+    compo_state = ComponentBase.compo_state + ['disabled']
 
     label = None #: If set, the label is rendered before the button.
     value = None #: The value is used as button text if no icon is provided.
@@ -25,6 +26,7 @@ class Button(ComponentBase):
     event_name = None #: Mandatory name of the event handling method (without trailing "handle\_").
     event_target = None #: Optional target where the event handling method can be found.
     is_submit = False #: Set to true if button should have html type "submit".
+    disabled = False #: Set to true if button should be disabled.
 
     def __init__(self, label=None, value=None, event_name=None, event_target=None, is_submit=False, **extra_params):
         super(Button, self).__init__()

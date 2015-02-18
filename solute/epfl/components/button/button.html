@@ -4,7 +4,7 @@
     {% endif %}
 
     <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}">
-        <button class="form-control epfl-button {% if compo.color is defined %}btn-{{ compo.color }}{% endif %}" type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{compo.cid}}">
+        <button class="form-control epfl-button btn{% if compo.color is defined %} btn-{{ compo.color }}{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}" type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{compo.cid}}">
             {% if compo.icon is defined and (not compo.icon is none) %}
 
             <i class="fa {{ compo.icon }}"></i>
