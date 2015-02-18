@@ -47,6 +47,7 @@ epfl.Selectize = function (cid, params) {
 
 
     $("#selectize-toggle-" + cid).click(function () {
+        $("#selectize-input-" + cid).focus();
         epfl.Selectize.toggle(cid);
     });
 
