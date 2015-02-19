@@ -15,6 +15,9 @@
 
         <div epfl-type="select">
             <select class="form-control" id="{{compo.cid}}" name="{{ compo.name }}">
+            {% if (not compo.value is defined or compo.value is none) and (compo.placeholder is defined and not compo.placeholder is none) %}
+            <option value="" disabled selected style="display:none;">{{ compo.placeholder }}</option>
+            {% endif %}
             {% for option in compo.options %}
                 {% if option is string %}
 	                {% set value = option %}
