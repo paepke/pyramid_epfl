@@ -1,7 +1,7 @@
 {% if (compo.label is defined and not compo.label is none) %}
 	{% if compo.layout_vertical %}
 	<div epflid="{{ compo.cid }}">
-	<div class="row"><label class="col-sm-12 control-label">{{ compo.label }}</label></div>
+	<div class="row"><label class="col-sm-12">{{ compo.label }}</label></div>
 	<div class="row"><div class="col-sm-12">
 		{% if (compo.tag is defined and not compo.tag is none) %}
         <{{ compo.tag }} class="{{ compo.tag_class }}">{{ compo.value }}</{{ compo.tag }}>

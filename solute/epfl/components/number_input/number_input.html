@@ -1,7 +1,7 @@
 {% if compo.layout_vertical %}
 <div epflid="{{ compo.cid }}" class="epfl-number-input">
 	{% if compo.label %}
-	<div class="row"><label for="{{ compo.cid }}" class="col-sm-12 control-label">{{ compo.label }}</label></div>
+	<div class="row"><label for="{{ compo.cid }}" class="col-sm-12">{{ compo.label }}</label></div>
 	{% endif %}
 	<div class="row">
     <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">
