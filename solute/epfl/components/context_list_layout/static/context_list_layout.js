@@ -1,3 +1,10 @@
-/**
- * Created by mast on 18.02.15.
- */
+epfl.ContextListLayout = function (cid, params) {
+    epfl.ComponentBase.call(this, cid, params);
+
+    epfl.ContextListLayout.ContextEvent = function (event, param) {
+        epfl.dispatch_event(cid, event, param);
+    };
+};
+
+
+epfl.ContextListLayout.inherits_from(epfl.ComponentBase);
