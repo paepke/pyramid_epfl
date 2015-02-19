@@ -1,0 +1,11 @@
+div.epfl-table-cell{
+    height:15px;
+    padding: 0px;
+    margin: 0px;
+}
+
+div.epfl-table-edit{
+    position: relative;
+    top:-5px;
+    height: 3px;
+}

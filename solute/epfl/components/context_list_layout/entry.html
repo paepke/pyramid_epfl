@@ -1,23 +1,20 @@
-<div class="row">
-    <div class="col-sm-11">
+
+    <div class="pull-left">
         {{ compo.data }}
     </div>
-    <div class="dropdown col-sm-1">
-        <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                class="btn btn-default btn-xs pull-right">
-            <i class="fa fa-bars"></i>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            {% for entry in compo.menu %}
+    <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            class="btn btn-default btn-xs pull-right epfl-context-list-dropdown-button">
+        <i class="fa fa-bars"></i>
+    </button>
+    <ul class="dropdown-menu epfl-context-list-dropdown" role="menu" aria-labelledby="dLabel">
+        {% for entry in compo.menu %}
 
-                {% if entry.type == "link" %}
-                    <li><a href="#"
-                           onclick=" epfl.ContextListLayout.ContextEvent('{{ entry.event }}', {id:{{ compo.id }},data: '{{ compo.data }}'});">
-                        {{ entry.name }}</a></li>
-                {% else %}
-                    <li class="divider"></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-</div>
+            {% if entry.type == "link" %}
+                <li><a href="#"
+                       onclick=" epfl.ContextListLayout.ContextEvent('{{ entry.event }}', {id:{{ compo.id }},data: '{{ compo.data }}'});">
+                    {{ entry.name }}</a></li>
+            {% else %}
+                <li class="divider"></li>
+            {% endif %}
+        {% endfor %}
+    </ul>

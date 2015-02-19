@@ -7,6 +7,8 @@ ul.epfl-selectize {
     border-color: #DDDDDD;
     border-radius: 4px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    position: absolute;
+    z-index: 5;
 }
 
 ul.epfl-selectize-innerlist {
@@ -14,12 +16,14 @@ ul.epfl-selectize-innerlist {
     padding-left: 0;
     border-top: 1px solid #ddd;
     background-color: #fff;
+}
 
+li.epfl-selectize{
+    background-color: #ffffff;
 }
 
 li.epfl-selectize.epfl-selectize-head {
     padding: 0px 0 0px 0px;
-
 }
 
 li.epfl-selectize.epfl-selectize-head.selected {

@@ -1,6 +1,8 @@
 epfl.Selectize = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
+    $("[epflid='"+cid+"'] > ul").width($("[epflid='"+cid+"']").width());
+
     epfl.Selectize.isVisible = function (cid) {
         return $("#selectize-" + cid + ":visible").length !== 0;
     }
