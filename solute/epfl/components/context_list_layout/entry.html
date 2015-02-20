@@ -11,7 +11,7 @@
 
             {% if entry.type == "link" %}
                 <li><a href="#"
-                       onclick=" epfl.ContextListLayout.ContextEvent('{{ entry.event }}', {id:{{ compo.id }},data: '{{ compo.data }}'});">
+                       onclick=" epfl.ContextListLayout.ContextEvent('{{ entry.event }}', {entry_id:'{{ compo.id }}', data: '{{ compo.data }}'});">
                     {{ entry.name }}</a></li>
             {% else %}
                 <li class="divider"></li>
