@@ -1,10 +1,5 @@
 .epfl-context-list {
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-ul.epfl-context-list-group {
-    overflow-y: visible;
+    overflow:hidden;
 }
 
 li.epfl-context-list-entry {
@@ -25,4 +20,8 @@ ul.epfl-context-list-dropdown {
 
 button.epfl-context-list-dropdown-button {
     display: none;
+}
+
+div.epfl-context-list{
+    border: 1px solid #DFDFDF;
 }

@@ -44,8 +44,9 @@ search_{{ compo.cid }}
 					.parent()
 					.addClass("has-feedback");
 			}
-
-            var row_data = {search: $(elm).val()};
+            console.log("!! {{compo.row_data}}");
+            var row_data = {{compo.row_data |tojson|safe }};
+            row_data.search = $(elm).val();
 
             if ($("#{{ compo.cid }}_orderby").length && $("#{{ compo.cid }}_ordertype").length) {
                 row_data.orderby = $("#{{ compo.cid }}_orderby option:selected").val();
@@ -68,8 +69,12 @@ search_{{ compo.cid }}
         }
         search_{{ compo.cid }}_timeout = window.setTimeout(submit, 500);
     });
+ {% if compo.seach_focus is defined and compo.seach_focus == True %}
 if (search_{{ compo.cid }}.length > 0) {
+
     search_{{ compo.cid }}
         .focus()[0]
         .setSelectionRange(search_{{ compo.cid }}.val().length, search_{{ compo.cid }}.val().length);
 }
+
+{% endif %}
