@@ -52,7 +52,7 @@ from link_list_layout.link_list_layout import LinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
 from tree_layout.tree_layout import TreeLayout, TreeLeafEntry, DraggableTreeLeafEntry, DroppableTreeLayout
-from context_list_layout.context_list_layout import ContextListLayout
+from context_list_layout.context_list_layout import ContextListLayout, ContextListEntry
 
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer

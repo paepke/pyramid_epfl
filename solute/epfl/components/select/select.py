@@ -19,6 +19,8 @@ class Select(FormInputBase):
     template_name = "select/select.html"
     
     options = [] #: A list if options for the select input.
+    
+    compo_state = FormInputBase.compo_state + ['options']
 
     validation_type = 'text'
     layout_vertical = False
