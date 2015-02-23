@@ -50,7 +50,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
                 return compo
             if not hasattr(compo, 'container_compo'):
                 return None
-            return compo.container_compo
+            return get_parent_form(compo.container_compo)
 
         # try to find a parent form and register this component, but fail silently,
         # since components do not need to be nested inside a form
