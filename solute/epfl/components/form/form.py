@@ -97,6 +97,18 @@ class FormInputBase(epflcomponentbase.ComponentBase):
                     result, text = False, ('Value must not be lower than %s.' % self.min_value)
                 elif ((not self.max_value is None) and (int(self.value)>self.max_value)):
                     result, text = False, ('Value must not be higher than %s.' % self.max_value)
+        elif self.validation_type == 'float_number':
+            if self.mandatory and ((self.value is None) or (self.value == "")):
+                result, text = False, 'Value is required'
+            elif ((not self.value is None) and (self.value != "")):
+                try:
+                    float(self.value)
+                except ValueError:
+                    result, text = False, 'Value did not validate as number.'
+                if ((not self.min_value is None) and (int(self.value)<self.min_value)):
+                    result, text = False, ('Value must not be lower than %s.' % self.min_value)
+                elif ((not self.max_value is None) and (int(self.value)>self.max_value)):
+                    result, text = False, ('Value must not be higher than %s.' % self.max_value)
                     
         # validation_type bool is always valid
 
