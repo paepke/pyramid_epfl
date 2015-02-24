@@ -60,7 +60,7 @@ epfl.Selectize = function (cid, params) {
                 epfl.Selectize.resetList($("ul.epfl-selectize"));
                 $("#selectize-input-" + cid).val(current.text().trim());
                 epfl.Selectize.hide(cid);
-                epfl.dispatch_event(cid, "set_selection", {selection: current.text().trim()});
+                epfl.dispatch_event(cid, "set_selection", {selection_id: current.data('selectizeid'), selection_text: current.text().trim()});
             }
             return;
         }
@@ -168,7 +168,7 @@ epfl.Selectize = function (cid, params) {
         epfl.Selectize.resetList($("ul.epfl-selectize"));
         $("#selectize-input-" + cid).val($(this).text().trim());
         epfl.Selectize.hide(cid);
-        epfl.dispatch_event(cid, "set_selection", {selection: $(this).text().trim()});
+        epfl.dispatch_event(cid, "set_selection", {selection_id: $(this).data('selectizeid'), selection_text: $(this).text().trim()});
     }).mouseenter(function () {
         $(this).addClass("selected");
         $(this).parent().parent().addClass("selected");

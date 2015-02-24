@@ -8,9 +8,9 @@ class Selectize(epflcomponentbase.ComponentBase):
 
     .. code:: python
 
-        entries = [{"name": "Group4", "entries": ["entry1", "entry2", "entry3", "entry4", "entry5", "entry6"]},
-               {"name": "Group5", "entries": ["entry1", "entry2", "entry3", "entry4", "entry5", "entry6"]},
-               {"name": "Group6", "entries": ["entry1", "entry2", "entry3", "entry4", "entry5", "entry6"]}]
+        entries = [{"name": "Group4", "entries": [{"id" : "entry1_id", "value": "entry1" }, {"id" : "entry2_id", "value": "entry2" }, ...]},
+               {"name": "Group5", "entries": [{"id" : "entry3_id", "value": "entry3" }, ...]},
+               {"name": "Group6", "entries": [{"id" : "entry4_id", "value": "entry4" }, ...]}]
 
     """
 
@@ -23,10 +23,12 @@ class Selectize(epflcomponentbase.ComponentBase):
     js_name = ["selectize.js"]
 
     compo_config = []
-    compo_state = ["entries", "selection"]
+    compo_state = ["entries", "selection_id", "label"]
 
     entries = []
-    selection = ""  #:the current selection, this is the last value which was selected with enter or mouseclick
+    selection_id = ""  #:the current selection, this is the last value which was selected with enter or mouseclick
+    label = None
+    layout_vertical = False
 
-    def handle_set_selection(self, selection):
-        self.selection = selection
+    def handle_set_selection(self, selection_id, selection_text):
+        self.selection_id = selection_id
