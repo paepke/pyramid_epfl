@@ -1,0 +1,49 @@
+<div epflid="{{ compo.cid }}" class="epfl-simple-tree"
+     >
+    <div class="row epfl-simple-tree-filter">
+        <div class="col-sm-6">
+            <input type="text"
+                   class="form-control epfl-simple-tree-search"
+                   placeholder="Suchen..." {% if compo.search %} value="{{ compo.search }}"{% endif %}>
+        </div>
+        <div class="col-sm-6">
+            <select class="form-control epfl-simple-tree-filter">
+                {% for filter in compo.all_filter %}
+                <option>{{ filter }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="epfl-simple-tree-data" style="height:{{ compo.height }}px;overflow-y:scroll;overflow-x:hidden">
+        {% for entry in compo.tree_data %}
+            <div class="epfl-simple-tree-leaf-0" leafid="{{ entry['id'] }}">
+            <span>
+                <i class="fa {% if entry["children"] is defined %}fa-minus-square-o{% else %}fa-plus-square-o{% endif %}"></i>
+                {{ entry['label'] }}</span>
+            </div>
+            {% if entry["children"] is defined %}
+                {% for child in entry["children"] %}
+                    <div class="epfl-simple-tree-leaf-1" leafid="{{ child['id'] }}" onclick="epfl.Simpletree.Leaf1Clicked({{ child['id'] }})">
+                        <span>
+                            <i class="fa {% if child["children"] is defined %}fa-folder-open-o{% else %}fa-folder-o{% endif %}"></i>
+                            {{ child['label'] }}
+                        </span>
+                    </div>
+                    {% if child["children"] is defined %}
+                        {% for subchild in child["children"] %}
+                            <div class="epfl-simple-tree-leaf-2 epfl-simple-tree-leaf-dragable"
+                                 leafid="{{ subchild['id'] }}">
+                                    <span>
+                                        <i class="fa fa-file-text-o"></i>{{ subchild['label'] }}
+                                    </span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+
+        {% endfor %}
+    </div>
+</div>
+

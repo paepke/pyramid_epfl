@@ -32,6 +32,7 @@ from password_input.password_input import PasswordInput
 
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
+from simpletree.simpletree import Simpletree
 
 from badge.badge import Badge
 from diagram.diagram import Diagram
@@ -95,6 +96,7 @@ def add_routes(config):
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
+    Simpletree.add_pyramid_routes(config)
 
     Form.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
