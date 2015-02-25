@@ -1,4 +1,4 @@
-div.epfl-simple-tree{
+div.epfl-simple-tree {
     padding: 5px;
 }
 
@@ -6,12 +6,11 @@ div.epfl-simple-tree i {
     padding-right: 1px;
 }
 
-div.epfl-simple-tree-filter{
+div.epfl-simple-tree-filter {
     padding-bottom: 5px;
 }
 
-
-div.epfl-simple-tree-data{
+div.epfl-simple-tree-data {
     cursor: pointer;
 }
 
@@ -19,11 +18,21 @@ div.epfl-simple-tree-leaf-0 {
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+div.epfl-simple-tree-leaf-0.epfl-simple-tree-marked {
+    background-color: #d1f0ec;
+}
+
 div.epfl-simple-tree-leaf-0 > span {
     font-weight: bold;
 }
+
 div.epfl-simple-tree-leaf-0:hover {
     background-color: #DDDDDD;
+}
+
+div.epfl-simple-tree-leaf-0:hover button {
+    display: block;
 }
 
 div.epfl-simple-tree-leaf-1 {
@@ -31,8 +40,17 @@ div.epfl-simple-tree-leaf-1 {
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
+div.epfl-simple-tree-leaf-1.epfl-simple-tree-marked {
+    background-color: #d1f0ec;
+}
+
 div.epfl-simple-tree-leaf-1:hover {
     background-color: #DDDDDD;
+}
+
+div.epfl-simple-tree-leaf-1:hover button {
+    display: block;
 }
 
 div.epfl-simple-tree-leaf-2 {
@@ -40,16 +58,43 @@ div.epfl-simple-tree-leaf-2 {
     padding-top: 5px;
     padding-bottom: 5px;
     border: 1px solid #eeeeee;
-    margin-top:3px;
-}
-div.epfl-simple-tree-leaf-2:hover {
-     background-color: #DDDDDD;
+    margin-top: 3px;
 }
 
-div.epfl-simple-tree-leaf-2 span{
+div.epfl-simple-tree-leaf-2.epfl-simple-tree-marked {
+    background-color: #d1f0ec;
+}
+
+div.epfl-simple-tree-leaf-2:hover {
+    background-color: #DDDDDD;
+}
+
+div.epfl-simple-tree-leaf-2:hover button {
+    display: block;
+}
+
+div.epfl-simple-tree-leaf-2 span {
     padding-left: 5px;
 }
 
-div.epfl-simple-tree-leaf-2 i{
+div.epfl-simple-tree-leaf-2 i {
     padding-right: 5px;
+}
+
+ul.epfl-simple-tree-dropdown {
+    float: right;
+}
+
+button.epfl-simple-tree-dropdown-button {
+    display: none;
+}
+
+div.epfl-simple-tree-leaf-droppable-hover {
+    border: 3px dotted #d1f0ec;
+    background-color: transparent;
+}
+
+div.epfl-simple-tree-leaf-droppable-hover:hover {
+    border: 1px dashed #1BB7A0;
+    background-color: transparent;
 }

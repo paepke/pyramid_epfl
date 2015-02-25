@@ -2,6 +2,7 @@
 
 from solute.epfl.core import epflcomponentbase
 
+
 class Simpletree(epflcomponentbase.ComponentBase):
     template_name = "simpletree/simpletree.html"
     js_parts = epflcomponentbase.ComponentBase.js_parts + ["simpletree/simpletree.js"]
@@ -27,7 +28,6 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def init_transaction(self):
         self.tree_data = self.load_level_0()
 
-
     def load_level_0(self, search=None, filter=None):
         return []
 
@@ -36,7 +36,6 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     def load_level_2(self, upper_leaf_id, search=None, filter=None):
         return []
-
 
     def handle_leaf_0_clicked(self, leafid):
         leafid = int(leafid)
@@ -84,6 +83,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.redraw()
 
+    def handle_leaf_2_clicked(self, leafid):
+        #Overwrite for click handling
+        pass
 
     def add_leaf_1_data(self, leafdata, leafid):
         new_data = []
@@ -118,6 +120,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def handle_search(self, search):
         self.search = search
 
+        self.rebuild_tree_structure(search)
+
+    def rebuild_tree_structure(self,search = None):
         self.tree_data = self.load_level_0(search)
 
         for id in self.open_leaf_0_ids:
@@ -127,6 +132,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
             self.add_leaf_1_data(self.load_level_2(id, search), id)
 
         self.redraw()
+
+    def handle_drop(self, drag_leafid, drag_parent_cid, drop_leafid, drop_parent_cid):
+        pass
 
 
 
