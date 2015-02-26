@@ -13,7 +13,7 @@ epfl.Selectize = function (cid, params) {
 
     epfl.Selectize.show = function (cid) {
         $("#selectize-" + cid).show();
-        $("#selectize-" + cid).width($("#selectize-input-" + cid).parent().parent().width());
+        $("#selectize-" + cid).css({"min-width":$("#selectize-input-" + cid).parent().parent().width()+"px"});
     }
 
     epfl.Selectize.hide = function (cid) {
