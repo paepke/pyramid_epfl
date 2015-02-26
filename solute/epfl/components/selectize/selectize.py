@@ -1,6 +1,8 @@
 from solute.epfl.core import epflcomponentbase
+from solute.epfl.components.form.form import FormInputBase
 
-class Selectize(epflcomponentbase.ComponentBase):
+
+class Selectize(FormInputBase):
     """
     Dropdown with optgroups and search function with highlighting
 
@@ -23,12 +25,19 @@ class Selectize(epflcomponentbase.ComponentBase):
     js_name = ["selectize.js"]
 
     compo_config = []
-    compo_state = ["entries", "selection_id", "label"]
+    compo_state = FormInputBase.compo_state + ["entries"]
 
     entries = []
-    selection_id = ""  #:the current selection, this is the last value which was selected with enter or mouseclick
-    label = None
     layout_vertical = False
 
     def handle_set_selection(self, selection_id, selection_text):
-        self.selection_id = selection_id
+        self.value = (selection_id,selection_text)
+
+    def validate(self):
+        if self.mandatory and ((self.value is None) or (self.value == "")):
+            self.validation_error = 'Value is required'
+            self.redraw()
+            return False
+
+        self.validation_error = ''
+        return True
