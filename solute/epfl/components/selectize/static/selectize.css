@@ -43,8 +43,7 @@ li.epfl-selectize-divider {
 }
 
 span.epfl-selectize-heading {
-    font-size: 16px;
-    font-weight: 900;
+    font-weight: bold;
     padding-left: 10px;
 }
 
