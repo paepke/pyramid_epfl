@@ -14,7 +14,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     css_name = ["simpletree.css"]
 
     compo_config = []
-    compo_state = ["tree_data", "search", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter"]
+    compo_state = ["tree_data", "search", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter"]
 
     tree_data = []
     open_leaf_0_ids = []
@@ -24,6 +24,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     height = 400
 
     search = None
+    filter = None
 
     def init_transaction(self):
         self.tree_data = self.load_level_0()
@@ -84,7 +85,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.redraw()
 
     def handle_leaf_2_clicked(self, leafid):
-        #Overwrite for click handling
+        # Overwrite for click handling
         pass
 
     def add_leaf_1_data(self, leafdata, leafid):
@@ -117,19 +118,20 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.tree_data = new_data
 
-    def handle_search(self, search):
+    def handle_search(self, search, filter):
         self.search = search
+        self.filter = filter
 
         self.rebuild_tree_structure(search)
 
-    def rebuild_tree_structure(self,search = None):
-        self.tree_data = self.load_level_0(search)
+    def rebuild_tree_structure(self, search=None, filter=None):
+        self.tree_data = self.load_level_0(search,filter)
 
         for id in self.open_leaf_0_ids:
-            self.add_leaf_0_data(self.load_level_1(id, search), id)
+            self.add_leaf_0_data(self.load_level_1(id, search,filter), id)
 
         for id in self.open_leaf_1_ids:
-            self.add_leaf_1_data(self.load_level_2(id, search), id)
+            self.add_leaf_1_data(self.load_level_2(id, search,filter), id)
 
         self.redraw()
 

@@ -5,7 +5,13 @@ epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
     $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").change(function () {
-        epfl.dispatch_event(cid, "search", {search: $(this).val()});
+        epfl.dispatch_event(cid, "search", {search: $(this).val(),
+                                            filter:$("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").val()});
+    });
+
+    $("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").change(function () {
+        epfl.dispatch_event(cid, "search", {search: $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").val(),
+                                            filter:$(this).val()});
     });
 
     $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-0").click(function () {
@@ -25,7 +31,7 @@ epfl.Simpletree = function (cid, params) {
         containment: 'window',
         scroll: false,
         helper: 'clone',
-        cursorAt: {top: 0, left: 0}
+        cursorAt: {top: 10, left: 10}
     });
 
     var droppables = $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-droppable");
