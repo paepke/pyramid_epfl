@@ -36,26 +36,27 @@ epfl.Simpletree = function (cid, params) {
         drop: function (event, ui) {
             epfl.dispatch_event(cid, "drop", {
                 drag_leafid: ui.draggable.attr("leafid"),
-                drag_parent_cid:ui.draggable.closest("div[epflid]").attr('epflid'),
+                drag_parent_cid: ui.draggable.closest("div[epflid]").attr('epflid'),
                 drop_leafid: $(this).attr("leafid"),
-                drop_parent_cid:$(this).closest("div[epflid]").attr('epflid')
+                drop_parent_cid: $(this).closest("div[epflid]").attr('epflid')
             });
         }
     });
 
     epfl.Simpletree.ContextEvent = function (event, param) {
-        console.log("epfl.Simpletree.ContextEvent", event, param);
         epfl.dispatch_event(cid, event, param);
     };
 
     $("div[epflid='" + cid + "'] button.epfl-simple-tree-dropdown-button").click(function (event) {
         event.stopPropagation();
-        if($(this).parent().hasClass('open')){
-            $(this).parent().removeClass("open");
-        }else {
-            $(this).parent().addClass("open");
+        var parent = $(this).parent();
+        if (parent.hasClass('open')) {
+            parent.removeClass("open");
+        } else {
+            parent.addClass("open");
         }
         var posi = $(this).offset();
+
         var ul = $(this).next("ul");
         var top = posi.top - 3;
         var left = posi.left + $(this).width() + 15;
@@ -66,12 +67,18 @@ epfl.Simpletree = function (cid, params) {
         }
 
         ul.css({
-            top: top,
-            left: left,
+            top: top - $(window).scrollTop(),
+            left: left - $(window).scrollLeft(),
             position: "fixed"
         });
         $(this).parent().mouseleave(function () {
             $(this).removeClass("open");
+            $(this).unbind("mouseleave");
+        });
+
+        $(window).scroll(function () {
+            parent.removeClass("open");
+            $(this).unbind("scroll");
         });
     });
 
