@@ -138,11 +138,21 @@ epfl.Selectize = function (cid, params) {
 
                 $(this).find(".epfl-selectize-entry").each(function () {
                     epfl.Selectize.resetText($(this).find("span"));
-                    if ($(this).find("span").text().toLowerCase().indexOf(search.toLowerCase()) === -1) {
+
+                    var foundInSibling = $(this).find("span").text().toLowerCase().indexOf(search.toLowerCase());
+                    var foundInId = false;
+                    if(foundInSibling === -1){
+                        foundInSibling = $(this).data('selectizeid').text().toLowerCase().indexOf(search.toLowerCase());
+                        foundInId = foundInSibling !== -1;
+                    }
+
+                    if (foundInSibling === -1) {
                         $(this).hide();
                     } else {
                         $(this).show();
-                        epfl.Selectize.markText($(this).find("span"), search);
+                        if(!foundInId) {
+                            epfl.Selectize.markText($(this).find("span"), search);
+                        }
                         found = true;
                     }
                 });

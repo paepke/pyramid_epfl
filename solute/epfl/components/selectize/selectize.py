@@ -25,13 +25,16 @@ class Selectize(FormInputBase):
     js_name = ["selectize.js"]
 
     compo_config = []
-    compo_state = FormInputBase.compo_state + ["entries"]
+    compo_state = FormInputBase.compo_state + ["entries","drop_down_height","selected_text"]
 
     entries = []
     layout_vertical = False
+    drop_down_height = None
+    selected_text = None
 
     def handle_set_selection(self, selection_id, selection_text):
-        self.value = (selection_id,selection_text)
+        self.value = selection_id
+        self.selected_text = selection_text
 
     def validate(self):
         if self.mandatory and ((self.value is None) or (self.value == "")):
