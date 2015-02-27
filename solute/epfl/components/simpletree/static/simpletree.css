@@ -39,6 +39,7 @@ div.epfl-simple-tree-leaf-1 {
     margin-left: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
+    margin-top: 3px;
 }
 
 div.epfl-simple-tree-leaf-1.epfl-simple-tree-marked {
@@ -61,8 +62,11 @@ div.epfl-simple-tree-leaf-2 {
     margin-top: 3px;
 }
 
+
+
 div.epfl-simple-tree-leaf-2.epfl-simple-tree-marked {
     background-color: #d1f0ec;
+    border: 1px solid #148b79;
 }
 
 div.epfl-simple-tree-leaf-2:hover {
@@ -97,4 +101,16 @@ div.epfl-simple-tree-leaf-droppable-hover {
 div.epfl-simple-tree-leaf-droppable-hover:hover {
     border: 1px dashed #1BB7A0;
     background-color: transparent;
+}
+
+div.epfl-simple-tree-leaf-2.ui-draggable-dragging {
+    width: 100%;
+    background-color:transparent;
+    border: 1px solid #1BB7A0;
+}
+
+div.epfl-simple-tree-leaf-2.ui-draggable-dragging:hover {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid #1BB7A0;
 }

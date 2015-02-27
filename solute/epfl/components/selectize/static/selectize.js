@@ -43,6 +43,8 @@ epfl.Selectize = function (cid, params) {
             $(this).find("span").each(function () {
                 epfl.Selectize.resetText($(this));
             });
+
+            $(this).parent().parent().next("li.epfl-selectize-divider").show();
             $(this).show();
             $(this).removeClass("selected");
         });
@@ -144,8 +146,10 @@ epfl.Selectize = function (cid, params) {
 
                     if (foundInSibling === -1) {
                         $(this).hide();
+                        $(this).parent().parent().next("li.epfl-selectize-divider").hide();
                     } else {
                         $(this).show();
+                        $(this).parent().parent().next("li.epfl-selectize-divider").show();
                         epfl.Selectize.markText($(this).find("span"), search);
                         found = true;
                     }
@@ -159,6 +163,7 @@ epfl.Selectize = function (cid, params) {
             } else {
                 //found show all
                 $(this).show();
+                $(this).next("li.epfl-selectize-divider").show();
                 $(this).find(".epfl-selectize-entry").each(function () {
                     epfl.Selectize.resetText($(this).find("span"));
                     $(this).show();

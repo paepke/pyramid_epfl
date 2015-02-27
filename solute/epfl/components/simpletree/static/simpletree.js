@@ -28,7 +28,6 @@ epfl.Simpletree = function (cid, params) {
     var dragables = $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-dragable");
     dragables.draggable({
         revert: "invalid",
-        containment: 'window',
         scroll: false,
         helper: 'clone',
         cursorAt: {top: 10, left: 10}
@@ -65,7 +64,7 @@ epfl.Simpletree = function (cid, params) {
 
         var ul = $(this).next("ul");
         var top = posi.top - 3;
-        var left = posi.left + $(this).width() + 15;
+        var left = posi.left + $(this).width() + 10;
         var menuEnterd = false;
 
         if (left + ul.width() > $(window).width()) {
@@ -74,7 +73,7 @@ epfl.Simpletree = function (cid, params) {
 
         ul.css({
             top: top - $(window).scrollTop(),
-            left: left - $(window).scrollLeft(),
+            left: left,
             position: "fixed"
         });
         $(this).parent().mouseleave(function () {
