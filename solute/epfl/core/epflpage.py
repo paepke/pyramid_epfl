@@ -78,6 +78,7 @@ class Page(object):
     model = None
 
     #: If true components will be initialized just in time on being accessed.
+    default_lazy_mode = False
     lazy_mode = False
     active_components = None
 
@@ -100,6 +101,8 @@ class Page(object):
 
         self.setup_model()
 
+        if self.request.is_xhr and self.default_lazy_mode:
+            self.lazy_mode = self.default_lazy_mode
         if self.request.is_xhr:
             self.lazy_mode = len([e for e in self.page_request.get_queue()
                                   if e.get('lazy_mode', False) is not True]) == 0
