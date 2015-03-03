@@ -8,21 +8,25 @@ epfl.FormInputBase = function (cid, params) {
 
     if (type == "defaultinput" || type == "textarea") {
         var inputType = $(selector).attr("type");
-        $(selector).keydown(function (event) {
 
-            if (inputType === "number" &&
-                (event.keyCode < 48 || event.keyCode > 57) &&
-                [190, 46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40].indexOf(event.keyCode) === -1) {
-                event.preventDefault();
-                return;
-            }
-
+        $(selector).keyup(function (event) {
             if ($(selector).val() !== compo.lastValue) {
                 compo.lastValue = $(selector).val();
                 if (fire_change_immediately) {
                     epfl.dispatch_event(cid, "change", {value: $(selector).val()});
                 } else {
                     epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
+                }
+            }
+        }).keydown(function(event){
+            if (inputType === "number" &&
+                (event.keyCode < 48 || event.keyCode > 57) &&
+                [190, 46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40].indexOf(event.keyCode) === -1) {
+                if(compo.ctrl && [65,67,86,88].indexOf(event.keyCode) !== -1){
+                }else {
+                    compo.ctrl = event.ctrlKey;
+                    event.preventDefault();
+                    return;
                 }
             }
         });
