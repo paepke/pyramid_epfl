@@ -103,7 +103,7 @@ class Page(object):
 
         if self.request.is_xhr and self.default_lazy_mode:
             self.lazy_mode = self.default_lazy_mode
-        if self.request.is_xhr:
+        elif self.request.is_xhr:
             self.lazy_mode = len([e for e in self.page_request.get_queue()
                                   if e.get('lazy_mode', False) is not True]) == 0
         if self.lazy_mode:
