@@ -140,8 +140,9 @@ class Transaction(MutableMapping):
             self.tid = self.tid_new
 
         store_type = self.request.registry.settings.get('epfl.transaction.store')
+        transaction_timeout = self.request.registry.settings.get('epfl.transaction.timeout', 1800)
         if store_type == 'redis':
-            self.redis.setex('TA_%s' % self.tid, 1800, pickle.dumps(self._data))
+            self.redis.setex('TA_%s' % self.tid, transaction_timeout, pickle.dumps(self._data))
         elif store_type == 'memory':
             self.memory['TA_%s' % self.tid] = self._data
         else:
