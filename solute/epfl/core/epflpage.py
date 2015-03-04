@@ -232,14 +232,16 @@ class Page(object):
         else:
             traverse_compo_struct()
 
-    def assign_component(self, compo_info, container_id=None):
+    def assign_component(self, compo_info, container_id=None, compo_obj=None):
         """ Create a component from the remembered compo_info and assign it to the page.
         Deals with lazy_mode by using a wrapper method for actually creating and adding the component. This wrapper
         method is then either called or sent to :meth:`add_lazy_component`. """
 
         def lazy_assign(overwrite=False):
-            compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
-            self.add_static_component(compo_info["cid"], compo_obj, overwrite=overwrite)
+            _compo_obj = compo_obj
+            if compo_obj is None:
+                _compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
+            self.add_static_component(compo_info["cid"], _compo_obj, overwrite=overwrite)
 
         if self.lazy_mode:
             self.add_lazy_component(compo_info["cid"], lazy_assign)
@@ -339,18 +341,27 @@ class Page(object):
         setattr(self, cid, lazy_obj)
         self.components[cid] = True  # Just tell the PageComponents Instance that this page has that key.
 
+    def component_exists(self, cid):
+        """Check if a"""
+        if getattr(self, cid, None) is None:
+            return False
+        if isinstance(getattr(self, cid), LazyProperty):
+            return False
+
+        return True
+
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
         if self.request.registry.settings.get('epfl.debug', 'false') == 'true' \
-                and self.__dict__.has_key(cid) and not overwrite:
+                and self.__dict__.has_key(cid) is not None and not overwrite:
             raise Exception('A component with CID %(cid)s is already present in this page!\n'
                             'Existing component: %(existing_compo)r of type %(existing_compo_unbound)r\n'
                             'New component: %(new_compo)r of type %(new_compo_unbound)r\n'
                             'Call epfl.page.add_static_component(cid, compo_obj, overwrite=True) instead of page.cid = '
                             'compo_obj if you really want to do this.' % {'cid': cid,
-                                                                          'existing_compo': self.__dict__[cid],
-                                                                          'existing_compo_unbound': self.__dict__[
-                                                                              cid].__unbound_component__,
+                                                                          'existing_compo': getattr(self, cid),
+                                                                          'existing_compo_unbound': getattr(self,
+                                                                                                            cid).__unbound_component__,
                                                                           'new_compo_unbound': compo_obj.__unbound_component__,
                                                                           'new_compo': compo_obj})
         self.__dict__[cid] = compo_obj
@@ -539,6 +550,9 @@ class Page(object):
             return
 
         cid, struct_dict = item
+        if self.active_components is not None and cid not in self.active_components:
+            return
+
         compo_obj = getattr(self, cid)
         if compo_obj.is_visible(check_parents=True):
             redraw_parts = compo_obj.get_redraw_parts()
