@@ -2,20 +2,14 @@
     {{ compo.data }}
 </div>
 {% if compo.menu is defined and not compo.menu is none %}
-<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-        class="btn btn-default btn-xs pull-right epfl-context-list-dropdown-button">
-    <i class="fa fa-bars"></i>
-</button>
-<ul class="dropdown-menu epfl-context-list-dropdown" role="menu" aria-labelledby="dLabel">
-    {% for entry in compo.menu %}
+    <ul class="context-dropdown-menu">
+        {% for entry in compo.menu %}
+            {% if entry.type == "link" %}
+                <li class="entry" data-event="{{ entry.event }}" data-id="{{ compo.id }}" data-data="{{ compo.data }}">{{ entry.name }}</li>
+            {% else %}
+                <li class="divider"></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
 
-        {% if entry.type == "link" %}
-            <li><a href="#"
-                   onclick=" epfl.ContextListLayout.ContextEvent('{{ entry.event }}', {entry_id:'{{ compo.id }}', data: '{{ compo.data }}'});">
-                {{ entry.name }}</a></li>
-        {% else %}
-            <li class="divider"></li>
-        {% endif %}
-    {% endfor %}
-</ul>
 {% endif %}

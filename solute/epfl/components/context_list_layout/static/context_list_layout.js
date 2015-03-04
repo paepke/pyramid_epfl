@@ -6,30 +6,42 @@ epfl.ContextListLayout = function (cid, params) {
     };
 
 
-    $("#" + cid + " button.epfl-context-list-dropdown-button").click(function () {
-        var posi = $(this).offset();
-        var ul = $(this).next("ul");
-        var top = posi.top - 3;
-        var left = posi.left + $(this).width() + 15;
-        var menuEnterd = false;
+    $.fn.epflContextDropDown = function () {
+        //init visuals
+        $(this).parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
+        $(this).parent().find("button").hide();
 
-        if (left + ul.width() > $(window).width()) {
-            left = posi.left - (ul.width() + 3)
-        }
-
-        ul.css({
-            top: top,
-            left: left,
-            position: "fixed"
+        //events
+        $(this).children("li.entry").click(function () {
+            $(this).parent().hide();
+            var liEvent = $(this).data("event");
+            var liId = $(this).data("id");
+            var liData = $(this).data("data");
+            epfl.dispatch_event(cid, liEvent, {entry_id: liId, data: liData});
         });
-        $(this).parent().mouseleave(function(){
-            $(this).removeClass("open");
-        });
-    });
 
-    $("#" + cid + " ul.epfl-context-list-dropdown").mouseleave(function(){
-            $(this).dropdown('toggle');
-    });
+        $(this).parent().find("button").click(function () {
+            var ul = $(this).parent().find("ul");
+            if (ul.is(":visible")) {
+                ul.hide();
+            } else {
+                ul.show();
+                ul.css({
+                    top: $(this).offset().top + $(this).height() + 3,
+                    left: $(this).offset().left
+                })
+            }
+        });
+
+        $($(this).parent()).mouseenter(function () {
+            $(this).find("button").show();
+        }).mouseleave(function () {
+            $(this).find("button").hide();
+            $(this).find("ul").hide();
+        });
+        return this;
+    };
+    $("#" + cid + " ul.context-dropdown-menu").epflContextDropDown();
 };
 
 epfl.ContextListLayout.inherits_from(epfl.ComponentBase);
