@@ -6,9 +6,11 @@
     </ul>
     <div id="{{compo.cid}}_tabcontent" class="tab-content">
         {% for compo_obj in compo.components %}
-        <div role="tabpanel" class="fade in {% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %}active{% endif %}" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
+        {% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %}
+        <div role="tabpanel" class="fade in active" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
         {{ compo_obj.render() }}
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
