@@ -74,10 +74,10 @@ epfl.Selectize = function (cid, params) {
             //check if something is selected
             if ($(".epfl-selectize.selected:visible").length > 0) {
                 //select prev visible if last do nothing
-                var current = $("li.epfl-selectize.selected:visible").find("li.epfl-selectize.selected:visible");
-                if (current.prev("li").length > 0) {
+                var current = $("li.epfl-selectize-entry.selected:visible");
+                if (current.prev("li:visible").length > 0) {
                     current.removeClass("selected");
-                    current.prev("li").addClass("selected");
+                    current.prev("li:visible").addClass("selected");
                 } else {
                     var prevSelectize = $("li.epfl-selectize.selected:visible").prev().prev();
                     if (prevSelectize.length > 0) {
@@ -104,11 +104,10 @@ epfl.Selectize = function (cid, params) {
             //check if something is selected
             if ($(".epfl-selectize.selected:visible").length > 0) {
                 //select next visible if last do nothing
-                var current = $("li.epfl-selectize.selected:visible").find("li.epfl-selectize.selected:visible");
-
-                if (current.next("li").length > 0) {
+                var current = $("li.epfl-selectize-entry.selected:visible");
+                if (current.next("li:visible").length > 0) {
                     current.removeClass("selected");
-                    current.next("li").addClass("selected");
+                    current.next("li:visible").addClass("selected");
                 } else {
                     var nextSelectize = $("li.epfl-selectize.selected:visible").next().next();
                     if (nextSelectize.length > 0) {

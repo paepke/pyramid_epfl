@@ -50,3 +50,7 @@ span.epfl-selectize-heading {
 span.epfl-selectize-text {
     padding-left: 20px;
 }
+
+ul.epfl-selectize:hover{
+    cursor: default;
+}
