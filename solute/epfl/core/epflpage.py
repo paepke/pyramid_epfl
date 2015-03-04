@@ -17,6 +17,7 @@ class LazyProperty(object):
     """
     Wrapper function used for just in time initialization of components by calling the registered callback.
     """
+    __unbound_component__ = 'LazyProperty'
 
     def __init__(self, callback):
         self.callback = callback
@@ -232,14 +233,16 @@ class Page(object):
         else:
             traverse_compo_struct()
 
-    def assign_component(self, compo_info, container_id=None):
+    def assign_component(self, compo_info, container_id=None, compo_obj=None):
         """ Create a component from the remembered compo_info and assign it to the page.
         Deals with lazy_mode by using a wrapper method for actually creating and adding the component. This wrapper
         method is then either called or sent to :meth:`add_lazy_component`. """
 
         def lazy_assign(overwrite=False):
-            compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
-            self.add_static_component(compo_info["cid"], compo_obj, overwrite=overwrite)
+            _compo_obj = compo_obj
+            if compo_obj is None:
+                _compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
+            self.add_static_component(compo_info["cid"], _compo_obj, overwrite=overwrite)
 
         if self.lazy_mode:
             self.add_lazy_component(compo_info["cid"], lazy_assign)
@@ -539,6 +542,9 @@ class Page(object):
             return
 
         cid, struct_dict = item
+        if self.active_components is not None and cid not in self.active_components:
+            return
+
         compo_obj = getattr(self, cid)
         if compo_obj.is_visible(check_parents=True):
             redraw_parts = compo_obj.get_redraw_parts()
