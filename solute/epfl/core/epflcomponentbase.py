@@ -797,6 +797,18 @@ class ComponentContainerBase(ComponentBase):
 
     __update_children_done__ = False
 
+    _components = None
+    components_initialized = False
+
+    @property
+    def components(self):
+        # self.init_child_components()
+        return self._components
+
+    @components.setter
+    def components(self, value):
+        self._components = value
+
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
@@ -875,6 +887,19 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
+    def init_child_components(self):
+        if self.components_initialized or not self.struct_dict:
+            return
+        self.components_initialized = True
+        for cid in self.struct_dict:
+            compo = getattr(self.page, cid)
+            if isinstance(compo, ComponentContainerBase):
+                compo.init_child_components()
+
+    def redraw(self, parts=None):
+        self.init_child_components()
+        return super(ComponentContainerBase, self).redraw(parts=parts)
+
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -885,6 +910,8 @@ class ComponentContainerBase(ComponentBase):
 
         if not self.is_smart():
             return
+
+        self.init_child_components()
 
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
 
@@ -1033,11 +1060,12 @@ class ComponentContainerBase(ComponentBase):
         """
         if type(compo_obj) is str:
             return getattr(self.page, compo_obj).delete_component()
+        self.init_child_components()
 
         compo_obj.compo_destruct()
-        if hasattr(compo_obj, 'components'):
-            for compo in compo_obj.components[:]:
-                compo.delete_component()
+        if compo_obj.struct_dict is not None:
+            for compo in compo_obj.struct_dict.keys()[:]:
+                getattr(self.page, compo).delete_component()
         self.components.remove(compo_obj)
         if self.struct_dict is None:
             self.page.transaction['compo_struct'][self.cid].pop(compo_obj.cid)
