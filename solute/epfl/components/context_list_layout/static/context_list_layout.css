@@ -36,6 +36,7 @@ ul.context-dropdown-menu{
     background-color: #FFFFFF;
     padding-left: 0px;
     font-size: 14px;
+    cursor:pointer;
 }
 
 ul.context-dropdown-menu li.entry:hover{

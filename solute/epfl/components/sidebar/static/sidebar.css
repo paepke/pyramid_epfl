@@ -1,22 +1,64 @@
-.sidebar_head {
-    background-color: #d7d7d7;
+div.epfl-sidebar {
+    cursor: pointer;
 }
 
-.sidebar_links {
-    background-color: #f9f9f9;
+div.epfl-sidebar ul {
+    list-style: none;
+    padding-left: 0;
 }
 
-div.sidebar_heading{
-    height: 45px;
+div.epfl-sidebar ul.epfl-sidebar-navi li {
+    text-align: center;
+    font-size: 14px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    height: 65px;
+}
+
+div.epfl-sidebar ul.epfl-sidebar-navi li.epfl-sidebar-selected {
+    background-color: #1BB7A0;
+    color: #FFF;
+}
+
+div.epfl-sidebar li.epfl-sidebar-navi-entry:hover {
+    background-color: #E4E4E4;
+    color: #1BB7A0;
+    transition: all 0.2s ease-in-out;
+}
+
+div.epfl-sidebar ul.epfl-sidebar-menu {
+    display: none;
     position: relative;
-    top:13px;
-    left:15px;
+    left: 100px;
+    top: -57px;
+    background-color: #F1F1F1;
+    width: 200px;
+    text-align: left;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-div.sidebar_heading span{
-    margin-left: 10px;
+div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry {
+    text-align: left;
+    font-size: 14px;
+    padding: 5px;
+    height: 40px;
 }
 
-li.sidebar_links span{
-    font-weight: 100;
+div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry:hover span {
+    transition: all 0.2s ease-in-out;
+    color: #1BB7A0;
 }
+
+div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry span {
+    padding-left: 10px;
+    color: #767676;
+    position: relative;
+    top: 5px;
+}
+
+div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry i {
+    padding-right: 5px;
+}
+
