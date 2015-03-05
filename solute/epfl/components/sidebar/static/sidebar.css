@@ -1,6 +1,7 @@
-div.epfl-sidebar{
-    cursor:default;
+div.epfl-sidebar {
+    cursor: pointer;
 }
+
 div.epfl-sidebar ul {
     list-style: none;
     padding-left: 0;
@@ -11,10 +12,10 @@ div.epfl-sidebar ul.epfl-sidebar-navi li {
     font-size: 14px;
     padding-bottom: 10px;
     padding-top: 10px;
-    height: 60px;
+    height: 65px;
 }
 
-div.epfl-sidebar ul.epfl-sidebar-navi li.epfl-sidebar-selected{
+div.epfl-sidebar ul.epfl-sidebar-navi li.epfl-sidebar-selected {
     background-color: #1BB7A0;
     color: #FFF;
 }
@@ -33,6 +34,9 @@ div.epfl-sidebar ul.epfl-sidebar-menu {
     background-color: #F1F1F1;
     width: 200px;
     text-align: left;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry {
@@ -49,7 +53,6 @@ div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry:hover span {
 
 div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry span {
     padding-left: 10px;
-    font-weight: bold;
     color: #767676;
     position: relative;
     top: 5px;

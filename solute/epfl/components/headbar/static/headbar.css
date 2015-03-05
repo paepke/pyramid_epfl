@@ -5,12 +5,13 @@ span.headbar-icontext {
     color: #ffffff;
     padding:15px;
     position:relative;
-    top:8px;
-    font-size:18px;
+    top:9px;
+    font-size:12px;
+    border-right: 1px solid #393a46;
 }
 
 div.headbar-title{
-    border-right: 1px solid #D4D4D4;
+    border-right: 1px solid #393a46;
     float:left;
     padding-top:5px;
     padding-bottom:5px;
@@ -21,5 +22,27 @@ div.headbar-title{
 
 div.headbar-left{
     position: relative;
-    left:-100px;
+    left:-120px;
+}
+
+ol.epfl-headbar-breadcrumb{
+    margin:0px;
+
+}
+
+ol.epfl-headbar-breadcrumb li a{
+    background-color: #393a46;
+    padding:12px;
+
+}
+ol.epfl-headbar-breadcrumb li a:before{
+    border-color: #393a46 #393a46 #393a46 transparent;
+    border-width: 1.8em 0 1.7em 1em;
+    top:46%;
+}
+ol.epfl-headbar-breadcrumb li a:after{
+    border-left: 1em solid #393a46;
+    border-bottom: 1.7em solid transparent;
+    border-top: 1.7em solid transparent;
+    top:45%;
 }

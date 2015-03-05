@@ -37,6 +37,6 @@ class Sidebar(ComponentBase):
     def setup_component(self):
         self.current_url = urlparse(self.page.request.current_route_url()).path
 
-    def handle_go_to_page(self,url,parent_name):
+    def handle_go_to_page(self,url,parent_name,child_name):
         self.selected_parent = parent_name
         self.page.jump(url)

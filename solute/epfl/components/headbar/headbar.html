@@ -6,12 +6,24 @@
                     <span>{{ compo.title }}</span>
                 </a>
             </div>
+
+
+
+
             <div class="top-nav">
                 <div class="pull-left headbar-left">
-                    <span class="headbar-icontext"><i class="fa fa-user"></i> {{ compo.username }}</span>
-                    <span class="headbar-icontext"><i class="fa fa-group"></i> {{ compo.usergroup }}</span>
+
+                    <ol class="breadcrumb-alt epfl-headbar-breadcrumb">
+                        <li><a href="#">{{ compo.breadcrumb_first }}</a></li>
+                        <li><a href="#">{{ compo.breadcrumb_second }}</a></li>
+                    </ol>
+
+
+
                 </div>
                 <div class="pull-right">
+                    <span class="headbar-icontext"><i class="fa fa-user"></i> {{ compo.username }}</span>
+                    <span class="headbar-icontext"><i class="fa fa-group"></i> {{ compo.usergroup }}</span>
                     <span class="headbar-icontext">
                         <a href="#"
                            onclick="epfl.dispatch_event('{{ compo.cid }}', 'logout',{redirect:'{{ compo.logoutlink }}'});">

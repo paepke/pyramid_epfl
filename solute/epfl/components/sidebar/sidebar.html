@@ -9,7 +9,7 @@
                     {% if link['children'] is defined %}
                         <ul class="epfl-sidebar-menu">
                             {% for child in link['children'] %}
-                                <li class="epfl-sidebar-menu-entry" data-url="{{ child['url'] }}" data-parent-name="{{ link['name'] }}">
+                                <li class="epfl-sidebar-menu-entry" data-url="{{ child['url'] }}" data-parent-name="{{ link['name'] }}" data-child-name="{{ child['name'] }}">
                                     <span>
                                             <i class="fa fa-caret-right"></i>{{ child['name'] }}
                                     </span>

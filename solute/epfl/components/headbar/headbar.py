@@ -11,7 +11,7 @@ class Headbar(epflcomponentbase.ComponentBase):
 
     css_name = ["headbar.css"]
 
-    compo_state = ['username', 'title','titlelink','usergroup','optionslink']
+    compo_state = ['username', 'title','titlelink','usergroup','optionslink',"breadcrumb_first","breadcrumb_second"]
 
     title = "" #: The title shown in the left corner
     title_hover_text = None
@@ -21,6 +21,9 @@ class Headbar(epflcomponentbase.ComponentBase):
     optionslink = "#"
     logoutlink = "#" #: Where the logout goes to
     logout_hover_text = "Logout"
+
+    breadcrumb_first = ""
+    breadcrumb_second = ""
 
     def handle_logout(self,redirect):
         """
