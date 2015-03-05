@@ -1,29 +1,24 @@
-<div epflid="{{ compo.cid }}" id="sidebar_{{ compo.cid }}" class="epfl_sidebar">
-    <aside class="nav-container ng-scope nav-fixed nav-vertical">
-        <div class="nav-wrapper ng-scope">
-            <ul class="nav ng-scope" id="nav" style="overflow: hidden; width: auto; height: 100%;">
-                {% for link in compo.links %}
-                    <li class="sidebar_head">
-                        <div class="sidebar_heading">
-                            <i class="fa fa-{{ link['icon'] }}"></i><span>{{ link['name'] }}</span>
-</div>
-                        {% if link['children'] is defined %}
-                            <ul class="nav ng-scope sidebar_links"  style="display:block">
-                                {% for child in link['children'] %}
-                                    <li  class="sidebar_links">
-                                        <a href="{{ child['url'] }}" id="{{ child['name'] }}">
-                                            <span {% if compo.current_url == child['url'] %}class="text-primary"{% endif %}>{{ child['name'] }}</span>
-                                            <p class="pull-right"><i class="fa fa-caret-right"></i></p>
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <i class="fa fa-caret-right icon-has-ul"></i>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+<div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-sidebar">
+    <aside>
+        <ul class="epfl-sidebar-navi">
+            {% for link in compo.links %}
+                <li class="epfl-sidebar-navi-entry{% if compo.selected_parent == link['name']%} epfl-sidebar-selected{% endif %}">
+                    <span>
+                        <i class="fa fa-{{ link['icon'] }} fa-2x"></i><br>{{ link['name'] }}
+                    </span>
+                    {% if link['children'] is defined %}
+                        <ul class="epfl-sidebar-menu">
+                            {% for child in link['children'] %}
+                                <li class="epfl-sidebar-menu-entry" data-url="{{ child['url'] }}" data-parent-name="{{ link['name'] }}">
+                                    <span>
+                                            <i class="fa fa-caret-right"></i>{{ child['name'] }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
     </aside>
 </div>

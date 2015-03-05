@@ -7,6 +7,9 @@ class Headbar(epflcomponentbase.ComponentBase):
 
     """
     template_name = "headbar/headbar.html"
+    asset_spec = "solute.epfl.components:headbar/static"
+
+    css_name = ["headbar.css"]
 
     compo_state = ['username', 'title','titlelink','usergroup','optionslink']
 

@@ -23,14 +23,20 @@ class Sidebar(ComponentBase):
     asset_spec = "solute.epfl.components:sidebar/static"
 
     css_name = ["sidebar.css"]
+    js_name = ["sidebar.js"]
+    js_parts = ComponentBase.js_parts + ["sidebar/sidebar.js"]
 
     compo_state = ComponentBase.compo_state[:]
-    compo_state.extend(["links","current_url"])
+    compo_state.extend(["links","current_url","selected_parent"])
 
     links = []
     current_url = ""
 
+    selected_parent = None
+
     def setup_component(self):
         self.current_url = urlparse(self.page.request.current_route_url()).path
 
-
+    def handle_go_to_page(self,url,parent_name):
+        self.selected_parent = parent_name
+        self.page.jump(url)
