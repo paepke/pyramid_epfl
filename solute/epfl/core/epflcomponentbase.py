@@ -2,6 +2,7 @@
 
 from pprint import pprint
 from collections2 import OrderedDict as odict
+from collections import MutableSequence
 
 import types, copy, string, inspect, uuid
 
@@ -747,15 +748,12 @@ class ComponentBase(object):
             target.struct_dict = self.page.transaction['compo_struct'][target.cid]
 
         struct_dict = source.struct_dict.pop(cid)
-        source.components.remove(compo)
 
         compo.set_container_compo(target, slot)
         if position is None:
             target.struct_dict[cid] = struct_dict
-            target.components.append(compo)
         else:
             target.struct_dict.insert(cid, struct_dict, position)
-            target.components.insert(position, compo)
 
         target.redraw()
         source.redraw()
@@ -797,17 +795,7 @@ class ComponentContainerBase(ComponentBase):
 
     __update_children_done__ = False
 
-    _components = None
     components_initialized = False
-
-    @property
-    def components(self):
-        # self.init_child_components()
-        return self._components
-
-    @components.setter
-    def components(self, value):
-        self._components = value
 
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
@@ -887,19 +875,6 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    def init_child_components(self):
-        if self.components_initialized or not self.struct_dict:
-            return
-        self.components_initialized = True
-        for cid in self.struct_dict:
-            compo = getattr(self.page, cid)
-            if isinstance(compo, ComponentContainerBase):
-                compo.init_child_components()
-
-    def redraw(self, parts=None):
-        self.init_child_components()
-        return super(ComponentContainerBase, self).redraw(parts=parts)
-
     def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -910,8 +885,6 @@ class ComponentContainerBase(ComponentBase):
 
         if not self.is_smart():
             return
-
-        self.init_child_components()
 
         data = self._get_data(self.row_offset, self.row_limit, self.row_data)
 
@@ -1045,7 +1018,7 @@ class ComponentContainerBase(ComponentBase):
     def setup_component_slots(self):
         """ Overwrite me. This method must initialize the slots that this
         container-component provides to accumulate components """
-        self.components = []
+        self.components = ComponentList(self)
 
     def add_component_to_slot(self, compo_obj, slot, position=None):
         """ This method must fill the correct slot with the component """
@@ -1060,7 +1033,6 @@ class ComponentContainerBase(ComponentBase):
         """
         if type(compo_obj) is str:
             return getattr(self.page, compo_obj).delete_component()
-        self.init_child_components()
 
         compo_obj.compo_destruct()
         if compo_obj.struct_dict is not None:
@@ -1072,3 +1044,35 @@ class ComponentContainerBase(ComponentBase):
         else:
             self.struct_dict.pop(compo_obj.cid)
         self.page.transaction['compo_info'].pop(compo_obj.cid)
+
+
+class ComponentList(MutableSequence):
+    """
+
+    """
+
+    def __init__(self, container_compo):
+        self.container_compo = container_compo
+
+    @property
+    def struct_dict(self):
+        struct_dict = getattr(self.container_compo, 'struct_dict', None)
+        if struct_dict is not None:
+            return struct_dict
+        return self.container_compo.page.transaction['compo_struct'][self.container_compo.cid]
+
+    def __setitem__(self, index, value):
+        pass
+
+    def insert(self, index, value):
+        pass
+
+    def __len__(self):
+        return len(self.struct_dict)
+
+    def __getitem__(self, index):
+        cid = self.struct_dict.keys()[index]
+        return getattr(self.container_compo.page, cid)
+
+    def __delitem__(self, index):
+        pass
