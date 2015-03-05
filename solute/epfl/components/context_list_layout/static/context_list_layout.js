@@ -27,7 +27,7 @@ epfl.ContextListLayout = function (cid, params) {
             } else {
                 ul.show();
                 ul.css({
-                    top: $(this).offset().top + $(this).height() + 3,
+                    top: ($(this).offset().top + $(this).height() + 3) - $(window).scrollTop(),
                     left: $(this).offset().left
                 })
             }
