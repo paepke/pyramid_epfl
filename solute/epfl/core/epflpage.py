@@ -109,6 +109,8 @@ class Page(object):
                                   if e.get('lazy_mode', False) is not True]) == 0
         if self.lazy_mode:
             self.active_components = set()
+            self.active_component_objects = []
+            self.active_component_cid_objects = []
 
     def __call__(self):
         """
@@ -318,6 +320,10 @@ class Page(object):
         value = getattr(self, key)
         if isinstance(value, epflcomponentbase.ComponentBase):
             self.components.pop(key)
+            if self.active_components is not None:
+                self.active_components.remove(value.cid)
+                self.active_component_objects.remove(value)
+                self.active_component_cid_objects.remove((value.cid, value))
         self.__dict__.pop(key)
 
     def __setattr__(self, key, value):
@@ -360,6 +366,8 @@ class Page(object):
         self.components[cid] = compo_obj
         if self.active_components is not None:
             self.active_components.add(cid)
+            self.active_component_objects.append(compo_obj)
+            self.active_component_cid_objects.append((cid, compo_obj))
         if not hasattr(compo_obj, 'container_compo'):
             self.transaction["compo_struct"].setdefault(cid, odict())
 
@@ -373,9 +381,9 @@ class Page(object):
         elif self.active_components is None and not show_cid:
             return self.components.values()
         if show_cid:
-            data = [(cid, self.components[cid]) for cid in self.active_components if cid in self.components.keys()]
+            data = self.active_component_cid_objects
         else:
-            data = [self.components[cid] for cid in self.active_components if cid in self.components.keys()]
+            data = self.active_component_objects
         return data
 
     def has_access(self):
@@ -459,11 +467,11 @@ class Page(object):
 
         [request-processing-flow]
         """
-
+        initialized_components = self.transaction['__initialized_components__']
         for cid, compo in self.get_active_components():
-            if cid + "$__inited__" not in self.transaction:
+            if cid not in initialized_components:
                 self._active_initiations += 1
-                self.transaction[cid + "$__inited__"] = True
+                self.transaction["__initialized_components__"].add(cid)
                 compo.init_transaction()
                 self._active_initiations -= 1
 

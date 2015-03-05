@@ -57,6 +57,7 @@ class Transaction(MutableMapping):
 
     def set_page_obj(self, page_obj):
         self["__page__"] = page_obj.get_name()
+        self["__initialized_components__"] = set()
 
     def get_page_name(self):
         return self["__page__"]

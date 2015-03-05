@@ -332,22 +332,15 @@ class ComponentBase(object):
         Set the container_compo for this component and create any required structural information in the transaction.
         """
 
-        # TODO: Can be handled without traversal due to container_compo having a struct_dict reference.
         self.container_compo = compo_obj
         self.container_slot = slot
 
-        # Traverse upwards in the structure to set the correct position for this component in transaction.
-        def traverse(compo):
-            container = getattr(compo, 'container_compo', None)
-            structure_dict = self.page.transaction.setdefault("compo_struct", odict())
-            if container:
-                structure_dict = traverse(container)
-            return structure_dict.setdefault(compo.cid, odict())
+        #
+        parent_dict = compo_obj.struct_dict
+        if parent_dict is None:
+            parent_dict = self.page.transaction['compo_struct'].setdefault(compo_obj.cid, odict())
 
-        if position is not None:
-            self.struct_dict = traverse(self.container_compo).insert(self.cid, odict(), position)
-        else:
-            self.struct_dict = traverse(self.container_compo).setdefault(self.cid, odict())
+        self.struct_dict = parent_dict.setdefault(self.cid, odict())
 
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
@@ -359,7 +352,7 @@ class ComponentBase(object):
 
         for attr_name in self.compo_state + self.base_compo_state:
             self.page.transaction.pop(self.cid + "$" + attr_name, None)
-        self.page.transaction.pop(self.cid + "$__inited__", None)
+        self.page.transaction['__initialized_components__'].remove(self.cid)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
         del self.page[self.cid]
