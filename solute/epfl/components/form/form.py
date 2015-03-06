@@ -55,7 +55,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         # try to find a parent form and register this component, but fail silently,
         # since components do not need to be nested inside a form
         try:
-            get_parent_form(self.container_compo).register_field(self)
+            get_parent_form(self.container_compo).register_field(self) 
         except AttributeError:
             pass
 
@@ -155,20 +155,25 @@ class Form(epflcomponentbase.ComponentContainerBase):
     js_parts.append("form/form.js")
 
     asset_spec = "solute.epfl.components:form/static"
+    js_name = ["form.js"]
 
-    compo_state = ["_registered_fields"]
+    compo_state = ["_registered_fields", "is_dirty"]
 
     fields = []
     _registered_fields = []
     validation_errors = []
 
     validate_hidden_fields = False
+    is_dirty = False
 
     def __init__(self, node_list=None, validate_hidden_fields=False, **extra_params):
         super(Form, self).__init__()
 
     def handle_submit(self):
         pass
+    
+    def handle_set_dirty(self):
+        self.is_dirty = True
 
     def register_field(self, field):
         """

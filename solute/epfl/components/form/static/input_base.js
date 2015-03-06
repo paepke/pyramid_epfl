@@ -1,9 +1,19 @@
 epfl.FormInputBase = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
+    var compo_cid = cid;
     var selector = "#" + cid;
     var type = $(selector).closest("div").attr('epfl-type');
     var fire_change_immediately = params["fire_change_immediately"];
+    
+    function event_change(value) {
+    	epfl.dispatch_event(cid, "set_dirty", {});
+		if (fire_change_immediately) {
+            epfl.dispatch_event(cid, "change", {value: value});
+        } else {
+            epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid);
+        }
+    }
 
 
     if (type == "defaultinput" || type == "textarea") {
@@ -12,11 +22,7 @@ epfl.FormInputBase = function (cid, params) {
         $(selector).keyup(function (event) {
             if ($(selector).val() !== compo.lastValue) {
                 compo.lastValue = $(selector).val();
-                if (fire_change_immediately) {
-                    epfl.dispatch_event(cid, "change", {value: $(selector).val()});
-                } else {
-                    epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
-                }
+                event_change($(selector).val());
             }
         }).keydown(function(event){
             if (inputType === "number" &&
@@ -44,21 +50,13 @@ epfl.FormInputBase = function (cid, params) {
 
     } else if (type == "select") {
         $(selector).change(function () {
-            if (fire_change_immediately) {
-                epfl.dispatch_event(cid, "change", {value: $(selector).val()});
-            } else {
-                epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: $(selector).val()}), cid);
-            }
+            event_change($(selector).val());
         });
     } else if (type == "checkbox") {
         $(selector).attr('checked', $(selector).val() == 'True');
         $(selector).change(function () {
             var val = val = $(this).is(':checked');
-            if (fire_change_immediately) {
-                epfl.dispatch_event(cid, "change", {value: val});
-            } else {
-                epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
-            }
+            event_change(val);
         });
 
     } else if (type == "toggle") {
@@ -66,11 +64,7 @@ epfl.FormInputBase = function (cid, params) {
         $(selector).bootstrapSwitch('state');
         $(selector).on('switchChange.bootstrapSwitch', function (event, state) {
             var val = $(this).closest("div").parent().hasClass("bootstrap-switch-on");
-            if (fire_change_immediately) {
-                epfl.dispatch_event(cid, "change", {value: val});
-            } else {
-                epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
-            }
+            event_change(val);
         });
 
     } else if (type == "radiobuttongroup") {
@@ -78,22 +72,14 @@ epfl.FormInputBase = function (cid, params) {
         selector = "input[type=radio][name=" + cid + "]";
         $(selector).change(function () {
             var val = $(this).val();
-            if (fire_change_immediately) {
-                epfl.dispatch_event(cid, "change", {value: val});
-            } else {
-                epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
-            }
+            event_change(val);
         });
 
     } else if (type == "buttonsetgroup") {
         selector = "input[type=radio][name=" + cid + "]";
         $(selector).change(function () {
             var val = $(this).val();
-            if (fire_change_immediately) {
-                epfl.dispatch_event(cid, "change", {value: val});
-            } else {
-                epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: val}), cid);
-            }
+            event_change(val);
         });
     }
     if (params["submit_form_on_enter"]) {
