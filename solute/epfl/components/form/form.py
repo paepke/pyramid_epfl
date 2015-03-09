@@ -140,9 +140,20 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         if self.validation_type == 'number':
             if self.value == None:
                 return None
-            return int(self.value)
+            try:
+                return int(self.value)
+            except ValueError:
+                return None
         if self.validation_type == 'bool':
             return bool(self.value)
+
+        if self.validation_type == 'float':
+            if self.value == None:
+                return None
+            try:
+                return float(self.value)
+            except ValueError:
+                return None
         return self.value
 
     def handle_change(self, value):
