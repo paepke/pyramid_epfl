@@ -32,6 +32,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     #: Otherwise, change events are fired upon the next immediate epfl event.
     fire_change_immediately = False
     compo_col = 12
+    label_col = 2
 
     def __init__(self, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):
@@ -158,7 +159,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
     js_parts.append("form/form.js")
 
     asset_spec = "solute.epfl.components:form/static"
-    js_name = ["form.js","input_base.js"]
+    js_name = ["form.js"]
 
     compo_state = ["_registered_fields", "is_dirty"]
 

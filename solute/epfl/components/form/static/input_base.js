@@ -2,9 +2,11 @@ epfl.FormInputBase = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var selector = "#" + cid;
     var compo_col = parseInt(params["compo_col"]);
-    if ($(selector + " > label").length > 0) {
-        $(selector + " > label").first().addClass("col-sm-1");
-        compo_col -= 1;
+    var label_col = parseInt(params["label_col"]);
+
+    if ($(selector).children().first().prop("tagName") === "LABEL") {
+        $(selector).children().first().addClass("col-sm-"+label_col);
+        compo_col -= parseInt(label_col);
     }
     $(selector+ " > div").first().addClass("col-sm-" + compo_col);
 };
