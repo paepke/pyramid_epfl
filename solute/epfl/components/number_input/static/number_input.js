@@ -6,9 +6,11 @@ epfl.NumberInput = function (cid, params) {
     compo.shiftKey = false;
     var enqueue_event = !params["fire_change_immediately"];
     var validation_type = $(selector).data('validation-type');
-    var allowed_keys = [46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40, 189];
+    var allowed_keys = [46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40, 189, 109];
     if (validation_type === "float") {
         allowed_keys.push(190);
+        allowed_keys.push(188);
+        allowed_keys.push(108);
     }
 
     var change = function (event) {
@@ -22,7 +24,7 @@ epfl.NumberInput = function (cid, params) {
 
             compo.shiftKey = true
         }
-        if ((event.keyCode < 48 || event.keyCode > 57) &&
+        if ((event.keyCode < 48 || event.keyCode > 57 && event.keyCode < 96 || event.keyCode > 105) &&
             allowed_keys.indexOf(event.keyCode) === -1) {
             if (compo.strg && [65, 67, 86, 88].indexOf(event.keyCode) !== -1) {
 
