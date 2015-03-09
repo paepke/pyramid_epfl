@@ -24,3 +24,9 @@ class Checkbox(FormInputBase):
     #: If set to True, label and checkbox are not splitted to different bootstrap rows,
     # but placed directly next to each other.
     compact = False
+
+    js_parts = FormInputBase.js_parts[:]
+    js_parts.extend(['checkbox/checkbox.js'])
+    js_name = FormInputBase.js_name + [("solute.epfl.components:checkbox/static", "checkbox.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:checkbox/static", "checkbox.css")]
+

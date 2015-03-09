@@ -1,25 +1,16 @@
-<div epflid="{{ compo.cid }}" class="row">
-	{% if compo.compact %}
-		<div epfl-type="checkbox" class="col-sm-12 text-left">
-        	{% if compo.label %}
-			<label>
-			{% endif %}
-			<input class="epfl-checkbox" type="checkbox" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" style="width:auto;" />
-			{% if compo.label %}
-			{{ compo.label }}</label>
-			{% endif %}
-		</div>
-	{% else %}
-		{% if compo.label %}
-		<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-		{% endif %}
-	    <div class="text-left {{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-			<div epfl-type="checkbox" class="text-left">
-	            <input class="form-control epfl-checkbox" type="checkbox" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" style="width:auto;" />
-	        </div>
-	        {% if compo.validation_error %}
-	            <small class="help-block has-error">{{ compo.validation_error }}</small>
-	        {% endif %}
-	    </div>
-	{% endif %}
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+    {% endif %}
+    <div>
+    <input class="form-control epfl-checkbox"
+           type="checkbox"
+           id="{{ compo.cid }}_input"
+           name="{{ compo.name }}"
+           value="{{ compo.value if compo.value is not none else '' }}"
+           style="width:auto;" />
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
+    </div>
 </div>

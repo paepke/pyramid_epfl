@@ -1,13 +1,13 @@
-<div epflid="{{ compo.cid }}" class="row epfl-text-input">
-	{% if compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-	{% endif %}
-    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-        <div epfl-type="defaultinput">
-            <input class="form-control" type="text" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}" {{ "data-provide='typeahead'"|safe if compo.typeahead else "" }}/>
-        </div>
-	    {% if compo.validation_error %}
-	        <small class="help-block has-error">{{ compo.validation_error }}</small>
-	    {% endif %}
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+    {% endif %}
+    <div>
+        <input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
+               value="{{ compo.value if compo.value is not none else '' }}"
+               placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
     </div>
 </div>

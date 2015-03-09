@@ -1,37 +1,25 @@
-{% if compo.layout_vertical is defined and compo.layout_vertical %}
-<div epflid="{{ compo.cid }}" class="epfl-number-input">
-	{% if compo.label is defined and compo.label %}
-	<div class="row"><label for="{{ compo.cid }}" class="col-sm-12">{{ compo.label }}</label></div>
-	{% endif %}
-	<div class="row">
-    <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">
-{% else %}
-<div epflid="{{ compo.cid }}" class="row epfl-number-input">
-	{% if compo.label is defined and compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-	{% endif %}
-    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-{% endif %}
-
-    <div epfl-type="defaultinput">
-        <input class="form-control" type="number" id="{{ compo.cid }}" name="{{ compo.name }}" value="{{ compo.value if compo.value is not none else '' }}" placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-number-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+    {% endif %}
+    <div>
+        <input class="form-control"
+               type="number"
+               id="{{ compo.cid }}_input"
+               name="{{ compo.name }}"
+               value="{{ compo.value if compo.value is not none else '' }}"
+               placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
         {% if compo.min_value is defined and compo.min_value is not none %}
         min="{{ compo.min_value }}"
         {% endif %}
         {% if compo.max_value is defined and compo.max_value is not none %}
         max="{{ compo.max_value }}"
         {% endif %}
+        data-validation-type='{{ compo.validation_type }}'
         />
-    </div>	
-    {% if compo.validation_error %}
-        <small class="help-block has-error">{{ compo.validation_error }}</small>
-    {% endif %}
-
-{% if compo.layout_vertical is defined and compo.layout_vertical %}
-	</div>
-	</div>
-</div>
-{% else %}
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
     </div>
 </div>
-{% endif %}
+

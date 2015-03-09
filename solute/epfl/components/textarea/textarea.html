@@ -1,30 +1,15 @@
-{% if compo.layout_vertical is defined and compo.layout_vertical %}
-<div epflid="{{ compo.cid }}" class="epfl-textarea">
-	{% if compo.label is defined and compo.label %}
-	<div class="row"><label for="{{ compo.cid }}" class="col-sm-12">{{ compo.label }}</label></div>
-	{% endif %}
-	<div class="row">
-    <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">
-{% else %}
-<div epflid="{{ compo.cid }}" class="row epfl-textarea">
-	{% if compo.label is defined and compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-	{% endif %}
-    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-{% endif %}
-
-        <div epfl-type="textarea">
-            <textarea class="form-control" id="{{compo.cid}}" name="{{ compo.name }}" style="{{ compo.style if compo.style is defined else '' }}" placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}">{{ compo.value if compo.value is not none else '' }}</textarea>
-        </div>
-	    {% if compo.validation_error %}
-	        <small class="help-block has-error">{{ compo.validation_error }}</small>
-	    {% endif %}
-	    
-{% if compo.layout_vertical is defined and compo.layout_vertical %}
-	</div>
-	</div>
-</div>
-{% else %}
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+    {% endif %}
+    <div>
+        <textarea class="form-control"
+                  id="{{compo.cid}}_input"
+                  name="{{ compo.name }}"
+                  style="{{ compo.style if compo.style is defined else '' }}"
+                  placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}">{{ compo.value if compo.value is not none else '' }}</textarea>
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
     </div>
 </div>
-{% endif %}

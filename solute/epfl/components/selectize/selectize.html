@@ -1,15 +1,51 @@
-<div epflid="{{ compo.cid }}" class="row">
-{% if compo.layout_vertical is defined and compo.layout_vertical %}
-	{% if compo.label is defined and compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-12">{{ compo.label }}</label>
-	{% endif %}
-    <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">
-{% else %}
-	{% if compo.label is defined and compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-	{% endif %}
-    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-{% endif %}
+{#<div epflid="{{ compo.cid }}" class="row">#}
+{#{% if compo.layout_vertical is defined and compo.layout_vertical %}#}
+{#	{% if compo.label is defined and compo.label %}#}
+{#	<label for="{{ compo.cid }}" class="col-sm-12">{{ compo.label }}</label>#}
+{#	{% endif %}#}
+{#    <div class="col-sm-12{{ ' has-error' if compo.validation_error else '' }}">#}
+{#{% else %}#}
+{#	{% if compo.label is defined and compo.label %}#}
+{#	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>#}
+{#	{% endif %}#}
+{#    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">#}
+{#{% endif %}#}
+{#    <div class="input-group">#}
+{#        <input type="text" class="form-control epfl-selectize-input" id="selectize-input-{{ compo.cid }}" {% if compo.selected_text %}value="{{ compo.selected_text }}"{% endif %}>#}
+{#        <div class="input-group-btn">#}
+{#            <button type="button" class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}"><span class="caret"></span></button>#}
+{#        </div>#}
+{#    </div>#}
+{#    {% if compo.validation_error %}#}
+{#        <small class="help-block has-error">{{ compo.validation_error }}</small>#}
+{#    {% endif %}#}
+{##}
+{#    <ul class="epfl-selectize" id="selectize-{{ compo.cid }}" {% if compo.drop_down_height is defined and compo.drop_down_height != None %}style="max-height:{{ compo.drop_down_height }}px;overflow-y: scroll"{% endif %}>#}
+{#        {% for entry in compo.entries %}#}
+{#            <li class="epfl-selectize epfl-selectize-head"><span#}
+{#                    class="epfl-selectize epfl-selectize-heading">{{ entry['name'] }}</span>#}
+{#                <ul class="epfl-selectize-innerlist">#}
+{#                    {% for subentry in  entry['entries'] %}#}
+{##}
+{#                        <li class="epfl-selectize epfl-selectize-entry {{ compo.cid }}" id="selectize-entry-{{ compo.cid }}" data-selectizeid="{{ subentry.id }}">#}
+{#                            <span class="epfl-selectize epfl-selectize-text">{{ subentry.value }}</span>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </li>#}
+{#            <li class="epfl-selectize-divider"></li>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+{#    #}
+{#	</div>#}
+{#</div>#}
+
+
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+    {% endif %}
+    <div>
     <div class="input-group">
         <input type="text" class="form-control epfl-selectize-input" id="selectize-input-{{ compo.cid }}" {% if compo.selected_text %}value="{{ compo.selected_text }}"{% endif %}>
         <div class="input-group-btn">
@@ -36,7 +72,6 @@
             <li class="epfl-selectize-divider"></li>
         {% endfor %}
     </ul>
-    
-	</div>
-</div>
 
+    </div>
+</div>

@@ -24,3 +24,10 @@ class Select(FormInputBase):
 
     validation_type = 'text'
     layout_vertical = False
+
+    js_parts = FormInputBase.js_parts[:]
+    js_parts.extend(['select/select.js'])
+    js_name = FormInputBase.js_name + [("solute.epfl.components:select/static", "select.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:select/static", "select.css")]
+
+    validation_type = 'text'

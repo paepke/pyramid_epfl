@@ -18,7 +18,6 @@ from dragable.dragable import Dragable
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
-from float_number_input.float_number_input import FloatNumberInput
 from number_input.number_input import NumberInput
 from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
@@ -28,7 +27,6 @@ from selectize.selectize import Selectize
 from radio.radio import Radio
 from buttonradio.buttonradio import ButtonRadio
 from toggle.toggle import Toggle
-from password_input.password_input import PasswordInput
 
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
@@ -103,7 +101,6 @@ def add_routes(config):
     TextInput.add_pyramid_routes(config)
     TextEditor.add_pyramid_routes(config)
     NumberInput.add_pyramid_routes(config)
-    FloatNumberInput.add_pyramid_routes(config)
     Textarea.add_pyramid_routes(config)
     Radio.add_pyramid_routes(config)
     ButtonRadio.add_pyramid_routes(config)

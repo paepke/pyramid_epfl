@@ -12,7 +12,16 @@ class ButtonRadio(FormInputBase):
         form = Form(node_list=[ButtonRadio(label="Gender:", name="gender", default="male", options=["male", "female"])])
 
     """
-
     template_name = "buttonradio/buttonradio.html"
+
+    js_parts = FormInputBase.js_parts[:]
+    js_parts.extend(['buttonradio/buttonradio.js'])
+
+    js_name = FormInputBase.js_name + [("solute.epfl.components:buttonradio/static", "buttonradio.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:buttonradio/static", "buttonradio.css")]
+
+    options = ""
+
     validation_type = 'text'
     center=False
+

@@ -13,6 +13,14 @@ class Radio(FormInputBase):
 
     """
 
+    options = ""
+
     template_name = "radio/radio.html"
 
     validation_type = 'text'
+
+    js_parts = FormInputBase.js_parts[:]
+    js_parts.extend(['radio/radio.js'])
+
+    js_name = FormInputBase.js_name + [("solute.epfl.components:radio/static", "radio.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:radio/static", "radio.css")]

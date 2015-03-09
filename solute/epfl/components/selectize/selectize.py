@@ -18,11 +18,11 @@ class Selectize(FormInputBase):
 
     template_name = "selectize/selectize.html"
 
-    js_parts = epflcomponentbase.ComponentBase.js_parts + ["selectize/selectize.js"]
-    asset_spec = "solute.epfl.components:selectize/static"
+    js_parts = FormInputBase.js_parts[:]
+    js_parts.extend(['selectize/selectize.js'])
+    js_name = FormInputBase.js_name + [("solute.epfl.components:selectize/static", "selectize.js")]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:selectize/static", "selectize.css")]
 
-    css_name = ["selectize.css"]
-    js_name = ["selectize.js"]
 
     compo_config = []
     compo_state = FormInputBase.compo_state + ["entries","drop_down_height","selected_text"]

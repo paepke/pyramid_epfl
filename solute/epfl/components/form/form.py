@@ -31,6 +31,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     #: Set to true if input change events should be fired immediately to the server.
     #: Otherwise, change events are fired upon the next immediate epfl event.
     fire_change_immediately = False
+    compo_col = 12
 
     def __init__(self, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):
@@ -97,7 +98,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
                     result, text = False, ('Value must not be lower than %s.' % self.min_value)
                 elif ((not self.max_value is None) and (int(self.value)>self.max_value)):
                     result, text = False, ('Value must not be higher than %s.' % self.max_value)
-        elif self.validation_type == 'float_number':
+        elif self.validation_type == 'float':
             if self.mandatory and ((self.value is None) or (self.value == "")):
                 result, text = False, 'Value is required'
             elif ((not self.value is None) and (self.value != "")):
@@ -136,6 +137,8 @@ class FormInputBase(epflcomponentbase.ComponentBase):
             except UnicodeEncodeError:
                 return unicode(self.value)
         if self.validation_type == 'number':
+            if self.value == None:
+                return None
             return int(self.value)
         if self.validation_type == 'bool':
             return bool(self.value)
@@ -155,7 +158,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
     js_parts.append("form/form.js")
 
     asset_spec = "solute.epfl.components:form/static"
-    js_name = ["form.js"]
+    js_name = ["form.js","input_base.js"]
 
     compo_state = ["_registered_fields", "is_dirty"]
 
@@ -189,6 +192,8 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     def get_values(self):
         values = odict()
+        print "get_values",self.registered_fields
+
         for field in self.registered_fields:
             if field.name is None:
                 continue

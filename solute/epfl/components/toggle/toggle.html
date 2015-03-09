@@ -1,13 +1,16 @@
-<div epflid="{{ compo.cid }}" class="row epfl-toggle">
-	{% if compo.label %}
-	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
-	{% endif %}
-    <div class="{{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}{{ ' has-error' if compo.validation_error else '' }}">
-        <div class="toggle" epfl-type="toggle">
-            <input type="checkbox" id="{{ compo.cid }}" name="{{ compo.name }}" data-on-text="{{ compo.on_text }}" data-off-text="{{ compo.off_text }}"  value="{{ compo.value if compo.value is not none else '' }}"/>
-        </div>
-    {% if compo.validation_error %}
-        <small class="help-block has-error">{{ compo.validation_error }}</small>
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
     {% endif %}
+    <div>
+        <input type="checkbox"
+               id="{{compo.cid}}_input"
+               name="{{ compo.name }}"
+               data-on-text="{{ compo.on_text }}"
+               data-off-text="{{ compo.off_text }}"
+               value="{{ compo.value if compo.value is not none else '' }}"/>
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
     </div>
 </div>
