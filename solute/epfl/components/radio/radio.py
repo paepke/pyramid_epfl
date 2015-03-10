@@ -15,6 +15,8 @@ class Radio(FormInputBase):
 
     options = ""
 
+    compo_state = FormInputBase.compo_state + ['options']
+
     template_name = "radio/radio.html"
 
     validation_type = 'text'
