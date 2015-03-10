@@ -5,13 +5,13 @@ epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
     $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").change(function () {
-        epfl.dispatch_event(cid, "search", {search: $(this).val(),
-                                            filter:$("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").val()});
+        epfl.dispatch_event(cid, "search", {search_string: $(this).val(),
+                                            filter_key:$("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").val()});
     });
 
     $("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").change(function () {
-        epfl.dispatch_event(cid, "search", {search: $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").val(),
-                                            filter:$(this).val()});
+        epfl.dispatch_event(cid, "search", {search_string: $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").val(),
+                                            filter_key:$(this).val()});
     });
 
     $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-0").click(function () {

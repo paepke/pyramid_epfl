@@ -14,7 +14,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     css_name = ["simpletree.css"]
 
     compo_config = []
-    compo_state = ["tree_data", "search", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter"]
+    compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key"]
 
     tree_data = []
     open_leaf_0_ids = []
@@ -23,19 +23,19 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     height = 400
 
-    search = None
-    filter = None
+    search_string = None
+    filter_key = None
 
     def init_transaction(self):
         self.tree_data = self.load_level_0()
 
-    def load_level_0(self, search=None, filter=None):
+    def load_level_0(self, search_string=None, filter_key=None):
         return []
 
-    def load_level_1(self, upper_leaf_id, search=None, filter=None):
+    def load_level_1(self, upper_leaf_id, search_string=None, filter_key=None):
         return []
 
-    def load_level_2(self, upper_leaf_id, search=None, filter=None):
+    def load_level_2(self, upper_leaf_id, search_string=None, filter_key=None):
         return []
 
     def handle_leaf_0_clicked(self, leafid):
@@ -118,20 +118,22 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.tree_data = new_data
 
-    def handle_search(self, search, filter):
-        self.search = search
-        self.filter = filter
+    def handle_search(self, search_string, filter_key):
+        self.search_string = search_string
+        self.filter_key = filter_key
 
-        self.rebuild_tree_structure(search)
+        self.rebuild_tree_structure()
 
-    def rebuild_tree_structure(self, search=None, filter=None):
-        self.tree_data = self.load_level_0(search,filter)
+    def rebuild_tree_structure(self):
+        search_string = self.search_string
+        filter_key = self.filter_key
+        self.tree_data = self.load_level_0(search_string, filter_key)
 
-        for id in self.open_leaf_0_ids:
-            self.add_leaf_0_data(self.load_level_1(id, search,filter), id)
+        for leafid in self.open_leaf_0_ids:
+            self.add_leaf_0_data(self.load_level_1(leafid, search_string, filter_key), leafid)
 
-        for id in self.open_leaf_1_ids:
-            self.add_leaf_1_data(self.load_level_2(id, search,filter), id)
+        for leafid in self.open_leaf_1_ids:
+            self.add_leaf_1_data(self.load_level_2(leafid, search_string, filter_key), leafid)
 
         self.redraw()
 
