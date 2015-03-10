@@ -33,6 +33,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     fire_change_immediately = False
     compo_col = 12
     label_col = 2
+    layout_vertical = False
 
     def __init__(self, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):
