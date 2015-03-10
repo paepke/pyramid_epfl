@@ -5,7 +5,7 @@ epfl.FormInputBase = function (cid, params) {
     var label_col = parseInt(params["label_col"]);
     var vertical = params["vertical"];
 
-    if (vertical === "True") {
+    if (vertical === true) {
         if ($(selector).children().first().prop("tagName") === "LABEL") {
             $(selector).children().first().wrap("<div class='row'></div>").wrap("<div class='col-sm-" + compo_col +"'></div>");
         }
@@ -21,12 +21,15 @@ epfl.FormInputBase = function (cid, params) {
 };
 
 epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
-    enqueue_event = enqueue_event || true;
+	if (enqueue_event === undefined) {
+		enqueue_event = true;
+	}
 
-    epfl.dispatch_event(cid, "set_dirty", {});
     if (enqueue_event) {
+    	epfl.dispatch_event(cid, "set_dirty", {});
         epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid);
     } else {
+    	epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid);
         epfl.dispatch_event(cid, "change", {value: value});
     }
 }

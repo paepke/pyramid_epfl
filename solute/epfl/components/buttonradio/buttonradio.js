@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "ButtonRadio", {});
+epfl.init_component("{{compo.cid}}", "ButtonRadio", {"fire_change_immediately": {{ compo.fire_change_immediately|format_bool }}});

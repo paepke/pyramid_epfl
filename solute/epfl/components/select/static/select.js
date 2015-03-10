@@ -3,7 +3,8 @@ epfl.Select = function (cid, params) {
 
     var selector = "#" + cid +"_input";
     var compo = this;
-    var enqueue_event = !params["fire_change_immediately"];
+    console.log(cid + " params[fire_change_immediately]: " + params["fire_change_immediately"]);
+    var enqueue_event = !params["fire_change_immediately"]; 
 
     $(selector).change(function(){
         epfl.FormInputBase.on_change(compo, $(this).val(), cid, enqueue_event);
