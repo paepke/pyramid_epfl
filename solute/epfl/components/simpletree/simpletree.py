@@ -49,7 +49,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         if (not self.tree_data[level_0_id].has_key("children")):
             return
 
-        if(not self.tree_data[level_0_id]["children"].has_key[level_1_id]):
+        if(not self.tree_data[level_0_id]["children"].has_key(level_1_id)):
             return
 
         self.tree_data[level_0_id]["children"][level_1_id]["children"] = {}
