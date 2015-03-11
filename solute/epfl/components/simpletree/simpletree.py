@@ -16,9 +16,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key"]
 
-    tree_data = []
+    tree_data = {}
+
     open_leaf_0_ids = []
-    open_leaf_1_ids = []
+    open_leaf_1_ids = {}
     all_filter = []
 
     height = 400
@@ -26,8 +27,41 @@ class Simpletree(epflcomponentbase.ComponentBase):
     search_string = None
     filter_key = None
 
+    # TREE DATA
+    def reset_tree_data(self):
+        self.tree_data = {}
+
+    def add_level_0(self, data):
+        for entry in data:
+            self.tree_data[entry['id']] = entry
+
+
+    def add_level_1(self, data, parent_id):
+        self.tree_data[parent_id]["children"] = {}
+        for entry in data:
+            self.tree_data[parent_id]["children"][entry['id']] = entry
+
+    def remove_level_1(self, parent_id):
+        del self.tree_data[parent_id]["children"]
+
+
+    def add_level_2(self, data, level_1_id, level_0_id):
+        if (not self.tree_data[level_0_id].has_key("children")):
+            return
+
+        if(not self.tree_data[level_0_id]["children"].has_key[level_1_id]):
+            return
+
+        self.tree_data[level_0_id]["children"][level_1_id]["children"] = {}
+        for entry in data:
+            self.tree_data[level_0_id]["children"][level_1_id]["children"][entry['id']] = entry
+
+    def remove_level_2(self, level_1_id, level_0_id):
+        del self.tree_data[level_0_id]["children"][level_1_id]["children"]
+
+
     def init_transaction(self):
-        self.tree_data = self.load_level_0()
+        self.add_level_0(self.load_level_0())
 
     def load_level_0(self, search_string=None, filter_key=None):
         return []
@@ -38,49 +72,33 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def load_level_2(self, upper_leaf_id, search_string=None, filter_key=None):
         return []
 
+
     def handle_leaf_0_clicked(self, leafid):
         leafid = int(leafid)
 
         if leafid in self.open_leaf_0_ids:
             # close
             self.open_leaf_0_ids.remove(leafid)
-            self.remove_leaf_0_data(leafid)
+            self.remove_level_1(leafid)
         else:
             # open
-            self.add_leaf_0_data(self.load_level_1(leafid), leafid)
+            self.add_level_1(self.load_level_1(leafid), leafid)
             self.open_leaf_0_ids.append(leafid)
 
         self.redraw()
 
-    def add_leaf_0_data(self, leafdata, leafid):
 
-        newData = []
-        for entry in self.tree_data:
-            if entry["id"] == leafid:
-                entry["children"] = leafdata
-            newData.append(entry)
-
-        self.tree_data = newData
-
-    def remove_leaf_0_data(self, leafid):
-        newData = []
-        for entry in self.tree_data:
-            if entry["id"] == leafid:
-                entry.pop("children", None)
-            newData.append(entry)
-
-        self.tree_data = newData
-
-    def handle_leaf_1_clicked(self, leafid):
+    def handle_leaf_1_clicked(self, leafid, parent_id):
 
         if leafid in self.open_leaf_1_ids:
             # close
-            self.open_leaf_1_ids.remove(leafid)
-            self.remove_leaf_1_data(leafid)
+            del self.open_leaf_1_ids[leafid]
+            self.remove_level_2(leafid, parent_id)
+
         else:
             # open
-            self.add_leaf_1_data(self.load_level_2(leafid), leafid)
-            self.open_leaf_1_ids.append(leafid)
+            self.add_level_2(self.load_level_1(leafid), leafid, parent_id)
+            self.open_leaf_1_ids[leafid] = {"leafid": leafid, "parent_id": parent_id}
 
         self.redraw()
 
@@ -88,56 +106,33 @@ class Simpletree(epflcomponentbase.ComponentBase):
         # Overwrite for click handling
         pass
 
-    def add_leaf_1_data(self, leafdata, leafid):
-        new_data = []
-
-        for entry in self.tree_data:
-            if "children" in entry:
-                new_children = []
-                for child in entry["children"]:
-                    if child["id"] == leafid:
-                        child["children"] = leafdata
-                    new_children.append(child)
-                entry["children"] = new_children
-            new_data.append(entry)
-
-        self.tree_data = new_data
-
-    def remove_leaf_1_data(self, leafid):
-        new_data = []
-
-        for entry in self.tree_data:
-            if "children" in entry:
-                new_children = []
-                for child in entry["children"]:
-                    if child["id"] == leafid:
-                        child.pop("children", None)
-                    new_children.append(child)
-                entry["children"] = new_children
-            new_data.append(entry)
-
-        self.tree_data = new_data
 
     def handle_search(self, search_string, filter_key):
         self.search_string = search_string
         self.filter_key = filter_key
-
         self.rebuild_tree_structure()
 
     def rebuild_tree_structure(self):
         search_string = self.search_string
         filter_key = self.filter_key
-        self.tree_data = self.load_level_0(search_string, filter_key)
+        self.reset_tree_data()
+
+        self.add_level_0(self.load_level_0(search_string, filter_key))
+
+        print "self.open_leaf_0_ids",self.open_leaf_0_ids
+        print "self.open_leaf_1_ids",self.open_leaf_1_ids
 
         for leafid in self.open_leaf_0_ids:
-            self.add_leaf_0_data(self.load_level_1(leafid, search_string, filter_key), leafid)
+            self.add_level_1(self.load_level_1(leafid, search_string, filter_key), leafid)
 
-        for leafid in self.open_leaf_1_ids:
-            self.add_leaf_1_data(self.load_level_2(leafid, search_string, filter_key), leafid)
+        for leaf_obj in self.open_leaf_1_ids.iteritems():
+            self.add_level_2(self.load_level_2(leaf_obj[1]["leafid"], search_string, filter_key),
+                             leaf_obj[1]["leafid"],leaf_obj[1]["parent_id"])
 
         self.redraw()
 
-    def handle_drop(self, drag_leafid, drag_parent_cid, drop_leafid, drop_parent_cid):
+    def handle_drop(self, drag_leafid, drag_parent_leafid, drag_tree_cid, drop_leafid, drop_parent_leafid,
+                    drop_tree_cid):
         pass
 
 

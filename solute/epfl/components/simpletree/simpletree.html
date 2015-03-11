@@ -16,7 +16,6 @@
         {% endfor %}
     </ul>
 {% endmacro %}
-
 <div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-simple-tree">
     <div class="row epfl-simple-tree-filter">
         <div class="col-sm-6">
@@ -26,10 +25,10 @@
                        placeholder="Suchen..." {% if compo.search_string %}
                        value="{{ compo.search_string }}"{% endif %}>
                   <span class="input-group-btn">
-                    <button class="btn btn-default epfl-simple-tree-search-btn" type="button"><i class="fa fa-search"></i></button>
+                    <button class="btn btn-default epfl-simple-tree-search-btn" type="button"><i
+                            class="fa fa-search"></i></button>
                   </span>
             </div>
-
         </div>
         <div class="col-sm-6">
             <select class="form-control epfl-simple-tree-filter">
@@ -61,52 +60,58 @@
         </div>
     </div>
     <div class="epfl-simple-tree-data" style="height:{{ compo.height }}px;overflow-y:scroll;overflow-x:hidden">
-        {% for entry in compo.tree_data %}
+        {% for entry_obj in compo.tree_data.iteritems() %}
+            {% set entry = entry_obj[1] %}
             <div class="epfl-simple-tree-leaf-0
                         {% if entry['marked'] is defined and entry['marked'] == True %} epfl-simple-tree-marked{% endif %}
                         {% if entry['draggable'] is defined and entry['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
                         {% if entry['droppable'] is defined and entry['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
                  leafid="{{ entry['id'] }}">
             <span>
-                <i class="fa {% if entry["children"] is defined %}fa fa-
-                    {{ entry["icon"]["opened"] }}{% else %}fa fa-{{ entry["icon"]["closed"] }}{% endif %}"></i>
+                <i class="fa {% if entry["children"] is defined %}fa fa-{{ entry["icon"]["opened"] }}{% else %}fa fa-{{ entry["icon"]["closed"] }}{% endif %}"></i>
                 {{ entry['label'] }}</span>
                 {% if entry['context_menu'] is defined %}
                     {{ contextmenu(entry['context_menu'],entry['id'],entry['label']) }}
                 {% endif %}
             </div>
+
             {% if entry["children"] is defined %}
-                {% for child in entry["children"] %}
+                {% for child_obj in entry["children"].iteritems() %}
+                    {% set child = child_obj[1] %}
+
                     <div class="epfl-simple-tree-leaf-1
                                 {% if child['marked'] is defined and child['marked'] == True %} epfl-simple-tree-marked{% endif %}
                                 {% if child['draggable'] is defined and child['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
                                 {% if child['droppable'] is defined and child['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
                          leafid="{{ child['id'] }}"
-                         onclick="epfl.Simpletree.Leaf1Clicked({{ child['id'] }},'{{ compo.cid }}')">
+                         onclick="epfl.Simpletree.Leaf1Clicked({{ child['id'] }},{{ entry['id'] }},'{{ compo.cid }}')">
                         <span>
-                            <i class="fa {% if child["children"] is defined %}fa fa-
-                                {{ child["icon"]["opened"] }}{% else %}fa fa-{{ child["icon"]["closed"] }}{% endif %}"></i>
+                            <i class="{% if child["children"] is defined %}fa fa-{{ child["icon"]["opened"] }}{% else %}fa fa-{{ child["icon"]["closed"] }}{% endif %}"></i>
                             {{ child['label'] }}
                         </span>
                         {% if child['context_menu'] is defined %}
                             {{ contextmenu(child['context_menu'],child['id'],child['label']) }}
                         {% endif %}
                     </div>
+
                     {% if child["children"] is defined %}
-                        {% for subchild in child["children"] %}
+                        {% for subchild_obj in child["children"].iteritems() %}
+                            {% set subchild = subchild_obj[1] %}
+
                             <div class="epfl-simple-tree-leaf-2
-                                        {% if subchild['marked'] is defined and subchild['marked'] == True %} epfl-simple-tree-marked{% endif %}
-                                        {% if subchild['draggable'] is defined and subchild['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
-                                        {% if subchild['droppable'] is defined and subchild['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
+                                            {% if subchild['marked'] is defined and subchild['marked'] == True %} epfl-simple-tree-marked{% endif %}
+                                            {% if subchild['draggable'] is defined and subchild['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
+                                            {% if subchild['droppable'] is defined and subchild['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
                                  leafid="{{ subchild['id'] }}"
                                  onclick="epfl.Simpletree.Leaf2Clicked({{ subchild['id'] }},'{{ compo.cid }}')">
-                                    <span>
-                                        <i class="fa fa-{{ subchild["icon"] }}"></i>{{ subchild['label'] }}
-                                    </span>
+                                        <span>
+                                            <i class="fa fa-{{ subchild["icon"] }}"></i>{{ subchild['label'] }}
+                                        </span>
                             </div>
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
+
             {% endif %}
         {% endfor %}
     </div>
