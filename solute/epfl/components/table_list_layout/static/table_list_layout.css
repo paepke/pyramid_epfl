@@ -9,3 +9,13 @@ div.epfl-table-edit{
     top:-5px;
     height: 3px;
 }
+
+.epfl-table {
+	overflow-y: scroll;
+	display: block;
+	height: 100%;
+}
+
+.tablelistlayout-sortcolumn {
+	cursor: pointer;
+}
