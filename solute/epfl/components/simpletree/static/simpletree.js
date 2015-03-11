@@ -45,7 +45,7 @@ epfl.Simpletree = function (cid, params) {
         out: function (event, ui) {
             scrollUpMouseOver = false;
         },
-        drop:function (event, ui){
+        drop: function (event, ui) {
             scrollUpMouseOver = false;
         }
     });
@@ -65,12 +65,10 @@ epfl.Simpletree = function (cid, params) {
         out: function (event, ui) {
             scrollDownMouseOver = false;
         },
-        drop:function (event, ui){
+        drop: function (event, ui) {
             scrollDownMouseOver = false;
         }
     });
-
-
 
     $("#" + cid + " input.epfl-simple-tree-search").change(function () {
         epfl.dispatch_event(cid, "search", {
@@ -95,17 +93,35 @@ epfl.Simpletree = function (cid, params) {
     });
 
     $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
-        epfl.dispatch_event(cid, "leaf_0_clicked", {
-            leafid: $(this).attr("leafid"),
-            scroll_top: $(dataAreaSelector).scrollTop()
-        });
+        var open = $(this).data("open");
+
+        if (open) {
+            epfl.dispatch_event(cid, "leaf_0_close", {
+                leafid: $(this).attr("leafid"),
+                scroll_top: $(dataAreaSelector).scrollTop()
+            });
+        }else{
+            epfl.dispatch_event(cid, "leaf_0_open", {
+                leafid: $(this).attr("leafid"),
+                scroll_top: $(dataAreaSelector).scrollTop()
+            });
+        }
+
+
     });
 
-    epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, thiscid) {
-        epfl.dispatch_event(thiscid, "leaf_1_clicked", {
-            leafid: leafid, parent_id: parent_id,
-            scroll_top: $(dataAreaSelector).scrollTop()
-        });
+    epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, open, thiscid) {
+        if (open) {
+            epfl.dispatch_event(thiscid, "leaf_1_close", {
+                leafid: leafid, parent_id: parent_id,
+                scroll_top: $(dataAreaSelector).scrollTop()
+            });
+        } else {
+            epfl.dispatch_event(thiscid, "leaf_1_open", {
+                leafid: leafid, parent_id: parent_id,
+                scroll_top: $(dataAreaSelector).scrollTop()
+            });
+        }
     };
     epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
         epfl.dispatch_event(thiscid, "leaf_2_clicked", {
