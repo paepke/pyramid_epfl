@@ -17,40 +17,46 @@
     </ul>
 {% endmacro %}
 
-<div epflid="{{ compo.cid }}" class="epfl-simple-tree">
+<div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-simple-tree">
     <div class="row epfl-simple-tree-filter">
         <div class="col-sm-6">
-            <input type="text"
-                   class="form-control epfl-simple-tree-search"
-                   placeholder="Suchen..." {% if compo.search_string %} value="{{ compo.search_string }}"{% endif %}>
+            <div class="input-group">
+                <input type="text"
+                       class="form-control epfl-simple-tree-search"
+                       placeholder="Suchen..." {% if compo.search_string %}
+                       value="{{ compo.search_string }}"{% endif %}>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default epfl-simple-tree-search-btn" type="button"><i class="fa fa-search"></i></button>
+                  </span>
+            </div>
+
         </div>
         <div class="col-sm-6">
             <select class="form-control epfl-simple-tree-filter">
                 {% for filter_key in compo.all_filter %}
-                {% if filter_key is string %}
-	                {% set value = filter_key %}
-	                {% set visual = filter_key %}
-	            {% else %}
-	                {% if filter_key[0] is defined and filter_key[1] is defined %}
-	                    {% set value = filter_key[0] %}
-	                    {% set visual = filter_key[1] %}
-	                {% endif %}
-	                {% if filter_key["visual"] is defined  %}
-	                      {% set visual = filter_key["visual"] %}
-	                      {% if filter_key["value"] is defined %}
-	                          {% set value = filter_key["value"] %}
-	                      {% endif %}
-	                      {% if filter_key["id"] is defined %}
-	                          {% set value = filter_key["id"] %}
-	                      {% endif %}
-	                {% endif %}
-	            {% endif %}
-                <option value="{{ value }}"{% if compo.filter_key == value %} selected="selected"{% endif %}>{{ visual }}</option>
-            {% endfor %}
-                
-                
-                
-                
+                    {% if filter_key is string %}
+                        {% set value = filter_key %}
+                        {% set visual = filter_key %}
+                    {% else %}
+                        {% if filter_key[0] is defined and filter_key[1] is defined %}
+                            {% set value = filter_key[0] %}
+                            {% set visual = filter_key[1] %}
+                        {% endif %}
+                        {% if filter_key["visual"] is defined %}
+                            {% set visual = filter_key["visual"] %}
+                            {% if filter_key["value"] is defined %}
+                                {% set value = filter_key["value"] %}
+                            {% endif %}
+                            {% if filter_key["id"] is defined %}
+                                {% set value = filter_key["id"] %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    <option value="{{ value }}"{% if compo.filter_key == value %}
+                            selected="selected"{% endif %}>{{ visual }}</option>
+                {% endfor %}
+
+
             </select>
         </div>
     </div>
@@ -62,7 +68,8 @@
                         {% if entry['droppable'] is defined and entry['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
                  leafid="{{ entry['id'] }}">
             <span>
-                <i class="fa {% if entry["children"] is defined %}fa fa-{{ entry["icon"]["opened"] }}{% else %}fa fa-{{ entry["icon"]["closed"] }}{% endif %}"></i>
+                <i class="fa {% if entry["children"] is defined %}fa fa-
+                    {{ entry["icon"]["opened"] }}{% else %}fa fa-{{ entry["icon"]["closed"] }}{% endif %}"></i>
                 {{ entry['label'] }}</span>
                 {% if entry['context_menu'] is defined %}
                     {{ contextmenu(entry['context_menu'],entry['id'],entry['label']) }}
@@ -77,7 +84,8 @@
                          leafid="{{ child['id'] }}"
                          onclick="epfl.Simpletree.Leaf1Clicked({{ child['id'] }},'{{ compo.cid }}')">
                         <span>
-                            <i class="fa {% if child["children"] is defined %}fa fa-{{ child["icon"]["opened"] }}{% else %}fa fa-{{ child["icon"]["closed"] }}{% endif %}"></i>
+                            <i class="fa {% if child["children"] is defined %}fa fa-
+                                {{ child["icon"]["opened"] }}{% else %}fa fa-{{ child["icon"]["closed"] }}{% endif %}"></i>
                             {{ child['label'] }}
                         </span>
                         {% if child['context_menu'] is defined %}

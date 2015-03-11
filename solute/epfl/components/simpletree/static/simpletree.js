@@ -4,17 +4,29 @@
 epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
-    $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").change(function () {
-        epfl.dispatch_event(cid, "search", {search_string: $(this).val(),
-                                            filter_key:$("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").val()});
+    $("#" + cid + " input.epfl-simple-tree-search").change(function () {
+        epfl.dispatch_event(cid, "search", {
+            search_string: $(this).val(),
+            filter_key: $("#" + cid + " select.epfl-simple-tree-filter").val()
+        });
     });
 
-    $("div[epflid='" + cid + "'] select.epfl-simple-tree-filter").change(function () {
-        epfl.dispatch_event(cid, "search", {search_string: $("div[epflid='" + cid + "'] input.epfl-simple-tree-search").val(),
-                                            filter_key:$(this).val()});
+    $("#" + cid + " button.epfl-simple-tree-search-btn").click(function () {
+        epfl.dispatch_event(cid, "search", {
+            search_string: $(this).val(),
+            filter_key: $("#" + cid + " select.epfl-simple-tree-filter").val()
+        });
     });
 
-    $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-0").click(function () {
+
+    $("#" + cid + " select.epfl-simple-tree-filter").change(function () {
+        epfl.dispatch_event(cid, "search", {
+            search_string: $("#" + cid + " input.epfl-simple-tree-search").val(),
+            filter_key: $(this).val()
+        });
+    });
+
+    $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
         epfl.dispatch_event(cid, "leaf_0_clicked", {leafid: $(this).attr("leafid")});
     });
 
@@ -25,7 +37,7 @@ epfl.Simpletree = function (cid, params) {
         epfl.dispatch_event(thiscid, "leaf_2_clicked", {leafid: leafid});
     };
 
-    var dragables = $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-dragable");
+    var dragables = $("#" + cid + " div.epfl-simple-tree-leaf-dragable");
     dragables.draggable({
         revert: "invalid",
         scroll: false,
@@ -33,7 +45,7 @@ epfl.Simpletree = function (cid, params) {
         cursorAt: {top: 10, left: 10}
     });
 
-    var droppables = $("div[epflid='" + cid + "'] div.epfl-simple-tree-leaf-droppable");
+    var droppables = $("#" + cid + " div.epfl-simple-tree-leaf-droppable");
 
     droppables.droppable({
         accept: ".epfl-simple-tree-leaf-dragable",
@@ -52,7 +64,7 @@ epfl.Simpletree = function (cid, params) {
         epfl.dispatch_event(cid, event, param);
     };
 
-    $("div[epflid='" + cid + "'] button.epfl-simple-tree-dropdown-button").click(function (event) {
+    $("#" + cid + " button.epfl-simple-tree-dropdown-button").click(function (event) {
         event.stopPropagation();
         var parent = $(this).parent();
         if (parent.hasClass('open')) {
@@ -87,7 +99,7 @@ epfl.Simpletree = function (cid, params) {
         });
     });
 
-    $("div[epflid='" + cid + "'] ul.epfl-simple-tree-dropdown").mouseleave(function () {
+    $("#" + cid + " ul.epfl-simple-tree-dropdown").mouseleave(function () {
         $(this).dropdown('toggle');
     });
 

@@ -6,6 +6,8 @@ $(function () {
                       	"fire_change_immediately": {{ compo.fire_change_immediately|format_bool }},
                         "compo_col":{{compo.compo_col}},
                         "label_col":{{compo.label_col}},
-                        "vertical": {{compo.layout_vertical|format_bool }}
+                        "vertical": {{compo.layout_vertical|format_bool }},
+                        "label_style": "{{compo.label_style }}",
+                        "input_style": "{{compo.input_style }}",
 });
 });
