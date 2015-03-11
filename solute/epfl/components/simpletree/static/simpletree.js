@@ -4,7 +4,72 @@
 epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
-    $("#"+cid + " div.epfl-simple-tree-data").scrollTop(params["scrollTop"]);
+    var dataAreaSelector = "#" + cid + " div.epfl-simple-tree-data";
+
+    $(dataAreaSelector).scrollTop(params["scrollTop"]);
+
+
+    var setHiddenScrollArea = function () {
+        $("#" + cid + " div.epfl-simple-tree-scroll-upper").css({
+            "width": $("#" + cid).width() + "px",
+            "top": $(dataAreaSelector).offset().top - $(window).scrollTop(),
+            "left": $(dataAreaSelector).offset().left - $(window).scrollLeft()
+        });
+
+        $("#" + cid + " div.epfl-simple-tree-scroll-lower").css({
+            "width": $("#" + cid).width() + "px",
+            "top": ($(dataAreaSelector).offset().top + $(dataAreaSelector).height() - 30) - $(window).scrollTop(),
+            "left": $(dataAreaSelector).offset().left - $(window).scrollLeft()
+        });
+    };
+    setHiddenScrollArea();
+
+
+    $(window).scroll(function () {
+        setHiddenScrollArea();
+    });
+
+
+    var scrollUpMouseOver = false;
+    $("#" + cid + " div.epfl-simple-tree-scroll-upper").droppable({
+        over: function (event, ui) {
+            scrollUpMouseOver = true;
+            var scrollUp = function () {
+                if (scrollUpMouseOver === true) {
+                    $(dataAreaSelector).scrollTop($(dataAreaSelector).scrollTop() - 30);
+                    setTimeout(scrollUp, 100);
+                }
+            };
+            scrollUp();
+        },
+        out: function (event, ui) {
+            scrollUpMouseOver = false;
+        },
+        drop:function (event, ui){
+            scrollUpMouseOver = false;
+        }
+    });
+
+    var scrollDownMouseOver = false;
+    $("#" + cid + " div.epfl-simple-tree-scroll-lower").droppable({
+        over: function (event, ui) {
+            scrollDownMouseOver = true;
+            var scrollDown = function () {
+                if (scrollDownMouseOver === true) {
+                    $(dataAreaSelector).scrollTop($(dataAreaSelector).scrollTop() + 30);
+                    setTimeout(scrollDown, 100);
+                }
+            };
+            scrollDown();
+        },
+        out: function (event, ui) {
+            scrollDownMouseOver = false;
+        },
+        drop:function (event, ui){
+            scrollDownMouseOver = false;
+        }
+    });
+
 
 
     $("#" + cid + " input.epfl-simple-tree-search").change(function () {
@@ -30,18 +95,23 @@ epfl.Simpletree = function (cid, params) {
     });
 
     $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
-        console.log("scroll",$("#"+cid + " div.epfl-simple-tree-data").scrollTop());
-        epfl.dispatch_event(cid, "leaf_0_clicked", {leafid: $(this).attr("leafid"),
-                                                    scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
+        epfl.dispatch_event(cid, "leaf_0_clicked", {
+            leafid: $(this).attr("leafid"),
+            scroll_top: $(dataAreaSelector).scrollTop()
+        });
     });
 
-    epfl.Simpletree.Leaf1Clicked = function (leafid,parent_id, thiscid) {
-        epfl.dispatch_event(thiscid, "leaf_1_clicked", {leafid: leafid,parent_id:parent_id,
-                                                        scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
+    epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, thiscid) {
+        epfl.dispatch_event(thiscid, "leaf_1_clicked", {
+            leafid: leafid, parent_id: parent_id,
+            scroll_top: $(dataAreaSelector).scrollTop()
+        });
     };
     epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
-        epfl.dispatch_event(thiscid, "leaf_2_clicked", {leafid: leafid,
-                                                        scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
+        epfl.dispatch_event(thiscid, "leaf_2_clicked", {
+            leafid: leafid,
+            scroll_top: $(dataAreaSelector).scrollTop()
+        });
     };
 
     var dragables = $("#" + cid + " div.epfl-simple-tree-leaf-dragable");
@@ -49,7 +119,10 @@ epfl.Simpletree = function (cid, params) {
         revert: "invalid",
         scroll: false,
         helper: 'clone',
-        cursorAt: {top: 10, left: 10}
+        cursorAt: {top: 10, left: 10},
+        containment: "document",
+        zIndex: 5000,
+        scroll: true
     });
 
     var droppables = $("#" + cid + " div.epfl-simple-tree-leaf-droppable");
@@ -70,7 +143,6 @@ epfl.Simpletree = function (cid, params) {
 
             var drag_parent_leafid = get_parent_leafid(ui.draggable);
             var drop_parent_leafid = get_parent_leafid($(this));
-            console.log("drag_parent_leafid",drag_parent_leafid,"drop_parent_leafid",drop_parent_leafid);
             epfl.dispatch_event(cid, "drop", {
                 drag_leafid: ui.draggable.attr("leafid"),
                 drag_parent_leafid: drag_parent_leafid,

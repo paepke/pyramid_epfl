@@ -60,6 +60,7 @@
         </div>
     </div>
     <div class="epfl-simple-tree-data" style="height:{{ compo.height }}px;overflow-y:scroll;overflow-x:hidden">
+    <div class="epfl-simple-tree-scroll-upper"></div>
         {% for entry_obj in compo.tree_data.iteritems() %}
             {% set entry = entry_obj[1] %}
             <div class="epfl-simple-tree-leaf-0
@@ -113,6 +114,7 @@
 
             {% endif %}
         {% endfor %}
+    <div class="epfl-simple-tree-scroll-lower"></div>
     </div>
 </div>
 
