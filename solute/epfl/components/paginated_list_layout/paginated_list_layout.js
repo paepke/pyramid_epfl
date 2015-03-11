@@ -5,10 +5,26 @@ epfl.paginated_list_goto_complete = function () {
 		$('#' + '{{ compo.cid }}_search').parent().removeClass("has-feedback");
 	}
 }
-epfl.paginated_list_goto = function (element, cid, row_offset, row_limit, row_data) {
+epfl.paginated_list_goto = function (element, cid, row_offset, row_limit) {
     if ($(element).hasClass('disabled')) {
         return;
     }
+    row_data = {};
+    {% if compo.row_data is defined and compo.row_data is mapping %}
+    {% for key, value in compo.row_data.iteritems() %}
+	    {% if value is number %}
+	    	row_data.{{ key }} = {{ value }};
+	    {% elif value is string %}
+	    	row_data.{{ key }} = '{{ value }}';
+	     {% endif %}
+	{% endfor %}
+    {% endif %}
+    row_data.orderby = '{{ compo.row_data['orderby'] if compo.row_data is defined
+                                                         and compo.row_data is mapping
+                                                         and compo.row_data['orderby'] is defined else '' }}';
+    row_data.ordertype = '{{ compo.row_data['ordertype'] if compo.row_data is defined
+                                                         and compo.row_data is mapping
+                                                         and compo.row_data['ordertype'] is defined else '' }}';
     epfl.set_component_info(cid, 'callback_send_event', 'set_row', epfl.paginated_list_goto_complete);
     epfl.dispatch_event(
     	cid,
