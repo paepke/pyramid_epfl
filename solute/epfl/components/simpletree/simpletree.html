@@ -26,9 +26,31 @@
         </div>
         <div class="col-sm-6">
             <select class="form-control epfl-simple-tree-filter">
-                {% for filter in compo.all_filter %}
-                    <option>{{ filter }}</option>
-                {% endfor %}
+                {% for filter_key in compo.all_filter %}
+                {% if filter_key is string %}
+	                {% set value = filter_key %}
+	                {% set visual = filter_key %}
+	            {% else %}
+	                {% if filter_key[0] is defined and filter_key[1] is defined %}
+	                    {% set value = filter_key[0] %}
+	                    {% set visual = filter_key[1] %}
+	                {% endif %}
+	                {% if filter_key["visual"] is defined  %}
+	                      {% set visual = filter_key["visual"] %}
+	                      {% if filter_key["value"] is defined %}
+	                          {% set value = filter_key["value"] %}
+	                      {% endif %}
+	                      {% if filter_key["id"] is defined %}
+	                          {% set value = filter_key["id"] %}
+	                      {% endif %}
+	                {% endif %}
+	            {% endif %}
+                <option value="{{ value }}"{% if compo.filter_key == value %} selected="selected"{% endif %}>{{ visual }}</option>
+            {% endfor %}
+                
+                
+                
+                
             </select>
         </div>
     </div>
