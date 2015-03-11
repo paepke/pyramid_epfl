@@ -144,9 +144,9 @@ epfl.Simpletree = function (cid, params) {
 
             var get_parent_leafid = function (element) {
                 if (element.hasClass("epfl-simple-tree-leaf-2")) {
-                    return element.prevAll("epfl-simple-tree-leaf-1").first().attr("leafid");
+                    return element.prevAll(".epfl-simple-tree-leaf-1").first().attr("leafid");
                 } else if (element.hasClass("epfl-simple-tree-leaf-1")) {
-                    return element.prevAll("epfl-simple-tree-leaf-0").first().attr("leafid");
+                    return element.prevAll(".epfl-simple-tree-leaf-0").first().attr("leafid");
                 }
                 return null;
             }
