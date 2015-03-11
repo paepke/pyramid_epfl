@@ -116,7 +116,6 @@ div.epfl-simple-tree-leaf-2.ui-draggable-dragging:hover {
 }
 
 .epfl-simple-tree-scroll-upper, .epfl-simple-tree-scroll-lower{
-    height: 30px;
+    height: 10px;
     position: fixed;
-    z-index: 10;
 }

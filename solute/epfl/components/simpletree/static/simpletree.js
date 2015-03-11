@@ -8,7 +8,6 @@ epfl.Simpletree = function (cid, params) {
 
     $(dataAreaSelector).scrollTop(params["scrollTop"]);
 
-
     var setHiddenScrollArea = function () {
         $("#" + cid + " div.epfl-simple-tree-scroll-upper").css({
             "width": $("#" + cid).width() + "px",
@@ -18,17 +17,15 @@ epfl.Simpletree = function (cid, params) {
 
         $("#" + cid + " div.epfl-simple-tree-scroll-lower").css({
             "width": $("#" + cid).width() + "px",
-            "top": ($(dataAreaSelector).offset().top + $(dataAreaSelector).height() - 30) - $(window).scrollTop(),
+            "top": ($(dataAreaSelector).offset().top + $(dataAreaSelector).height() - 10) - $(window).scrollTop(),
             "left": $(dataAreaSelector).offset().left - $(window).scrollLeft()
         });
     };
     setHiddenScrollArea();
 
-
     $(window).scroll(function () {
         setHiddenScrollArea();
     });
-
 
     var scrollUpMouseOver = false;
     $("#" + cid + " div.epfl-simple-tree-scroll-upper").droppable({
@@ -84,7 +81,6 @@ epfl.Simpletree = function (cid, params) {
         });
     });
 
-
     $("#" + cid + " select.epfl-simple-tree-filter").change(function () {
         epfl.dispatch_event(cid, "search", {
             search_string: $("#" + cid + " input.epfl-simple-tree-search").val(),
@@ -106,8 +102,6 @@ epfl.Simpletree = function (cid, params) {
                 scroll_top: $(dataAreaSelector).scrollTop()
             });
         }
-
-
     });
 
     epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, open, thiscid) {
@@ -123,6 +117,7 @@ epfl.Simpletree = function (cid, params) {
             });
         }
     };
+
     epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
         epfl.dispatch_event(thiscid, "leaf_2_clicked", {
             leafid: leafid,
@@ -142,7 +137,6 @@ epfl.Simpletree = function (cid, params) {
     });
 
     var droppables = $("#" + cid + " div.epfl-simple-tree-leaf-droppable");
-
     droppables.droppable({
         accept: ".epfl-simple-tree-leaf-dragable",
         hoverClass: "epfl-simple-tree-leaf-droppable-hover",
