@@ -14,7 +14,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     css_name = ["simpletree.css"]
 
     compo_config = []
-    compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key"]
+    compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key","scroll_top"]
 
     tree_data = {}
 
@@ -26,6 +26,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     search_string = None
     filter_key = None
+
+    scroll_top = 0
 
     # TREE DATA
     def reset_tree_data(self):
@@ -73,7 +75,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
         return []
 
 
-    def handle_leaf_0_clicked(self, leafid):
+    def handle_leaf_0_clicked(self, leafid,scroll_top):
+        self.scroll_top = scroll_top
         leafid = int(leafid)
 
         if leafid in self.open_leaf_0_ids:
@@ -88,8 +91,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.redraw()
 
 
-    def handle_leaf_1_clicked(self, leafid, parent_id):
-
+    def handle_leaf_1_clicked(self, leafid, parent_id,scroll_top):
+        self.scroll_top = scroll_top
         if leafid in self.open_leaf_1_ids:
             # close
             del self.open_leaf_1_ids[leafid]
@@ -97,12 +100,13 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         else:
             # open
-            self.add_level_2(self.load_level_1(leafid), leafid, parent_id)
+            self.add_level_2(self.load_level_2(leafid), leafid, parent_id)
             self.open_leaf_1_ids[leafid] = {"leafid": leafid, "parent_id": parent_id}
 
         self.redraw()
 
-    def handle_leaf_2_clicked(self, leafid):
+    def handle_leaf_2_clicked(self, leafid,scroll_top):
+        self.scroll_top = scroll_top
         # Overwrite for click handling
         pass
 

@@ -4,6 +4,9 @@
 epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
+    $("#"+cid + " div.epfl-simple-tree-data").scrollTop(params["scrollTop"]);
+
+
     $("#" + cid + " input.epfl-simple-tree-search").change(function () {
         epfl.dispatch_event(cid, "search", {
             search_string: $(this).val(),
@@ -27,14 +30,18 @@ epfl.Simpletree = function (cid, params) {
     });
 
     $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
-        epfl.dispatch_event(cid, "leaf_0_clicked", {leafid: $(this).attr("leafid")});
+        console.log("scroll",$("#"+cid + " div.epfl-simple-tree-data").scrollTop());
+        epfl.dispatch_event(cid, "leaf_0_clicked", {leafid: $(this).attr("leafid"),
+                                                    scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
     });
 
     epfl.Simpletree.Leaf1Clicked = function (leafid,parent_id, thiscid) {
-        epfl.dispatch_event(thiscid, "leaf_1_clicked", {leafid: leafid,parent_id:parent_id});
+        epfl.dispatch_event(thiscid, "leaf_1_clicked", {leafid: leafid,parent_id:parent_id,
+                                                        scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
     };
     epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
-        epfl.dispatch_event(thiscid, "leaf_2_clicked", {leafid: leafid});
+        epfl.dispatch_event(thiscid, "leaf_2_clicked", {leafid: leafid,
+                                                        scroll_top:$("#"+cid + " div.epfl-simple-tree-data").scrollTop()});
     };
 
     var dragables = $("#" + cid + " div.epfl-simple-tree-leaf-dragable");

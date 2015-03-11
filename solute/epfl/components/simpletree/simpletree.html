@@ -97,7 +97,6 @@
                     {% if child["children"] is defined %}
                         {% for subchild_obj in child["children"].iteritems() %}
                             {% set subchild = subchild_obj[1] %}
-
                             <div class="epfl-simple-tree-leaf-2
                                             {% if subchild['marked'] is defined and subchild['marked'] == True %} epfl-simple-tree-marked{% endif %}
                                             {% if subchild['draggable'] is defined and subchild['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
