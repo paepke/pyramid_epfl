@@ -155,7 +155,7 @@ epfl.Simpletree = function (cid, params) {
         scroll: false,
         helper: 'clone',
         cursorAt: {top: -5, left: -5},
-        containment: "document",
+        containment: "window",
         zIndex: 5000,
         scroll: true,
         start: function (event, ui) {
@@ -163,7 +163,8 @@ epfl.Simpletree = function (cid, params) {
         },
         stop: function (event, ui) {
             window.epflSimpleTreeDragging = false;
-        }
+        },
+        appendTo:"body"
     });
 
     $(selector + " div.epfl-simple-tree-leaf-droppable").droppable({

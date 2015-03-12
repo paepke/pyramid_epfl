@@ -104,7 +104,7 @@ div.epfl-simple-tree-leaf-droppable-hover:hover {
 }
 
 div.epfl-simple-tree-leaf-2.ui-draggable-dragging {
-    width: 100%;
+    width: 350px;
     background-color:transparent;
     border: 1px solid #1BB7A0;
 }
