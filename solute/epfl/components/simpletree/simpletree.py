@@ -87,54 +87,74 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.add_level_0(self.load_level_0(search_string, filter_key))
 
         for leafid in self.open_leaf_0_ids:
-            self.add_level_1(self.load_level_1(leafid, search_string, filter_key), leafid)
-
-        for leaf_obj in self.open_leaf_1_ids.iteritems():
-            self.add_level_2(self.load_level_2(leaf_obj[1]["leafid"], search_string, filter_key),
-                             leaf_obj[1]["leafid"], leaf_obj[1]["parent_id"])
+            if leafid in self.tree_data.keys():
+                self.add_level_1(self.load_level_1(leafid, search_string, filter_key), leafid)
+            else:
+                self.open_leaf_0_ids.remove(leafid)
+        deprecated_leaf_1_ids = []
+        for leaf_id, leaf_obj in self.open_leaf_1_ids.iteritems():
+            if (leaf_obj["parent_id"] in self.tree_data.keys()) and leaf_id in self.tree_data[leaf_obj["parent_id"]]['children'].keys():
+                self.add_level_2(self.load_level_2(leaf_obj["leafid"], search_string, filter_key),
+                                 leaf_id, leaf_obj["parent_id"])
+            else:
+                deprecated_leaf_1_ids.append(leaf_id)
+        for leaf_id in deprecated_leaf_1_ids:
+            del self.open_leaf_1_ids[leaf_id]
 
         self.redraw()
 
-    def update_level_0(self):
+    def update_level_0(self, recursive=False):
+        if recursive:
+            self.rebuild_tree_structure()
+            return
         level_0_data = self.load_level_0(self.search_string, self.filter_key)
-
+        new_tree_data = {}
         for entry in level_0_data:
-            if entry["id"] in self.tree_data:
-                if "children" in self.tree_data[entry["id"]]:
-                    children = self.tree_data[entry["id"]]["children"]
-                    self.tree_data[entry["id"]] = entry
-                    self.tree_data[entry["id"]]["children"] = children
-                else:
-                    self.tree_data[entry["id"]] = entry
+            if (entry["id"] in self.tree_data) and ("children" in self.tree_data[entry["id"]]):
+                children = self.tree_data[entry["id"]]["children"]
+                new_tree_data[entry["id"]] = entry
+                new_tree_data[entry["id"]]["children"] = children
             else:
-                self.tree_data[entry["id"]] = entry
+                new_tree_data[entry["id"]] = entry
+        self.tree_data = new_tree_data
+        self.redraw()
 
-    def update_level_1(self, parent_id, recursive=False):
-        level_1_data = self.load_level_1(parent_id, self.search_string, self.filter_key)
+    def update_level_1(self, level_0_id, recursive=False): 
+        level_1_data = self.load_level_1(level_0_id, self.search_string, self.filter_key)
 
         for entry in level_1_data:
-            if entry["id"] in self.tree_data[parent_id]["children"]:
-                if "children" in self.tree_data[parent_id]["children"][entry["id"]]:
+            if entry["id"] in self.tree_data[level_0_id]["children"]:
+                if "children" in self.tree_data[level_0_id]["children"][entry["id"]]:
 
                     if recursive:
-                        level_2_data = self.load_level_2(entry["id"], self.search_string, self.filter_key)
-                        for subentry in level_2_data:
-                            self.tree_data[parent_id]["children"][entry["id"]]["children"][subentry["id"]] = subentry
+                        self.update_level_2(level_0_id, entry["id"])
                     else:
-                        children = self.tree_data[parent_id]["children"][entry["id"]]["children"]
-                        self.tree_data[parent_id]["children"][entry["id"]] = entry
-                        self.tree_data[parent_id]["children"][entry["id"]]["children"] = children
+                        children = self.tree_data[level_0_id]["children"][entry["id"]]["children"]
+                        self.tree_data[level_0_id]["children"][entry["id"]] = entry
+                        self.tree_data[level_0_id]["children"][entry["id"]]["children"] = children
                 else:
-                    self.tree_data[parent_id]["children"][entry["id"]] = entry
+                    self.tree_data[level_0_id]["children"][entry["id"]] = entry
             else:
-                self.tree_data[parent_id]["children"][entry["id"]] = entry
+                self.tree_data[level_0_id]["children"][entry["id"]] = entry
+        self.redraw()
+        
+    def update_level_1_for_given_level_1_entry(self, level_1_id, recursive=False):
+        level_0_id = None
+        for entry_id, entry in self.tree_data.iteritems():
+            if "children" in entry and (level_1_id) in entry["children"].keys():
+                level_0_id = entry_id
+                break
+        if not level_0_id is None:
+            self.update_level_1(level_0_id, recursive)
 
-    def update_level_2(self, level_0_id,level_1_id):
-        level_2_data = self.load_level_2( level_1_id, self.search_string, self.filter_key)
+    def update_level_2(self, level_0_id, level_1_id):
+        if not level_1_id in self.open_leaf_1_ids.keys():
+            return
+        level_2_data = self.load_level_2(level_1_id, self.search_string, self.filter_key)
 
         for entry in level_2_data:
             self.tree_data[level_0_id]["children"][level_1_id]["children"][entry["id"]] = entry
-
+        self.redraw()
 
     def leaf_0_clicked(self, leafid):
         pass
