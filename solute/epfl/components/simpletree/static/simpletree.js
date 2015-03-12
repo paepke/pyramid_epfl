@@ -4,18 +4,36 @@
 epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
-    var dataAreaSelector = "#" + cid + " div.epfl-simple-tree-data";
+    var selector = "#" + cid;
+    var dataAreaSelector = selector + " div.epfl-simple-tree-data";
+
+    /**************************************************************************
+     Helper
+     *************************************************************************/
+    var get_parent_leafid = function (element) {
+        if (element.hasClass("epfl-simple-tree-leaf-2")) {
+            return element.prevAll(".epfl-simple-tree-leaf-1").first().attr("leafid");
+        } else if (element.hasClass("epfl-simple-tree-leaf-1")) {
+            return element.prevAll(".epfl-simple-tree-leaf-0").first().attr("leafid");
+        }
+        return null;
+    }
+
+
+    /**************************************************************************
+     Scroll
+     *************************************************************************/
 
     $(dataAreaSelector).scrollTop(params["scrollTop"]);
 
     var setHiddenScrollArea = function () {
-        $("#" + cid + " div.epfl-simple-tree-scroll-upper").css({
+        $(selector + " div.epfl-simple-tree-scroll-upper").css({
             "width": $("#" + cid).width() + "px",
             "top": $(dataAreaSelector).offset().top - $(window).scrollTop(),
             "left": $(dataAreaSelector).offset().left - $(window).scrollLeft()
         });
 
-        $("#" + cid + " div.epfl-simple-tree-scroll-lower").css({
+        $(selector + " div.epfl-simple-tree-scroll-lower").css({
             "width": $("#" + cid).width() + "px",
             "top": ($(dataAreaSelector).offset().top + $(dataAreaSelector).height() - 10) - $(window).scrollTop(),
             "left": $(dataAreaSelector).offset().left - $(window).scrollLeft()
@@ -28,7 +46,7 @@ epfl.Simpletree = function (cid, params) {
     });
 
     var scrollUpMouseOver = false;
-    $("#" + cid + " div.epfl-simple-tree-scroll-upper").droppable({
+    $(selector + " div.epfl-simple-tree-scroll-upper").droppable({
         over: function (event, ui) {
             scrollUpMouseOver = true;
             var scrollUp = function () {
@@ -48,7 +66,7 @@ epfl.Simpletree = function (cid, params) {
     });
 
     var scrollDownMouseOver = false;
-    $("#" + cid + " div.epfl-simple-tree-scroll-lower").droppable({
+    $(selector + " div.epfl-simple-tree-scroll-lower").droppable({
         over: function (event, ui) {
             scrollDownMouseOver = true;
             var scrollDown = function () {
@@ -67,35 +85,43 @@ epfl.Simpletree = function (cid, params) {
         }
     });
 
-    $("#" + cid + " input.epfl-simple-tree-search").change(function () {
+    /**************************************************************************
+     Search and Filter
+     *************************************************************************/
+
+    $(selector + " input.epfl-simple-tree-search").change(function () {
         epfl.dispatch_event(cid, "search", {
             search_string: $(this).val(),
-            filter_key: $("#" + cid + " select.epfl-simple-tree-filter").val()
+            filter_key: $(selector + " select.epfl-simple-tree-filter").val()
         });
     });
 
-    $("#" + cid + " button.epfl-simple-tree-search-btn").click(function () {
+    $(selector + " button.epfl-simple-tree-search-btn").click(function () {
         epfl.dispatch_event(cid, "search", {
             search_string: $(this).val(),
-            filter_key: $("#" + cid + " select.epfl-simple-tree-filter").val()
+            filter_key: $(selector + " select.epfl-simple-tree-filter").val()
         });
     });
 
-    $("#" + cid + " select.epfl-simple-tree-filter").change(function () {
+    $(selector + " select.epfl-simple-tree-filter").change(function () {
         epfl.dispatch_event(cid, "search", {
-            search_string: $("#" + cid + " input.epfl-simple-tree-search").val(),
+            search_string: $(selector + " input.epfl-simple-tree-search").val(),
             filter_key: $(this).val()
         });
     });
 
-    $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
+    /**************************************************************************
+     Tree Leaf Events
+     *************************************************************************/
+
+    $(selector + " div.epfl-simple-tree-leaf-0").click(function () {
         var open = $(this).data("open");
         if (open) {
             epfl.dispatch_event(cid, "leaf_0_close", {
                 leafid: $(this).attr("leafid"),
                 scroll_top: $(dataAreaSelector).scrollTop()
             });
-        }else{
+        } else {
             epfl.dispatch_event(cid, "leaf_0_open", {
                 leafid: $(this).attr("leafid"),
                 scroll_top: $(dataAreaSelector).scrollTop()
@@ -124,31 +150,28 @@ epfl.Simpletree = function (cid, params) {
         });
     };
 
-    var dragables = $("#" + cid + " div.epfl-simple-tree-leaf-dragable");
-    dragables.draggable({
+    $(selector + " div.epfl-simple-tree-leaf-dragable").draggable({
         revert: "invalid",
         scroll: false,
         helper: 'clone',
-        cursorAt: {top: 10, left: 10},
+        cursorAt: {top: -5, left: -5},
         containment: "document",
         zIndex: 5000,
-        scroll: true
+        scroll: true,
+        start: function (event, ui) {
+            window.epflSimpleTreeDragging = true;
+        },
+        stop: function (event, ui) {
+            window.epflSimpleTreeDragging = false;
+        }
     });
 
-    var droppables = $("#" + cid + " div.epfl-simple-tree-leaf-droppable");
-    droppables.droppable({
+    $(selector + " div.epfl-simple-tree-leaf-droppable").droppable({
         accept: ".epfl-simple-tree-leaf-dragable",
-        hoverClass: "epfl-simple-tree-leaf-droppable-hover",
+        //hoverClass: "epfl-simple-tree-leaf-droppable-hover",
+        tolerance: "pointer",
         drop: function (event, ui) {
 
-            var get_parent_leafid = function (element) {
-                if (element.hasClass("epfl-simple-tree-leaf-2")) {
-                    return element.prevAll(".epfl-simple-tree-leaf-1").first().attr("leafid");
-                } else if (element.hasClass("epfl-simple-tree-leaf-1")) {
-                    return element.prevAll(".epfl-simple-tree-leaf-0").first().attr("leafid");
-                }
-                return null;
-            }
 
             var drag_parent_leafid = get_parent_leafid(ui.draggable);
             var drop_parent_leafid = get_parent_leafid($(this));
@@ -162,18 +185,64 @@ epfl.Simpletree = function (cid, params) {
             });
         }
     });
-    
-    $("#" + cid + " .epfl-simple-tree-dropdown a").click(function (event) {
-    	event.stopPropagation();
-    	$("#" + cid + " .epfl-simple-tree-dropdown").dropdown("toggle");
-    	event_name = $(this).data("event");
-    	entry_id = $(this).data("entry_id");
-    	entry = $(this).data("entry");
-    	epfl.dispatch_event(cid, event_name, {entry_id: entry_id, data: entry});
-    	return false;
+    var openTimeout;
+    $(selector + " div.epfl-simple-tree-leaf-droppable").mouseenter(function () {
+        if (window.epflSimpleTreeDragging === undefined ||
+            window.epflSimpleTreeDragging === false) {
+            return;
+        }
+
+        $(this).addClass("epfl-simple-tree-leaf-droppable-hover");
+
+    }).mouseleave(function () {
+        if($(this).hasClass("epfl-simple-tree-leaf-droppable-hover")){
+            $(this).removeClass("epfl-simple-tree-leaf-droppable-hover");
+        }
     });
 
-    $("#" + cid + " button.epfl-simple-tree-dropdown-button").click(function (event) {
+    $(selector + " div.epfl-simple-tree-openable[data-open='false']").mouseenter(function () {
+        if (window.epflSimpleTreeDragging === undefined ||
+            window.epflSimpleTreeDragging === false) {
+            return;
+        }
+        var that = this;
+        openTimeout = setTimeout(function () {
+            if ($(that).hasClass("epfl-simple-tree-leaf-0")) {
+                epfl.dispatch_event(cid, "leaf_0_open", {
+                    leafid: $(that).attr("leafid"),
+                    scroll_top: $(dataAreaSelector).scrollTop()
+                });
+            } else if ($(that).hasClass("epfl-simple-tree-leaf-1")) {
+
+                var parent_id = get_parent_leafid($(that));
+                epfl.dispatch_event(cid, "leaf_1_open", {
+                    leafid: parseInt($(that).attr("leafid")),
+                    parent_id: parseInt(parent_id),
+                    scroll_top: $(dataAreaSelector).scrollTop()
+                });
+
+            }
+        }, 500);
+    }).mouseleave(function () {
+        clearTimeout(openTimeout);
+    });
+
+
+    /**************************************************************************
+     Context Menu
+     *************************************************************************/
+
+    $(selector + " .epfl-simple-tree-dropdown a").click(function (event) {
+        event.stopPropagation();
+        $(selector + " .epfl-simple-tree-dropdown").dropdown("toggle");
+        event_name = $(this).data("event");
+        entry_id = $(this).data("entry_id");
+        entry = $(this).data("entry");
+        epfl.dispatch_event(cid, event_name, {entry_id: entry_id, data: entry});
+        return false;
+    });
+
+    $(selector + " button.epfl-simple-tree-dropdown-button").click(function (event) {
         event.stopPropagation();
         var parent = $(this).parent();
         if (parent.hasClass('open')) {
@@ -208,7 +277,7 @@ epfl.Simpletree = function (cid, params) {
         });
     });
 
-    $("#" + cid + " ul.epfl-simple-tree-dropdown").mouseleave(function () {
+    $(selector + " ul.epfl-simple-tree-dropdown").mouseleave(function () {
         $(this).dropdown('toggle');
     });
 

@@ -65,7 +65,7 @@
     <div class="epfl-simple-tree-scroll-upper"></div>
         {% for entry_obj in compo.tree_data.iteritems() %}
             {% set entry = entry_obj[1] %}
-            <div class="epfl-simple-tree-leaf-0
+            <div class="epfl-simple-tree-leaf-0 epfl-simple-tree-openable
                         {% if entry['marked'] is defined and entry['marked'] == True %} epfl-simple-tree-marked{% endif %}
                         {% if entry['draggable'] is defined and entry['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
                         {% if entry['droppable'] is defined and entry['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
@@ -82,7 +82,7 @@
                 {% for child_obj in entry["children"].iteritems() %}
                     {% set child = child_obj[1] %}
 
-                    <div class="epfl-simple-tree-leaf-1
+                    <div class="epfl-simple-tree-leaf-1 epfl-simple-tree-openable
                                 {% if child['marked'] is defined and child['marked'] == True %} epfl-simple-tree-marked{% endif %}
                                 {% if child['draggable'] is defined and child['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}
                                 {% if child['droppable'] is defined and child['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}"
