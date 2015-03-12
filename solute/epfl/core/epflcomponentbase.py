@@ -312,7 +312,6 @@ class ComponentBase(object):
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info, container_id):
-        print compo_info["class"][1]
         compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
         if container_id:
             container_compo = page.components[container_id]  # container should exist before their content
@@ -358,7 +357,7 @@ class ComponentBase(object):
 
         self.page.transaction['__initialized_components__'].remove(self.cid)
 
-        del self.page[self.cid]
+        delattr(self.page, self.cid)
 
     def finalize(self):
         """ Called from the page-object when the page is finalized
@@ -731,21 +730,15 @@ class ComponentBase(object):
         """
 
         compo = getattr(self.page, cid)
+        compo_info = self.page.transaction.get_component(cid)
         target = getattr(self.page, target)
         source = getattr(self.page, compo.container_compo.cid)
 
-        if getattr(source, 'struct_dict', None) is None:
-            source.struct_dict = self.page.transaction['compo_struct'][source.cid]
-        if getattr(target, 'struct_dict', None) is None:
-            target.struct_dict = self.page.transaction['compo_struct'][target.cid]
-
-        struct_dict = source.struct_dict.pop(cid)
+        self.page.transaction.del_component(cid)
+        compo_info['ccid'] = target.cid
 
         compo.set_container_compo(target, slot)
-        if position is None:
-            target.struct_dict[cid] = struct_dict
-        else:
-            target.struct_dict.insert(cid, struct_dict, position)
+        self.page.transaction.set_component(cid, compo_info, position=position)
 
         target.redraw()
         source.redraw()
@@ -1027,9 +1020,9 @@ class ComponentContainerBase(ComponentBase):
             return getattr(self.page, compo_obj).delete_component()
 
         compo_obj.compo_destruct()
-        if compo_obj.struct_dict is not None:
-            for compo in compo_obj.struct_dict.keys()[:]:
-                getattr(self.page, compo).delete_component()
+        if hasattr(compo_obj, 'components'):
+            for compo in list(compo_obj.components):
+                compo.delete_component()
         self.components.remove(compo_obj)
 
 

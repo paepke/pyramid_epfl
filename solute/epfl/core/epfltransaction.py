@@ -107,12 +107,16 @@ class Transaction(MutableMapping):
             return None
         return compo['compo_struct'][cid]
 
-    def set_component(self, cid, compo_info):
+    def set_component(self, cid, compo_info, position=None):
         container = self
         if 'ccid' in compo_info:
             self.setdefault('compo_lookup', {})[cid] = compo_info['ccid']
             container = self.get_component(compo_info['ccid'])
-        container.setdefault('compo_struct', odict())[cid] = compo_info
+        compo_struct = container.setdefault('compo_struct', odict())
+        if position is None:
+            compo_struct[cid] = compo_info
+        else:
+            compo_struct.insert(cid, compo_info, position)
 
     def del_component(self, cid):
         compo = self.get_component(cid)

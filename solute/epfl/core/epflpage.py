@@ -112,6 +112,7 @@ class Page(object):
             self.active_component_objects = []
             self.active_component_cid_objects = []
 
+    @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
