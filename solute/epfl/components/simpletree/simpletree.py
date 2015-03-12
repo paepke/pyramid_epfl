@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from solute.epfl.core import epflcomponentbase
-from odict import odict
+from collections2 import OrderedDict as odict
 
 class Simpletree(epflcomponentbase.ComponentBase):
     template_name = "simpletree/simpletree.html"
