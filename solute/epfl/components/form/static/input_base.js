@@ -37,7 +37,7 @@ epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
     }
 
     if (enqueue_event) {
-        epfl.dispatch_event(cid, "set_dirty", {});
+        epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid);
         epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid);
     } else {
         epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid);
