@@ -61,7 +61,7 @@ class ContextListLayout(ListLayout):
 
     auto_update_children = True
 
-    js_name = ["context_list_layout.js"]
+    js_name = ["context_list_layout.js",("solute.epfl:static", "plugin/contextmenu.js")]
     css_name = ["context_list_layout.css"]
 
     data_interface = {'id': None, 'data': None, 'menu': None}
