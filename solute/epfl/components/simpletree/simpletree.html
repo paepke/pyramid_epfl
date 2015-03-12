@@ -1,23 +1,16 @@
 {% macro contextmenu(menuentries,child_id,child_data) %}
-    <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false"
-            class="btn btn-default btn-xs pull-right epfl-simple-tree-dropdown-button"><i class="fa fa-bars"></i>
-    </button>
-    <ul class="dropdown-menu epfl-simple-tree-dropdown" role="menu"
-        aria-labelledby="dLabel">
-        {% for menuentry in menuentries %}
-            {% if menuentry.type == "link" %}
-                <li><a href="#"
-                		data-event="{{ menuentry.event }}"
-                		data-entry_id="{{ child_id }}"
-                		data-entry = "{{ child_data }}">
-                    {{ menuentry.name }}</a></li>
+    <ul class="context-dropdown-menu">
+        {% for entry in menuentries %}
+            {% if entry.type == "link" %}
+                <li class="entry" data-event="{{ entry.event }}" data-id="{{ child_id }}"
+                    data-data="{{ child_data }}">{{ entry.name }}</li>
             {% else %}
                 <li class="divider"></li>
             {% endif %}
         {% endfor %}
     </ul>
 {% endmacro %}
+
 <div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-simple-tree">
     <div class="row epfl-simple-tree-filter">
         <div class="col-sm-6">

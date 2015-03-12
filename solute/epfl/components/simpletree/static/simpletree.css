@@ -35,6 +35,10 @@ div.epfl-simple-tree-leaf-0:hover button {
     display: block;
 }
 
+div.epfl-simple-tree-leaf-0 button {
+    display: none;
+}
+
 div.epfl-simple-tree-leaf-1 {
     margin-left: 10px;
     padding-top: 5px;
@@ -54,6 +58,11 @@ div.epfl-simple-tree-leaf-1:hover button {
     display: block;
 }
 
+div.epfl-simple-tree-leaf-1 button {
+    display: none;
+}
+
+
 div.epfl-simple-tree-leaf-2 {
     margin-left: 20px;
     padding-top: 5px;
@@ -61,8 +70,6 @@ div.epfl-simple-tree-leaf-2 {
     border: 1px solid #eeeeee;
     margin-top: 3px;
 }
-
-
 
 div.epfl-simple-tree-leaf-2.epfl-simple-tree-marked {
     background-color: #d1f0ec;
@@ -77,20 +84,16 @@ div.epfl-simple-tree-leaf-2:hover button {
     display: block;
 }
 
+div.epfl-simple-tree-leaf-2 button {
+    display: none;
+}
+
 div.epfl-simple-tree-leaf-2 span {
     padding-left: 5px;
 }
 
 div.epfl-simple-tree-leaf-2 i {
     padding-right: 5px;
-}
-
-ul.epfl-simple-tree-dropdown {
-    float: right;
-}
-
-button.epfl-simple-tree-dropdown-button {
-    display: none;
 }
 
 div.epfl-simple-tree-leaf-droppable-hover {
@@ -123,3 +126,35 @@ div.epfl-simple-tree-leaf-2.ui-draggable-dragging:hover {
 div.epfl-simple-tree-leaf-selected {
     background-color: #DDDDDD;
 }
+
+ul.context-dropdown-menu{
+    display: none;
+    border: 1px solid black;
+    list-style-type: none;
+    background-clip: padding-box;
+    border-color: #DDDDDD;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    position: fixed;
+    z-index: 5000;
+    background-color: #FFFFFF;
+    padding-left: 0px;
+    font-size: 14px;
+    cursor:pointer;
+}
+
+ul.context-dropdown-menu li.entry:hover{
+    background-color:  #DDDDDD;
+}
+ul.context-dropdown-menu li.entry{
+    padding-top: 3px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+ul.context-dropdown-menu li.divider{
+    border-bottom: 1px solid #DDDDDD;
+    height: 1px;
+    padding-top: 3px;
+}
+

@@ -232,55 +232,36 @@ epfl.Simpletree = function (cid, params) {
     /**************************************************************************
      Context Menu
      *************************************************************************/
+    var epflContextDropDown = function (element) {
+        element.parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
 
-    $(selector + " .epfl-simple-tree-dropdown a").click(function (event) {
-        event.stopPropagation();
-        $(selector + " .epfl-simple-tree-dropdown").dropdown("toggle");
-        event_name = $(this).data("event");
-        entry_id = $(this).data("entry_id");
-        entry = $(this).data("entry");
-        epfl.dispatch_event(cid, event_name, {entry_id: entry_id, data: entry});
-        return false;
-    });
-
-    $(selector + " button.epfl-simple-tree-dropdown-button").click(function (event) {
-        event.stopPropagation();
-        var parent = $(this).parent();
-        if (parent.hasClass('open')) {
-            parent.removeClass("open");
-        } else {
-            parent.addClass("open");
-        }
-        var posi = $(this).offset();
-
-        var ul = $(this).next("ul");
-        var top = posi.top - 3;
-        var left = posi.left + $(this).width() + 10;
-        var menuEnterd = false;
-
-        if (left + ul.width() > $(window).width()) {
-            left = posi.left - (ul.width() + 3)
-        }
-
-        ul.css({
-            top: top - $(window).scrollTop(),
-            left: left,
-            position: "fixed"
-        });
-        $(this).parent().mouseleave(function () {
-            $(this).removeClass("open");
-            $(this).unbind("mouseleave");
+        element.children("li.entry").click(function () {
+            $(this).parent().hide();
+            var liEvent = $(this).data("event");
+            var liId = $(this).data("id");
+            var liData = $(this).data("data");
+            epfl.dispatch_event(cid, liEvent, {entry_id: liId, data: liData});
         });
 
-        $(window).scroll(function () {
-            parent.removeClass("open");
-            $(this).unbind("scroll");
+        element.parent().find("button").click(function () {
+            event.stopPropagation();
+            var ul = $(this).parent().find("ul");
+            if (ul.is(":visible")) {
+                ul.hide();
+            } else {
+                ul.show();
+                ul.css({
+                    top: ($(this).offset().top + $(this).height() + 3) - $(window).scrollTop(),
+                    left: $(this).offset().left
+                })
+            }
         });
+    };
+    $(document).click(function(){
+        $("#" + cid + " ul.context-dropdown-menu").hide();
     });
 
-    $(selector + " ul.epfl-simple-tree-dropdown").mouseleave(function () {
-        $(this).dropdown('toggle');
-    });
+    epflContextDropDown($("#" + cid + " ul.context-dropdown-menu"));
 
 };
 
