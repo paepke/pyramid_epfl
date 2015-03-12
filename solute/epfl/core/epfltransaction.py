@@ -93,14 +93,19 @@ class Transaction(MutableMapping):
         if cid in self['compo_struct']:
             return self['compo_struct'][cid]
 
-        if 'compo_lookup' not in self:
+        if 'compo_lookup' not in self or cid not in self['compo_lookup']:
             return None
 
         return self.get_child_component(self['compo_lookup'][cid],
                                         cid)
 
     def get_child_component(self, ccid, cid):
-        return self.get_component(ccid)['compo_struct'][cid]
+        compo = self.get_component(ccid)
+        if not compo \
+                or 'compo_struct' not in compo \
+                or cid not in compo['compo_struct']:
+            return None
+        return compo['compo_struct'][cid]
 
     def set_component(self, cid, compo_info):
         container = self

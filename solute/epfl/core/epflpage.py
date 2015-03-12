@@ -278,7 +278,8 @@ class Page(object):
         The main request teardown.
         """
         for compo_obj in self.get_active_components(show_cid=False):
-            compo_obj.finalize()
+            if self.transaction.has_component(compo_obj.cid):
+                compo_obj.finalize()
 
         other_pages = self.page_request.get_handeled_pages()
         for page_obj in other_pages:
@@ -546,7 +547,7 @@ class Page(object):
                 self.traversing_redraw(item)
             return
 
-        cid, struct_dict = item
+        cid, compo = item
         if self.active_components is not None and cid not in self.active_components:
             return
 
@@ -561,8 +562,12 @@ class Page(object):
                 self.add_js_response(js)
                 js_only = True
 
-            for child in struct_dict.iteritems():
-                self.traversing_redraw(child, js_only=js_only)
+            if 'compo_struct' not in compo:
+                return
+
+            for child in compo['compo_struct'].iteritems():
+                if child:
+                    self.traversing_redraw(child, js_only=js_only)
         else:
             self.add_js_response("epfl.hide_component('{cid}')".format(cid=cid))
 

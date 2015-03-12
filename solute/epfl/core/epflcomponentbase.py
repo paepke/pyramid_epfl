@@ -263,6 +263,8 @@ class ComponentBase(object):
         self.container_slot = None
         self.deleted = False
 
+        self.__config = config
+
         for attr_name in self.compo_config:
             if attr_name in config:
                 config_value = config[attr_name]
@@ -301,6 +303,7 @@ class ComponentBase(object):
 
     def get_component_info(self):
         info = {"class": self.__unbound_component__.__getstate__(),
+                "config": self.__config,
                 "cid": self.cid,
                 "slot": self.container_slot}
         if self.container_compo:
@@ -309,7 +312,8 @@ class ComponentBase(object):
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info, container_id):
-        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["class"][1])
+        print compo_info["class"][1]
+        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
         if container_id:
             container_compo = page.components[container_id]  # container should exist before their content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
@@ -349,10 +353,10 @@ class ComponentBase(object):
 
         self.container_compo.del_component(self, self.container_slot)
 
-        for attr_name in self.compo_state + self.base_compo_state:
-            self.page.transaction.pop(self.cid + "$" + attr_name, None)
-        self.page.transaction['__initialized_components__'].remove(self.cid)
+        self.page.transaction.del_component(self.cid)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
+
+        self.page.transaction['__initialized_components__'].remove(self.cid)
 
         del self.page[self.cid]
 
@@ -1027,11 +1031,6 @@ class ComponentContainerBase(ComponentBase):
             for compo in compo_obj.struct_dict.keys()[:]:
                 getattr(self.page, compo).delete_component()
         self.components.remove(compo_obj)
-        if self.struct_dict is None:
-            self.page.transaction['compo_struct'][self.cid].pop(compo_obj.cid)
-        else:
-            self.struct_dict.pop(compo_obj.cid)
-        self.page.transaction['compo_info'].pop(compo_obj.cid)
 
 
 class ComponentList(MutableSequence):
@@ -1047,7 +1046,7 @@ class ComponentList(MutableSequence):
         struct_dict = getattr(self.container_compo, 'struct_dict', None)
         if struct_dict is not None:
             return struct_dict
-        return self.container_compo.page.transaction['compo_struct'][self.container_compo.cid]
+        return self.container_compo.page.transaction.get_component(self.container_compo.cid).get('compo_struct', odict())
 
     def __setitem__(self, index, value):
         pass
