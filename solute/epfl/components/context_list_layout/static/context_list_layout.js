@@ -6,7 +6,6 @@ epfl.ContextListLayout = function (cid, params) {
     };
 
     var epflContextDropDown = function (element) {
-        element.parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
         $(this).parent().find("button").hide();
 
         element.children("li.entry").click(function () {
@@ -17,7 +16,7 @@ epfl.ContextListLayout = function (cid, params) {
             epfl.dispatch_event(cid, liEvent, {entry_id: liId, data: liData});
         });
 
-        element.parent().find("button").click(function () {
+        element.parent().find("button").click(function (event) {
             event.stopPropagation();
             var ul = $(this).parent().find("ul");
             if (ul.is(":visible")) {

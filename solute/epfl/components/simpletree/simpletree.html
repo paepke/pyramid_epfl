@@ -1,4 +1,5 @@
 {% macro contextmenu(menuentries,child_id,child_data) %}
+    <button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>
     <ul class="context-dropdown-menu">
         {% for entry in menuentries %}
             {% if entry.type == "link" %}

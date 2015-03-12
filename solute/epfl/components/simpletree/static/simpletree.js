@@ -243,8 +243,6 @@ epfl.Simpletree = function (cid, params) {
      Context Menu
      *************************************************************************/
     var epflContextDropDown = function (element) {
-        element.parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
-
         element.children("li.entry").click(function () {
             $(this).parent().hide();
             var liEvent = $(this).data("event");
@@ -253,7 +251,7 @@ epfl.Simpletree = function (cid, params) {
             epfl.dispatch_event(cid, liEvent, {entry_id: liId, data: liData});
         });
 
-        element.parent().find("button").click(function () {
+        element.parent().find("button").click(function (event) {
             event.stopPropagation();
             var ul = $(this).parent().find("ul");
             if (ul.is(":visible")) {

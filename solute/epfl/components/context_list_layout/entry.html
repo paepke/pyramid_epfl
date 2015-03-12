@@ -2,6 +2,7 @@
     {{ compo.data }}
 </div>
 {% if compo.menu is defined and not compo.menu is none %}
+    <button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>
     <ul class="context-dropdown-menu">
         {% for entry in compo.menu %}
             {% if entry.type == "link" %}
