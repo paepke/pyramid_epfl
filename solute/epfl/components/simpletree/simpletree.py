@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from solute.epfl.core import epflcomponentbase
-
+from odict import odict
 
 class Simpletree(epflcomponentbase.ComponentBase):
     template_name = "simpletree/simpletree.html"
@@ -17,7 +17,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
                    "scroll_top","selected_0_id","selected_1_id","selected_2_id"]
 
-    tree_data = {}
+    tree_data = odict()
 
     open_leaf_0_ids = []
     open_leaf_1_ids = {}
