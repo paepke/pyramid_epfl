@@ -1,4 +1,4 @@
-epfl.PluginContextMenu = function (selector) {
+epfl.PluginContextMenu = function (selector,cid) {
     var element = $(selector);
 
     element.children("li.entry").click(function (event) {

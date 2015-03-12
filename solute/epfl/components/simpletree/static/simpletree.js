@@ -242,7 +242,7 @@ epfl.Simpletree = function (cid, params) {
     /**************************************************************************
      Context Menu
      *************************************************************************/
-    epfl.PluginContextMenu($(selector + " ul.context-dropdown-menu"));
+    epfl.PluginContextMenu(selector + " ul.context-dropdown-menu",cid);
 };
 
 epfl.Simpletree.inherits_from(epfl.ComponentBase);
