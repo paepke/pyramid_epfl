@@ -5,14 +5,11 @@ epfl.ContextListLayout = function (cid, params) {
         epfl.dispatch_event(cid, event, param);
     };
 
-
-    $.fn.epflContextDropDown = function () {
-        //init visuals
-        $(this).parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
+    var epflContextDropDown = function (element) {
+        element.parent().prepend("<button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>");
         $(this).parent().find("button").hide();
 
-        //events
-        $(this).children("li.entry").click(function () {
+        element.children("li.entry").click(function () {
             $(this).parent().hide();
             var liEvent = $(this).data("event");
             var liId = $(this).data("id");
@@ -20,7 +17,8 @@ epfl.ContextListLayout = function (cid, params) {
             epfl.dispatch_event(cid, liEvent, {entry_id: liId, data: liData});
         });
 
-        $(this).parent().find("button").click(function () {
+        element.parent().find("button").click(function () {
+            event.stopPropagation();
             var ul = $(this).parent().find("ul");
             if (ul.is(":visible")) {
                 ul.hide();
@@ -32,16 +30,12 @@ epfl.ContextListLayout = function (cid, params) {
                 })
             }
         });
-
-        $($(this).parent()).mouseenter(function () {
-            $(this).find("button").show();
-        }).mouseleave(function () {
-            $(this).find("button").hide();
-            $(this).find("ul").hide();
-        });
-        return this;
     };
-    $("#" + cid + " ul.context-dropdown-menu").epflContextDropDown();
+    $(document).click(function(){
+        $("#" + cid + " ul.context-dropdown-menu").hide();
+    });
+
+    epflContextDropDown($("#" + cid + " ul.context-dropdown-menu"));
 };
 
 epfl.ContextListLayout.inherits_from(epfl.ComponentBase);
