@@ -3,6 +3,7 @@
 from solute.epfl.core import epflcomponentbase
 from collections2 import OrderedDict as odict
 
+
 class Simpletree(epflcomponentbase.ComponentBase):
     template_name = "simpletree/simpletree.html"
     js_parts = epflcomponentbase.ComponentBase.js_parts + ["simpletree/simpletree.js"]
@@ -15,7 +16,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     compo_config = []
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
-                   "scroll_top","selected_0_id","selected_1_id","selected_2_id"]
+                   "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id"]
 
     tree_data = odict()
 
@@ -108,13 +109,13 @@ class Simpletree(epflcomponentbase.ComponentBase):
             else:
                 self.tree_data[entry["id"]] = entry
 
-    def update_level_1(self,parent_id,recursive=False):
+    def update_level_1(self, parent_id, recursive=False):
         level_1_data = self.load_level_1(parent_id, self.search_string, self.filter_key)
 
         for entry in level_1_data:
             if entry["id"] in self.tree_data[parent_id]["children"]:
                 if "children" in self.tree_data[parent_id]["children"][entry["id"]]:
-                    
+
                     if recursive:
                         level_2_data = self.load_level_2(entry["id"], self.search_string, self.filter_key)
                         for subentry in level_2_data:
@@ -127,6 +128,13 @@ class Simpletree(epflcomponentbase.ComponentBase):
                     self.tree_data[parent_id]["children"][entry["id"]] = entry
             else:
                 self.tree_data[parent_id]["children"][entry["id"]] = entry
+
+    def update_level_2(self, level_0_id,level_1_id):
+        level_2_data = self.load_level_2( level_1_id, self.search_string, self.filter_key)
+
+        for entry in level_2_data:
+            self.tree_data[level_0_id]["children"][level_1_id]["children"][entry["id"]] = entry
+
 
     def leaf_0_clicked(self, leafid):
         pass
@@ -186,8 +194,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.filter_key = filter_key
         self.rebuild_tree_structure()
 
-    def handle_drop(self, drag_leafid, drag_parent_leafid, drag_tree_cid, drop_leafid, drop_parent_leafid,
-                    drop_tree_cid):
+    def handle_drop(self,
+                    drag_leafid,drag_parent_leafid,drag_level_0_leafid,drag_tree_cid,
+                    drop_leafid,drop_parent_leafid,drop_level_0_leafid,drop_tree_cid):
         pass
 
 

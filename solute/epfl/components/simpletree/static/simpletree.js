@@ -19,6 +19,13 @@ epfl.Simpletree = function (cid, params) {
         return null;
     }
 
+    var get_level_0_leafid = function(element){
+        if(element.hasClass("epfl-simple-tree-leaf-2") || element.hasClass("epfl-simple-tree-leaf-1")){
+            return parseInt(element.prevAll(".epfl-simple-tree-leaf-0").first().data("leafid"));
+        }
+        return null;
+    }
+
 
     /**************************************************************************
      Scroll
@@ -169,19 +176,22 @@ epfl.Simpletree = function (cid, params) {
 
     $(selector + " div.epfl-simple-tree-leaf-droppable").droppable({
         accept: ".epfl-simple-tree-leaf-dragable",
-        //hoverClass: "epfl-simple-tree-leaf-droppable-hover",
         tolerance: "pointer",
         drop: function (event, ui) {
-
-
             var drag_parent_leafid = get_parent_leafid(ui.draggable);
             var drop_parent_leafid = get_parent_leafid($(this));
+
+            var drag_level_0_leafid = get_level_0_leafid(ui.draggable);
+            var drop_level_0_leafid = get_level_0_leafid($(this));
+
             epfl.dispatch_event(cid, "drop", {
                 drag_leafid: parseInt(ui.draggable.data("leafid")),
                 drag_parent_leafid: drag_parent_leafid,
+                drag_level_0_leafid:drag_level_0_leafid,
                 drag_tree_cid: ui.draggable.closest("div[epflid]").attr('epflid'),
                 drop_leafid: parseInt($(this).data("leafid")),
                 drop_parent_leafid: drop_parent_leafid,
+                drop_level_0_leafid:drop_level_0_leafid,
                 drop_tree_cid: $(this).closest("div[epflid]").attr('epflid')
             });
         }
@@ -261,7 +271,7 @@ epfl.Simpletree = function (cid, params) {
         $("#" + cid + " ul.context-dropdown-menu").hide();
     });
 
-    epflContextDropDown($("#" + cid + " ul.context-dropdown-menu"));
+    epflContextDropDown($(selector + " ul.context-dropdown-menu"));
 
 };
 
