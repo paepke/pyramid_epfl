@@ -94,6 +94,39 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.redraw()
 
+    def update_level_0(self):
+        level_0_data = self.load_level_0(self.search_string, self.filter_key)
+
+        for entry in level_0_data:
+            if entry["id"] in self.tree_data:
+                if "children" in self.tree_data[entry["id"]]:
+                    children = self.tree_data[entry["id"]]["children"]
+                    self.tree_data[entry["id"]] = entry
+                    self.tree_data[entry["id"]]["children"] = children
+                else:
+                    self.tree_data[entry["id"]] = entry
+            else:
+                self.tree_data[entry["id"]] = entry
+
+    def update_level_1(self,parent_id,recursive=False):
+        level_1_data = self.load_level_1(parent_id, self.search_string, self.filter_key)
+
+        for entry in level_1_data:
+            if entry["id"] in self.tree_data[parent_id]["children"]:
+                if "children" in self.tree_data[parent_id]["children"][entry["id"]]:
+                    
+                    if recursive:
+                        level_2_data = self.load_level_2(entry["id"], self.search_string, self.filter_key)
+                        for subentry in level_2_data:
+                            self.tree_data[parent_id]["children"][entry["id"]]["children"][subentry["id"]] = subentry
+                    else:
+                        children = self.tree_data[parent_id]["children"][entry["id"]]["children"]
+                        self.tree_data[parent_id]["children"][entry["id"]] = entry
+                        self.tree_data[parent_id]["children"][entry["id"]]["children"] = children
+                else:
+                    self.tree_data[parent_id]["children"][entry["id"]] = entry
+            else:
+                self.tree_data[parent_id]["children"][entry["id"]] = entry
 
     def leaf_0_clicked(self, leafid):
         pass
