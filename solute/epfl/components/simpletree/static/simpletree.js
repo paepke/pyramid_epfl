@@ -90,7 +90,6 @@ epfl.Simpletree = function (cid, params) {
 
     $("#" + cid + " div.epfl-simple-tree-leaf-0").click(function () {
         var open = $(this).data("open");
-
         if (open) {
             epfl.dispatch_event(cid, "leaf_0_close", {
                 leafid: $(this).attr("leafid"),
@@ -163,10 +162,16 @@ epfl.Simpletree = function (cid, params) {
             });
         }
     });
-
-    epfl.Simpletree.ContextEvent = function (event, param) {
-        epfl.dispatch_event(cid, event, param);
-    };
+    
+    $("#" + cid + " .epfl-simple-tree-dropdown a").click(function (event) {
+    	event.stopPropagation();
+    	$("#" + cid + " .epfl-simple-tree-dropdown").dropdown("toggle");
+    	event_name = $(this).data("event");
+    	entry_id = $(this).data("entry_id");
+    	entry = $(this).data("entry");
+    	epfl.dispatch_event(cid, event_name, {entry_id: entry_id, data: entry});
+    	return false;
+    });
 
     $("#" + cid + " button.epfl-simple-tree-dropdown-button").click(function (event) {
         event.stopPropagation();

@@ -8,7 +8,9 @@
         {% for menuentry in menuentries %}
             {% if menuentry.type == "link" %}
                 <li><a href="#"
-                       onclick=" epfl.Simpletree.ContextEvent('{{ menuentry.event }}', {entry_id:'{{ child_id }}', data: '{{ child_data }}'});">
+                		data-event="{{ menuentry.event }}"
+                		data-entry_id="{{ child_id }}"
+                		data-entry = "{{ child_data }}">
                     {{ menuentry.name }}</a></li>
             {% else %}
                 <li class="divider"></li>
