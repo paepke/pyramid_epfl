@@ -35,7 +35,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     # TREE DATA
     def reset_tree_data(self):
-        self.tree_data = {}
+        self.tree_data = odict()
 
     def add_level_0(self, data):
         for entry in data:
@@ -43,7 +43,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
 
     def add_level_1(self, data, parent_id):
-        self.tree_data[parent_id]["children"] = {}
+        self.tree_data[parent_id]["children"] = odict()
         for entry in data:
             self.tree_data[parent_id]["children"][entry['id']] = entry
 
@@ -52,13 +52,13 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
 
     def add_level_2(self, data, level_1_id, level_0_id):
-        if (not self.tree_data[level_0_id].has_key("children")):
+        if not "children" in self.tree_data[level_0_id]:
             return
 
-        if (not self.tree_data[level_0_id]["children"].has_key(level_1_id)):
+        if not level_1_id in self.tree_data[level_0_id]["children"]:
             return
 
-        self.tree_data[level_0_id]["children"][level_1_id]["children"] = {}
+        self.tree_data[level_0_id]["children"][level_1_id]["children"] = odict()
         for entry in data:
             self.tree_data[level_0_id]["children"][level_1_id]["children"][entry['id']] = entry
 
