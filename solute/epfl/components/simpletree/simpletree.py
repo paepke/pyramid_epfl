@@ -15,7 +15,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     compo_config = []
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
-                   "scroll_top"]
+                   "scroll_top","selected_0_id","selected_1_id","selected_2_id"]
 
     tree_data = {}
 
@@ -29,6 +29,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
     filter_key = None
 
     scroll_top = 0
+    selected_0_id = None
+    selected_1_id = None
+    selected_2_id = None
 
     # TREE DATA
     def reset_tree_data(self):

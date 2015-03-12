@@ -119,3 +119,7 @@ div.epfl-simple-tree-leaf-2.ui-draggable-dragging:hover {
     height: 10px;
     position: fixed;
 }
+
+div.epfl-simple-tree-leaf-selected {
+    background-color: #DDDDDD;
+}
