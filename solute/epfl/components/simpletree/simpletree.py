@@ -85,9 +85,6 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.add_level_0(self.load_level_0(search_string, filter_key))
 
-        print "self.open_leaf_0_ids", self.open_leaf_0_ids
-        print "self.open_leaf_1_ids", self.open_leaf_1_ids
-
         for leafid in self.open_leaf_0_ids:
             self.add_level_1(self.load_level_1(leafid, search_string, filter_key), leafid)
 
