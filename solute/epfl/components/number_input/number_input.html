@@ -3,25 +3,29 @@
         <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
     {% endif %}
     <div>
-        <input class="form-control"
-               type="number"
-               {% if compo.validation_type == "number"%}
-               pattern="\d*"
-               {% else %}
-                pattern="[0-9]+([\.|,][0-9]+)?" step="any"
-                {% endif %}
-               id="{{ compo.cid }}_input"
-               name="{{ compo.name }}"
-               value="{{ compo.value if compo.value is not none else '' }}"
-               placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
-        {% if compo.min_value is defined and compo.min_value is not none %}
-        min="{{ compo.min_value }}"
-        {% endif %}
-        {% if compo.max_value is defined and compo.max_value is not none %}
-        max="{{ compo.max_value }}"
-        {% endif %}
-        data-validation-type='{{ compo.validation_type }}'
-        />
+    	{% if compo.readonly is defined and compo.readonly %}
+    		<p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
+    	{% else %}
+	        <input class="form-control"
+	               type="number"
+	               {% if compo.validation_type == "number"%}
+	               pattern="\d*"
+	               {% else %}
+	                pattern="[0-9]+([\.|,][0-9]+)?" step="any"
+	                {% endif %}
+	               id="{{ compo.cid }}_input"
+	               name="{{ compo.name }}"
+	               value="{{ compo.value if compo.value is not none else '' }}"
+	               placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
+	        {% if compo.min_value is defined and compo.min_value is not none %}
+	        min="{{ compo.min_value }}"
+	        {% endif %}
+	        {% if compo.max_value is defined and compo.max_value is not none %}
+	        max="{{ compo.max_value }}"
+	        {% endif %}
+	        data-validation-type='{{ compo.validation_type }}'
+	        />
+	    {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}

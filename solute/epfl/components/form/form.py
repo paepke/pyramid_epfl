@@ -6,7 +6,7 @@ from collections2 import OrderedDict as odict
 class FormInputBase(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form/static"
 
-    compo_state = ['label', 'name', 'value', 'validation_error']
+    compo_state = ['label', 'name', 'value', 'validation_error', 'readonly']
     js_parts = ["form/input_base.js"]
 
     js_name = ["input_base.js", "bootstrap3-typeahead.min.js"]
@@ -17,6 +17,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     value = None  #: The actual value of the input element that is posted upon form submission.
     default = None  #: Default value that may be pre-set or pre-selected
     placeholder = None  #: Placeholder text that can be displayed if supported by the input.
+    readonly = False
     #: Set during call of :func:`validate` with an error message if validation fails.
     validation_error = ''
     validation_type = None
