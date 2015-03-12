@@ -3,11 +3,15 @@
     {% if compo.row_count > compo.row_limit and compo.show_pagination %}
     <div class="col-sm-12 text-center">
         <ul class="pagination-sm pagination" style="margin: 5px 0; ">
+        	{% set current_page = (compo.row_offset/compo.row_limit)|round(method='floor')|int %}
+            {% set max_page = (compo.row_count/compo.row_limit)|round(method='floor')|int %}
+            {% if max_page > 4 %}
             <li onclick="epfl.paginated_list_goto(
                     this, '{{ compo.cid }}', 0, {{ compo.row_limit }})"
                 class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
                 <span aria-hidden="true">&laquo;</span>
             </li>
+            {% endif %}
             <li onclick="epfl.paginated_list_goto(
                     this,
                     '{{ compo.cid }}',
@@ -16,8 +20,6 @@
                 class="{{ '' if compo.row_offset > 0 else 'disabled' }}">
                 <span aria-hidden="true">&lt;</span>
             </li>
-            {% set current_page = (compo.row_offset/compo.row_limit)|round(method='floor')|int %}
-            {% set max_page = (compo.row_count/compo.row_limit)|round(method='floor')|int %}
             {% if max_page > 4 %}
             	{% if (max_page-current_page) < 2 %}
             		{% set pagination_start = (((compo.row_count/compo.row_limit)|round(method='floor')|int)-4)*compo.row_limit %}
@@ -51,6 +53,7 @@
                 class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
                 <span aria-hidden="true">&gt;</span>
             </li>
+            {% if max_page > 4 %}
             <li onclick="epfl.paginated_list_goto(
                     this,
                     '{{ compo.cid }}',
@@ -59,6 +62,7 @@
                 class="{{ '' if compo.row_offset + compo.row_limit < compo.row_count else 'disabled' }}">
                 <span aria-hidden="true">&raquo;</span>
             </li>
+            {% endif %}
         </ul>
     </div>
     {% endif %}
