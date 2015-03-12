@@ -220,17 +220,13 @@ class Page(object):
                 struct = self.transaction["compo_struct"]
 
             for key, value in struct.iteritems():
-                self.assign_component(self.transaction["compo_info"][key], container_id=container_id)
-                traverse_compo_struct(value, container_id=key)
+                self.assign_component(value, container_id=container_id)
+                if 'compo_struct' in value:
+                    traverse_compo_struct(value['compo_struct'], container_id=key)
 
         # Calling self.setup_components once and remember the compos as compo_info and their structure as compo_struct.
         if not self.transaction.get("components_assigned"):
             self.setup_components()
-            compo_info = {}
-            for cid, compo in self.get_active_components():
-                compo_info[cid] = compo.get_component_info()
-            self.transaction["compo_info"] = compo_info
-            self.transaction["compo_struct"] = odict()
             self.transaction["components_assigned"] = True
         else:
             traverse_compo_struct()
@@ -243,7 +239,8 @@ class Page(object):
         def lazy_assign(overwrite=False):
             _compo_obj = compo_obj
             if compo_obj is None:
-                _compo_obj = compo_info["class"].create_by_compo_info(self, compo_info, container_id=container_id)
+                unbound_component = epflcomponentbase.UnboundComponent.create_from_state(compo_info['class'])
+                _compo_obj = unbound_component.create_by_compo_info(self, compo_info, container_id=container_id)
             self.add_static_component(compo_info["cid"], _compo_obj, overwrite=overwrite)
 
         if self.lazy_mode:
@@ -368,8 +365,8 @@ class Page(object):
             self.active_components.add(cid)
             self.active_component_objects.append(compo_obj)
             self.active_component_cid_objects.append((cid, compo_obj))
-        if not hasattr(compo_obj, 'container_compo'):
-            self.transaction["compo_struct"].setdefault(cid, odict())
+        if not self.transaction.has_component(cid):
+            self.transaction.set_component(cid, compo_obj.get_component_info())
 
     def get_active_components(self, show_cid=True):
         """

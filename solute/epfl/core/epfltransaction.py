@@ -10,10 +10,11 @@ from pprint import pprint
 from redis import StrictRedis
 import cPickle as pickle
 from copy import deepcopy
+from collections2 import OrderedDict as odict
 
 import types, copy, string, uuid, time
 
-from collections import MutableMapping
+from collections import MutableMapping, defaultdict
 
 
 class Transaction(MutableMapping):
@@ -51,6 +52,8 @@ class Transaction(MutableMapping):
         self.tid = tid
         self.created = False
 
+        self.compo_reference = {}
+
         if not self.tid:
             self.tid = uuid.uuid4().hex
             self.created = True
@@ -82,6 +85,45 @@ class Transaction(MutableMapping):
         Deletes this transaction and all child-transactions.
         """
         del self.data
+
+    # EPFL Core Api methods
+    def get_component(self, cid):
+        if 'compo_struct' not in self:
+            return None
+        if cid in self['compo_struct']:
+            return self['compo_struct'][cid]
+
+        if 'compo_lookup' not in self:
+            return None
+
+        return self.get_child_component(self['compo_lookup'][cid],
+                                        cid)
+
+    def get_child_component(self, ccid, cid):
+        return self.get_component(ccid)['compo_struct'][cid]
+
+    def set_component(self, cid, compo_info):
+        container = self
+        if 'ccid' in compo_info:
+            self.setdefault('compo_lookup', {})[cid] = compo_info['ccid']
+            container = self.get_component(compo_info['ccid'])
+        container.setdefault('compo_struct', odict())[cid] = compo_info
+
+    def del_component(self, cid):
+        compo = self.get_component(cid)
+        container = self
+        if 'ccid' in compo:
+            container = self.get_component(compo['ccid'])
+
+        if 'compo_lookup' in self and cid in self['compo_lookup']:
+            del self['compo_lookup'][cid]
+        del container['compo_struct'][cid]
+
+    def has_component(self, cid):
+        try:
+            return self.get_component(cid) is not None
+        except KeyError:
+            return False
 
     # MutableMapping requirements:
     def __getitem__(self, key):
@@ -160,16 +202,17 @@ class Transaction(MutableMapping):
         if not self.tid:
             raise Exception('Transaction store was accessed before transaction id was set.')
 
-        default_data = {"overlays": []}
+        default_data = {}
 
         store_type = self.request.registry.settings.get('epfl.transaction.store')
         if store_type == 'redis':
             data = self.redis.get('TA_%s' % self.tid)
             if data:
                 self._data = pickle.loads(data)
+                self._data_original = pickle.loads(data)
             else:
                 self._data = default_data
-            self._data_original = deepcopy(self._data)
+                self._data_original = deepcopy(self._data)
             if not self.is_clean:
                 raise Exception("what the fuck? ")
             return self._data

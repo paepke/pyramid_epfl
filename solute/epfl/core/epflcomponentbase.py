@@ -71,6 +71,12 @@ class UnboundComponent(object):
         cls = self.__dynamic_class__
         return cls(*args, **kwargs)
 
+    @classmethod
+    def create_from_state(cls, state):
+        ubc = cls(None, {})
+        ubc.__setstate__(state)
+        return ubc
+
     @property
     def __dynamic_class__(self):
         """
@@ -257,8 +263,6 @@ class ComponentBase(object):
         self.container_slot = None
         self.deleted = False
 
-        self.__config = config
-
         for attr_name in self.compo_config:
             if attr_name in config:
                 config_value = config[attr_name]
@@ -296,14 +300,16 @@ class ComponentBase(object):
                                path="solute.epfl.components:" + compo_path_part + "/static")
 
     def get_component_info(self):
-        return {"class": self.__unbound_component__,
-                "config": self.__config,
+        info = {"class": self.__unbound_component__.__getstate__(),
                 "cid": self.cid,
                 "slot": self.container_slot}
+        if self.container_compo:
+            info['ccid'] = self.container_compo.cid
+        return info
 
     @classmethod
     def create_by_compo_info(cls, page, compo_info, container_id):
-        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
+        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["class"][1])
         if container_id:
             container_compo = page.components[container_id]  # container should exist before their content
             compo_obj.set_container_compo(container_compo, compo_info["slot"])
@@ -334,13 +340,6 @@ class ComponentBase(object):
 
         self.container_compo = compo_obj
         self.container_slot = slot
-
-        #
-        parent_dict = compo_obj.struct_dict
-        if parent_dict is None:
-            parent_dict = self.page.transaction['compo_struct'].setdefault(compo_obj.cid, odict())
-
-        self.struct_dict = parent_dict.setdefault(self.cid, odict())
 
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
@@ -476,11 +475,9 @@ class ComponentBase(object):
 
     def _get_compo_state_attribute(self, attr_name):
         transaction = self.page.transaction
-        if self.cid + "$" + attr_name in transaction:
-            value = transaction[self.cid + "$" + attr_name]
-            return value
-        else:
-            return copy.deepcopy(getattr(self, attr_name))
+        compo_info = transaction.get_component(self.cid)
+
+        return (compo_info or {}).get('compo_state', {}).get(attr_name, copy.deepcopy(getattr(self, attr_name)))
 
     def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
@@ -511,13 +508,11 @@ class ComponentBase(object):
         """
         This function finalizes the compo_state attributes
         """
+        compo_info = self.page.transaction.get_component(self.cid)
 
-        values = {}
         for attr_name in self.compo_state + self.base_compo_state:
             value = getattr(self, attr_name)
-            values[self.cid + "$" + attr_name] = value
-
-        self.page.transaction.update(values)
+            compo_info.setdefault('compo_state', {})[attr_name] = value
 
     def get_component_id(self):
         return self.cid
@@ -998,9 +993,9 @@ class ComponentContainerBase(ComponentBase):
         compo_obj.set_container_compo(self, slot, position=position)
         # handle the static part
         self.page.add_static_component(cid, compo_obj)
-        # now remember it
-        self.page.transaction["compo_info"][cid] = compo_obj.get_component_info()
-        # and make it available in this container
+        self.struct_dict = self.page.transaction.get_component(cid).get('compo_struct', None)
+
+        # make it available in this container
         self.add_component_to_slot(compo_obj, slot, position=position)
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
