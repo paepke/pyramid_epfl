@@ -973,7 +973,6 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    @profile
     def add_component(self, compo_obj, slot=None, cid=None, position=None):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to

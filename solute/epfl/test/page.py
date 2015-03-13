@@ -6,6 +6,8 @@ from solute.epfl.core.epflpage import Page
 from solute.epfl.core.epflcomponentbase import ComponentBase
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
 
+from collections2.dicts import OrderedDict
+
 
 class PageTest(unittest.TestCase):
     def setUp(self):
@@ -39,12 +41,15 @@ class PageTest(unittest.TestCase):
 
         t.set_component('root_node', {'cid': 'root_node',
                                       'slot': None,
+                                      'config': {},
                                       'class': (ComponentContainerBase,
                                                 {},
                                                 ('27a3d2ef7f76417bb2ebde9853f0c2a6', None))})
 
         t.set_component('child_node', {'slot': None,
                                        'ccid': 'root_node',
+                                       'config': {'test': None,
+                                                  'compo_state': ['test']},
                                        'class': (ComponentBase,
                                                  {'test': None,
                                                   'compo_state': ['test']},
@@ -56,3 +61,93 @@ class PageTest(unittest.TestCase):
 
         assert page.root_node is not None and page.child_node is not None
         assert page.child_node.test == 'foobar'
+
+    def test_component_regeneration_performance(self):
+        page = Page(self.request)
+        transaction = page.transaction
+        transaction['components_assigned'] = True
+        transaction.set_component('root_node',
+                                  {'cid': 'root_node',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('root_node', None))})
+        transaction.set_component('child_node_0',
+                                  {'ccid': 'root_node',
+                                   'cid': 'child_node_0',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('child_node_0', None))})
+
+        compo_depth = 5
+        compo_width = 100
+
+        steps = [time.time()]
+        for i in range(0, compo_depth):
+            transaction.set_component('child_node_%s' % (i + 1),
+                                      {'ccid': 'child_node_%s' % i,
+                                       'cid': 'child_node_%s' % (i + 1),
+                                       'slot': None,
+                                       'config': {},
+                                       'class': (ComponentContainerBase,
+                                                 {},
+                                                 ('child_node_%s' % (i + 1), None))})
+            for x in range(0, compo_width):
+                transaction.set_component('child_node_%s_%s' % (i + 1, x),
+                                          {'ccid': 'child_node_%s' % i,
+                                           'cid': 'child_node_%s_%s' % (i + 1, x),
+                                           'slot': None,
+                                           'config': {},
+                                           'class': (ComponentContainerBase,
+                                                     {},
+                                                     ('child_node_%s_%s' % (i + 1, x), None))})
+        steps.append(time.time())
+
+        page.create_components()
+        steps.append(time.time())
+
+        assert (steps[-1] - steps[-2]) / compo_depth / compo_width < 1. / 5000
+
+    def test_component_deletion_and_recreation(self):
+        page = Page(self.request)
+        transaction = page.transaction
+        transaction['components_assigned'] = True
+        transaction.set_component('root_node',
+                                  {'cid': 'root_node',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('root_node', None))})
+
+        page.create_components()
+
+        def create_child_components():
+            page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
+            for i in range(0, 10):
+                getattr(page, 'child_node_%s' % i) \
+                    .add_component(ComponentContainerBase(cid='child_node_%s' % (i + 1)))
+                for x in range(0, 3):
+                    getattr(page,
+                            'child_node_%s' % (i + 1)) \
+                        .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
+
+        create_child_components()
+
+        page.child_node_0.delete_component()
+
+        assert transaction['compo_lookup'] == {}
+        assert transaction.get_component('root_node') == {'cid': 'root_node',
+                                                          'compo_struct': OrderedDict(),
+                                                          'slot': None,
+                                                          'config': {},
+                                                          'class': (ComponentContainerBase,
+                                                                    {},
+                                                                    ('root_node', None))}
+
+        create_child_components()
+
+        assert len(transaction['compo_lookup']) == 41
