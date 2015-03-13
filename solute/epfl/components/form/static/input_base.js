@@ -8,26 +8,6 @@ epfl.FormInputBase = function (cid, params) {
     };
 
     var selector = "#" + cid;
-    var compo_col = parseInt(params["compo_col"]);
-    var label_col = parseInt(params["label_col"]);
-    var vertical = params["vertical"];
-
-    if (vertical === true) {
-        if ($(selector).children().first().prop("tagName") === "LABEL") {
-            addCustomStyle($(selector).children().first(), params["label_style"]);
-            $(selector).children().first().wrap("<div class='row'></div>").wrap("<div class='col-sm-" + compo_col + "'></div>");
-        }
-        $(selector).children().eq(1).addClass("col-sm-" + compo_col);
-        $(selector).children().eq(1).wrap("<div class='row'></div>");
-    } else {
-        if ($(selector).children().first().prop("tagName") === "LABEL") {
-            addCustomStyle($(selector).children().first(), params["label_style"]);
-            $(selector).children().first().addClass("col-sm-" + label_col);
-            compo_col -= parseInt(label_col);
-        }
-        $(selector + " > div").first().addClass("col-sm-" + compo_col);
-    }
-
     addCustomStyle($(selector + " input"),params["input_style"]);
 };
 
