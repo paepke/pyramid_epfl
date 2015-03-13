@@ -70,31 +70,29 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def init_transaction(self):
         self.add_level_0(self.load_level_0())
 
-    def load_level_0(self, search_string=None, filter_key=None):
+    def load_level_0(self):
         return []
 
-    def load_level_1(self, upper_leaf_id, search_string=None, filter_key=None):
+    def load_level_1(self, upper_leaf_id):
         return []
 
-    def load_level_2(self, upper_leaf_id, search_string=None, filter_key=None):
+    def load_level_2(self, upper_leaf_id):
         return []
 
     def rebuild_tree_structure(self):
-        search_string = self.search_string
-        filter_key = self.filter_key
         self.reset_tree_data()
 
-        self.add_level_0(self.load_level_0(search_string, filter_key))
+        self.add_level_0(self.load_level_0())
 
         for leafid in self.open_leaf_0_ids:
             if leafid in self.tree_data.keys():
-                self.add_level_1(self.load_level_1(leafid, search_string, filter_key), leafid)
+                self.add_level_1(self.load_level_1(leafid), leafid)
             else:
                 self.open_leaf_0_ids.remove(leafid)
         deprecated_leaf_1_ids = []
         for leaf_id, leaf_obj in self.open_leaf_1_ids.iteritems():
-            if (leaf_obj["parent_id"] in self.tree_data.keys()) and leaf_id in self.tree_data[leaf_obj["parent_id"]]['children'].keys():
-                self.add_level_2(self.load_level_2(leaf_obj["leafid"], search_string, filter_key),
+            if (leaf_obj["parent_id"] in self.tree_data.keys()) and ('children' in self.tree_data[leaf_obj['parent_id']]) and (leaf_id in self.tree_data[leaf_obj['parent_id']]['children'].keys()):
+                self.add_level_2(self.load_level_2(leaf_id),
                                  leaf_id, leaf_obj["parent_id"])
             else:
                 deprecated_leaf_1_ids.append(leaf_id)
@@ -107,7 +105,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         if recursive:
             self.rebuild_tree_structure()
             return
-        level_0_data = self.load_level_0(self.search_string, self.filter_key)
+        level_0_data = self.load_level_0()
         new_tree_data = odict()
         for entry in level_0_data:
             if (entry["id"] in self.tree_data) and ("children" in self.tree_data[entry["id"]]):
@@ -120,11 +118,11 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.redraw()
 
     def update_level_1(self, level_0_id, recursive=False): 
-        level_1_data = self.load_level_1(level_0_id, self.search_string, self.filter_key)
+        level_1_data = self.load_level_1(level_0_id)
         new_level_1_data = odict()
         recursive_update_ids=[]
         for entry in level_1_data:
-            if entry["id"] in self.tree_data[level_0_id]["children"] and ("children" in self.tree_data[level_0_id]["children"][entry["id"]]):
+            if ("children" in self.tree_data[level_0_id]) and (entry["id"] in self.tree_data[level_0_id]["children"]) and ("children" in self.tree_data[level_0_id]["children"][entry["id"]]):
                 if recursive:
                     recursive_update_ids.append(entry["id"])
                 else:
@@ -152,7 +150,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def update_level_2(self, level_0_id, level_1_id):
         if not level_1_id in self.open_leaf_1_ids.keys():
             return
-        level_2_data = self.load_level_2(level_1_id, self.search_string, self.filter_key)
+        level_2_data = self.load_level_2(level_1_id)
         new_level_2_data = odict()
         for entry in level_2_data:
             new_level_2_data[entry["id"]] = entry
