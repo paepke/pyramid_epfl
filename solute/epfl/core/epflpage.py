@@ -83,6 +83,7 @@ class Page(object):
     lazy_mode = False
     active_components = None
 
+    # @profile
     def __init__(self, request, transaction=None):
         """
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
@@ -112,6 +113,7 @@ class Page(object):
             self.active_component_objects = []
             self.active_component_cid_objects = []
 
+    @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -209,6 +211,7 @@ class Page(object):
             else:
                 self.model = self.model(self.request)
 
+    @profile
     def create_components(self):
         """
         Used every request to instantiate the components by traversing the transaction['compo_struct'] and once

@@ -242,6 +242,8 @@ class ComponentBase(object):
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
     redraw_requested = None  #: Set of parts requesting to be redrawn.
 
+    _compo_info = None
+
     def __new__(cls, *args, **config):
         """
         Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
@@ -273,11 +275,6 @@ class ComponentBase(object):
 
             setattr(self, attr_name, copy.deepcopy(config_value))  # copy from class to instance
 
-        for attr_name in self.compo_state + self.base_compo_state:
-            if attr_name in config:
-                config_value = config[attr_name]
-                setattr(self, attr_name, copy.deepcopy(config_value))
-
         self.cid = args[1]
         self._set_page_obj(args[0])
 
@@ -288,6 +285,24 @@ class ComponentBase(object):
         Overwrite this for auto completion features on component level.
         """
         pass
+
+    def __getattribute__(self, key):
+        if key not in ['compo_state', 'base_compo_state', 'page', 'cid', 'compo_info', '_compo_info'] \
+                and key in self.compo_state + self.base_compo_state:
+            return self.compo_info.get('compo_state', {}).get(key,
+                                                              super(ComponentBase, self).__getattribute__(key))
+        return super(ComponentBase, self).__getattribute__(key)
+
+    def __setattr__(self, key, value):
+        if key not in self.compo_state + self.base_compo_state:
+            return super(ComponentBase, self).__setattr__(key, value)
+        self.compo_info.setdefault('compo_state', {})[key] = value
+
+    @property
+    def compo_info(self):
+        if self._compo_info is None:
+            self._compo_info = self.page.transaction.get_component(self.cid)
+        return self._compo_info
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -363,7 +378,8 @@ class ComponentBase(object):
         """ Called from the page-object when the page is finalized
         [request-processing-flow]
         """
-        self.finalize_component_state()
+        # self.finalize_component_state()
+        pass
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this component.
@@ -452,9 +468,9 @@ class ComponentBase(object):
         [request-processing-flow]
         """
 
-        for attr_name in self.compo_state + self.base_compo_state:
-            value = self._get_compo_state_attribute(attr_name)
-            setattr(self, attr_name, value)
+        # for attr_name in self.compo_state + self.base_compo_state:
+        #     value = self._get_compo_state_attribute(attr_name)
+        #     setattr(self, attr_name, value)
 
     def setup_component(self):
         """ Called from the system every request when the component-state of all

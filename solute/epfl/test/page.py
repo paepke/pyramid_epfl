@@ -62,6 +62,16 @@ class PageTest(unittest.TestCase):
         assert page.root_node is not None and page.child_node is not None
         assert page.child_node.test == 'foobar'
 
+        page.child_node.test = {'some': 'dict'}
+
+        assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
+
+        new_page = Page(self.request, transaction=t)
+        new_page.create_components()
+
+        assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
+        assert new_page.child_node.test == {'some': 'dict'}
+
     def test_component_regeneration_performance(self):
         page = Page(self.request)
         transaction = page.transaction
@@ -82,7 +92,7 @@ class PageTest(unittest.TestCase):
                                              {},
                                              ('child_node_0', None))})
 
-        compo_depth = 5
+        compo_depth = 50
         compo_width = 100
 
         steps = [time.time()]
@@ -151,3 +161,4 @@ class PageTest(unittest.TestCase):
         create_child_components()
 
         assert len(transaction['compo_lookup']) == 41
+        assert page.child_node_4_1
