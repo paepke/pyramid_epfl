@@ -16,6 +16,11 @@ div.epfl-table-edit{
 	height: 100%;
 }
 
+.epfl-table tbody {
+	width: 100%;
+	display: table;
+}
+
 .tablelistlayout-sortcolumn {
 	cursor: pointer;
 }

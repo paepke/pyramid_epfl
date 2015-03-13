@@ -3,9 +3,13 @@
         <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
     {% endif %}
     <div>
-        <input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
+    	{% if compo.readonly is defined and compo.readonly %}
+    		<p class="form-control-static">{% if compo.password %}{% else %}{{ compo.value if compo.value is not none else '' }}{% endif %}</p>
+    	{% else %}
+        	<input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
                value="{{ compo.value if compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+        {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}

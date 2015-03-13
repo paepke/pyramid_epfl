@@ -14,12 +14,26 @@ li.epfl-context-list-entry:hover button {
     display: block;
 }
 
+li.epfl-context-list-entry button {
+    display: none;
+}
+
+/*div.epfl-simple-tree-leaf-2:hover button {*/
+    /*display: block;*/
+/*}*/
+
+/*div.epfl-simple-tree-leaf-2 button {*/
+    /*display: none;*/
+/*}*/
+
+
 ul.epfl-context-list-dropdown {
     float: right;
 }
 
 div.epfl-context-list{
     border: 1px solid #DFDFDF;
+    height:100%;
 }
 
 
