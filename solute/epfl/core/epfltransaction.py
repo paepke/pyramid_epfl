@@ -5,7 +5,6 @@
 A Dict-Like Object that represents a epfl-transaction
 """
 
-
 from pprint import pprint
 from redis import StrictRedis
 import cPickle as pickle
@@ -15,6 +14,7 @@ from collections2 import OrderedDict as odict
 import types, copy, string, uuid, time
 
 from collections import MutableMapping, defaultdict
+from solute.epfl.core import epflcomponentbase
 
 
 class Transaction(MutableMapping):
@@ -47,6 +47,7 @@ class Transaction(MutableMapping):
     def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
 
+        self.instances = {}
         self.request = request
         self.session = request.session
         self.tid = tid
@@ -87,6 +88,16 @@ class Transaction(MutableMapping):
         del self.data
 
     # EPFL Core Api methods
+    def get_component_instance(self, page, cid):
+        if cid not in self.instances:
+            compo_info = self.get_component(cid)
+            ubc = epflcomponentbase.UnboundComponent.create_from_state(compo_info['class'])
+            self.instances[cid] = ubc(page,
+                                      cid,
+                                      __instantiate__=True,
+                                      **compo_info['config'])
+        return self.instances[cid]
+
     def get_component(self, cid):
         if 'compo_struct' not in self:
             return None
@@ -112,6 +123,9 @@ class Transaction(MutableMapping):
         if 'ccid' in compo_info:
             self.setdefault('compo_lookup', {})[cid] = compo_info['ccid']
             container = self.get_component(compo_info['ccid'])
+        if 'cid' not in compo_info:
+            compo_info['cid'] = cid
+
         compo_struct = container.setdefault('compo_struct', odict())
         if position is None:
             compo_struct[cid] = compo_info
@@ -126,6 +140,12 @@ class Transaction(MutableMapping):
 
         if 'compo_lookup' in self and cid in self['compo_lookup']:
             del self['compo_lookup'][cid]
+        if cid in self.instances:
+            del self.instances[cid]
+        if 'compo_struct' not in container:
+            print container
+        if cid not in container['compo_struct']:
+            print container['compo_struct']
         del container['compo_struct'][cid]
 
     def has_component(self, cid):

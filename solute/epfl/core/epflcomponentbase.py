@@ -18,6 +18,10 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
+class MissingContainerComponentException(Exception):
+    pass
+
+
 class MissingEventHandlerException(Exception):
     pass
 
@@ -230,9 +234,6 @@ class ComponentBase(object):
     #: this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
     __unbound_component__ = None
 
-    #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
-    struct_dict = None
-
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
     base_compo_state = ["visible"]  # these are the compo_state-names for this ComponentBase-Class
@@ -243,6 +244,27 @@ class ComponentBase(object):
     redraw_requested = None  #: Set of parts requesting to be redrawn.
 
     _compo_info = None
+
+    @classmethod
+    def add_pyramid_routes(cls, config):
+        """ Adds the static pyramid routes needed by this component. This only works for native components stored in
+        :mod:`solute.epfl.components`. """
+        fn = inspect.getfile(cls)
+        pos = fn.index("/epfl/components/")
+        epos = fn.index("/", pos + 17)
+        compo_path_part = fn[pos + 17: epos]
+
+        config.add_static_view(name="epfl/components/" + compo_path_part,
+                               path="solute.epfl.components:" + compo_path_part + "/static")
+
+    @classmethod
+    def create_by_compo_info(cls, page, compo_info, container_id):
+        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
+        if container_id:
+            container_compo = page.components[container_id]  # container should exist before their content
+            compo_obj.set_container_compo(container_compo, compo_info["slot"])
+            container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
+        return compo_obj
 
     def __new__(cls, *args, **config):
         """
@@ -261,8 +283,6 @@ class ComponentBase(object):
             self.__unbound_component__ = cls()
 
         self.redraw_requested = set()
-        self.container_compo = None
-        self.container_slot = None
         self.deleted = False
 
         self.__config = config
@@ -287,7 +307,7 @@ class ComponentBase(object):
         pass
 
     def __getattribute__(self, key):
-        if key not in ['compo_state', 'base_compo_state', 'page', 'cid', 'compo_info', '_compo_info'] \
+        if key not in ['compo_state', 'base_compo_state'] \
                 and key in self.compo_state + self.base_compo_state:
             return self.compo_info.get('compo_state', {}).get(key,
                                                               super(ComponentBase, self).__getattribute__(key))
@@ -302,37 +322,47 @@ class ComponentBase(object):
     def compo_info(self):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
-        return self._compo_info
+        return self._compo_info or {}
 
-    @classmethod
-    def add_pyramid_routes(cls, config):
-        """ Adds the static pyramid routes needed by this component. This only works for native components stored in
-        :mod:`solute.epfl.components`. """
-        fn = inspect.getfile(cls)
-        pos = fn.index("/epfl/components/")
-        epos = fn.index("/", pos + 17)
-        compo_path_part = fn[pos + 17: epos]
 
-        config.add_static_view(name="epfl/components/" + compo_path_part,
-                               path="solute.epfl.components:" + compo_path_part + "/static")
+    @property
+    def struct_dict(self):
+        return self.compo_info.setdefault('compo_struct', odict())
+
+    @property
+    def container_slot(self):
+        return self.compo_info.get('slot', None)
+
+    @container_slot.setter
+    def container_slot(self, value):
+        self.compo_info['slot'] = value
+
+    @property
+    def container_compo(self):
+        if self.compo_info.get('ccid', None) is None\
+                or 'ccid' not in self.compo_info\
+                or self.compo_info['ccid'] is None:
+            raise AttributeError()
+        return getattr(self.page, self.compo_info['ccid'])
+
+    @container_compo.setter
+    def container_compo(self, value):
+        self.compo_info['ccid'] = value.cid
+
+    def register_in_transaction(self, container, slot=None, position=None):
+        compo_info = self.get_component_info()
+        compo_info['ccid'] = container.cid
+        self.page.transaction.set_component(self.cid, compo_info, position=position)
+        self.container_slot = slot
 
     def get_component_info(self):
         info = {"class": self.__unbound_component__.__getstate__(),
                 "config": self.__config,
                 "cid": self.cid,
                 "slot": self.container_slot}
-        if self.container_compo:
+        if hasattr(self, 'container_compo'):
             info['ccid'] = self.container_compo.cid
         return info
-
-    @classmethod
-    def create_by_compo_info(cls, page, compo_info, container_id):
-        compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
-        if container_id:
-            container_compo = page.components[container_id]  # container should exist before their content
-            compo_obj.set_container_compo(container_compo, compo_info["slot"])
-            container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
-        return compo_obj
 
     def _set_page_obj(self, page_obj):
         """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
@@ -378,7 +408,6 @@ class ComponentBase(object):
         """ Called from the page-object when the page is finalized
         [request-processing-flow]
         """
-        # self.finalize_component_state()
         pass
 
     def has_access(self):
@@ -468,10 +497,6 @@ class ComponentBase(object):
         [request-processing-flow]
         """
 
-        # for attr_name in self.compo_state + self.base_compo_state:
-        #     value = self._get_compo_state_attribute(attr_name)
-        #     setattr(self, attr_name, value)
-
     def setup_component(self):
         """ Called from the system every request when the component-state of all
         components in the page is setup.
@@ -522,16 +547,6 @@ class ComponentBase(object):
              }""" % (json.encode(msg), self.cid, cmd_ok)
 
         self.page.add_js_response(js)
-
-    def finalize_component_state(self):
-        """
-        This function finalizes the compo_state attributes
-        """
-        compo_info = self.page.transaction.get_component(self.cid)
-
-        for attr_name in self.compo_state + self.base_compo_state:
-            value = getattr(self, attr_name)
-            compo_info.setdefault('compo_state', {})[attr_name] = value
 
     def get_component_id(self):
         return self.cid
@@ -1002,14 +1017,12 @@ class ComponentContainerBase(ComponentBase):
         # we have no nice cid, so use a UUID
         if not cid:
             cid = str(uuid.uuid4())
-        # assign the container
-        compo_obj.set_container_compo(self, slot, position=position)
+
+        compo_obj.register_in_transaction(self, slot, position=position)
+
         # handle the static part
         self.page.add_static_component(cid, compo_obj)
-        self.struct_dict = self.page.transaction.get_component(cid).get('compo_struct', None)
 
-        # make it available in this container
-        self.add_component_to_slot(compo_obj, slot, position=position)
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
         self.page.handle_transaction()
@@ -1039,7 +1052,6 @@ class ComponentContainerBase(ComponentBase):
         if hasattr(compo_obj, 'components'):
             for compo in list(compo_obj.components):
                 compo.delete_component()
-        self.components.remove(compo_obj)
 
 
 class ComponentList(MutableSequence):
@@ -1050,13 +1062,6 @@ class ComponentList(MutableSequence):
     def __init__(self, container_compo):
         self.container_compo = container_compo
 
-    @property
-    def struct_dict(self):
-        struct_dict = getattr(self.container_compo, 'struct_dict', None)
-        if struct_dict is not None:
-            return struct_dict
-        return self.container_compo.page.transaction.get_component(self.container_compo.cid).get('compo_struct', odict())
-
     def __setitem__(self, index, value):
         pass
 
@@ -1064,10 +1069,10 @@ class ComponentList(MutableSequence):
         pass
 
     def __len__(self):
-        return len(self.struct_dict)
+        return len(self.container_compo.struct_dict)
 
     def __getitem__(self, index):
-        cid = self.struct_dict.keys()[index]
+        cid = self.container_compo.struct_dict.keys()[index]
         return getattr(self.container_compo.page, cid)
 
     def __delitem__(self, index):

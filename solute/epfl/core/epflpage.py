@@ -113,7 +113,7 @@ class Page(object):
             self.active_component_objects = []
             self.active_component_cid_objects = []
 
-    @profile
+    # @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -211,7 +211,7 @@ class Page(object):
             else:
                 self.model = self.model(self.request)
 
-    @profile
+    # @profile
     def create_components(self):
         """
         Used every request to instantiate the components by traversing the transaction['compo_struct'] and once
@@ -301,15 +301,13 @@ class Page(object):
         requested value is an instance of :class:`LazyProperty` it will be called, then reloaded using the default
         behaviour of super.
         """
-        if item in ['components', 'lazy_mode'] \
-                or not self.lazy_mode \
-                or item not in getattr(self, 'components', {}).keys():
-            return super(Page, self).__getattribute__(item)
-        value = self.__dict__[item]
-        if isinstance(value, LazyProperty):
-            value()
-            value = super(Page, self).__getattribute__(item)
-        return value
+        if item not in ['components', 'transaction'] \
+                and hasattr(self, 'transaction') \
+                and self.transaction.has_component(item):
+            return self.transaction.get_component_instance(self, item)
+
+        return super(Page, self).__getattribute__(item)
+
 
     def __getitem__(self, key):
         return getattr(self, key)
