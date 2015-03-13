@@ -49,7 +49,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
             self.tree_data[parent_id]["children"][entry['id']] = entry
 
     def remove_level_1(self, parent_id):
-        del self.tree_data[parent_id]["children"]
+        try:
+            del self.tree_data[parent_id]["children"]
+        except KeyError:
+            pass
 
 
     def add_level_2(self, data, level_1_id, level_0_id):
@@ -64,7 +67,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
             self.tree_data[level_0_id]["children"][level_1_id]["children"][entry['id']] = entry
 
     def remove_level_2(self, level_1_id, level_0_id):
-        del self.tree_data[level_0_id]["children"][level_1_id]["children"]
+        try:
+            del self.tree_data[level_0_id]["children"][level_1_id]["children"]
+        except KeyError:
+            pass
 
 
     def init_transaction(self):
@@ -165,7 +171,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
         leafid = int(leafid)
 
         self.add_level_1(self.load_level_1(leafid), leafid)
-        self.open_leaf_0_ids.append(leafid)
+        if not leafid in self.open_leaf_0_ids:
+            self.open_leaf_0_ids.append(leafid)
 
         self.leaf_0_clicked(leafid)
 
@@ -175,8 +182,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def handle_leaf_0_close(self, leafid, scroll_top):
         self.scroll_top = scroll_top
         leafid = int(leafid)
-
-        self.open_leaf_0_ids.remove(leafid)
+        try:
+            self.open_leaf_0_ids.remove(leafid)
+        except ValueError:
+            pass
         self.remove_level_1(leafid)
 
         self.redraw()
@@ -197,8 +206,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     def handle_leaf_1_close(self, leafid, parent_id, scroll_top):
         self.scroll_top = scroll_top
-
-        del self.open_leaf_1_ids[leafid]
+        try:
+            del self.open_leaf_1_ids[leafid]
+        except KeyError:
+            pass
         self.remove_level_2(leafid, parent_id)
 
         self.leaf_1_clicked(leafid, parent_id)
