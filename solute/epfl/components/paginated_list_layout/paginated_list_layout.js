@@ -25,7 +25,9 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit) {
     row_data.ordertype = '{{ compo.row_data['ordertype'] if compo.row_data is defined
                                                          and compo.row_data is mapping
                                                          and compo.row_data['ordertype'] is defined else '' }}';
-    row_data.search = element.val()
+    if(element) {
+        row_data.search = element.val();
+    }
     epfl.set_component_info(cid, 'callback_send_event', 'set_row', epfl.paginated_list_goto_complete);
     epfl.dispatch_event(
     	cid,
