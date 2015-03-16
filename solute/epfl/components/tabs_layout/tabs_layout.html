@@ -3,13 +3,15 @@
         {% for compo_obj in compo.components %}
         <li role="presentation"
         class="{% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %} active{% endif %}{% if compo_obj.disabled is defined and compo_obj.disabled == True %} disabled{% endif %}">
-        	<a id="{{ compo_obj.cid }}_tabmenuentry" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" {% if compo_obj.disabled is defined and compo_obj.disabled == True %}class="disabled"{% else %}href="#{{ compo_obj.cid }}_tab" data-toggle="tab"{% endif %} aria-controls="{{ compo_obj.cid }}_tab" aria-expanded="true">{{ compo_obj.title }}</a></li>
+        	<a id="{{ compo_obj.cid }}_tabmenuentry" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" {% if compo_obj.disabled is defined and compo_obj.disabled == True %}class="disabled"{% else %}href="#{{ compo_obj.cid }}_tab" data-toggle="tab"{% endif %} aria-controls="{{ compo_obj.cid }}_tab" aria-expanded="true">{{ compo_obj.title }}</a>
+        	</li>
         {% endfor %}
     </ul>
     <div id="{{compo.cid}}_tabcontent" class="tab-content">
         {% for compo_obj in compo.components %}
-        {% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %}
-        <div role="tabpanel" class="fade in active" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
+        {% if compo_obj.disabled is defined and compo_obj.disabled == True %}
+        {% else %}
+        <div role="tabpanel" class="fade in{% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %} active{% endif %}" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
         {{ compo_obj.render() }}
         </div>
         {% endif %}

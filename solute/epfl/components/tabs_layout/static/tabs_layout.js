@@ -1,6 +1,9 @@
 epfl.TabsLayoutComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     $('#' + cid + '_tabmenu a[data-toggle]').click(function () {
+    	if ($(this).parent().hasClass("active")) {
+    		return;
+    	}
     	selected_compo_cid = $(this).data('tab-compo-cid');
     	epfl.dispatch_event(cid, "toggle_tab", {"selected_compo_cid": selected_compo_cid});
 	});
