@@ -1,7 +1,7 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% if compo.show_search %}
-    <input class="form-control"
+    <input class="form-control epfl-search-input"
            type="text"
            placeholder="Suchtext"
            id="{{ compo.cid }}_search"
