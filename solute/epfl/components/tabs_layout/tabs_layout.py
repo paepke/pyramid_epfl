@@ -10,9 +10,10 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
 
     js_name = ["tabs_layout.js"]
 
-    compo_state = ["active_tab_cid"]
+    compo_state = ["active_tab_cid", "lazy_load_tabs"]
 
     active_tab_cid = ""
+    lazy_load_tabs = False
 
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid
