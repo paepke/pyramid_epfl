@@ -17,14 +17,33 @@ epfl.Simpletree = function (cid, params) {
             return parseInt(element.prevAll(".epfl-simple-tree-leaf-0").first().data("leafid"));
         }
         return null;
-    }
+    };
+    
+    var get_leafids = function (element) {
+        var result = {
+            level_0: null,
+            level_1: null,
+            level_2: null,
+            level: null
+        };
 
-    var get_level_0_leafid = function(element){
-        if(element.hasClass("epfl-simple-tree-leaf-2") || element.hasClass("epfl-simple-tree-leaf-1")){
-            return parseInt(element.prevAll(".epfl-simple-tree-leaf-0").first().data("leafid"));
+        if (element.hasClass("epfl-simple-tree-leaf-0")) {
+            result.level = 0;
+            result.level_0 = element.data("leafid");
+
+        } else if (element.hasClass("epfl-simple-tree-leaf-1")) {
+            result.level = 1;
+            result.level_0 = element.prevAll(".epfl-simple-tree-leaf-0").first().data("leafid");
+            result.level_1 = element.data("leafid");
+
+        } else if (element.hasClass("epfl-simple-tree-leaf-2")) {
+            result.level = 2;
+            result.level_0 = element.prevAll(".epfl-simple-tree-leaf-0").first().data("leafid");
+            result.level_1 = element.prevAll(".epfl-simple-tree-leaf-1").first().data("leafid");
+            result.level_2 = element.data("leafid");
         }
-        return null;
-    }
+        return result;
+    };
 
 
     /**************************************************************************
@@ -171,29 +190,29 @@ epfl.Simpletree = function (cid, params) {
         stop: function (event, ui) {
             window.epflSimpleTreeDragging = false;
         },
-        appendTo:"body"
+        appendTo: "body"
     });
 
     $(selector + " div.epfl-simple-tree-leaf-droppable").droppable({
         accept: ".epfl-simple-tree-leaf-dragable",
         tolerance: "pointer",
         drop: function (event, ui) {
-            var drag_parent_leafid = get_parent_leafid(ui.draggable);
-            var drop_parent_leafid = get_parent_leafid($(this));
 
-            var drag_level_0_leafid = get_level_0_leafid(ui.draggable);
-            var drop_level_0_leafid = get_level_0_leafid($(this));
-
+            var drag_leafids = get_leafids(ui.draggable);
+            var drop_leafids = get_leafids($(this));
             epfl.dispatch_event(cid, "drop", {
-                drag_leafid: parseInt(ui.draggable.data("leafid")),
-                drag_parent_leafid: drag_parent_leafid,
-                drag_level_0_leafid:drag_level_0_leafid,
+                drag_level:drag_leafids.level,
+                drag_level_0: drag_leafids.level_0,
+                drag_level_1: drag_leafids.level_1,
+                drag_level_2: drag_leafids.level_2,
                 drag_tree_cid: ui.draggable.closest("div[epflid]").attr('epflid'),
-                drop_leafid: parseInt($(this).data("leafid")),
-                drop_parent_leafid: drop_parent_leafid,
-                drop_level_0_leafid:drop_level_0_leafid,
+                drop_level:drop_leafids.level,
+                drop_level_0: drop_leafids.level_0,
+                drop_level_1: drop_leafids.level_1,
+                drop_level_2: drop_leafids.level_2,
                 drop_tree_cid: $(this).closest("div[epflid]").attr('epflid')
             });
+
         }
     });
     var openTimeout;
@@ -206,7 +225,7 @@ epfl.Simpletree = function (cid, params) {
         $(this).addClass("epfl-simple-tree-leaf-droppable-hover");
 
     }).mouseleave(function () {
-        if($(this).hasClass("epfl-simple-tree-leaf-droppable-hover")){
+        if ($(this).hasClass("epfl-simple-tree-leaf-droppable-hover")) {
             $(this).removeClass("epfl-simple-tree-leaf-droppable-hover");
         }
     });
@@ -242,7 +261,7 @@ epfl.Simpletree = function (cid, params) {
     /**************************************************************************
      Context Menu
      *************************************************************************/
-    epfl.PluginContextMenu(selector + " ul.context-dropdown-menu",cid);
+    epfl.PluginContextMenu(selector + " ul.context-dropdown-menu", cid);
 };
 
 epfl.Simpletree.inherits_from(epfl.ComponentBase);
