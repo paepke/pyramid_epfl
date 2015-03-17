@@ -161,14 +161,13 @@ epfl_module = function() {
             return;
         }
 
-        window.epfl_flush_active = true;
-
         if (epfl.queue.length == 0) {
             // queue empty
             if (callback_func) {
                 callback_func(null);
             }
         } else {
+            window.epfl_flush_active = true;
             // send and clear queue
             var ajax_target_url = location.href;
 
@@ -209,7 +208,7 @@ epfl_module = function() {
                     }
                     epfl.hide_please_wait(true);
                 },
-                complete: function () {
+                complete: function (jqXHR,status) {
                     window.epfl_flush_active = false;
                     if(window.epfl_flush_again){
                         window.epfl_flush_again = false;
