@@ -126,7 +126,7 @@ class PageTest(unittest.TestCase):
         page.create_components()
         steps.append(time.time())
 
-        assert (steps[-1] - steps[-2]) / compo_depth / compo_width < 1. / 5000
+        assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000
 
     def test_component_rendering_ajax(self):
 
@@ -175,7 +175,6 @@ class PageTest(unittest.TestCase):
                'epfl.set_component_info("child_node_0", "handle", [\'set_row\']);' \
                'epfl.set_component_info("root_node", "handle", [\'set_row\']);' in out
 
-
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)
         transaction = page.transaction
@@ -202,6 +201,7 @@ class PageTest(unittest.TestCase):
 
         create_child_components()
 
+        assert len(page.root_node.components) == 1
         page.child_node_0.delete_component()
 
         assert transaction['compo_lookup'] == {}
@@ -212,8 +212,9 @@ class PageTest(unittest.TestCase):
                                                           'class': (ComponentContainerBase,
                                                                     {},
                                                                     ('root_node', None))}
-
+        assert len(page.root_node.components) == 0
         create_child_components()
+        assert len(page.root_node.components) == 1
 
         assert len(transaction['compo_lookup']) == 41
         assert page.child_node_4_1
