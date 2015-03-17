@@ -350,7 +350,6 @@ class ComponentBase(object):
     def container_compo(self, value):
         self.compo_info['ccid'] = value.cid
 
-    @profile
     def register_in_transaction(self, container, slot=None, position=None):
         compo_info = {'class': self.__unbound_component__.__getstate__(),
                       'config': self.__config,
@@ -436,7 +435,6 @@ class ComponentBase(object):
         self.visible = False
         return current_visibility
 
-    @profile
     def is_visible(self, check_parents=False):
         """ Checks wether the component should be displayed or not. This is affected by "has_access" and
         the "visible"-component-attribute.
@@ -633,7 +631,6 @@ class ComponentBase(object):
 
         epflutil.add_extra_contents(self.response, obj=self)
 
-    @profile
     def render_templates(self, env, templates):
         """
         Render one or many templates given as list using the given jinja2 environment env and the dict from
@@ -654,7 +651,6 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
-    @profile
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
@@ -813,7 +809,6 @@ class ComponentContainerBase(ComponentBase):
 
         return self
 
-    @profile
     def get_themed_template(self, env, target):
         """
         Return a list of templates in the order they should be used for rendering. Deals with template inheritance based
@@ -841,7 +836,6 @@ class ComponentContainerBase(ComponentBase):
 
         return direction, render_funcs
 
-    @profile
     def get_render_environment(self, env):
         """
         Creates a dictionary containing references to the different theme parts and the component. Theme parts are
@@ -893,7 +887,6 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    @profile
     def update_children(self, force=False, init_transaction=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -1015,7 +1008,6 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    @profile
     def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to

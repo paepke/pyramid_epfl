@@ -101,7 +101,6 @@ class Transaction(MutableMapping):
     def get_active_components(self):
         return self.instances.values()
 
-    @profile
     def switch_component(self, cid, ccid):
         compo_info = self.pop_component(cid)
         compo_info['ccid'] = ccid
@@ -145,7 +144,6 @@ class Transaction(MutableMapping):
         except (TypeError, KeyError):
             return None
 
-    @profile
     def set_component(self, cid, compo_info, position=None, compo_obj=None):
         if not isinstance(compo_info, dict):
             compo_obj = compo_info
