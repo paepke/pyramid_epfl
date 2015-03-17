@@ -19,9 +19,12 @@ class Box(epflcomponentbase.ComponentContainerBase):
     asset_spec = "solute.epfl.components:box/static"
     theme_path = ['box/theme']
 
+    compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ['title']
     js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["box/box.js"]
     css_name = ["box.css"]
     js_name = ["box.js"]
+    
+    title = None #: The title of a box. If it is set, a heading panel is rendered that contains the title.
 
     auto_visibility = True # the visibility of the box depends on the visibility of the containing template-elements
                            # if none of them (compos or form-fields) are visible the box to is not visible

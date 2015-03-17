@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {% if compo.title is defined and compo.show_title %}
+    {% if (not compo.title is none) and compo.show_title %}
     <div class="panel-heading" >{{ compo.title }} {{ caller() }}
     {% if compo.is_removable %}<a href="#" class="epfl_box_remove_button in_heading"><i class="fa fa-lg fa-times"></i></a>{% endif %}
     </div>

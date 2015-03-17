@@ -227,10 +227,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.rebuild_tree_structure()
 
     def handle_drop(self,
-                    drag_leafid,drag_parent_leafid,drag_level_0_leafid,drag_tree_cid,
-                    drop_leafid,drop_parent_leafid,drop_level_0_leafid,drop_tree_cid):
+                    drag_level,drag_level_0,drag_level_1,drag_level_2,drag_tree_cid,
+                    drop_level,drop_level_0,drop_level_1,drop_level_2,drop_tree_cid):
         pass
-
-
-
 
