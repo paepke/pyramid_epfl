@@ -1,7 +1,9 @@
 <div class="row{{ " vertical-align" if compo.vertical_center else "" }}" epflid="{{ compo.cid }}">
 {% for compo_obj in compo.components %}
+	{% if compo_obj.is_visible() %}
 	<div class="col-md-{{ compo_obj.cols }}">
     	{{ compo_obj.render() }}
     </div>
+    {% endif %}
 {% endfor %}
 </div>
