@@ -4,6 +4,11 @@ Function.prototype.inherits_from = function(super_constructor) { this.prototype 
 
 var epfl = new Object();
 
+if (window.epfl_flush_mutex === undefined) {
+    window.epfl_flush_mutex = false;
+}
+
+
 
 epfl_module = function() {
 
@@ -147,8 +152,15 @@ epfl_module = function() {
     };
 
     epfl.flush = function(callback_func, sync) {
+        if(window.epfl_flush_mutex){
+            setTimeout(function(){
+                epfl.flush(callback_func,sync);
+            },10);
+            return;
+        }
 
-
+        window.epfl_flush_mutex = true;
+        
         if (epfl.queue.length == 0) {
             // queue empty
             if (callback_func) {
@@ -189,13 +201,15 @@ epfl_module = function() {
                                 console.log(e);
                             }
                         } else {
-                            epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
+                            epfl.show_fading_message("Server Error: " + errorThrown, "error");
                             console.log(httpRequest);
                         }
                         epfl.hide_please_wait(true);
                     }
             });
         };
+
+        window.epfl_flush_mutex = false;
     };
 
     epfl.send = function(epflevent, callback_func) {

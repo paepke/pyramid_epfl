@@ -10,13 +10,13 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     asset_spec = "solute.epfl.components:simpletree/static"
 
-    js_name = ["simpletree.js",("solute.epfl:static", "plugin/contextmenu.js")]
+    js_name = ["simpletree.js", ("solute.epfl:static", "plugin/contextmenu.js")]
 
     css_name = ["simpletree.css"]
 
     compo_config = []
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
-                   "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id"]
+                   "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id", "is_loading", "load_async"]
 
     tree_data = odict()
 
@@ -33,6 +33,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
     selected_0_id = None
     selected_1_id = None
     selected_2_id = None
+
+    is_loading = False
+    load_async = True
 
     # TREE DATA
     def reset_tree_data(self):
@@ -72,9 +75,18 @@ class Simpletree(epflcomponentbase.ComponentBase):
         except KeyError:
             pass
 
-
     def init_transaction(self):
+        if self.load_async:
+            self.is_loading = True
+            self.add_js_response("epfl.Simpletree.LoadData('%s')" % self.cid);
+            self.load_async = False
+        else:
+            self.add_level_0(self.load_level_0())
+
+    def handle_load_data(self):
         self.add_level_0(self.load_level_0())
+        self.is_loading = False
+        self.redraw()
 
     def load_level_0(self):
         return []
@@ -97,7 +109,9 @@ class Simpletree(epflcomponentbase.ComponentBase):
                 self.open_leaf_0_ids.remove(leafid)
         deprecated_leaf_1_ids = []
         for leaf_id, leaf_obj in self.open_leaf_1_ids.iteritems():
-            if (leaf_obj["parent_id"] in self.tree_data.keys()) and ('children' in self.tree_data[leaf_obj['parent_id']]) and (leaf_id in self.tree_data[leaf_obj['parent_id']]['children'].keys()):
+            if (leaf_obj["parent_id"] in self.tree_data.keys()) and (
+                        'children' in self.tree_data[leaf_obj['parent_id']]) and (
+                        leaf_id in self.tree_data[leaf_obj['parent_id']]['children'].keys()):
                 self.add_level_2(self.load_level_2(leaf_id),
                                  leaf_id, leaf_obj["parent_id"])
             else:
@@ -123,12 +137,14 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.tree_data = new_tree_data
         self.redraw()
 
-    def update_level_1(self, level_0_id, recursive=False): 
+    def update_level_1(self, level_0_id, recursive=False):
         level_1_data = self.load_level_1(level_0_id)
         new_level_1_data = odict()
-        recursive_update_ids=[]
+        recursive_update_ids = []
         for entry in level_1_data:
-            if ("children" in self.tree_data[level_0_id]) and (entry["id"] in self.tree_data[level_0_id]["children"]) and ("children" in self.tree_data[level_0_id]["children"][entry["id"]]):
+            if ("children" in self.tree_data[level_0_id]) and (
+                        entry["id"] in self.tree_data[level_0_id]["children"]) and (
+                        "children" in self.tree_data[level_0_id]["children"][entry["id"]]):
                 if recursive:
                     recursive_update_ids.append(entry["id"])
                 else:
@@ -138,12 +154,12 @@ class Simpletree(epflcomponentbase.ComponentBase):
             else:
                 new_level_1_data[entry["id"]] = entry
         self.tree_data[level_0_id]["children"] = new_level_1_data
-        
+
         for recursive_update_id in recursive_update_ids:
             self.update_level_2(level_0_id, recursive_update_id)
-        
+
         self.redraw()
-        
+
     def update_level_1_for_given_level_1_entry(self, level_1_id, recursive=False):
         level_0_id = None
         for entry_id, entry in self.tree_data.iteritems():
@@ -227,7 +243,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.rebuild_tree_structure()
 
     def handle_drop(self,
-                    drag_level,drag_level_0,drag_level_1,drag_level_2,drag_tree_cid,
-                    drop_level,drop_level_0,drop_level_1,drop_level_2,drop_tree_cid):
+                    drag_level, drag_level_0, drag_level_1, drag_level_2, drag_tree_cid,
+                    drop_level, drop_level_0, drop_level_1, drop_level_2, drop_tree_cid):
         pass
 

@@ -4,8 +4,15 @@
 epfl.Simpletree = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
+
+
     var selector = "#" + cid;
     var dataAreaSelector = selector + " div.epfl-simple-tree-data";
+
+    //If the tree data are loading don't make any js stuff
+    if($(dataAreaSelector).length === 0){
+        return;
+    }
 
     /**************************************************************************
      Helper
@@ -18,7 +25,8 @@ epfl.Simpletree = function (cid, params) {
         }
         return null;
     };
-    
+
+    //Get the leafids from all upper leafs element is a jquery object
     var get_leafids = function (element) {
         var result = {
             level_0: null,
@@ -48,10 +56,15 @@ epfl.Simpletree = function (cid, params) {
 
     /**************************************************************************
      Scroll
+     We need the hidden scroll area for scrolling when an element is dragging
+     the user can move to the upper or lower area of the tree which then scrolls
      *************************************************************************/
 
+
+    //When the tree reloads go back to the last scroll position stored in transactio
     $(dataAreaSelector).scrollTop(params["scrollTop"]);
 
+    //Sets the positon of the scrollarea
     var setHiddenScrollArea = function () {
         $(selector + " div.epfl-simple-tree-scroll-upper").css({
             "width": $("#" + cid).width() + "px",
@@ -71,6 +84,7 @@ epfl.Simpletree = function (cid, params) {
         setHiddenScrollArea();
     });
 
+    //The scroll function of the hidden scroll area
     var scrollUpMouseOver = false;
     $(selector + " div.epfl-simple-tree-scroll-upper").droppable({
         over: function (event, ui) {
@@ -176,6 +190,12 @@ epfl.Simpletree = function (cid, params) {
         });
     };
 
+    /**************************************************************************
+     Drag and Drop
+     window.epflSimpleTreeDragging is required for mouseover effects while dragging an element
+     the effects are setting classes for ui highlighting and send event for tree leaf open
+     *************************************************************************/
+
     $(selector + " div.epfl-simple-tree-leaf-dragable").draggable({
         revert: "invalid",
         scroll: false,
@@ -186,9 +206,11 @@ epfl.Simpletree = function (cid, params) {
         scroll: true,
         start: function (event, ui) {
             window.epflSimpleTreeDragging = true;
+            $(this).addClass("epfl-simple-tree-leaf-dragging");
         },
         stop: function (event, ui) {
             window.epflSimpleTreeDragging = false;
+            $(this).removeClass("epfl-simple-tree-leaf-dragging");
         },
         appendTo: "body"
     });
@@ -257,7 +279,6 @@ epfl.Simpletree = function (cid, params) {
         clearTimeout(openTimeout);
     });
 
-
     /**************************************************************************
      Context Menu
      *************************************************************************/
@@ -265,4 +286,14 @@ epfl.Simpletree = function (cid, params) {
 };
 
 epfl.Simpletree.inherits_from(epfl.ComponentBase);
+
+//This function is triggerd from init_transaction for loading the tree data 'async' which means you first see the
+//loading indicator on the tree and when the data are loaded they got shown via a epfl redraw
+epfl.Simpletree.LoadData = function(cid){
+    epfl.enqueue(epfl.make_component_event(cid, 'load_data', {}), cid);
+    setTimeout(function(){
+        epfl.flush();
+        $('#epfl_please_wait').hide();
+    },100);
+};
 
