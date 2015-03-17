@@ -1,4 +1,4 @@
-$('[id="{{compo.cid}}"]').click(function(event) {
-    var request = epfl.make_component_event("{{compo.event_target}}", "{{compo.event_name}}");
-    epfl.send(request);
-});
+epfl.init_component("{{ compo.cid }}", "ButtonComponent", {"event_name" : "{{ compo.event_name }}",
+														   "event_target" : "{{ compo.event_target }}",
+														   "confirm_first": {{ compo.confirm_first|format_bool }},
+														   "confirm_message": "{{ compo.confirm_message }}" });
