@@ -603,6 +603,7 @@ class ComponentBase(object):
                     event_params.setdefault('position', position)
 
             self.epfl_event_trace = epfl_event_trace
+            print epfl_event_trace, event_name, event_params, event_handler
             event_handler(**event_params)
             self.epfl_event_trace = None
         except MissingEventHandlerException:

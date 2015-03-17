@@ -100,7 +100,6 @@ def get_epfl_jinja2_environment(request):
     jinja_extensions.extend_environment(env)
     _get_template = env.get_template
 
-    @profile
     def get_template(*args, **kwargs):
         try:
             if epfl_template_cache[args[0]] is None:

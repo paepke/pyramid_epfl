@@ -324,11 +324,7 @@ class Page(object):
     def __delattr__(self, key):
         value = getattr(self, key)
         if isinstance(value, epflcomponentbase.ComponentBase):
-            self.components.pop(key)
-            if self.active_components is not None:
-                self.active_components.remove(value.cid)
-                self.active_component_objects.remove(value)
-                self.active_component_cid_objects.remove((value.cid, value))
+            raise Exception('This shouldn\'t happen!')
         self.__dict__.pop(key)
 
     def __setattr__(self, key, value):
@@ -376,15 +372,6 @@ class Page(object):
         instances that have registered there upon initialization and are still present on this page.
         """
         return self.transaction.get_active_components()
-        # if self.active_components is None and show_cid:
-        #     return self.components.items()
-        # elif self.active_components is None and not show_cid:
-        #     return self.components.values()
-        # if show_cid:
-        #     data = self.active_component_cid_objects
-        # else:
-        #     data = self.active_component_objects
-        # return data
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this page.
@@ -461,7 +448,6 @@ class Page(object):
 
         return out
 
-    @profile
     def handle_transaction(self):
         """ This method is called just before the event-handling takes place.
         It calles the init_transaction-methods of all components, that the event handlers have
@@ -484,6 +470,7 @@ class Page(object):
         """
         self.transaction.store_as_new()
 
+    @profile
     def handle_ajax_request(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
@@ -537,37 +524,36 @@ class Page(object):
 
         return True
 
-    def traversing_redraw(self, item=None, js_only=False):
+    def traversing_redraw(self, cid=None, js_only=False):
         """
         Handle redrawing components by traversing the structure as deep as necessary. Subtrees of redrawn components are
         ignored.
         """
-        if item is None:
-            for item in self.transaction['compo_struct'].iteritems():
-                self.traversing_redraw(item)
+        if cid is None:
+            for compo_obj in self.get_active_components():
+                ccid = compo_obj.compo_info.get('ccid', None)
+                if ccid is not None and self.transaction.is_active_component(cid):
+                    continue
+                self.traversing_redraw(compo_obj.cid)
             return
 
-        cid, compo = item
-        if self.active_components is not None and cid not in self.active_components:
+        if not self.transaction.is_active_component(cid):
             return
 
         compo_obj = getattr(self, cid)
+
         if compo_obj.is_visible(check_parents=True):
             redraw_parts = compo_obj.get_redraw_parts()
             if redraw_parts:
                 if js_only:
                     redraw_parts = {'js': redraw_parts.get('js', None)}
-                js = "epfl.replace_component('{cid}', {parts})".format(cid=cid,
+                js = "epfl.replace_component('{cid}', {parts})".format(cid=compo_obj.cid,
                                                                        parts=json.encode(redraw_parts))
                 self.add_js_response(js)
                 js_only = True
 
-            if 'compo_struct' not in compo:
-                return
-
-            for child in compo['compo_struct'].iteritems():
-                if child:
-                    self.traversing_redraw(child, js_only=js_only)
+            for child_cid in compo_obj.compo_info.get('compo_struct', {}):
+                self.traversing_redraw(child_cid, js_only=js_only)
         else:
             self.add_js_response("epfl.hide_component('{cid}')".format(cid=cid))
 
@@ -578,7 +564,6 @@ class Page(object):
         for compo in self.get_active_components():
             compo.redraw()
 
-    @profile
     def handle_submit_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
         This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
