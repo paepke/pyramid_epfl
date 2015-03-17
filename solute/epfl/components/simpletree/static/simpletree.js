@@ -176,6 +176,10 @@ epfl.Simpletree = function (cid, params) {
         });
     };
 
+    /**************************************************************************
+     Drag and Drop
+     *************************************************************************/
+
     $(selector + " div.epfl-simple-tree-leaf-dragable").draggable({
         revert: "invalid",
         scroll: false,
@@ -186,9 +190,11 @@ epfl.Simpletree = function (cid, params) {
         scroll: true,
         start: function (event, ui) {
             window.epflSimpleTreeDragging = true;
+            $(this).addClass("epfl-simple-tree-leaf-dragging");
         },
         stop: function (event, ui) {
             window.epflSimpleTreeDragging = false;
+            $(this).removeClass("epfl-simple-tree-leaf-dragging");
         },
         appendTo: "body"
     });
