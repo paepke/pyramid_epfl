@@ -353,6 +353,7 @@ class ComponentBase(object):
     @profile
     def register_in_transaction(self, container, slot=None, position=None):
         compo_info = {'class': self.__unbound_component__.__getstate__(),
+                      'config': self.__config,
                       'ccid': container.cid,
                       'cid': self.cid,
                       'slot': slot}
