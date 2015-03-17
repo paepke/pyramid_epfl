@@ -9,6 +9,11 @@ import solute.epfl
 from pyramid import path
 from os.path import exists
 from solute.epfl import core
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
 
 
 class DictTransformer(object):
@@ -50,7 +55,7 @@ class ClassAttributeExtender(type):
         print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
-
+@profile
 def add_extra_contents(response, obj):
     """ Adds CSS and JS extra-Contents of this object to the response.
     The object must have the following attributes:

@@ -6,12 +6,19 @@ from solute.epfl.core.epflpage import Page
 from solute.epfl.core.epflcomponentbase import ComponentBase
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
 
+from solute.epfl import get_epfl_jinja2_environment, includeme
+from pyramid_jinja2 import get_jinja2_environment
+
 from collections2.dicts import OrderedDict
 
 
 class PageTest(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
+        testing.DummyRequest.get_jinja2_environment = get_jinja2_environment
+        testing.DummyRequest.get_epfl_jinja2_environment = get_epfl_jinja2_environment
+
+        includeme(self.config)
         self.request = testing.DummyRequest()
         self.request.content_type = ''
         self.request.is_xhr = False
@@ -120,6 +127,54 @@ class PageTest(unittest.TestCase):
         steps.append(time.time())
 
         assert (steps[-1] - steps[-2]) / compo_depth / compo_width < 1. / 5000
+
+    def test_component_rendering_ajax(self):
+
+        page = Page(self.request)
+        page.request.is_xhr = True
+        page.page_request.params = {"q": []}
+        transaction = page.transaction
+        transaction['components_assigned'] = True
+        transaction.set_component('root_node',
+                                  {'cid': 'root_node',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('root_node', None))})
+
+        page.create_components()
+
+        page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
+        for i in range(0, 10):
+            getattr(page, 'child_node_%s' % i) \
+                .add_component(ComponentContainerBase(cid='child_node_%s' % (i + 1)))
+            for x in range(0, 3):
+                getattr(page,
+                        'child_node_%s' % (i + 1)) \
+                    .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
+
+        page.root_node.redraw()
+
+        assert page.handle_ajax_request()
+        assert False not in [c.is_rendered for c in page.get_active_components()]
+
+        out = page.call_ajax()
+        for i in range(0, 10):
+            assert ('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1)) in out
+            assert ('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1)) in out
+            out = out.replace('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1), '')
+            out = out.replace('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1), '')
+            for x in range(0, 3):
+                assert ('epfl.replace_component(\'child_node_%s_%s\', {"js":""});' % (i + 1, x)) in out
+                assert ('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x)) in out
+                out = out.replace('epfl.replace_component(\'child_node_%s_%s\', {"js":""});' % (i + 1, x), '')
+                out = out.replace('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x),
+                                  '')
+        assert 'epfl.replace_component(\'child_node_0\', {"js":""});' \
+               'epfl.set_component_info("child_node_0", "handle", [\'set_row\']);' \
+               'epfl.set_component_info("root_node", "handle", [\'set_row\']);' in out
+
 
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)

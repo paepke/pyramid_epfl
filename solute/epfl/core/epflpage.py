@@ -53,7 +53,6 @@ class Page(object):
     """
 
     __name = None  #: cached value from get_name()
-    __parent = None  #: cached value from parent, TODO: check if deprecated
 
     asset_spec = "solute.epfl:static"
 
@@ -84,11 +83,6 @@ class Page(object):
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
 
-    #: If true components will be initialized just in time on being accessed.
-    default_lazy_mode = False
-    lazy_mode = False
-    active_components = None
-
     def __init__(self, request, transaction=None):
         """
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
@@ -107,16 +101,6 @@ class Page(object):
             self.transaction = self.__get_transaction_from_request()
 
         self.setup_model()
-
-        if self.request.is_xhr and self.default_lazy_mode:
-            self.lazy_mode = self.default_lazy_mode
-        elif self.request.is_xhr:
-            self.lazy_mode = len([e for e in self.page_request.get_queue()
-                                  if e.get('lazy_mode', False) is not True]) == 0
-        if self.lazy_mode:
-            self.active_components = set()
-            self.active_component_objects = []
-            self.active_component_cid_objects = []
 
     @profile
     def __call__(self):
@@ -224,63 +208,10 @@ class Page(object):
         initially to initialize the transaction structure.
         """
 
-        def traverse_compo_struct(struct=None, container_id=None):
-            if struct is None:
-                struct = self.transaction["compo_struct"]
-
-            for key, value in struct.iteritems():
-                self.assign_component(value, container_id=container_id)
-                if 'compo_struct' in value:
-                    traverse_compo_struct(value['compo_struct'], container_id=key)
-
         # Calling self.setup_components once and remember the compos as compo_info and their structure as compo_struct.
         if not self.transaction.get("components_assigned"):
             self.setup_components()
             self.transaction["components_assigned"] = True
-        else:
-            traverse_compo_struct()
-
-    def assign_component(self, compo_info, container_id=None, compo_obj=None):
-        """ Create a component from the remembered compo_info and assign it to the page.
-        Deals with lazy_mode by using a wrapper method for actually creating and adding the component. This wrapper
-        method is then either called or sent to :meth:`add_lazy_component`. """
-
-        def lazy_assign(overwrite=False):
-            _compo_obj = compo_obj
-            if compo_obj is None:
-                unbound_component = epflcomponentbase.UnboundComponent.create_from_state(compo_info['class'])
-                _compo_obj = unbound_component.create_by_compo_info(self, compo_info, container_id=container_id)
-            self.add_static_component(compo_info["cid"], _compo_obj, overwrite=overwrite)
-
-        if self.lazy_mode:
-            self.add_lazy_component(compo_info["cid"], lazy_assign)
-        else:
-            lazy_assign()
-
-    @property
-    def parent(self):
-        """ Gets the parent-page (connected by the parent-transaction) - if any!
-        It "spawns" a new page-obj-live-cycle with setup_component and via the PageRequest (get_handeled_pages) the
-        hook for the teardown (done_request).
-        """
-        if self.__parent:
-            return self.__parent
-
-        ptid = self.transaction.get_pid()
-        if not ptid:
-            raise ValueError("No parent page connected to this page")
-
-        parent_transaction = epfltransaction.Transaction(self.request, ptid)
-        parent_page_name = parent_transaction.get_page_name()
-        parent_page_class = epflutil.get_page_class_by_name(self.request, parent_page_name)
-
-        parent_page_obj = parent_page_class(self.request, parent_transaction)
-
-        self.page_request.add_handeled_page(parent_page_obj)
-
-        self.__parent = parent_page_obj
-
-        return parent_page_obj
 
     def done_request(self):
         """ [request-processing-flow]
@@ -336,18 +267,6 @@ class Page(object):
             self.add_static_component(key, value)
         else:
             super(Page, self).__setattr__(key, value)  # Use normal behaviour.
-
-    def add_lazy_component(self, cid, callback):
-        """
-        Create a :class:`LazyProperty` instance with the callback function given, then set everything up as normal.
-        :meth:`__getattribute__` will deal with :class:`LazyProperty` instances by calling them, thus initializing the
-        actually requested component.
-        """
-
-        lazy_obj = LazyProperty(callback)
-
-        setattr(self, cid, lazy_obj)
-        self.components[cid] = True  # Just tell the PageComponents Instance that this page has that key.
 
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
@@ -420,7 +339,8 @@ class Page(object):
         env = {"epfl_base_html": self.base_html,
                "epfl_base_title": self.title,
                "css_imports": self.get_css_imports,
-               "js_imports": self.get_js_imports}
+               "js_imports": self.get_js_imports,
+               "root_node": self.root_node}
 
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
@@ -524,6 +444,7 @@ class Page(object):
 
         return True
 
+    @profile
     def traversing_redraw(self, cid=None, js_only=False):
         """
         Handle redrawing components by traversing the structure as deep as necessary. Subtrees of redrawn components are
@@ -537,7 +458,7 @@ class Page(object):
                 self.traversing_redraw(compo_obj.cid)
             return
 
-        if not self.transaction.is_active_component(cid):
+        if not self.transaction.is_active_component(cid) and cid != 'root_node':
             return
 
         compo_obj = getattr(self, cid)
@@ -782,7 +703,7 @@ class PageRequest(object):
             return {self.params["widget_name"]: self.request.POST[self.params["widget_name"] + "[]"]}
 
 
-class PageComponents(MutableMapping):
+class PageComponents(object):
     """
     Wrapper dict that just holds the information which component is actually supposed to be present while leaving the
     actual instances stored only in :attr:`Page.__dict__`.
@@ -793,19 +714,6 @@ class PageComponents(MutableMapping):
 
     def __init__(self, page):
         self.page = page
-        self._items = set()
-
-    def __setitem__(self, key, value):
-        self._items.add(key)
-
-    def __delitem__(self, key):
-        self._items.remove(key)
-
-    def __iter__(self):
-        return self._items.__iter__()
 
     def __getitem__(self, key):
         return getattr(self.page, key)
-
-    def __len__(self):
-        return len(self._items)

@@ -1,4 +1,9 @@
 # coding: utf-8
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
 
 from pprint import pprint
 from collections2 import OrderedDict as odict
@@ -308,7 +313,7 @@ class ComponentBase(object):
         pass
 
     def __getattribute__(self, key):
-        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access'] \
+        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access', 'is_rendered'] \
                 and key in self.compo_state + self.base_compo_state:
             return self.compo_info.get('compo_state', {}).get(key,
                                                               super(ComponentBase, self).__getattribute__(key))
@@ -603,7 +608,6 @@ class ComponentBase(object):
                     event_params.setdefault('position', position)
 
             self.epfl_event_trace = epfl_event_trace
-            print epfl_event_trace, event_name, event_params, event_handler
             event_handler(**event_params)
             self.epfl_event_trace = None
         except MissingEventHandlerException:
@@ -632,6 +636,7 @@ class ComponentBase(object):
 
         epflutil.add_extra_contents(self.response, obj=self)
 
+    @profile
     def render_templates(self, env, templates):
         """
         Render one or many templates given as list using the given jinja2 environment env and the dict from
@@ -652,6 +657,7 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    @profile
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
@@ -723,6 +729,7 @@ class ComponentBase(object):
         else:
             self.redraw_requested.add(parts)
 
+    @profile
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
         as keys and thier content as values. No modification of the "response" is made. Only the parts that are
@@ -1009,6 +1016,7 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
+    @profile
     def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
