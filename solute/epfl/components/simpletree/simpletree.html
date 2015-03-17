@@ -13,6 +13,12 @@
 {% endmacro %}
 
 <div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-simple-tree">
+ {% if compo.is_loading == True %}
+            <div class="epfl-simple-tree-loading">
+                <p class="text-center text-primary"><i class="fa fa-spinner fa-spin fa-5x"></i></p>
+            </div>
+{% else %}
+
     <div class="row epfl-simple-tree-filter">
         <div class="col-sm-6">
             <div class="input-group">
@@ -57,6 +63,7 @@
     </div>
     <div class="epfl-simple-tree-data" style="height:{{ compo.height }}px;overflow-y:scroll;overflow-x:hidden">
     <div class="epfl-simple-tree-scroll-upper"></div>
+
         {% for entry_obj in compo.tree_data.iteritems() %}
             {% set entry = entry_obj[1] %}
             <div class="epfl-simple-tree-leaf-0 epfl-simple-tree-openable{% if entry['draggable'] is defined and entry['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}{% if entry['droppable'] is defined and entry['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}{% if compo.selected_0_id ==  entry['id'] %} epfl-simple-tree-leaf-selected{% endif %}"
@@ -103,5 +110,6 @@
         {% endfor %}
     <div class="epfl-simple-tree-scroll-lower"></div>
     </div>
+{% endif %}
 </div>
 
