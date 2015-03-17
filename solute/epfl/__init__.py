@@ -1,7 +1,8 @@
 #* coding: utf-8
-from jinja2 import StrictUndefined
+from jinja2 import StrictUndefined, TemplateNotFound
+import time
 
-from solute.epfl.core.epflpage import Page # shortcut
+from solute.epfl.core.epflpage import Page
 
 import components
 
@@ -24,6 +25,9 @@ from solute.epfl.core import (epfltransaction,
 
 class IEPFLJinja2Environment(Interface):
     pass
+
+
+epfl_template_cache = {}
 
 
 # handling extra data in different scopes:
@@ -62,9 +66,9 @@ def get_epfl_jinja2_environment(request):
 
     loader = jinja_helpers.PreprocessingFileSystemLoader(oenv.loader.searchpath,
                                                          encoding = oenv.loader.encoding,
-                                                         debug = oenv.loader.debug)
+                                                         debug = oenv.loader.debug, )
 
-    cache_size = int(request.registry.settings.get("jinja2.cache_size", 50))
+    cache_size = int(request.registry.settings.get("jinja2.cache_size", 1000000))
 
     env = jinja_reflection.ReflectiveEnvironment(loader = loader,
                                                  auto_reload = oenv.auto_reload,
@@ -94,6 +98,25 @@ def get_epfl_jinja2_environment(request):
     env.globals = oenv.globals
 
     jinja_extensions.extend_environment(env)
+    _get_template = env.get_template
+
+    @profile
+    def get_template(*args, **kwargs):
+        try:
+            if epfl_template_cache[args[0]] is None:
+                raise TemplateNotFound(args[0])
+            return epfl_template_cache[args[0]]
+        except KeyError:
+            pass
+        try:
+            epfl_template_cache[args[0]] = _get_template(*args, **kwargs)
+            return epfl_template_cache[args[0]]
+        except TemplateNotFound:
+            epfl_template_cache[args[0]] = None
+            raise
+
+
+    env.get_template = get_template
 
     request.registry.registerUtility(env, IEPFLJinja2Environment)
     return request.registry.queryUtility(IEPFLJinja2Environment)

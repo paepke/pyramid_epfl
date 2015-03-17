@@ -98,27 +98,61 @@ class Transaction(MutableMapping):
                                       **compo_info['config'])
         return self.instances[cid]
 
+    def get_active_components(self):
+        return self.instances.values()
+
+    @profile
+    def switch_component(self, cid, ccid):
+        compo_info = self.pop_component(cid)
+        compo_info['ccid'] = ccid
+        self.set_component(cid, compo_info)
+
+    def pop_component(self, cid):
+        try:
+            return self['compo_struct'].pop(cid)
+        except KeyError:
+            pass
+
+        try:
+            return self.pop_child_component(self['compo_lookup'][cid],
+                                            cid)
+        except KeyError:
+            return None
+
     def get_component(self, cid):
-        if 'compo_struct' not in self:
-            return None
-        if cid in self['compo_struct']:
+        try:
             return self['compo_struct'][cid]
+        except KeyError:
+            pass
 
-        if 'compo_lookup' not in self or cid not in self['compo_lookup']:
+        try:
+            return self.get_child_component(self['compo_lookup'][cid],
+                                            cid)
+        except KeyError:
             return None
-
-        return self.get_child_component(self['compo_lookup'][cid],
-                                        cid)
 
     def get_child_component(self, ccid, cid):
         compo = self.get_component(ccid)
-        if not compo \
-                or 'compo_struct' not in compo \
-                or cid not in compo['compo_struct']:
+        try:
+            return compo['compo_struct'][cid]
+        except (TypeError, KeyError):
             return None
-        return compo['compo_struct'][cid]
 
-    def set_component(self, cid, compo_info, position=None):
+    def pop_child_component(self, ccid, cid):
+        compo = self.get_component(ccid)
+        try:
+            return compo['compo_struct'].pop(cid)
+        except (TypeError, KeyError):
+            return None
+
+    @profile
+    def set_component(self, cid, compo_info, position=None, compo_obj=None):
+        if not isinstance(compo_info, dict):
+            compo_obj = compo_info
+            compo_info = compo_obj.get_component_info()
+        if compo_obj:
+            self.instances[cid] = compo_obj
+
         container = self
         if 'ccid' in compo_info:
             self.setdefault('compo_lookup', {})[cid] = compo_info['ccid']

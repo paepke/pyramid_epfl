@@ -141,7 +141,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
             self._handle_search_grouped()
         self.redraw()
 
-    def update_children(self, force=False):
+    def update_children(self, *args, **kwargs):
         """
         Overwrite :meth:`solute.epfl.core.epflcomponentbase.ComponentContainerBase.update_children` to check if :attr:`selected_child_cids` is properly filled.
         Smart components may re-generate cids of its child components, and thus cannot use
@@ -150,7 +150,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         In this method, we know that all components have been initialized and for all ids in 
         :attr:`selected_child_ids`, the corresponding component cid can be placed in :attr:`selected_child_cids`.
         """
-        result = epflcomponentbase.ComponentContainerBase.update_children(self, force=force)
+        result = epflcomponentbase.ComponentContainerBase.update_children(self, *args, **kwargs)
         if (len(self.selected_child_ids) > 0):
             for compo in self.components:
                 if compo.id in self.selected_child_ids:

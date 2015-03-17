@@ -12,6 +12,12 @@ import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
 
 class LazyProperty(object):
     """
@@ -83,7 +89,6 @@ class Page(object):
     lazy_mode = False
     active_components = None
 
-    # @profile
     def __init__(self, request, transaction=None):
         """
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
@@ -113,7 +118,7 @@ class Page(object):
             self.active_component_objects = []
             self.active_component_cid_objects = []
 
-    # @profile
+    @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -156,6 +161,7 @@ class Page(object):
 
         return out
 
+    @profile
     def call_default(self):
         """
         Sub-method of :meth:`__call__` used for normal requests.
@@ -280,7 +286,7 @@ class Page(object):
         """ [request-processing-flow]
         The main request teardown.
         """
-        for compo_obj in self.get_active_components(show_cid=False):
+        for compo_obj in self.get_active_components():
             if self.transaction.has_component(compo_obj.cid):
                 compo_obj.finalize()
 
@@ -301,7 +307,7 @@ class Page(object):
         requested value is an instance of :class:`LazyProperty` it will be called, then reloaded using the default
         behaviour of super.
         """
-        if item not in ['components', 'transaction'] \
+        if item not in ['components', 'transaction', '_active_initiations'] \
                 and hasattr(self, 'transaction') \
                 and self.transaction.has_component(item):
             return self.transaction.get_component_instance(self, item)
@@ -361,29 +367,24 @@ class Page(object):
                                                                               cid].__unbound_component__,
                                                                           'new_compo_unbound': compo_obj.__unbound_component__,
                                                                           'new_compo': compo_obj})
-        self.__dict__[cid] = compo_obj
-        self.components[cid] = compo_obj
-        if self.active_components is not None:
-            self.active_components.add(cid)
-            self.active_component_objects.append(compo_obj)
-            self.active_component_cid_objects.append((cid, compo_obj))
         if not self.transaction.has_component(cid):
-            self.transaction.set_component(cid, compo_obj.get_component_info())
+            self.transaction.set_component(cid, compo_obj)
 
-    def get_active_components(self, show_cid=True):
+    def get_active_components(self):
         """
         If :attr:`active_components` is set this method returns a list of the :class:`.epflcomponentbase.ComponentBase`
         instances that have registered there upon initialization and are still present on this page.
         """
-        if self.active_components is None and show_cid:
-            return self.components.items()
-        elif self.active_components is None and not show_cid:
-            return self.components.values()
-        if show_cid:
-            data = self.active_component_cid_objects
-        else:
-            data = self.active_component_objects
-        return data
+        return self.transaction.get_active_components()
+        # if self.active_components is None and show_cid:
+        #     return self.components.items()
+        # elif self.active_components is None and not show_cid:
+        #     return self.components.values()
+        # if show_cid:
+        #     data = self.active_component_cid_objects
+        # else:
+        #     data = self.active_component_objects
+        # return data
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this page.
@@ -434,10 +435,10 @@ class Page(object):
                "css_imports": self.get_css_imports,
                "js_imports": self.get_js_imports}
 
-        env.update([(key, value) for key, value in self.get_active_components() if value.container_compo is None])
-
+        env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
+    @profile
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         self.add_js_response(self.get_page_init_js())
@@ -445,7 +446,7 @@ class Page(object):
         epflutil.add_extra_contents(self.response, obj=self)
 
         # pre-render all components
-        for component_name, component_obj in self.get_active_components():
+        for component_obj in self.get_active_components():
             component_obj.pre_render()
 
         # exclusive extra-content
@@ -455,10 +456,12 @@ class Page(object):
         if exclusive_extra_content:
             out = exclusive_extra_content
         else:
-            out = self.response.render_jinja(self.template, **self.get_render_environment())
+            render_env = self.get_render_environment()
+            out = self.response.render_jinja(self.template, **render_env)
 
         return out
 
+    @profile
     def handle_transaction(self):
         """ This method is called just before the event-handling takes place.
         It calles the init_transaction-methods of all components, that the event handlers have
@@ -466,17 +469,13 @@ class Page(object):
 
         [request-processing-flow]
         """
-        initialized_components = self.transaction['__initialized_components__']
-        for cid, compo in self.get_active_components():
-            if cid not in initialized_components:
-                self._active_initiations += 1
-                self.transaction["__initialized_components__"].add(cid)
-                compo.init_transaction()
-                self._active_initiations -= 1
 
-        if self._active_initiations == 0:
-            for cid, compo in self.get_active_components():
-                compo.setup_component()
+        if 'root_node' not in self.transaction['__initialized_components__']:
+            self.root_node.init_transaction()
+            self.transaction['__initialized_components__'].add('root_node')
+
+        for compo in self.get_active_components():
+            compo.setup_component()
 
     def make_new_tid(self):
         """
@@ -528,7 +527,7 @@ class Page(object):
             else:
                 raise Exception("Unknown ajax-event: " + repr(event))
 
-        for cid, compo in self.get_active_components():
+        for compo in self.get_active_components():
             compo.after_event_handling()
 
         pages = self.page_request.get_handeled_pages()[:]
@@ -576,9 +575,10 @@ class Page(object):
         """
         Trigger a redraw for all components.
         """
-        for compo in self.get_active_components(show_cid=False):
+        for compo in self.get_active_components():
             compo.redraw()
 
+    @profile
     def handle_submit_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
         This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
@@ -596,10 +596,10 @@ class Page(object):
 
         self.handle_transaction()
 
-        for component_name, component_obj in self.get_active_components():
+        for component_obj in self.get_active_components():
             component_obj.request_handle_submit(dict(self.page_request.params))
 
-        for cid, compo in self.get_active_components():
+        for compo in self.get_active_components():
             compo.after_event_handling()
 
     def add_js_response(self, js_string):
@@ -645,7 +645,7 @@ class Page(object):
         """
 
         # rendering all JS-parts of the components
-        for compo_obj in self.get_active_components(show_cid=False):
+        for compo_obj in self.get_active_components():
             if compo_obj.is_rendered:
                 init_js = compo_obj.get_js_part()
                 init_js = epflclient.JSBlockContent(init_js)

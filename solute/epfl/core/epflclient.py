@@ -223,6 +223,7 @@ class EPFLResponse(object):
                 return extra_content.render()
         return None
 
+    @profile
     def render_jinja(self, template, **kwargs):
         if type(template) is str:
             env = self.request.get_epfl_jinja2_environment()

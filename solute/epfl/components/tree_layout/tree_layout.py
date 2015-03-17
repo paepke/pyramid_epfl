@@ -123,9 +123,9 @@ class TreeLayout(ComponentContainerBase):
                     c.update_children(force=True)
                 except AttributeError:
                     pass  # a base component
-    
-    def update_children(self, force=False):
-        ComponentContainerBase.update_children(self, force=force)
+
+    def update_children(self, *args, **kwargs):
+        ComponentContainerBase.update_children(self, *args, **kwargs)
         self._slotted_components = None
 
 

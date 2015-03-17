@@ -244,6 +244,7 @@ class ComponentBase(object):
     redraw_requested = None  #: Set of parts requesting to be redrawn.
 
     _compo_info = None
+    _access = None
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -307,7 +308,7 @@ class ComponentBase(object):
         pass
 
     def __getattribute__(self, key):
-        if key not in ['compo_state', 'base_compo_state'] \
+        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access'] \
                 and key in self.compo_state + self.base_compo_state:
             return self.compo_info.get('compo_state', {}).get(key,
                                                               super(ComponentBase, self).__getattribute__(key))
@@ -342,25 +343,27 @@ class ComponentBase(object):
         if self.compo_info.get('ccid', None) is None\
                 or 'ccid' not in self.compo_info\
                 or self.compo_info['ccid'] is None:
-            raise AttributeError()
+            return None
         return getattr(self.page, self.compo_info['ccid'])
 
     @container_compo.setter
     def container_compo(self, value):
         self.compo_info['ccid'] = value.cid
 
+    @profile
     def register_in_transaction(self, container, slot=None, position=None):
-        compo_info = self.get_component_info()
-        compo_info['ccid'] = container.cid
-        self.page.transaction.set_component(self.cid, compo_info, position=position)
-        self.container_slot = slot
+        compo_info = {'class': self.__unbound_component__.__getstate__(),
+                      'ccid': container.cid,
+                      'cid': self.cid,
+                      'slot': slot}
+        self.page.transaction.set_component(self.cid, compo_info, position=position, compo_obj=self)
 
     def get_component_info(self):
         info = {"class": self.__unbound_component__.__getstate__(),
                 "config": self.__config,
                 "cid": self.cid,
                 "slot": self.container_slot}
-        if hasattr(self, 'container_compo'):
+        if getattr(self, 'container_compo', None) is not None:
             info['ccid'] = self.container_compo.cid
         return info
 
@@ -393,7 +396,7 @@ class ComponentBase(object):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
         you can not use this component any longer in the layout. """
         if not self.container_compo:
-            raise ValueError, "Only dynamically created components can be deleted"
+            raise ValueError("Only dynamically created components can be deleted")
 
         self.container_compo.del_component(self, self.container_slot)
 
@@ -401,8 +404,6 @@ class ComponentBase(object):
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
         self.page.transaction['__initialized_components__'].remove(self.cid)
-
-        delattr(self.page, self.cid)
 
     def finalize(self):
         """ Called from the page-object when the page is finalized
@@ -414,11 +415,9 @@ class ComponentBase(object):
         """ Checks if the current user has sufficient rights to see/access this component.
         Normally called by a condition in the jinja-template.
         """
-
-        if security.has_permission("access", self, self.request):
-            return True
-        else:
-            return False
+        if self._access is None:
+            self._access = security.has_permission("access", self, self.request)
+        return self._access
 
     def set_visible(self):
         """ Shows the complete component. You need to redraw it!
@@ -436,6 +435,7 @@ class ComponentBase(object):
         self.visible = False
         return current_visibility
 
+    @profile
     def is_visible(self, check_parents=False):
         """ Checks wether the component should be displayed or not. This is affected by "has_access" and
         the "visible"-component-attribute.
@@ -632,6 +632,7 @@ class ComponentBase(object):
 
         epflutil.add_extra_contents(self.response, obj=self)
 
+    @profile
     def render_templates(self, env, templates):
         """
         Render one or many templates given as list using the given jinja2 environment env and the dict from
@@ -652,6 +653,7 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    @profile
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
@@ -713,8 +715,8 @@ class ComponentBase(object):
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
-            return  # a parent of me already needs redrawing!
+        # if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
+        #     return  # a parent of me already needs redrawing!
 
         if type(parts) is list:
             self.redraw_requested.update(set(parts))
@@ -760,19 +762,7 @@ class ComponentBase(object):
         After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
         """
 
-        compo = getattr(self.page, cid)
-        compo_info = self.page.transaction.get_component(cid)
-        target = getattr(self.page, target)
-        source = getattr(self.page, compo.container_compo.cid)
-
-        self.page.transaction.del_component(cid)
-        compo_info['ccid'] = target.cid
-
-        compo.set_container_compo(target, slot)
-        self.page.transaction.set_component(cid, compo_info, position=position)
-
-        target.redraw()
-        source.redraw()
+        self.page.transaction.switch_component(cid, target)
 
 
 class ComponentContainerBase(ComponentBase):
@@ -813,6 +803,8 @@ class ComponentContainerBase(ComponentBase):
 
     components_initialized = False
 
+    _themes = {}
+
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
@@ -820,6 +812,7 @@ class ComponentContainerBase(ComponentBase):
 
         return self
 
+    @profile
     def get_themed_template(self, env, target):
         """
         Return a list of templates in the order they should be used for rendering. Deals with template inheritance based
@@ -836,14 +829,18 @@ class ComponentContainerBase(ComponentBase):
                     direction = theme_path[0]
                     render_funcs.insert(0, env.get_template('%s/%s.html' % (theme_path[1:], target)).module.render)
                     continue
-                render_funcs.append(env.get_template('%s/%s.html' % (theme_path, target)).module.render)
+                tpl = env.get_template('%s/%s.html' % (theme_path, target))
+                render_funcs.append(tpl.module.render)
                 return direction, render_funcs
             except TemplateNotFound:
                 continue
 
-        render_funcs.append(env.get_template('%s/%s.html' % (self.theme_path_default, target)).module.render)
+        tpl = env.get_template('%s/%s.html' % (self.theme_path_default, target))
+        render_funcs.append(tpl.module.render)
+
         return direction, render_funcs
 
+    @profile
     def get_render_environment(self, env):
         """
         Creates a dictionary containing references to the different theme parts and the component. Theme parts are
@@ -872,10 +869,14 @@ class ComponentContainerBase(ComponentBase):
             return _cb
 
         result.update({'compo': self,
-                       'container': wrap(self.get_themed_template(env, 'container')),
-                       'row': wrap(self.get_themed_template(env, 'row')),
-                       'before': wrap(self.get_themed_template(env, 'before')),
-                       'after': wrap(self.get_themed_template(env, 'after'))})
+                       'container': self.get_themed_template(env, 'container'),
+                       'row': self.get_themed_template(env, 'row'),
+                       'before': self.get_themed_template(env, 'before'),
+                       'after': self.get_themed_template(env, 'after')})
+        result['container'] = wrap(result['container'])
+        result['row'] = wrap(result['row'])
+        result['before'] = wrap(result['before'])
+        result['after'] = wrap(result['after'])
         return result
 
     def after_event_handling(self):
@@ -891,7 +892,8 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    def update_children(self, force=False):
+    @profile
+    def update_children(self, force=False, init_transaction=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
 
@@ -929,7 +931,8 @@ class ComponentContainerBase(ComponentBase):
 
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
-            data_cid_dict[data_id] = self.add_component(self.default_child_cls(**data_dict[data_id])).cid
+            data_cid_dict[data_id] = self.add_component(self.default_child_cls(**data_dict[data_id]),
+                                                        init_transaction=init_transaction).cid
             self.redraw()
 
         # IDs of data represented by a component. Matching components are updated.
@@ -942,9 +945,12 @@ class ComponentContainerBase(ComponentBase):
 
         # Rebuild order.
         for i, data_id in enumerate(new_order):
-            if getattr(self.components[i + tipping_point], 'id', None) != data_id:
-                self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
-                self.redraw()
+            try:
+                if self.components[i + tipping_point].id != data_id:
+                    self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
+                    self.redraw()
+            except AttributeError:
+                pass
 
     def _get_data(self, *args, **kwargs):
         """
@@ -993,9 +999,13 @@ class ComponentContainerBase(ComponentBase):
         for node in self.node_list:
             cid, slot = node.position
 
-            self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
+            compo = self.add_component(node(self.page, cid, __instantiate__=True),
+                                       slot=slot,
+                                       cid=cid,
+                                       init_transaction=True)
+
         if self.auto_initialize_children:
-            self.update_children(force=True)
+            self.update_children(force=True, init_transaction=True)
 
     def replace_component(self, old_compo_obj, new_compo_obj):
         """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
@@ -1004,7 +1014,8 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    def add_component(self, compo_obj, slot=None, cid=None, position=None):
+    @profile
+    def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
         compo_obj, position can be used to insert at a specific location.
@@ -1025,7 +1036,10 @@ class ComponentContainerBase(ComponentBase):
 
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
-        self.page.handle_transaction()
+        if init_transaction is False:
+            self.page.handle_transaction()
+        else:
+            compo_obj.init_transaction()
 
         return compo_obj
 
