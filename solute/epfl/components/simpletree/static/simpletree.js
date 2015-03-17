@@ -87,6 +87,7 @@ epfl.Simpletree = function (cid, params) {
     //The scroll function of the hidden scroll area
     var scrollUpMouseOver = false;
     $(selector + " div.epfl-simple-tree-scroll-upper").droppable({
+        tolerance: "pointer",
         over: function (event, ui) {
             scrollUpMouseOver = true;
             var scrollUp = function () {
@@ -107,6 +108,7 @@ epfl.Simpletree = function (cid, params) {
 
     var scrollDownMouseOver = false;
     $(selector + " div.epfl-simple-tree-scroll-lower").droppable({
+        tolerance: "pointer",
         over: function (event, ui) {
             scrollDownMouseOver = true;
             var scrollDown = function () {
