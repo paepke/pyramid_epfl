@@ -993,10 +993,10 @@ class ComponentContainerBase(ComponentBase):
         for node in self.node_list:
             cid, slot = node.position
 
-            compo = self.add_component(node(self.page, cid, __instantiate__=True),
-                                       slot=slot,
-                                       cid=cid,
-                                       init_transaction=True)
+            self.add_component(node(self.page, cid, __instantiate__=True),
+                               slot=slot,
+                               cid=cid,
+                               init_transaction=True)
 
         if self.auto_initialize_children:
             self.update_children(force=True, init_transaction=True)
@@ -1029,10 +1029,10 @@ class ComponentContainerBase(ComponentBase):
 
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
+        compo_obj.init_transaction()
+        self.page.transaction['__initialized_components__'].add(cid)
         if init_transaction is False:
             self.page.handle_transaction()
-        else:
-            compo_obj.init_transaction()
 
         return compo_obj
 
