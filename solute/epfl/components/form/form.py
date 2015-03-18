@@ -83,10 +83,9 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         self.validation_error = ""
         
     def set_focus(self):
-        self.add_js_response('epfl.components["{cid}"].focus();'.format(cid=self.cid))
+        self.add_js_response("setTimeout(function(){$('#%s_input').focus(); }, 0);" % self.cid)
         self.redraw()
-            
-
+        
     def validate(self):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
