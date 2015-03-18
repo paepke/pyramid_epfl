@@ -15,6 +15,7 @@
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}">
         <div name="{{ compo.name }}" epfl-type="radiobuttongroup">
+        {% if compo.options != None %}
             {% for option in compo.options %}
                 {% if option is string %}
                     {% set value = option %}
@@ -34,7 +35,7 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                <input type="radio" value="{{ value }}" {% if compo.value == value %}checked="checked"{% endif %} name="{{ compo.cid }}">{{ visual }}{% endfor %}
+                <input type="radio" value="{{ value }}" {% if compo.value == value %}checked="checked"{% endif %} name="{{ compo.cid }}">{{ visual }}{% endfor %}{% endif %}
         </div>
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>

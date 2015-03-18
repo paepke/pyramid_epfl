@@ -25,6 +25,7 @@
     {% endif %}
 
     <ul class="epfl-selectize" id="selectize-{{ compo.cid }}" {% if compo.drop_down_height is defined and compo.drop_down_height != None %}style="max-height:{{ compo.drop_down_height }}px;overflow-y: scroll"{% endif %}>
+    {% if compo.entries != None %}
         {% for entry in compo.entries %}
             <li class="epfl-selectize epfl-selectize-head"><span
                     class="epfl-selectize epfl-selectize-heading">{{ entry['name'] }}</span>
@@ -39,6 +40,7 @@
             </li>
             <li class="epfl-selectize-divider"></li>
         {% endfor %}
+    {% endif %}
     </ul>
 
     </div>

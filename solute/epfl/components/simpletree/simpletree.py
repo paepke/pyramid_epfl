@@ -18,11 +18,11 @@ class Simpletree(epflcomponentbase.ComponentBase):
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
                    "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id", "is_loading", "load_async"]
 
-    tree_data = odict()
+    tree_data = None
 
-    open_leaf_0_ids = []
-    open_leaf_1_ids = {}
-    all_filter = []
+    open_leaf_0_ids = None
+    open_leaf_1_ids = None
+    all_filter = None
 
     height = 400
 
@@ -42,6 +42,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.tree_data = odict()
 
     def add_level_0(self, data):
+        if self.tree_data is None:
+            self.tree_data = odict()
         for entry in data:
             self.tree_data[entry['id']] = entry
 
@@ -102,12 +104,18 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.add_level_0(self.load_level_0())
 
+        if self.open_leaf_0_ids is None:
+            self.open_leaf_0_ids = []
+
+
         for leafid in self.open_leaf_0_ids:
             if leafid in self.tree_data.keys():
                 self.add_level_1(self.load_level_1(leafid), leafid)
             else:
                 self.open_leaf_0_ids.remove(leafid)
         deprecated_leaf_1_ids = []
+        if self.open_leaf_1_ids is None:
+            self.open_leaf_1_ids = {}
         for leaf_id, leaf_obj in self.open_leaf_1_ids.iteritems():
             if (leaf_obj["parent_id"] in self.tree_data.keys()) and (
                         'children' in self.tree_data[leaf_obj['parent_id']]) and (
@@ -170,6 +178,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
             self.update_level_1(level_0_id, recursive)
 
     def update_level_2(self, level_0_id, level_1_id):
+        if self.open_leaf_1_ids is None:
+            self.open_leaf_1_ids = {}
         if not level_1_id in self.open_leaf_1_ids.keys():
             return
         level_2_data = self.load_level_2(level_1_id)
@@ -187,6 +197,11 @@ class Simpletree(epflcomponentbase.ComponentBase):
         leafid = int(leafid)
 
         self.add_level_1(self.load_level_1(leafid), leafid)
+
+        if self.open_leaf_0_ids is None:
+            self.open_leaf_0_ids = []
+
+
         if not leafid in self.open_leaf_0_ids:
             self.open_leaf_0_ids.append(leafid)
 
@@ -199,6 +214,8 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.scroll_top = scroll_top
         leafid = int(leafid)
         try:
+            if self.open_leaf_0_ids is None:
+                self.open_leaf_0_ids = []
             self.open_leaf_0_ids.remove(leafid)
         except ValueError:
             pass
@@ -214,6 +231,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.scroll_top = scroll_top
 
         self.add_level_2(self.load_level_2(leafid), leafid, parent_id)
+
+        if self.open_leaf_1_ids is None:
+            self.open_leaf_1_ids = {}
+
         self.open_leaf_1_ids[leafid] = {"leafid": leafid, "parent_id": parent_id}
 
         self.leaf_1_clicked(leafid, parent_id)
@@ -223,6 +244,10 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def handle_leaf_1_close(self, leafid, parent_id, scroll_top):
         self.scroll_top = scroll_top
         try:
+
+            if self.open_leaf_1_ids is None:
+                self.open_leaf_1_ids = {}
+
             del self.open_leaf_1_ids[leafid]
         except KeyError:
             pass

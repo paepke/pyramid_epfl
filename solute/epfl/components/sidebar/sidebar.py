@@ -29,8 +29,8 @@ class Sidebar(ComponentBase):
     compo_state = ComponentBase.compo_state[:]
     compo_state.extend(["links","current_url","selected_parent"])
 
-    links = []
-    current_url = ""
+    links = None
+    current_url = None
 
     selected_parent = None
 

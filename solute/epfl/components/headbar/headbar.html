@@ -2,8 +2,8 @@
     <section class="header-container header-fixed">
         <header class="top-header clearfix">
             <div class="headbar-title">
-                <a href="{{ compo.titlelink }}" title="{{ compo.title_hover_text|default("") }}">
-                    <span>{{ compo.title }}</span>
+                <a href="{{ compo.titlelink|default("#") }}" title="{{ compo.title_hover_text|default("") }}">
+                    <span>{{ compo.title|default("")  }}</span>
                 </a>
             </div>
 
@@ -14,19 +14,19 @@
                 <div class="pull-left headbar-left">
 
                     <ol class="breadcrumb-alt epfl-headbar-breadcrumb">
-                        <li><a href="#">{{ compo.breadcrumb_first }}</a></li>
-                        <li><a href="#">{{ compo.breadcrumb_second }}</a></li>
+                        <li><a href="#">{{ compo.breadcrumb_first|default("")  }}</a></li>
+                        <li><a href="#">{{ compo.breadcrumb_second |default("") }}</a></li>
                     </ol>
 
 
 
                 </div>
                 <div class="pull-right">
-                    <span class="headbar-icontext"><i class="fa fa-user"></i> {{ compo.username }}</span>
-                    <span class="headbar-icontext"><i class="fa fa-group"></i> {{ compo.usergroup }}</span>
+                    <span class="headbar-icontext"><i class="fa fa-user"></i> {{ compo.username |default("") }}</span>
+                    <span class="headbar-icontext"><i class="fa fa-group"></i> {{ compo.usergroup |default("") }}</span>
                     <span class="headbar-icontext">
                         <a href="#"
-                           onclick="epfl.dispatch_event('{{ compo.cid }}', 'logout',{redirect:'{{ compo.logoutlink }}'});">
+                           onclick="epfl.dispatch_event('{{ compo.cid }}', 'logout',{redirect:'{{ compo.logoutlink|default("#") }}'});">
                             <i class="fa fa-sign-out"></i>Logout
                         </a>
                     </span>

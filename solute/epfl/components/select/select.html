@@ -18,6 +18,7 @@
             {% if (not compo.value is defined or compo.value is none) and (compo.placeholder is defined and not compo.placeholder is none) %}
             <option value="" disabled selected style="display:none;">{{ compo.placeholder }}</option>
             {% endif %}
+        {% if compo.options != None %}
             {% for option in compo.options %}
                 {% if option is string %}
 	                {% set value = option %}
@@ -39,6 +40,7 @@
 	            {% endif %}
                 <option value="{{ value }}"{% if compo.value == value %} selected="selected"{% endif %}>{{ visual }}</option>
             {% endfor %}
+        {% endif %}
             </select>
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>

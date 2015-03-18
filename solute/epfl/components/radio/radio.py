@@ -13,7 +13,7 @@ class Radio(FormInputBase):
 
     """
 
-    options = ""
+    options = None
 
     compo_state = FormInputBase.compo_state + ['options']
 

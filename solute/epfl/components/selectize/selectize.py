@@ -27,7 +27,7 @@ class Selectize(FormInputBase):
     compo_config = []
     compo_state = FormInputBase.compo_state + ["entries","drop_down_height","selected_text"]
 
-    entries = []
+    entries = None
     layout_vertical = False
     drop_down_height = None
     selected_text = None
