@@ -66,25 +66,33 @@ def add_extra_contents(response, obj):
 
     if obj.js_name:
         for js_name in obj.js_name:
-            url = create_static_url(obj, js_name)
-            js_script_src = core.epflclient.JSLink(url)
+            js_script_src = create_static_url(obj, js_name, wrapper_class=core.epflclient.JSLink)
             response.add_extra_content(js_script_src)
 
     if obj.css_name:
         for css_name in obj.css_name:
-            url = create_static_url(obj, css_name)
-            css_link_src = core.epflclient.CSSLink(url)
+            css_link_src = create_static_url(obj, css_name, wrapper_class=core.epflclient.CSSLink)
             response.add_extra_content(css_link_src)
 
+static_url_cache = {}
 
-def create_static_url(obj, mixin_name, spec=None):
+@profile
+def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
     if type(mixin_name) is tuple:
         spec, mixin_name = mixin_name
     asset_spec = "{spec}/{name}".format(spec=spec, name=mixin_name)
+    try:
+        return static_url_cache[(asset_spec, wrapper_class)]
+    except KeyError:
+        pass
+
     if spec[0:11] != 'solute.epfl':
-        return obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     static_path = obj.request.static_path(asset_spec)
 
     static_mixin = 'static/'
@@ -98,9 +106,15 @@ def create_static_url(obj, mixin_name, spec=None):
     absolute_path = "{base_path}{relative_path}{mixin}{mixin_name}".format(**output)
 
     if exists(absolute_path):
-        return obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     elif spec != 'solute.epfl:static':
-        return create_static_url(obj, mixin_name, 'solute.epfl:static')
+        static_url_cache[(asset_spec, wrapper_class)] = create_static_url(obj, mixin_name, 'solute.epfl:static')
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     else:
         # return obj.request.static_url(asset_spec)
         raise Exception('Static dependency not found. %s' % asset_spec)

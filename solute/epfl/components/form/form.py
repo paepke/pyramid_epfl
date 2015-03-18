@@ -179,7 +179,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
     compo_state = ["_registered_fields", "is_dirty"]
 
     fields = []
-    _registered_fields = []
+    _registered_fields = None
     validation_errors = []
 
     validate_hidden_fields = False
@@ -200,6 +200,8 @@ class Form(epflcomponentbase.ComponentContainerBase):
         which register themselves as fields have to provide the methods reset() and validate() (see :class:`.FormInputBase`),
         since these are called for all registered fields by the parent form.
         """
+        if self._registered_fields is None:
+            self._registered_fields = []
         self._registered_fields.append(field.cid)
 
     @property

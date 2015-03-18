@@ -5,6 +5,8 @@ except NameError:
     def profile(func):
         return func
 
+from random import randint
+
 from pprint import pprint
 from collections2 import OrderedDict as odict
 from collections import MutableSequence
@@ -44,11 +46,6 @@ class UnboundComponent(object):
     :class:`.ComponentContainerBase`. :func:`ComponentContainerBase.add_component` will return the actually
     instantiated component if it is called with an :class:`.UnboundComponent`.
     """
-
-    __valid_subtypes__ = [bool, int, long, float, complex, str, unicode, bytearray, xrange, type, types.FunctionType,
-                          types.NoneType]
-    __debugging_on__ = False
-
     __dynamic_class_store__ = None  #: Internal caching for :attr:`UnboundComponent.__dynamic_class__`
 
     def __init__(self, cls, config):
@@ -56,6 +53,9 @@ class UnboundComponent(object):
         Create dynamic cid for unbound components without a cid entry in config, store the calling class and create a
         copy of the config.
         """
+        if cls:
+            cls.set_handles()  # Called at this time to avoid later troubles with handle caching.
+
         self.__unbound_cls__ = cls
         self.__unbound_config__ = config.copy()
 
@@ -63,6 +63,7 @@ class UnboundComponent(object):
         self.position = (self.__unbound_config__.pop('cid', None) or uuid.uuid4().hex,
                          self.__unbound_config__.pop('slot', None))
 
+    @profile
     def __call__(self, *args, **kwargs):
         """
         Pseudo instantiation helper that returns a new UnboundComponent by updating the config. This can also be used to
@@ -87,6 +88,7 @@ class UnboundComponent(object):
         return ubc
 
     @property
+    @profile
     def __dynamic_class__(self):
         """
         If the config contains entries besides cid and slot a dynamic class is returned. This offers just in time
@@ -99,16 +101,25 @@ class UnboundComponent(object):
         stripped_conf.pop('cid', None)
         stripped_conf.pop('slot', None)
         if len(stripped_conf) > 0:
-            self.__dynamic_class_store__ = type('%s_auto_%s' % (self.__unbound_cls__.__name__, uuid.uuid4().hex),
-                                                (self.__unbound_cls__, ),
-                                                {})
+            cid = "{0:08x}".format(randint(0, 0xffffffff))
+            name = '{name}_auto_{cid}'.format(name=self.__unbound_cls__.__name__, cid=cid)
+            self.__dynamic_class_store__ = type(name, (self.__unbound_cls__, ), {})
             for param in self.__unbound_config__:
-                self.assure_valid_subtype(self.__unbound_config__[param])
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
             setattr(self.__dynamic_class_store__, '__unbound_component__', self)
             return self.__dynamic_class_store__
         else:
             return self.__unbound_cls__
+
+    @profile
+    def register_in_transaction(self, container, slot=None, position=None):
+        compo_info = {'class': self.__getstate__(),
+                      'config': self.__unbound_config__,
+                      'ccid': container.cid,
+                      'cid': self.position[0],
+                      'slot': slot}
+        container.page.transaction.set_component(self.position[0], compo_info, position=position)
+        return getattr(container.page, self.position[0])
 
     def create_by_compo_info(self, *args, **kwargs):
         """
@@ -123,8 +134,6 @@ class UnboundComponent(object):
         """
         Pickling helper.
         """
-        for param in self.__unbound_config__:
-            self.assure_valid_subtype(self.__unbound_config__[param])
         return self.__unbound_cls__, self.__unbound_config__, self.position
 
     def __setstate__(self, state):
@@ -132,38 +141,6 @@ class UnboundComponent(object):
         Pickling helper.
         """
         self.__unbound_cls__, self.__unbound_config__, self.position = state
-
-    @staticmethod
-    def assure_valid_subtype(param):
-        """
-        Raise an exception if param is not among the valid subtypes or contains invalid subtypes.
-
-        ***epfl.debug***: This test is skipped if epfl.debug is set to False in the config.
-        """
-
-        # Safely read the epfl.debug flag from the settings.
-        registry = threadlocal.get_current_registry()
-        if not registry or not registry.settings or not registry.settings.get('epfl.debug', 'false') == 'true':
-            return
-
-        # There are some basic types that are always accepted.
-        if type(param) in UnboundComponent.__valid_subtypes__:
-            return
-
-        # If param is in the list of iterables all its entries are checked.
-        if type(param) in [list, tuple, set, frozenset]:
-            for item in param.__iter__():
-                UnboundComponent.assure_valid_subtype(item)
-            return
-        # If param is a dict all its entries are checked.
-        if type(param) is dict:
-            for item in param.values():
-                UnboundComponent.assure_valid_subtype(item)
-            return
-
-        if type(param) in [UnboundComponent]:
-            return
-        raise Exception('Tried adding unsupported %r to an unbound class.' % param)
 
     def __eq__(self, other):
         """
@@ -250,6 +227,7 @@ class ComponentBase(object):
 
     _compo_info = None
     _access = None
+    _handles = None
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -272,6 +250,7 @@ class ComponentBase(object):
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
 
+    @profile
     def __new__(cls, *args, **config):
         """
         Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
@@ -314,7 +293,7 @@ class ComponentBase(object):
 
     def __getattribute__(self, key):
         if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access', 'is_rendered',
-                       'compo_config'] \
+                       'compo_config', '__class__', 'asset_spec', '_handles'] \
                 and key not in self.compo_config \
                 and key in self.compo_state + self.base_compo_state:
             return self.compo_info.get('compo_state', {}).get(key,
@@ -694,8 +673,20 @@ class ComponentBase(object):
 
         return jinja2.Markup(out)
 
+    @classmethod
+    def set_handles(cls):
+        if cls._handles is None:
+            cls._handles = []
+            for name in dir(cls):
+                if not name.startswith('handle_') or name == 'handle_event':
+                    continue
+                cls._handles.append(name[7:])
+
+    @profile
     def get_handles(self):
-        return [name[7:] for name in dir(self) if name.startswith('handle_') and name != 'handle_event']
+        self.set_handles()
+        return self._handles
+
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
@@ -1027,16 +1018,12 @@ class ComponentContainerBase(ComponentBase):
 
         if isinstance(compo_obj, UnboundComponent):
             cid, slot = compo_obj.position
-            compo_obj = compo_obj(self.page, cid, __instantiate__=True)
-
-        # we have no nice cid, so use a UUID
-        if not cid:
-            cid = str(uuid.uuid4())
-
-        compo_obj.register_in_transaction(self, slot, position=position)
-
-        # handle the static part
-        self.page.add_static_component(cid, compo_obj)
+            compo_obj = compo_obj.register_in_transaction(self, slot, position=position)
+        else:
+            # Generate UUID if no cid has been set previously.
+            if not cid:
+                cid = str(uuid.uuid4())
+            compo_obj.register_in_transaction(self, slot, position=position)
 
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
