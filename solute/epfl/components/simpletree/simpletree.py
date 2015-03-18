@@ -14,7 +14,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     css_name = ["simpletree.css"]
 
-    compo_config = []
+    compo_config = ['tree_data']
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
                    "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id", "is_loading", "load_async"]
 

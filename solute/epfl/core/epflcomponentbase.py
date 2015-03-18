@@ -313,14 +313,17 @@ class ComponentBase(object):
         pass
 
     def __getattribute__(self, key):
-        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access', 'is_rendered'] \
+        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access', 'is_rendered',
+                       'compo_config'] \
+                and key not in self.compo_config \
                 and key in self.compo_state + self.base_compo_state:
             return self.compo_info.get('compo_state', {}).get(key,
                                                               super(ComponentBase, self).__getattribute__(key))
         return super(ComponentBase, self).__getattribute__(key)
 
     def __setattr__(self, key, value):
-        if key not in self.compo_state + self.base_compo_state:
+        if key in self.compo_config \
+                or key not in self.compo_state + self.base_compo_state:
             return super(ComponentBase, self).__setattr__(key, value)
         self.compo_info.setdefault('compo_state', {})[key] = value
 
