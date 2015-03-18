@@ -7,7 +7,7 @@ The components must be imported in the namespace of this library.
 
 from canvas.canvas import Canvas  # A canvas component
 from flipflop.flipflop import FlipFlop
-from box.box import Box
+from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
 from droppable_box.droppable_box import DroppableBox
 from sortable.sortable import Sortable
