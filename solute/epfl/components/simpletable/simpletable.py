@@ -1,9 +1,6 @@
 # coding: utf-8
 from solute.epfl.core import epflcomponentbase,epflutil
 
-from pyramid.response import Response
-import json
-
 class SimpleTable(epflcomponentbase.ComponentBase):
 
     template_name = "simpletable/simpletable.html"
@@ -19,7 +16,7 @@ class SimpleTable(epflcomponentbase.ComponentBase):
 
     compo_config = []
 
-    table_data = []
-    table_head = []
-    title = ""
+    table_data = None
+    table_head = None
+    title = None
 
