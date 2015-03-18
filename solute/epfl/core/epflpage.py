@@ -153,8 +153,12 @@ class Page(object):
         self.handle_submit_request()
         out = self.render()
 
-        extra_content = set([s.render() for s in self.response.extra_content if s.enable_dynamic_rendering])
-        self.transaction['rendered_extra_content'] = self.transaction.get('rendered_extra_content', set())
+        extra_content = set()
+        for s in self.response.extra_content:
+            if s.enable_dynamic_rendering:
+                extra_content.add(s.render())
+
+        self.transaction.setdefault('rendered_extra_content', set())
         self.transaction['rendered_extra_content'].update(extra_content)
 
         return out

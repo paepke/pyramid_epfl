@@ -108,7 +108,7 @@ epfl_module = function() {
     epfl.init_component = function(cid, class_name, params) {
         var constructor = epfl[class_name];
         if (!constructor) {
-            alert("JS-ERROR: The component '" + class_name + "' does not exist!")
+            console.log("JS-ERROR: The component '" + class_name + "' does not exist!");
             return;
         }
         var compo_obj = new constructor(cid, params);
@@ -126,7 +126,7 @@ epfl_module = function() {
             }
             var el = $("[epflid='" + epflid + "']");
             if (el.length == 0) {
-                alert("Element with epflid='" + epflid + "' not found!");
+                console.log("Element not found!", cid, parts);
                 return;
             }
             var parts_jq = $(part_html);
