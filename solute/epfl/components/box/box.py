@@ -30,9 +30,6 @@ class Box(epflcomponentbase.ComponentContainerBase):
                            # if none of them (compos or form-fields) are visible the box to is not visible
                            # else the box is visible
 
-    compo_config = epflcomponentbase.ComponentContainerBase.compo_config[:]
-    compo_config.append("auto_visibility")
-
     hover_box = False
     hover_box_remove_on_close = True
     box_shown = True
@@ -70,3 +67,20 @@ class Box(epflcomponentbase.ComponentContainerBase):
                 if old_visibility:
                     self.redraw()
 
+
+class ModalBox(Box):
+    hover_box = True
+    visible = False
+    auto_visibility = False
+    is_removable = True
+    hover_box_remove_on_close = False
+    hover_box_width = 50
+    
+    def open(self):
+        self.visible = True
+        self.redraw()
+        self.add_ajax_response("$('body').css({ overflow: 'hidden' });")
+        
+    def handle_hide(self):
+        Box.handle_hide(self)
+        self.add_ajax_response("$('body').css({ overflow: 'inherit' });")

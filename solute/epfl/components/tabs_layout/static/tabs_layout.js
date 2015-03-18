@@ -8,7 +8,7 @@ epfl.TabsLayoutComponent = function(cid, params) {
     	epfl.dispatch_event(cid, "toggle_tab", {"selected_compo_cid": selected_compo_cid});
 	});
 	window.setTimeout(function() {
-		$('[epflid="'+cid+'"]').find('[role="tabpanel"]').addClass("tab-pane");
+		$('#'+cid).find('[role="tabpanel"]').addClass("tab-pane");
 	},0);
 	
 };

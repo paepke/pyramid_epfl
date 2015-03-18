@@ -4,17 +4,17 @@
         {% if compo.layout_vertical == True %}
             <div class="row">
                 <div class="col-sm-{{ compo_col }}">
-                    <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+                    <label class="control-label">{{ compo.label }}</label>
                 </div>
             </div>
         {% else %}
             {% set compo_col = compo_col - compo.label_col %}
-            <label for="{{ compo.cid }}_input" class="control-label col-sm-{{ compo.label_col }}">{{ compo.label }}</label>
+            <label class="control-label col-sm-{{ compo.label_col }}">{{ compo.label }}</label>
         {% endif %}
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}">
-        <div id="{{ compo.cid }}" name="{{ compo.name }}" epfl-type="radiobuttongroup" class="btn-group epfl-buttonradio" data-toggle="buttons">
+        <div name="{{ compo.name }}" epfl-type="radiobuttongroup" class="btn-group epfl-buttonradio" data-toggle="buttons">
             {% for option in compo.options %}
                 {% if option is string %}
                     {% set value = option %}

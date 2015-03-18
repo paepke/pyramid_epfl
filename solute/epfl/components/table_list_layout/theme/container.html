@@ -1,6 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    <div class="panel panel-default" epflid="{{ compo.cid }}" id="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
+    <div class="panel panel-default" id="{{ compo.cid }}" epflid="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
         {% if compo.title is defined %}
             <div class="panel-heading">{{ compo.title }}</div>
         {% endif %}

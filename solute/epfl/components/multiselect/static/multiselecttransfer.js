@@ -1,7 +1,7 @@
 epfl.MultiSelectTransferComponent = function (cid, params) {
     var compo = this;
     epfl.ComponentBase.call(this, cid, params);
-    $('[epflid="'+cid+'"]').click(function(event) {
+    $('#'+cid).click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();
     	epfl.dispatch_event(cid, "transfer", {});

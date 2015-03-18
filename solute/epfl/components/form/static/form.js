@@ -1,12 +1,12 @@
 epfl.FormComponent = function (cid, params) {
-	$('[epflid="'+cid+'"]').submit(function(event) {
+	$('#'+cid).submit(function(event) {
 	    event.preventDefault();
 	    epfl.dispatch_event(cid, "submit", {});
 	});
 	var set_dirty = function() {
-			is_dirty = $('[epflid="'+cid+'"]').data('dirty');
+			is_dirty = $('#'+cid).data('dirty');
 			if (is_dirty == '0') {
-				$('[epflid="'+cid+'"]').data('dirty', '1');
+				$('#'+cid).data('dirty', '1');
 				return true;
 			}
 			return false;

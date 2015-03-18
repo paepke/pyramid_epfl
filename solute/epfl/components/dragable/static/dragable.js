@@ -6,26 +6,26 @@ epfl.DragableComponent = function(cid, params) {
         delay: 500,
         zIndex: 9999
     });
-    $('[epflid="'+cid+'"].selectable').not('.selected').click(function(event) {
+    $('#' + cid+'.selectable').not('.selected').click(function(event) {
     	epfl.dispatch_event(cid, "selected", {});
     });
-    $('[epflid="'+cid+'"].selectable.selected').click(function(event) {
+    $('#' + cid+'.selectable.selected').click(function(event) {
     	epfl.dispatch_event(cid, "unselected", {});
     });
     // handle title renaming
-    $('[epflid="'+cid+'"].rename-inactive').bind('dblclick', function(event) {
+    $('#' + cid+'.rename-inactive').bind('dblclick', function(event) {
 		$(this).removeClass("rename-inactive");
 		$(this).children(".inactive").removeClass("inactive");
 		$(this).children(".title-rename").focus();
     });
-    $('[epflid="'+cid+'"] .title-rename.inactive').bind('keyup', function(event) {
+    $('#' + cid+' .title-rename.inactive').bind('keyup', function(event) {
     	if ((event.type == "keyup") && (event.keyCode != 113)) { // F2
 			return;
 		}
 		$(this).parent().removeClass("rename-inactive");
 		$(this).removeClass("inactive");
     });
-	$('[epflid="'+cid+'"] .title-rename').bind('keyup', function(event){
+	$('#' + cid+' .title-rename').bind('keyup', function(event){
 		if ((event.keyCode != 13) && (event.keyCode != 27)) {
 			return;
 		}
@@ -34,7 +34,7 @@ epfl.DragableComponent = function(cid, params) {
 		}
 		$(this).blur(); // will trigger focusout event
 	});
-	$('[epflid="'+cid+'"] .title-rename').bind('focusout', function(event){
+	$('#' + cid+' .title-rename').bind('focusout', function(event){
 
 		if ($(this).hasClass("inactive")) {
 			return;

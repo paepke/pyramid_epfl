@@ -1,10 +1,10 @@
 epfl.DropdownComponent = function (cid, params) {
-    $('[epflid="'+cid+'"] > .dropdown-toggle').click(function(event) {
+    $('#' + cid+ ' > .dropdown-toggle').click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();
         $(this).dropdown('toggle');
 	});
-	$('[epflid="'+cid+'"] > ul > li > .epfl_dropdown_menuitem').click(function(event) {
+	$('#' + cid+ ' > ul > li > .epfl_dropdown_menuitem').click(function(event) {
 		event.stopImmediatePropagation();
 	    event.preventDefault();
 	    menu_key = $(this).data("menu-key");

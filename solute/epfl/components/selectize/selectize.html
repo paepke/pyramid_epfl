@@ -4,12 +4,12 @@
         {% if compo.layout_vertical == True %}
             <div class="row">
                 <div class="col-sm-{{ compo_col }}">
-                    <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+                    <label for="selectize-input-{{ compo.cid }}" class="control-label">{{ compo.label }}</label>
                 </div>
             </div>
         {% else %}
             {% set compo_col = compo_col - compo.label_col %}
-            <label for="{{ compo.cid }}_input" class="control-label col-sm-{{ compo.label_col }}">{{ compo.label }}</label>
+            <label for="selectize-input-{{ compo.cid }}" class="control-label col-sm-{{ compo.label_col }}">{{ compo.label }}</label>
         {% endif %}
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}

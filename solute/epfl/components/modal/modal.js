@@ -8,7 +8,7 @@ epfl.ModalComponent = function(cid, params) {
     $('#'+cid+'_modal_close').click(function(){
         epfl.dispatch_event(cid, 'close', {});
     });
-    $('[epflid="'+cid+'"]').on('shown.bs.modal', function () {
+    $('#'+cid).on('shown.bs.modal', function () {
     	$(this).find("input").first().focus();
 	});
 };

@@ -2,12 +2,12 @@ epfl.ImageComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     
 	if ((params["opts"]["show_dominant_color"]) || (params["opts"]["show_additional_colors"])) {
-		$('[epflid="'+cid+'"]').find('.epfl-img-component-image').imagesLoaded( function(instance) {
+		$('#'+cid).find('.epfl-img-component-image').imagesLoaded( function(instance) {
 			var my_image = instance["images"][0].img;
 			var colorThief = new ColorThief();
 			if (params["opts"]["show_dominant_color"]) {
 				var dominantColor = colorThief.getColor(my_image);
-				var dominant_color_div = $('[epflid="'+cid+'"]').find('.epfl-img-component-dominant-color');
+				var dominant_color_div = $('#'+cid).find('.epfl-img-component-dominant-color');
 				dominant_color_div.css("background-color", "rgb("+dominantColor+")");
 			}
 			if (params["opts"]["show_additional_colors"]) {
