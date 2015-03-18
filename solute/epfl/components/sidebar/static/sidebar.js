@@ -13,6 +13,11 @@ epfl.Sidebar = function (cid, params) {
             child_name: $(this).data("child-name")
         });
     });
+
+    $("#" + cid + " div.epfl-sidebar-servermode").css({
+        "position":"fixed",
+        "top":$(window).height() - 20
+    });
 };
 
 epfl.Sidebar.inherits_from(epfl.ComponentBase);

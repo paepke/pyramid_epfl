@@ -27,10 +27,11 @@ class Sidebar(ComponentBase):
     js_parts = ComponentBase.js_parts + ["sidebar/sidebar.js"]
 
     compo_state = ComponentBase.compo_state[:]
-    compo_state.extend(["links","current_url","selected_parent"])
+    compo_state.extend(["links","current_url","selected_parent","server_test_mode"])
 
     links = None
     current_url = None
+    server_test_mode = None
 
     selected_parent = None
 

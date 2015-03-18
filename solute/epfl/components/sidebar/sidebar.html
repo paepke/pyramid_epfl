@@ -22,5 +22,8 @@
             {% endfor %}
         {% endif %}
         </ul>
+    {% if compo.server_test_mode %}
+        <div class="epfl-sidebar-servermode">Status: TEST</div>
+    {% endif %}
     </aside>
 </div>
