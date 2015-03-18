@@ -88,6 +88,9 @@ class Transaction(MutableMapping):
         del self.data
 
     # EPFL Core Api methods
+    def get_existing_components(self):
+        return self['compo_lookup'].keys() + self['compo_struct'].keys()
+
     def get_component_instance(self, page, cid):
         if cid not in self.instances:
             compo_info = self.get_component(cid)
@@ -177,10 +180,7 @@ class Transaction(MutableMapping):
             del self['compo_lookup'][cid]
         if cid in self.instances:
             del self.instances[cid]
-        if 'compo_struct' not in container:
-            print container
-        if cid not in container['compo_struct']:
-            print container['compo_struct']
+
         del container['compo_struct'][cid]
 
     def has_component(self, cid):

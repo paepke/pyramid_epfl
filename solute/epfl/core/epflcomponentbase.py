@@ -633,7 +633,6 @@ class ComponentBase(object):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
         """
-
         epflutil.add_extra_contents(self.response, obj=self)
 
     @profile

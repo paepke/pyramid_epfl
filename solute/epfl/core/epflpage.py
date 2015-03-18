@@ -357,8 +357,8 @@ class Page(object):
         epflutil.add_extra_contents(self.response, obj=self)
 
         # pre-render all components
-        for component_obj in self.get_active_components():
-            component_obj.pre_render()
+        for cid in self.transaction.get_existing_components():
+            getattr(self, cid).pre_render()
 
         # exclusive extra-content
         exclusive_extra_content = self.response.get_exclusive_extra_content()
