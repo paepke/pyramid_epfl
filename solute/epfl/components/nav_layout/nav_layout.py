@@ -12,7 +12,7 @@ class NavLayout(epflcomponentbase.ComponentBase):
     compo_state = ['links', 'title']
 
     title = None
-    links = []
+    links = None
 
     def __init__(self, title=None, links=[], **extra_params):
         super(NavLayout, self).__init__()

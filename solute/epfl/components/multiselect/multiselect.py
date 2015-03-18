@@ -34,14 +34,14 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
             "search_string", "default_out_multiselect_transfer_cid"]
 
     default_child_cls = MultiSelectEntry
-    selected_child_cids = set()  #: A list of child cids that are currently selected.
+    selected_child_cids = None  #: A list of child cids that are currently selected.
     
     #: smart components may re-generate cids for its child components. In this case, this list
     #: can be used to remember the selected components by its id. It will be automatically moved into cids of the :attr:`selected_child_cids`.
-    selected_child_ids = set()
+    selected_child_ids = None
     
     #: A list of child cids that should be hidden (e.g. for only displaying search results).
-    hidden_child_cids = set()
+    hidden_child_cids = None
     
     scroll_position = 0  #: Used to save the scroll position of the list in the transaction.
     show_search = False  #: If true, a search bar and search functionality is provided.
@@ -58,22 +58,28 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         Reset the state if the component. This is needed if the component is reused with a different data set,
         e.g. if the same ids is used for different data than before.
         """
-        self.selected_child_cids.clear()
-        self.selected_child_ids.clear()
-        self.hidden_child_cids.clear()
+        if self.selected_child_cids is not None:
+            self.selected_child_cids.clear()
+        if self.selected_child_ids is not None:
+            self.selected_child_ids.clear()
+        if self.hidden_child_cids is not None:
+            self.hidden_child_cids.clear()
         self.scroll_position = 0
         self.search_string = ""
         for comp in self.components:
             comp.delete_component()
 
     def handle_selected(self, child_cid):
+        if self.selected_child_cids is None:
+            self.selected_child_cids = set()
         if not child_cid in self.selected_child_cids:
             self.selected_child_cids.add(child_cid)
         self.redraw()
 
     def handle_unselected(self, child_cid):
-        self.selected_child_cids.discard(child_cid)
-        self.redraw()
+        if self.selected_child_cids is not None:
+            self.selected_child_cids.discard(child_cid)
+            self.redraw()
 
     def handle_double_click(self, child_cid):
         if not self.default_out_multiselect_transfer_cid is None:
@@ -89,9 +95,12 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         for compo in self.components:
             try:
                 if not searchstring in compo.data["value"].lower():
+                    if self.hidden_child_cids is not None:
+                        self.hidden_child_cids = set()
                     self.hidden_child_cids.add(compo.cid)
                     # this component is also not selected anymore
-                    self.selected_child_cids.discard(compo.cid)
+                    if self.selected_child_cids is not None:
+                        self.selected_child_cids.discard(compo.cid)
             except KeyError:
                 pass
 
@@ -103,6 +112,8 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         for compo in self.components:
             if "multiselect_group" in compo.data:
                 if (not current_group_cid is None) and (current_group_matched == False) and (number_of_matched_entries_for_group == 0):
+                    if self.hidden_child_cids is None:
+                        self.hidden_child_cids = set()
                     self.hidden_child_cids.add(current_group_cid)
                 try:
                     if not searchstring in compo.data["value"].lower():
@@ -121,20 +132,26 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
                     continue
                 try:
                     if not searchstring in compo.data["value"].lower():
+                        if self.hidden_child_cids is None:
+                            self.hidden_child_cids = set()
                         self.hidden_child_cids.add(compo.cid)
                         # this component is also not selected anymore
-                        self.selected_child_cids.discard(compo.cid)
+                        if self.selected_child_cids is not None:
+                            self.selected_child_cids.discard(compo.cid)
                     else:
                         number_of_matched_entries_for_group += 1
                 except KeyError as e:
                     pass
         # check for the last group
         if (not current_group_cid is None) and (current_group_matched == False) and (number_of_matched_entries_for_group == 0):
+            if self.hidden_child_cids is None:
+                self.hidden_child_cids = set()
             self.hidden_child_cids.add(current_group_cid)
 
     def handle_search(self, search_string):
         self.search_string = search_string.strip()
-        self.hidden_child_cids.clear()
+        if self.hidden_child_cids is not None:
+            self.hidden_child_cids.clear()
         if self.grouped == False:
             self._handle_search_simple()
         else:
@@ -151,9 +168,13 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         :attr:`selected_child_ids`, the corresponding component cid can be placed in :attr:`selected_child_cids`.
         """
         result = epflcomponentbase.ComponentContainerBase.update_children(self, force=force)
+        if self.selected_child_ids is None:
+            self.selected_child_ids = set()
         if (len(self.selected_child_ids) > 0):
             for compo in self.components:
                 if compo.id in self.selected_child_ids:
+                    if self.selected_child_cids is None:
+                        self.selected_child_cids = set()
                     self.selected_child_cids.add(compo.cid)
             self.selected_child_ids.clear()
         return result
@@ -191,9 +212,13 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
         if source_multiselect.is_smart() or target_multiselect.is_smart():
             # do nothing, source/target component is smart. This method has to be overwritten.
             return
+        if source_multiselect.selected_child_cids is None:
+            return
         for cid in source_multiselect.selected_child_cids:
             source_multiselect.send(self.page.components[cid].id)
             target_multiselect.switch_component(target_multiselect.cid, cid)
+            if target_multiselect.selected_child_cids is None:
+                target_multiselect.selected_child_cids = set()
             target_multiselect.selected_child_cids.add(cid)
         source_multiselect.selected_child_cids.clear()
         source_multiselect.redraw()
@@ -213,7 +238,10 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
 
         source_multiselect.send(self.page.components[cid].id)
         target_multiselect.switch_component(target_multiselect.cid, cid)
+        if target_multiselect.selected_child_cids is None:
+            target_multiselect.selected_child_cids = set()
         target_multiselect.selected_child_cids.add(cid)
-        source_multiselect.selected_child_cids.discard(cid)
+        if source_multiselect.selected_child_cids is not None:
+            source_multiselect.selected_child_cids.discard(cid)
         source_multiselect.redraw()
         target_multiselect.redraw()

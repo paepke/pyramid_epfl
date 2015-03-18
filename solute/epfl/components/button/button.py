@@ -28,7 +28,7 @@ class Button(ComponentBase):
     event_name = None #: Mandatory name of the event handling method (without trailing "handle\_").
     event_target = None #: Optional target where the event handling method can be found.
     is_submit = False #: Set to true if button should have html type "submit".
-    disabled = False #: Set to true if button should be disabled.
+    disabled = None #: Set to true if button should be disabled.
     confirm_first = False #: Set to true if user should be asked for confirmation first before the button event is triggered
     confirm_message = "Do you want to proceed?" #: Adapt this text for a custom confirmation dialog message.
 

@@ -29,12 +29,14 @@ class Image(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["image_path"]
 
-    image_path = ""
+    image_path = None
     show_dominant_color = False
     show_additional_colors = False
     height = None
 
     def get_image_path(self):
+        if self.image_path is None:
+            self.image_path = ""
         return self.image_path
 
     def set_image_path(self, path):

@@ -14,7 +14,7 @@ class FlipFlop(Droppable):
 
     compo_state = Droppable.compo_state + ["components_order"]
     
-    components_order = []
+    components_order = [] # TODO: should be set to None since it is in compo_state
 
     valid_types = [FlipFlopDragable]
 

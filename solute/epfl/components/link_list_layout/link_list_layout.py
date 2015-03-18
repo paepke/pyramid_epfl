@@ -21,12 +21,14 @@ class LinkListLayout(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ['links']
     
-    links = []
+    links = None
 
     auto_update_children = False
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         links = []
+        if self.links is None:
+            self.links = []
         for i, link in enumerate(self.links):
             if not has_permission_for_route(self.request, link['url']):
                 continue

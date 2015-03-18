@@ -29,8 +29,8 @@ class Sortable(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["sort_order","child_components"]
 
-    sort_order = []
-    child_components = []
+    sort_order = None
+    child_components = None
     
     def handle_orderChanged(self,newOrder):
         self.sort_order = newOrder
@@ -45,6 +45,8 @@ class Sortable(epflcomponentbase.ComponentBase):
         self.make_order()
 
     def get_sort_order(self):
+        if self.sort_order is None:
+            self.sort_order = []
         return self.sort_order
 
     def set_sort_order(self, new_order):
@@ -52,4 +54,6 @@ class Sortable(epflcomponentbase.ComponentBase):
         self.make_order()
     
     def add_child_component(self,name, child):
+        if self.child_components is None:
+            self.child_components = []
         self.child_components.append({ "name" : name, "element" : child })

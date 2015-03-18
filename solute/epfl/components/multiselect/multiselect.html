@@ -11,12 +11,12 @@
         {% if compo.grouped %}
         	{% if child_compo.data.multiselect_group is defined %}multiselect-group
         	{% else %}
-        		in-multiselect-group multiselect-selectable{{ " selected" if (child_compo.cid in compo.selected_child_cids) else "" }}
+        		in-multiselect-group multiselect-selectable{{ " selected" if ((compo.selected_child_cids is not none) and (child_compo.cid in compo.selected_child_cids)) else "" }}
         	{% endif %}	
         {% else %}
-        	multiselect-selectable{{ " selected" if (child_compo.cid in compo.selected_child_cids) else "" }}
+        	multiselect-selectable{{ " selected" if ((compo.selected_child_cids is not none) and (child_compo.cid in compo.selected_child_cids)) else "" }}
         {% endif %}
-        {{ "hidden" if (child_compo.cid in compo.hidden_child_cids) else "" }}">
+        {{ "hidden" if ((compo.hidden_child_cids is not none) and (child_compo.cid in compo.hidden_child_cids)) else "" }}">
         	{{ child_compo() }}
         </li>
     {% endfor %}

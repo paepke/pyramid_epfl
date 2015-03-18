@@ -22,7 +22,7 @@ class Popover(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["text", "title", "position", "label", "icon"]
 
-    text = []
+    text = ""
     title = None  # : if title is none it is not displayed
     position = "top"  # : posible positions are top,left,right,bottom
     #: An optional font-awesome icon that should be displayed on the button.
