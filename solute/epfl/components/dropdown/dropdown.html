@@ -1,4 +1,4 @@
-<div epflid="{{ compo.cid }}" class="dropdown epfl_dropdown">
+<div id="{{compo.cid}}" epflid="{{ compo.cid }}" class="dropdown epfl_dropdown">
 	<button class="btn btn-default{{ " btn-xs" if compo.small_button else "" }} dropdown-toggle" type="button" id="{{ compo.cid }}_dropdownmenu" data-toggle="dropdown" aria-expanded="true">
 	{% if compo.menu_icon %}
 	<i class="fa {{ compo.menu_icon }}"></i>

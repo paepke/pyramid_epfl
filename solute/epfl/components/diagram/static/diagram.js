@@ -1,11 +1,11 @@
 epfl.DiagramComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    $('[epflid="'+cid+'"]').highcharts(
+    $('#'+cid).highcharts(
         params
     );
     // handle changes in series visibility
-    $('[epflid="'+cid+'"]').find('.highcharts-legend-item').click(function(event) {
-    	var my_chart = $('[epflid="'+cid+'"]').highcharts();
+    $('#'+cid).find('.highcharts-legend-item').click(function(event) {
+    	var my_chart = $('#'+cid).highcharts();
     	series_visibility = [];
         for (var i = 0; i < my_chart.series.length; i++) {
 		    series = my_chart.series[i];

@@ -1,7 +1,7 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% if compo.hover_box %}
-    <div epflid="{{compo.cid}}"
+    <div id="{{compo.cid}}" epflid="{{compo.cid}}"
          class="epfl_hover_box"
          style="position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: rgba(0, 0, 0, 0.3); z-index: 10; ">
         <div class="panel panel-default {{ "epfl_box_border" if compo.box_shown else "epfl_box" }}"
@@ -10,7 +10,7 @@
         </div>
     </div>
     {% else %}
-    <div class="panel panel-default {{ "epfl_box_border" if compo.box_shown else "epfl_box" }}" epflid="{{compo.cid}}">
+    <div class="panel panel-default {{ "epfl_box_border" if compo.box_shown else "epfl_box" }}" id="{{compo.cid}}" epflid="{{compo.cid}}">
         {{ caller() }}
     </div>
     {% endif %}

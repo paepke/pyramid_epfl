@@ -1,4 +1,4 @@
-<div class="row{{ " vertical-align" if compo.vertical_center else "" }}" epflid="{{ compo.cid }}">
+<div class="row{{ " vertical-align" if compo.vertical_center else "" }}" id="{{ compo.cid }}" epflid="{{ compo.cid }}">
 {% for compo_obj in compo.components %}
 	<div class="col-md-{{ compo_obj.cols }}">
     	{{ compo_obj.render() }}

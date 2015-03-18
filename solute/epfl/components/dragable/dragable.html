@@ -1,6 +1,5 @@
 <div class="list-group-item col-sm-12{{ " selectable" if compo.selectable else "" }}{{ " selected" if compo.is_selected else "" }}{{ " rename-inactive" if compo.title_renamable else "" }}"
-     id="{{compo.cid}}"
-     epflid="{{compo.cid}}">
+     id="{{compo.cid}}" epflid="{{compo.cid}}">
     {% if not compo.components %}
     	{% if compo.title_renamable %}
 			<input class="title-rename inactive" value="{{ compo.title }}" data-oldtitle="{{ compo.title }}" />

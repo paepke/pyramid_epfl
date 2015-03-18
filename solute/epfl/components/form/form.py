@@ -81,6 +81,10 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         else:
             self.value = None
         self.validation_error = ""
+        
+    def set_focus(self):
+        self.add_js_response('epfl.components["{cid}"].focus();'.format(cid=self.cid))
+        self.redraw()
             
 
     def validate(self):
