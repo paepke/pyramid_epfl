@@ -79,3 +79,8 @@ class ModalBox(Box):
     def open(self):
         self.visible = True
         self.redraw()
+        self.add_ajax_response("$('body').css({ overflow: 'hidden' });")
+        
+    def handle_hide(self):
+        Box.handle_hide(self)
+        self.add_ajax_response("$('body').css({ overflow: 'inherit' });")
