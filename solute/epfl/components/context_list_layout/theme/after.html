@@ -1,8 +1,7 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {% from "paginated_list_layout/theme/after.html" import render as after with context %}
     </ul>
     </div>
-    {{ after(**kwargs) }}
+    {{ caller() }}
     </div>
 {% endmacro %}

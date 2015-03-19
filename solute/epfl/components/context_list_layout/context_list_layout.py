@@ -1,9 +1,10 @@
 # * encoding: utf-8
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.components import ListLayout
+from solute.epfl.components import ListLayout, PaginatedListLayout
 
 
 class ContextListEntry(epflcomponentbase.ComponentContainerBase):
+
     """
     Only for internal use as child compo of ContextListLayout
 
@@ -12,7 +13,8 @@ class ContextListEntry(epflcomponentbase.ComponentContainerBase):
     asset_spec = "solute.epfl.components:context_list_layout/static"
 
 
-class ContextListLayout(ListLayout):
+class ContextListLayout(PaginatedListLayout):
+
     """
     A searchable list layout with a context menu in every row
 
@@ -50,10 +52,14 @@ class ContextListLayout(ListLayout):
     """
 
     asset_spec = "solute.epfl.components:context_list_layout/static"
-    theme_path = ['paginated_list_layout/theme', 'context_list_layout/theme']
+    theme_path = {'default': ['context_list_layout/theme'],
+                  'container': ['pretty_list_layout/theme'],
+                  # context layout embraces paginated layout template  for before and after
+                  # templates
+                  'before': ['paginated_list_layout/theme', '<context_list_layout/theme'],
+                  'after': ['paginated_list_layout/theme', '<context_list_layout/theme']}
 
-    js_parts = ListLayout.js_parts[:]
-    js_parts.extend(['paginated_list_layout/paginated_list_layout.js', 'context_list_layout/context_list_layout.js'])
+    js_parts = PaginatedListLayout.js_parts + ['context_list_layout/context_list_layout.js']
     default_child_cls = ContextListEntry
 
     show_pagination = False
@@ -61,7 +67,7 @@ class ContextListLayout(ListLayout):
 
     auto_update_children = True
 
-    js_name = ["context_list_layout.js",("solute.epfl:static", "plugin/contextmenu.js")]
+    js_name = ["context_list_layout.js", ("solute.epfl:static", "plugin/contextmenu.js")]
     css_name = ["context_list_layout.css"]
 
     data_interface = {'id': None, 'data': None, 'menu': None}
