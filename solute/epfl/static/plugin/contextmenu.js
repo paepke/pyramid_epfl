@@ -19,7 +19,7 @@ epfl.PluginContextMenu = function (selector,cid) {
             ul.show();
             ul.css({
                 top: ($(this).offset().top + $(this).height() + 3) - $(window).scrollTop(),
-                left: $(this).offset().left
+                left: $(this).offset().left - (ul.width() - $(this).width() - 10)
             })
         }
     });
