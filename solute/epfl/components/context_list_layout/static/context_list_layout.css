@@ -1,7 +1,3 @@
-.epfl-context-list {
-   overflow-y:auto;
-}
-
 .epfl-context-list-group {
 	margin-bottom:0px;
 }
@@ -26,12 +22,6 @@ li.epfl-context-list-entry button {
 ul.epfl-context-list-dropdown {
     float: right;
 }
-
-div.epfl-context-list{
-    border: 1px solid #DFDFDF;
-    height:100%;
-}
-
 
 ul.context-dropdown-menu{
     display: none;
@@ -64,4 +54,3 @@ ul.context-dropdown-menu li.divider{
     height: 1px;
     padding-top: 3px;
 }
-
