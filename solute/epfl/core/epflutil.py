@@ -236,3 +236,36 @@ class URL(object):
                                        fragment=self.parsed_url.fragment)
 
         return new_url.geturl()
+
+
+import types, inspect
+
+
+class Discover(object):
+    depth = 0
+
+    def __init__(self):
+        self.discovered_modules = set()
+        self.discovered_classes = set()
+        self.discover_module(solute.epfl)
+
+    def discover_module(self, module):
+        if module in self.discovered_modules:
+            return
+        self.discovered_modules.add(module)
+
+        for name in dir(module):
+            obj = getattr(module, name)
+            if type(obj) is not type:
+                continue
+            if issubclass(obj, core.epflcomponentbase.ComponentBase):
+                self.discover_class(obj)
+
+        for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
+            self.discover_module(m)
+
+    def discover_class(self, cls):
+        if cls in self.discovered_classes:
+            return
+        self.discovered_classes.add(cls)
+        cls.discover()

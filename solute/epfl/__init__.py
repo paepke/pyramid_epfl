@@ -177,3 +177,5 @@ def includeme(config):
     config.set_root_factory(epflacl.DefaultACLRootFactory)
 
     epflassets.EPFLView.configure(config)
+
+    epflutil.Discover()

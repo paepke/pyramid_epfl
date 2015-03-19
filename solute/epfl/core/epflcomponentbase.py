@@ -9,7 +9,7 @@ from random import randint
 
 from pprint import pprint
 from collections2 import OrderedDict as odict
-from collections import MutableSequence
+from collections import MutableSequence, MutableMapping
 
 import types, copy, string, inspect, uuid
 
@@ -33,6 +33,55 @@ class MissingEventHandlerException(Exception):
     pass
 
 
+class ComponentRenderEnvironment(MutableMapping):
+    def __iter__(self):
+        return self.data.__iter__()
+
+    def __delitem__(self, key):
+        return self.data.__delitem__(key)
+
+    def __len__(self):
+        return self.data.__len__()
+
+    def __setitem__(self, key, value):
+        return self.data.__setitem__(key, value)
+
+    def __getitem__(self, item):
+        if item in ['compo']:
+            return self.data[item]
+
+        if item not in ['container', 'row', 'before', 'after']:
+            raise KeyError()
+
+        callables = self.data[item]
+
+        if len(callables) == 1:
+            def cb(*args, **kwargs):
+                # iterate over list and render at this time without further call stacking!
+                kwargs = kwargs.copy()
+                kwargs.update(**self)
+                return callables[0](*args, **kwargs)
+            return cb
+
+        return None
+
+    def __init__(self, compo, env):
+        self.data = {'compo': compo,
+                     'container': self.set_order(compo.get_themed_template(env, 'container')),
+                     'row': self.set_order(compo.get_themed_template(env, 'row')),
+                     'before': self.set_order(compo.get_themed_template(env, 'before')),
+                     'after': self.set_order(compo.get_themed_template(env, 'after'))}
+
+    @staticmethod
+    def set_order(template):
+        if type(template) is not tuple:
+            return template
+        direction, template = template
+        if direction == '<':
+            template.reverse()
+        return template
+
+
 class UnboundComponent(object):
     """
     This is one of two main classes used by epfl users, though probably few will notice. Any
@@ -53,9 +102,6 @@ class UnboundComponent(object):
         Create dynamic cid for unbound components without a cid entry in config, store the calling class and create a
         copy of the config.
         """
-        if cls:
-            cls.set_handles()  # Called at this time to avoid later troubles with handle caching.
-
         self.__unbound_cls__ = cls
         self.__unbound_config__ = config.copy()
 
@@ -228,6 +274,7 @@ class ComponentBase(object):
     _compo_info = None
     _access = None
     _handles = None
+    combined_compo_state = frozenset()
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -264,6 +311,8 @@ class ComponentBase(object):
 
         self = super(ComponentBase, cls).__new__(cls, **config)
 
+        self.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
+
         if self.__unbound_component__ is None:
             self.__unbound_component__ = cls()
 
@@ -291,18 +340,19 @@ class ComponentBase(object):
         """
         pass
 
+    @profile
     def __getattribute__(self, key):
-        if key not in ['compo_state', 'base_compo_state', 'cid', 'is_visible', '_themes', '_access', 'is_rendered',
-                       'compo_config', '__class__', 'asset_spec', '_handles'] \
-                and key not in self.compo_config \
-                and key in self.compo_state + self.base_compo_state:
-            return self.compo_info.get('compo_state', {}).get(key,
-                                                              super(ComponentBase, self).__getattribute__(key))
-        return super(ComponentBase, self).__getattribute__(key)
+        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
+            return super(ComponentBase, self).__getattribute__(key)
 
+        return super(ComponentBase, self).__getattribute__('compo_info').get('compo_state',
+                                                                             {}).get(key,
+                                                                                     super(ComponentBase,
+                                                                                           self).__getattribute__(key))
+
+    @profile
     def __setattr__(self, key, value):
-        if key in self.compo_config \
-                or key not in self.compo_state + self.base_compo_state:
+        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
             return super(ComponentBase, self).__setattr__(key, value)
         self.compo_info.setdefault('compo_state', {})[key] = value
 
@@ -311,7 +361,6 @@ class ComponentBase(object):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
         return self._compo_info or {}
-
 
     @property
     def struct_dict(self):
@@ -354,12 +403,12 @@ class ComponentBase(object):
             info['ccid'] = self.container_compo.cid
         return info
 
+    @profile
     def _set_page_obj(self, page_obj):
         """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
         set up after being assigned its page.
         """
         self.page = page_obj
-        self.page_request = page_obj.page_request
         self.request = page_obj.request
         self.response = page_obj.response
 
@@ -645,6 +694,8 @@ class ComponentBase(object):
         It returns HTML.
         """
 
+        self.page.register_depth()
+
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
             return jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
@@ -672,6 +723,10 @@ class ComponentBase(object):
                 self.add_js_response((1, set_component_info))
 
         return jinja2.Markup(out)
+
+    @classmethod
+    def discover(cls):
+        cls.set_handles()
 
     @classmethod
     def set_handles(cls):
@@ -842,38 +897,7 @@ class ComponentContainerBase(ComponentBase):
         Creates a dictionary containing references to the different theme parts and the component. Theme parts are
         wrapped as callables containing their respective inheritance chains as defined by :attr:`theme_path`.
         """
-        result = {}
-
-        def wrap(cb, parent=None):
-            if type(cb) is tuple:
-                direction, cb = cb
-                if len(cb) == 1:
-                    return wrap(cb[0])
-                if direction == '<':
-                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
-                return wrap(cb[0], parent=wrap((direction, cb[1:])))
-
-            def _cb(*args, **kwargs):
-                extra_kwargs = result.copy()
-                extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs)
-                if parent is not None:
-                    extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs)
-                return out
-
-            return _cb
-
-        result.update({'compo': self,
-                       'container': self.get_themed_template(env, 'container'),
-                       'row': self.get_themed_template(env, 'row'),
-                       'before': self.get_themed_template(env, 'before'),
-                       'after': self.get_themed_template(env, 'after')})
-        result['container'] = wrap(result['container'])
-        result['row'] = wrap(result['row'])
-        result['before'] = wrap(result['before'])
-        result['after'] = wrap(result['after'])
-        return result
+        return ComponentRenderEnvironment(self, env)
 
     def after_event_handling(self):
         """
@@ -888,6 +912,7 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
+    @profile
     def update_children(self, force=False, init_transaction=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -926,8 +951,10 @@ class ComponentContainerBase(ComponentBase):
 
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
-            data_cid_dict[data_id] = self.add_component(self.default_child_cls(**data_dict[data_id]),
-                                                        init_transaction=init_transaction).cid
+            ubc = self.default_child_cls(**data_dict[data_id])
+            bc = self.add_component(ubc, init_transaction=init_transaction)
+            data_cid_dict[data_id] = bc.cid
+
             self.redraw()
 
         # IDs of data represented by a component. Matching components are updated.
@@ -939,9 +966,10 @@ class ComponentContainerBase(ComponentBase):
                     self.redraw()
 
         # Rebuild order.
+        compo_struct = self.compo_info['compo_struct'].values()
         for i, data_id in enumerate(new_order):
             try:
-                if self.components[i + tipping_point].id != data_id:
+                if compo_struct[i + tipping_point].get('config', {}).get('id', None) != data_id:
                     self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
                     self.redraw()
             except AttributeError:
@@ -981,6 +1009,7 @@ class ComponentContainerBase(ComponentBase):
         """
         pass
 
+    @profile
     def init_transaction(self):
         """
         Components derived from :class:`ComponentContainerBase` will use their :attr:`node_list` to generate their
