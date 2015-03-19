@@ -309,9 +309,9 @@ class ComponentBase(object):
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
 
-        self = super(ComponentBase, cls).__new__(cls, **config)
+        epflutil.Discover.discover_class(cls)
 
-        self.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
+        self = super(ComponentBase, cls).__new__(cls, **config)
 
         if self.__unbound_component__ is None:
             self.__unbound_component__ = cls()
@@ -694,8 +694,6 @@ class ComponentBase(object):
         It returns HTML.
         """
 
-        self.page.register_depth()
-
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
             return jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
@@ -727,6 +725,7 @@ class ComponentBase(object):
     @classmethod
     def discover(cls):
         cls.set_handles()
+        cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
 
     @classmethod
     def set_handles(cls):

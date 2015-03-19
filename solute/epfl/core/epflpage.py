@@ -96,13 +96,6 @@ class Page(object):
 
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
-    registered_depth = 0
-
-    def register_depth(self):
-        current_depth = len(extract_stack())
-        if current_depth > self.registered_depth:
-            print current_depth
-            self.registered_depth = current_depth
 
     def __init__(self, request, transaction=None):
         """

@@ -242,11 +242,19 @@ import types, inspect
 
 
 class Discover(object):
+    instance = None
+
+    discovered_modules = set()
+    discovered_classes = set()
+
     depth = 0
 
+    def __new__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super(Discover, cls).__new__(cls, *args, **kwargs)
+        return cls.instance
+
     def __init__(self):
-        self.discovered_modules = set()
-        self.discovered_classes = set()
         self.discover_module(solute.epfl)
 
     def discover_module(self, module):
@@ -264,8 +272,9 @@ class Discover(object):
         for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
             self.discover_module(m)
 
-    def discover_class(self, cls):
-        if cls in self.discovered_classes:
+    @classmethod
+    def discover_class(cls, input_class):
+        if input_class in cls.discovered_classes:
             return
-        self.discovered_classes.add(cls)
-        cls.discover()
+        cls.discovered_classes.add(cls)
+        input_class.discover()
