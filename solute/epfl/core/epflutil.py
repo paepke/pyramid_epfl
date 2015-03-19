@@ -273,6 +273,7 @@ class Discover(object):
             self.discover_module(m)
 
     @classmethod
+    @profile
     def discover_class(cls, input_class):
         if input_class in cls.discovered_classes:
             return

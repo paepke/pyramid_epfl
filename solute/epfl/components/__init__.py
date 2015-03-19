@@ -5,7 +5,6 @@
 The components must be imported in the namespace of this library.
 """
 
-from canvas.canvas import Canvas  # A canvas component
 from flipflop.flipflop import FlipFlop
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
@@ -68,7 +67,6 @@ def add_routes(config):
     through this package.
     """
 
-    Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
     DragBox.add_pyramid_routes(config)
     DroppableBox.add_pyramid_routes(config)

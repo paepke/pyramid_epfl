@@ -96,6 +96,7 @@ class UnboundComponent(object):
     instantiated component if it is called with an :class:`.UnboundComponent`.
     """
     __dynamic_class_store__ = None  #: Internal caching for :attr:`UnboundComponent.__dynamic_class__`
+    __global_dynamic_class_store__ = {}  #: Global caching for :attr:`UnboundComponent.__dynamic_class__`
 
     def __init__(self, cls, config):
         """
@@ -106,7 +107,7 @@ class UnboundComponent(object):
         self.__unbound_config__ = config.copy()
 
         # Copy config and create a cid if none exists.
-        self.position = (self.__unbound_config__.pop('cid', None) or uuid.uuid4().hex,
+        self.position = (self.__unbound_config__.pop('cid', None) or "{0:08x}".format(randint(0, 0xffffffff)),
                          self.__unbound_config__.pop('slot', None))
 
     @profile
@@ -147,13 +148,21 @@ class UnboundComponent(object):
         stripped_conf.pop('cid', None)
         stripped_conf.pop('slot', None)
         if len(stripped_conf) > 0:
+            conf_hash = str(stripped_conf).__hash__()
+            try:
+                return self.__global_dynamic_class_store__[conf_hash]
+            except KeyError:
+                pass
+
             cid = "{0:08x}".format(randint(0, 0xffffffff))
             name = '{name}_auto_{cid}'.format(name=self.__unbound_cls__.__name__, cid=cid)
             self.__dynamic_class_store__ = type(name, (self.__unbound_cls__, ), {})
             for param in self.__unbound_config__:
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
-            setattr(self.__dynamic_class_store__, '__unbound_component__', self)
-            return self.__dynamic_class_store__
+            setattr(self.__dynamic_class_store__, '___unbound_component__', self)
+            self.__global_dynamic_class_store__[conf_hash] = self.__dynamic_class_store__
+            return self.__global_dynamic_class_store__[conf_hash]
+
         else:
             return self.__unbound_cls__
 
@@ -260,7 +269,7 @@ class ComponentBase(object):
 
     #: Internal reference to this Components :class:`UnboundComponent`. If it is None and something breaks because of it
     #: this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
-    __unbound_component__ = None
+    ___unbound_component__ = None
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
@@ -269,12 +278,13 @@ class ComponentBase(object):
     is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
-    redraw_requested = None  #: Set of parts requesting to be redrawn.
+    _redraw_requested = None  #: Set of parts requesting to be redrawn.
 
     _compo_info = None
     _access = None
     _handles = None
     combined_compo_state = frozenset()
+    deleted = False
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -312,12 +322,6 @@ class ComponentBase(object):
         epflutil.Discover.discover_class(cls)
 
         self = super(ComponentBase, cls).__new__(cls, **config)
-
-        if self.__unbound_component__ is None:
-            self.__unbound_component__ = cls()
-
-        self.redraw_requested = set()
-        self.deleted = False
 
         self.__config = config
 
@@ -361,6 +365,18 @@ class ComponentBase(object):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
         return self._compo_info or {}
+
+    @property
+    def __unbound_component__(self):
+        if self.___unbound_component__ is None:
+            self.___unbound_component__ = self.__class__()
+        return self.___unbound_component__
+
+    @property
+    def redraw_requested(self):
+        if self._redraw_requested is None:
+            self._redraw_requested = set()
+        return self._redraw_requested
 
     @property
     def struct_dict(self):
@@ -411,11 +427,6 @@ class ComponentBase(object):
         self.page = page_obj
         self.request = page_obj.request
         self.response = page_obj.response
-
-        # setup template
-
-        if not self.template_name:
-            raise Exception("You did not setup the 'self.template_name' in " + repr(self))
 
         # now we can setup the component-state
         self.setup_component_state()
@@ -726,6 +737,16 @@ class ComponentBase(object):
     def discover(cls):
         cls.set_handles()
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
+        cls.prepare_extra_content()
+
+        # setup template
+
+        if not cls.template_name:
+            raise Exception("You did not setup the 'self.template_name' in " + repr(cls))
+
+    @classmethod
+    def prepare_extra_content(cls):
+        pass
 
     @classmethod
     def set_handles(cls):
