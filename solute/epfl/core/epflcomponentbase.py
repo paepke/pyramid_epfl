@@ -737,12 +737,14 @@ class ComponentBase(object):
     def discover(cls):
         cls.set_handles()
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
-        cls.prepare_extra_content()
-
-        # setup template
 
         if not cls.template_name:
             raise Exception("You did not setup the 'self.template_name' in " + repr(cls))
+
+        if hasattr(cls, 'cid'):
+            raise Exception("You illegally set a cid as a class attribute in " + repr(cls))
+
+        cls.prepare_extra_content()
 
     @classmethod
     def prepare_extra_content(cls):
@@ -761,7 +763,6 @@ class ComponentBase(object):
     def get_handles(self):
         self.set_handles()
         return self._handles
-
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
