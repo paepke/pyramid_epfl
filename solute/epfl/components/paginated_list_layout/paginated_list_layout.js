@@ -26,7 +26,7 @@ epfl.paginated_list_goto = function (element, cid, row_offset, row_limit) {
                                                          and compo.row_data is mapping
                                                          and compo.row_data['ordertype'] is defined else '' }}';
     if($(element) && $(element).hasClass("epfl-search-input")) {
-        row_data.search = element.val();
+        row_data.search = $(element).val();
     }
     epfl.set_component_info(cid, 'callback_send_event', 'set_row', epfl.paginated_list_goto_complete);
     epfl.dispatch_event(
