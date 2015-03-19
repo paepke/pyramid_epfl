@@ -2,7 +2,7 @@
     {% set compo = kwargs.compo %}
     {% from "paginated_list_layout/theme/before.html" import render as before with context %}
     {{ before(**kwargs) }}
-    <div style="height: {{ compo.height }}px; overflow-y:scroll" height="{{ compo.height }}">
-        <div class="epfl-context-list" >
+    <div style="height: {{ compo.height }}px;" height="{{ compo.height }}">
+        <div class="epfl-context-list">
             <ul class="list-group epfl-context-list-group">
 {% endmacro %}

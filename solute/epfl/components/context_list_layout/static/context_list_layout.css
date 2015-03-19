@@ -1,5 +1,5 @@
 .epfl-context-list {
-    overflow:hidden;
+   overflow-y:auto;
 }
 
 li.epfl-context-list-entry {
@@ -17,14 +17,6 @@ li.epfl-context-list-entry:hover button {
 li.epfl-context-list-entry button {
     display: none;
 }
-
-/*div.epfl-simple-tree-leaf-2:hover button {*/
-    /*display: block;*/
-/*}*/
-
-/*div.epfl-simple-tree-leaf-2 button {*/
-    /*display: none;*/
-/*}*/
 
 
 ul.epfl-context-list-dropdown {

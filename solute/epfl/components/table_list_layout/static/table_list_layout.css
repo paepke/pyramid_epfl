@@ -11,7 +11,7 @@ div.epfl-table-edit{
 }
 
 .epfl-table {
-	overflow-y: scroll;
+	overflow-y: auto;
 	display: block;
 	height: 100%;
 }
