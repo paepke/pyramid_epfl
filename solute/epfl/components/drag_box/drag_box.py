@@ -19,6 +19,6 @@ class DragBox(Box):
 
     compo_state = Box.compo_state + ["disable_drag", "keep_orig_in_place"]
     #: If set to true, this component renders as a normal box and with disabled draggability. Useful for on-the-fly draggability toggling.
-    disable_drag = False
+    disable_drag = None
     #: If set to true, the dragged element is cloned and the original element is kept in place.
-    keep_orig_in_place = False
+    keep_orig_in_place = None

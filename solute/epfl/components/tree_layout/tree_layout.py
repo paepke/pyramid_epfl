@@ -12,7 +12,7 @@ class DraggableTreeLeafEntry(DragBox):
     theme_path = ["tree_layout/dragable_tree_leaf_entry_theme"]
     label = None
     icon = None
-    keep_orig_in_place = True
+    keep_orig_in_place = True # TODO: is that okay? (None default since it is in compo state
 
     compo_state = ["label", "icon"]
 
@@ -85,9 +85,9 @@ class TreeLayout(ComponentContainerBase):
 
     #: Indicates a set filter that can be used by get_data to return filtered entries only
     #: This dict can store the data of the root nodes of this tree for caching: TreeModelBase respects this.
-    tree_node_dict = {}
+    tree_node_dict = None
     #: Store the ids of expanded nodes, can be used by model, but is not set automatically.
-    expanded_nodes = []
+    expanded_nodes = None
 
     # folder icons
     # custom_node_icon_collapsed="fa-folder-o"

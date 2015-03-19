@@ -28,15 +28,19 @@ class Diagram(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["diagram_params"]
 
-    diagram_params = {}
+    diagram_params = None
 
     def get_params(self):
+        if self.diagram_params is None:
+            self.diagram_params = {}
         return self.diagram_params
 
     def set_params(self, params):
         self.diagram_params = params
 
     def handle_visibilityChange(self, series_visibility):
+        if self.diagram_params is None:
+            self.diagram_params = {}
         if not "series" in self.diagram_params:
             return
         for series_visibility_entry in series_visibility:

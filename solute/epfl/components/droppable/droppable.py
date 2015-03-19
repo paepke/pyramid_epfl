@@ -16,12 +16,12 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ["elements", "is_collapsed", "title", "is_selected"]
 
     valid_types = [Dragable]
-    elements = []
+    elements = [] # TODO: should be set to None since it is in compo_state
     collapsable = False
     title_renamable = False
-    is_selected = False
-    selectable = False
-    is_collapsed = False
+    is_selected = False # TODO: should be set to None since it is in compo_state
+    selectable = False # TODO: should be set to None since it is in compo_state
+    is_collapsed = False # TODO: should be set to None since it is in compo_state
     title = None
     # if set to true, a child cannot be dragged once it has been placed inside
     # the droppable
@@ -68,7 +68,7 @@ class SimpleDroppable(epflcomponentbase.ComponentContainerBase):
     compo_state = ["elements", "title"]
 
     valid_types = [Dragable]
-    elements = []
+    elements = [] # TODO: should be set to None since it is in compo_state
 
     title = None
     is_content_removable = False

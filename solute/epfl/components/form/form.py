@@ -183,6 +183,8 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     fields = []
     _registered_fields = None
+    validation_errors = None
+    _registered_fields = None
     validation_errors = []
 
     validate_hidden_fields = False

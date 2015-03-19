@@ -3,11 +3,13 @@
             {% if has_caller %}
                 {{ caller() }}
             {% else %}
+            	{% if compo.child_components is not none %}
                 {% for component in compo.child_components %}
                    {% call rowdef(component.name) %}
                         {{ component.element() }}
                     {% endcall %}
                 {% endfor %}
+                {% endif %}
             {% endif %}
         </ul>
 </div>

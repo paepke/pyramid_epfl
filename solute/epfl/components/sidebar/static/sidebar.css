@@ -62,3 +62,8 @@ div.epfl-sidebar ul.epfl-sidebar-menu li.epfl-sidebar-menu-entry i {
     padding-right: 5px;
 }
 
+div.epfl-sidebar-servermode{
+    color:red;
+    font-weight: bold;
+    font-size: 16px;
+}

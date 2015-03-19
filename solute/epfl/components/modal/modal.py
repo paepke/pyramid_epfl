@@ -25,8 +25,8 @@ class Modal(epflcomponentbase.ComponentContainerBase):
 
     compo_config = []
 
-    title = "" #: the title in the modal
-    save_button = False #: display save button
+    title = None
+    save_button = None
     small_modal = False #: display as small modal
 
 

@@ -17,7 +17,7 @@ class CardinalLayout(epflcomponentbase.ComponentContainerBase):
 
     compo_state = ['constrained']
 
-    constrained = False
+    constrained = None
 
     def cardinal_components(self, direction='center'):
         if self._cardinal_components is None:

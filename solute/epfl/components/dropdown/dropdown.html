@@ -7,8 +7,10 @@
     
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="{{ compo.cid }}_dropdownmenu">
+  	{% if compo.children %}
   	{% for child in compo.children %}
   		<li role="presentation"><a class="epfl_dropdown_menuitem" data-menu-key="{{ child.key }}" role="menuitem" tabindex="-1" href="#">{{ child.label }}</a></li>
     {% endfor %}
+    {% endif %}
   </ul>
 </div>

@@ -1,6 +1,7 @@
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-sidebar">
     <aside>
         <ul class="epfl-sidebar-navi">
+        {% if compo.links != None %}
             {% for link in compo.links %}
                 <li class="epfl-sidebar-navi-entry{% if compo.selected_parent == link['name']%} epfl-sidebar-selected{% endif %}">
                     <span>
@@ -19,6 +20,10 @@
                     {% endif %}
                 </li>
             {% endfor %}
+        {% endif %}
         </ul>
+    {% if compo.server_test_mode %}
+        <div class="epfl-sidebar-servermode">Status: TEST</div>
+    {% endif %}
     </aside>
 </div>

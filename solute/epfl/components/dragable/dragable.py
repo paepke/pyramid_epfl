@@ -16,7 +16,7 @@ class Dragable(epflcomponentbase.ComponentContainerBase):
     id = None
     title =None
     title_renamable = False
-    is_selected = False
+    is_selected = False # TODO: should be set to None since it is in compo_state
     selectable=False
 
     @classmethod
