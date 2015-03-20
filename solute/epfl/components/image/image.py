@@ -61,8 +61,8 @@ class ImageList(Droppable):
         new_image.image_path = origin_comp.image_path
         origin_comp_box.redraw()
         self.redraw()
-    
-    def __init__(self, *args, **extra_params):
+
+    def __init__(self, page, cid, *args, **extra_params):
         super(ImageList, self).__init__(*args, **extra_params)
         if "show_borders" in extra_params:
             self.show_borders = extra_params["show_borders"]

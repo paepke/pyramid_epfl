@@ -5,7 +5,7 @@ epfl.TextEditor = function(cid, params) {
 
     var editor = CKEDITOR.replace(cid + "_editor");
     editor.on('change', function (evt) {
-        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value:  evt.editor.getData()}), cid);
+        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value:  evt.editor.getData()}), cid + "_change");
     });
 }; 
 epfl.TextEditor.inherits_from(epfl.ComponentBase);

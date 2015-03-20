@@ -32,7 +32,8 @@ class Button(ComponentBase):
     confirm_first = False #: Set to true if user should be asked for confirmation first before the button event is triggered
     confirm_message = "Do you want to proceed?" #: Adapt this text for a custom confirmation dialog message.
 
-    def __init__(self, label=None, value=None, event_name=None, event_target=None, is_submit=False, **extra_params):
+    def __init__(self, page, cid, label=None, value=None, event_name=None, event_target=None, is_submit=False,
+                 **extra_params):
         super(Button, self).__init__()
         if not self.event_name:
             raise Exception('Missing event_name for Button component. %s' % self.cid)

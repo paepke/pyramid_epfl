@@ -1,3 +1,8 @@
+.epfl-multiselect-list {
+   overflow-y:auto;
+   border: 1px solid #DFDFDF;
+}
+
 .multiselect-selectable.selected {
     background-color: #ccc;
 }

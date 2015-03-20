@@ -13,6 +13,6 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
     theme_path_default = 'list_layout/default_theme'
     theme_path = []
 
-    def __init__(self, node_list=[], links=[], **extra_params):
+    def __init__(self, page, cid, node_list=[], links=[], **extra_params):
         super(ListLayout, self).__init__()
 
