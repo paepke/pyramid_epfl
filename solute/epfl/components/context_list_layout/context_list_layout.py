@@ -16,37 +16,37 @@ class ContextListEntry(epflcomponentbase.ComponentContainerBase):
 class ContextListLayout(PaginatedListLayout):
 
     """
-    A searchable list layout with a context menu in every row
+    A searchable list layout with a context menu in every row.
 
-    The context menu is configured over get_data
+    Its content and the context menu is configured using get_data()
     example
 
     .. code-block:: python
 
-        menu = [{"name":"move up","event":"move_up","type":"link"},
-                {"name":"move down","event":"move_down","type":"link"},
-                {"type":"divider"},
-                {"name":u"delete","event":"delete","type":"link"},
-                {"name":"rename","event":"rename","type":"link"}]
+        menu = [{'name':"move up", 'event':"move_up", 'type':"link"},
+                {'name':"move down", 'event':"move_down", 'type'"link"},
+                {'type':"divider"},
+                {'name':u"delete", 'event':"delete", 'type':"link"},
+                {'name':"rename", 'event':"rename", 'type':"link"}]
 
         data = []
         for i in range(0, 100):
-            data.append({"id": i, "data": "test" + str(i),"menu":menu})
+            data.append({'id': i, "data": "test" + str(i), 'menu':menu})
 
 
 
-    A click on a context menu entry emits an event which have to be handeled
+    A click on a context menu entry emits an event which have to be handled
     for example the entry
 
     .. code-block:: python
 
-        {"name":"rename","event":"rename","type":"link"}
+        {'name':"rename", 'event':"rename", 'type':"link"}
 
     have to be handled by
 
     .. code-block:: python
 
-        def handle_delete(self,id,data):
+        def handle_rename(self, id, data):
             pass
 
     """

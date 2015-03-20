@@ -1,6 +1,5 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {# {% from "paginated_list_layout/theme/before.html" import render as before with context %} #}
     {{ caller() }}
     <ul class="list-group epfl-context-list-group">
 {% endmacro %}

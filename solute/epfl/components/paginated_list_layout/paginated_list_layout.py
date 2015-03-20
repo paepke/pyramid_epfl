@@ -7,6 +7,19 @@
 from solute.epfl.components import PrettyListLayout
 
 class PaginatedListLayout(PrettyListLayout):
+    
+    """
+    A searchable list layout. Its content is configured using get_data()
+    example
+
+    .. code-block:: python
+
+        data = []
+        for i in range(0, 100):
+            data.append({'id': i, "data": "test" + str(i)})
+
+    """
+    
     show_pagination = True #: Set to true to show the pagination bar.
     show_search = True #: Set to true to enable the search field.
 
