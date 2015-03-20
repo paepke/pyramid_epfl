@@ -735,7 +735,7 @@ class ComponentBase(object):
 
     @classmethod
     def discover(cls):
-        cls.set_handles()
+        cls.set_handles(force_update=True)
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
 
         if not cls.template_name:
@@ -751,8 +751,8 @@ class ComponentBase(object):
         pass
 
     @classmethod
-    def set_handles(cls):
-        if cls._handles is None:
+    def set_handles(cls, force_update=True):
+        if cls._handles is None or force_update:
             cls._handles = []
             for name in dir(cls):
                 if not name.startswith('handle_') or name == 'handle_event':
