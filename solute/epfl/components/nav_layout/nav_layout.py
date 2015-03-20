@@ -14,5 +14,5 @@ class NavLayout(epflcomponentbase.ComponentBase):
     title = None
     links = None
 
-    def __init__(self, title=None, links=[], **extra_params):
+    def __init__(self, page, cid, title=None, links=[], **extra_params):
         super(NavLayout, self).__init__()

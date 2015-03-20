@@ -38,7 +38,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     label_style = None
     input_style = None
 
-    def __init__(self, label=None, name=None, typeahead=False, default="", validation_type="",
+    def __init__(self, page, cid, label=None, name=None, typeahead=False, default="", validation_type="",
                  **extra_params):
         super(FormInputBase, self).__init__()
 
@@ -190,7 +190,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
     validate_hidden_fields = False
     is_dirty = False
 
-    def __init__(self, node_list=None, validate_hidden_fields=False, **extra_params):
+    def __init__(self, page, cid, node_list=None, validate_hidden_fields=False, **extra_params):
         super(Form, self).__init__()
 
     def handle_submit(self):
