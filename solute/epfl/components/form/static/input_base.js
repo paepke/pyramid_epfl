@@ -15,7 +15,15 @@ epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
     if (enqueue_event === undefined) {
         enqueue_event = true;
     }
-	epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid + "_set_dirty");
+    
+    parent_form = $('#'+cid).closest('.epfl-form');
+    if (parent_form.length == 1) {
+    	is_dirty = parent_form.data('dirty');
+		if (is_dirty == '0') {
+			parent_form.data('dirty', '1');
+			epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid + "_set_dirty");
+		}
+    }
     if (enqueue_event) {
         epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid + "_change");
     } else {

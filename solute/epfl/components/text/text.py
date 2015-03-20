@@ -16,5 +16,5 @@ class Text(epflcomponentbase.ComponentBase):
     compo_state = epflcomponentbase.ComponentBase.compo_state + ["value", "tag", "tag_class", "verbose", "label"]
 
     def __init__(self, page, cid, value=None, verbose=False, tag=None, tag_class=False, label=None,
-                 vertical_layout=False, **extra_params):
+                 layout_vertical=False, **extra_params):
         super(Text, self).__init__()
