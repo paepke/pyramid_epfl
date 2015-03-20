@@ -15,12 +15,10 @@ epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
     if (enqueue_event === undefined) {
         enqueue_event = true;
     }
-
+	epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid + "_set_dirty");
     if (enqueue_event) {
-        epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid);
-        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid);
+        epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value: value}), cid + "_change");
     } else {
-        epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid);
         epfl.dispatch_event(cid, "change", {value: value});
     }
 }
