@@ -1,8 +1,5 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
-    {# {% from "paginated_list_layout/theme/before.html" import render as before with context %} #}
     {{ caller() }}
-    <div style="height: {{ compo.height }}px;" height="{{ compo.height }}">
-        <div class="epfl-context-list">
-            <ul class="list-group epfl-context-list-group">
+    <ul class="list-group epfl-context-list-group">
 {% endmacro %}

@@ -15,7 +15,9 @@ class LinkListLayout(PaginatedListLayout):
                       'text': None,
                       'url': None}
     
-    theme_path = PaginatedListLayout.theme_path + ['link_list_layout/theme']
+    #theme_path = PaginatedListLayout.theme_path + ['link_list_layout/theme']
+    theme_path = PaginatedListLayout.theme_path.copy()
+    theme_path['row'] = ['link_list_layout/theme']
         
     js_parts = PaginatedListLayout.js_parts + ['link_list_layout/link_list_layout.js']
 

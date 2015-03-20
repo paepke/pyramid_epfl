@@ -16,48 +16,47 @@ class ContextListEntry(epflcomponentbase.ComponentContainerBase):
 class ContextListLayout(PaginatedListLayout):
 
     """
-    A searchable list layout with a context menu in every row
+    A searchable list layout with a context menu in every row.
 
-    The context menu is configured over get_data
+    Its content and the context menu is configured using get_data()
     example
 
     .. code-block:: python
 
-        menu = [{"name":"move up","event":"move_up","type":"link"},
-                {"name":"move down","event":"move_down","type":"link"},
-                {"type":"divider"},
-                {"name":u"delete","event":"delete","type":"link"},
-                {"name":"rename","event":"rename","type":"link"}]
+        menu = [{'name':"move up", 'event':"move_up", 'type':"link"},
+                {'name':"move down", 'event':"move_down", 'type'"link"},
+                {'type':"divider"},
+                {'name':u"delete", 'event':"delete", 'type':"link"},
+                {'name':"rename", 'event':"rename", 'type':"link"}]
 
         data = []
         for i in range(0, 100):
-            data.append({"id": i, "data": "test" + str(i),"menu":menu})
+            data.append({'id': i, "data": "test" + str(i), 'menu':menu})
 
 
 
-    A click on a context menu entry emits an event which have to be handeled
+    A click on a context menu entry emits an event which have to be handled
     for example the entry
 
     .. code-block:: python
 
-        {"name":"rename","event":"rename","type":"link"}
+        {'name':"rename", 'event':"rename", 'type':"link"}
 
     have to be handled by
 
     .. code-block:: python
 
-        def handle_delete(self,id,data):
+        def handle_rename(self, id, data):
             pass
 
     """
 
-    asset_spec = "solute.epfl.components:context_list_layout/static"
     theme_path = {'default': ['context_list_layout/theme'],
                   'container': ['pretty_list_layout/theme'],
                   # context layout embraces paginated layout template  for before and after
                   # templates
-                  'before': ['paginated_list_layout/theme', '<context_list_layout/theme'],
-                  'after': ['paginated_list_layout/theme', '<context_list_layout/theme']}
+                  'before': ['pretty_list_layout/theme', '<paginated_list_layout/theme', '<context_list_layout/theme'],
+                  'after': ['pretty_list_layout/theme', '<paginated_list_layout/theme', '<context_list_layout/theme']}
 
     js_parts = PaginatedListLayout.js_parts + ['context_list_layout/context_list_layout.js']
     default_child_cls = ContextListEntry
@@ -67,8 +66,7 @@ class ContextListLayout(PaginatedListLayout):
 
     auto_update_children = True
 
-    js_name = ["context_list_layout.js", ("solute.epfl:static", "plugin/contextmenu.js")]
-    css_name = ["context_list_layout.css"]
+    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.js"), ("solute.epfl:static", "plugin/contextmenu.js")]
+    css_name = PaginatedListLayout.css_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.css")]
 
     data_interface = {'id': None, 'data': None, 'menu': None}
-    height = 400

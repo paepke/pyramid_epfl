@@ -140,6 +140,8 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     @property
     def converted_value(self):
         if self.validation_type == 'text':
+            if self.value == None:
+                return None
             try:
                 return str(self.value)
             except UnicodeEncodeError:
