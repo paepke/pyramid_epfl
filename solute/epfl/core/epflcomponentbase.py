@@ -55,17 +55,27 @@ class ComponentRenderEnvironment(MutableMapping):
 
         callables = self.data[item]
 
-        def cb(*args, **kwargs):
-            # iterate over list and render at this time without further call stacking!
-            kwargs = kwargs.copy()
-            kwargs.update(**self)
-            out = ''
-            for c in callables:
-                out = c(*args, **kwargs)
-                kwargs['caller'] = lambda *args, **kwargs: out
+        def wrap(cb, parent=None):
+            if type(cb) is tuple:
+                direction, cb = cb
+                if len(cb) == 1:
+                    return wrap(cb[0])
+                if direction == '<':
+                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
+                return wrap(cb[0], parent=wrap((direction, cb[1:])))
 
-            return out
-        return cb
+            def _cb(*args, **kwargs):
+                extra_kwargs = dict(self)
+                extra_kwargs.update(kwargs)
+                out = cb(*args, **extra_kwargs)
+                if parent is not None:
+                    extra_kwargs['caller'] = lambda: out
+                    out = parent(*args, **extra_kwargs)
+                return out
+
+            return _cb
+
+        return wrap(callables)
 
     def __init__(self, compo, env):
         self.data = {'compo': compo,
@@ -76,11 +86,11 @@ class ComponentRenderEnvironment(MutableMapping):
 
     @staticmethod
     def set_order(template):
-        if type(template) is not tuple:
-            return template
-        direction, template = template
-        if direction == '<':
-            template.reverse()
+        # if type(template) is not tuple:
+        #     return template
+        # direction, template = template
+        # if direction == '<':
+        #     template.reverse()
         return template
 
 
@@ -367,6 +377,10 @@ class ComponentBase(object):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
         return self._compo_info or {}
+
+    @property
+    def slot(self):
+        return self.compo_info['slot']
 
     @property
     def __unbound_component__(self):
@@ -987,10 +1001,11 @@ class ComponentContainerBase(ComponentBase):
                     self.redraw()
 
         # Rebuild order.
-        compo_struct = self.compo_info['compo_struct'].values()
+        compo_struct = self.compo_info['compo_struct']
         for i, data_id in enumerate(new_order):
             try:
-                if compo_struct[i + tipping_point].get('config', {}).get('id', None) != data_id:
+                key = compo_struct.keys()[i + tipping_point]
+                if compo_struct[key].get('config', {}).get('id', None) != data_id:
                     self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
                     self.redraw()
             except AttributeError:
