@@ -28,7 +28,7 @@ epfl.MultiSelectComponent = function (cid, params) {
     $('#' + cid + ' ul.list-group').scroll(function () {
         clearTimeout($.data(this, 'multiselect_scrolltimer'));
         $.data(this, 'multiselect_scrolltimer', setTimeout(function () { // detect scroll stop
-            epfl.dispatch_event(cid, "scrolled", {scroll_position: $('#' + cid + ' ul.list-group').scrollTop()});
+            epfl.enqueue(epfl.make_component_event(cid, "scrolled", {scroll_position: $('#' + cid + ' ul.list-group').scrollTop()}));
         }, 250));
     });
     // Search

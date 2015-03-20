@@ -50,6 +50,9 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     #: Set the cid of a :class:`solute.epfl.components.multiselect.multiselect.MultiSelectTransfer` object which is used to automatically
     #: transfer objects from this list to another one based on double-clicks.
     default_out_multiselect_transfer_cid = None
+    
+    # : The max height of the list view. If the entries exceed the height, a scrollbar is displayed.
+    height = None
 
     grouped = False  #: Set to true if list contains grouped entries.
     
@@ -94,8 +97,8 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         searchstring = self.search_string.lower()
         for compo in self.components:
             try:
-                if not searchstring in compo.data["value"].lower():
-                    if self.hidden_child_cids is not None:
+                if not searchstring in compo.data['text'].lower():
+                    if self.hidden_child_cids is None:
                         self.hidden_child_cids = set()
                     self.hidden_child_cids.add(compo.cid)
                     # this component is also not selected anymore
@@ -116,7 +119,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
                         self.hidden_child_cids = set()
                     self.hidden_child_cids.add(current_group_cid)
                 try:
-                    if not searchstring in compo.data["value"].lower():
+                    if not searchstring in compo.data['text'].lower():
                         current_group_matched = False
                     else:
                         current_group_matched = True
@@ -131,7 +134,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
                     number_of_matched_entries_for_group += 1
                     continue
                 try:
-                    if not searchstring in compo.data["value"].lower():
+                    if not searchstring in compo.data['text'].lower():
                         if self.hidden_child_cids is None:
                             self.hidden_child_cids = set()
                         self.hidden_child_cids.add(compo.cid)
