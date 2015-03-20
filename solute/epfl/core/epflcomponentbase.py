@@ -323,6 +323,9 @@ class ComponentBase(object):
 
         self = super(ComponentBase, cls).__new__(cls, **config)
 
+        self.cid = args[1]
+        self._set_page_obj(args[0])
+
         self.__config = config
 
         for attr_name in self.compo_config:
@@ -332,9 +335,6 @@ class ComponentBase(object):
                 config_value = getattr(self, attr_name)
 
             setattr(self, attr_name, copy.deepcopy(config_value))  # copy from class to instance
-
-        self.cid = args[1]
-        self._set_page_obj(args[0])
 
         return self
 
@@ -1043,7 +1043,6 @@ class ComponentContainerBase(ComponentBase):
 
         for node in self.node_list:
             cid, slot = node.position
-
             self.add_component(node(self.page, cid, __instantiate__=True),
                                slot=slot,
                                cid=cid,
