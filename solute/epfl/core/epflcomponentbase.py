@@ -150,7 +150,7 @@ class UnboundComponent(object):
         if len(stripped_conf) > 0:
             conf_hash = str(stripped_conf).__hash__()
             try:
-                return self.__global_dynamic_class_store__[conf_hash]
+                return self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)]
             except KeyError:
                 pass
 
@@ -160,8 +160,8 @@ class UnboundComponent(object):
             for param in self.__unbound_config__:
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
             setattr(self.__dynamic_class_store__, '___unbound_component__', self)
-            self.__global_dynamic_class_store__[conf_hash] = self.__dynamic_class_store__
-            return self.__global_dynamic_class_store__[conf_hash]
+            self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)] = self.__dynamic_class_store__
+            return self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)]
 
         else:
             return self.__unbound_cls__
