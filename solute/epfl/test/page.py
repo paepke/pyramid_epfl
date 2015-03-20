@@ -163,7 +163,6 @@ class PageTest(unittest.TestCase):
         out = page.call_ajax()
         for i in range(0, 10):
             assert ('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1)) in out
-            print out
             assert ('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1)) in out
             out = out.replace('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1), '')
             out = out.replace('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1), '')

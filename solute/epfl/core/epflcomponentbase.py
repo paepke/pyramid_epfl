@@ -55,15 +55,17 @@ class ComponentRenderEnvironment(MutableMapping):
 
         callables = self.data[item]
 
-        if len(callables) == 1:
-            def cb(*args, **kwargs):
-                # iterate over list and render at this time without further call stacking!
-                kwargs = kwargs.copy()
-                kwargs.update(**self)
-                return callables[0](*args, **kwargs)
-            return cb
+        def cb(*args, **kwargs):
+            # iterate over list and render at this time without further call stacking!
+            kwargs = kwargs.copy()
+            kwargs.update(**self)
+            out = ''
+            for c in callables:
+                out = c(*args, **kwargs)
+                kwargs['caller'] = lambda *args, **kwargs: out
 
-        return None
+            return out
+        return cb
 
     def __init__(self, compo, env):
         self.data = {'compo': compo,
@@ -444,8 +446,6 @@ class ComponentBase(object):
         you can not use this component any longer in the layout. """
         if not self.container_compo:
             raise ValueError("Only dynamically created components can be deleted")
-
-        self.container_compo.del_component(self, self.container_slot)
 
         self.page.transaction.del_component(self.cid)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
@@ -1095,17 +1095,11 @@ class ComponentContainerBase(ComponentBase):
         else:
             self.components.append(compo_obj)
 
-    def del_component(self, compo_obj, slot=None):
+    def del_component(self, cid, slot=None):
         """
         Removes the component from the slot and form the compo_info. Accepts either a component instance or a cid.
         """
-        if type(compo_obj) is str:
-            return getattr(self.page, compo_obj).delete_component()
-
-        compo_obj.compo_destruct()
-        if hasattr(compo_obj, 'components'):
-            for compo in list(compo_obj.components):
-                compo.delete_component()
+        return getattr(self.page, cid).delete_component()
 
 
 class ComponentList(MutableSequence):

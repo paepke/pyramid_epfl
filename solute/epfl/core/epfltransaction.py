@@ -182,12 +182,16 @@ class Transaction(MutableMapping):
         if 'ccid' in compo:
             container = self.get_component(compo['ccid'])
 
+        for child_cid in compo.get('compo_struct', {}).keys():
+            if self.has_component(child_cid):
+                self.del_component(child_cid)
+
         if 'compo_lookup' in self and cid in self['compo_lookup']:
             del self['compo_lookup'][cid]
         if cid in self.instances:
             del self.instances[cid]
-
-        del container['compo_struct'][cid]
+        if cid in container['compo_struct']:
+            del container['compo_struct'][cid]
 
     def has_component(self, cid):
         try:
