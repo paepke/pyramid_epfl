@@ -219,3 +219,37 @@ class PageTest(unittest.TestCase):
 
         assert len(transaction['compo_lookup']) == 41
         assert page.child_node_4_1
+
+    def test_component_deletion(self):
+        page = Page(self.request)
+        transaction = page.transaction
+        transaction['components_assigned'] = True
+        transaction.set_component('root_node',
+                                  {'cid': 'root_node',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('root_node', None))})
+
+        page.create_components()
+
+        page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
+
+        for i in range(0, 10):
+            getattr(page, 'child_node_%s' % i) \
+                .add_component(ComponentContainerBase(cid='child_node_%s' % (i + 1)))
+            getattr(page, 'child_node_%s' % (i + 1))
+            for x in range(0, 3):
+                getattr(page,
+                        'child_node_%s' % (i + 1)) \
+                    .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
+                getattr(page, 'child_node_%s_%s' % (i + 1, x))
+
+        page.child_node_0.delete_component()
+
+        assert transaction.has_component('child_node_0') is False
+        for i in range(0, 10):
+            assert transaction.has_component('child_node_%s' % (i + 1)) is False
+            for x in range(0, 3):
+                assert transaction.has_component('child_node_%s_%s' % (i + 1, x)) is False
