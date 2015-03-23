@@ -126,7 +126,7 @@ epfl_module = function() {
             }
             var el = $("[epflid='" + epflid + "']");
             if (el.length == 0) {
-                //console.log("Element not found!", cid, parts);
+                console.log("Element not found!", cid, parts);
                 return;
             }
             var parts_jq = $(part_html);
