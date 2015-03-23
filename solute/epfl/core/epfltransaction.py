@@ -113,10 +113,10 @@ class Transaction(MutableMapping):
     def is_active_component(self, cid):
         return cid in self.instances
 
-    def switch_component(self, cid, ccid):
+    def switch_component(self, cid, ccid, position=None):
         compo_info = self.pop_component(cid)
         compo_info['ccid'] = ccid
-        self.set_component(cid, compo_info)
+        self.set_component(cid, compo_info, position=position)
 
     def pop_component(self, cid):
         try:

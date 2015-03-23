@@ -850,7 +850,7 @@ class ComponentBase(object):
         After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
         """
 
-        self.page.transaction.switch_component(cid, target)
+        self.page.transaction.switch_component(cid, target, position=position)
 
 
 class ComponentContainerBase(ComponentBase):
