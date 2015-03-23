@@ -63,7 +63,7 @@ class EPFLView(object):
         order.
         """
         self.route_name = route_name
-        self.route_text = route_text or self.route_name
+        self.route_text = route_text
         self.route_pattern = route_pattern
         self.permission = permission
         self.rank = rank
@@ -79,6 +79,8 @@ class EPFLView(object):
         return cb
 
     def add_link(self):
+        if not self.route_text:
+            return
         self.counter['id'] += 1
         self.register.append({'id': self.counter['id'],
                               'url': self.route_name,
