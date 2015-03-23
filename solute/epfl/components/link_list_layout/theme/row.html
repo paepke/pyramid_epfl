@@ -1,8 +1,7 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% set compo_obj = kwargs.compo_obj %}
-    {% if compo_obj.event_name is defined
-       and compo_obj.event_target is defined %}
+    {% if compo_obj.event_name is defined %}
     	{{ caller() }}
     {% else %}
     <a class="list-group-item col-sm-12" href="{{ compo_obj.url }}" id="{{compo.cid}}" epflid="{{ compo_obj.cid }}">
