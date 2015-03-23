@@ -166,7 +166,8 @@ epfl.Simpletree = function (cid, params) {
         } else {
             epfl.dispatch_event(cid, "leaf_0_open", {
                 leafid: parseInt($(this).data("leafid")),
-                scroll_top: $(dataAreaSelector).scrollTop()
+                scroll_top: $(dataAreaSelector).scrollTop(),
+                hover: false
             });
         }
     });
@@ -180,7 +181,8 @@ epfl.Simpletree = function (cid, params) {
         } else {
             epfl.dispatch_event(thiscid, "leaf_1_open", {
                 leafid: leafid, parent_id: parent_id,
-                scroll_top: $(dataAreaSelector).scrollTop()
+                scroll_top: $(dataAreaSelector).scrollTop(),
+                hover: false
             });
         }
     };
@@ -264,7 +266,8 @@ epfl.Simpletree = function (cid, params) {
             if ($(that).hasClass("epfl-simple-tree-leaf-0")) {
                 epfl.dispatch_event(cid, "leaf_0_open", {
                     leafid: parseInt($(that).data("leafid")),
-                    scroll_top: $(dataAreaSelector).scrollTop()
+                    scroll_top: $(dataAreaSelector).scrollTop(),
+                    hover: true
                 });
             } else if ($(that).hasClass("epfl-simple-tree-leaf-1")) {
 
@@ -272,7 +275,8 @@ epfl.Simpletree = function (cid, params) {
                 epfl.dispatch_event(cid, "leaf_1_open", {
                     leafid: parseInt($(that).data("leafid")),
                     parent_id: parseInt(parent_id),
-                    scroll_top: $(dataAreaSelector).scrollTop()
+                    scroll_top: $(dataAreaSelector).scrollTop(),
+                    hover: true
                 });
 
             }

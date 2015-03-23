@@ -192,7 +192,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def leaf_0_clicked(self, leafid):
         pass
 
-    def handle_leaf_0_open(self, leafid, scroll_top):
+    def handle_leaf_0_open(self, leafid, scroll_top, hover):
         self.scroll_top = scroll_top
         leafid = int(leafid)
 
@@ -227,7 +227,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def leaf_1_clicked(self, leafid, parent_id):
         pass
 
-    def handle_leaf_1_open(self, leafid, parent_id, scroll_top):
+    def handle_leaf_1_open(self, leafid, parent_id, scroll_top, hover):
         self.scroll_top = scroll_top
 
         self.add_level_2(self.load_level_2(leafid), leafid, parent_id)
