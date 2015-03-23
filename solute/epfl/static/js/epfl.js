@@ -126,7 +126,7 @@ epfl_module = function() {
             }
             var el = $("[epflid='" + epflid + "']");
             if (el.length == 0) {
-                console.log("Element not found!", cid, parts);
+                //console.log("Element not found!", cid, parts);
                 return;
             }
             var parts_jq = $(part_html);
@@ -155,68 +155,82 @@ epfl_module = function() {
         epfl.flush(null, true);
     };
 
+    epfl.flush_queue = [];
+    epfl.flush_queue_active = false;
+
     epfl.flush = function (callback_func, sync) {
+        epfl.flush_queue.push([callback_func, sync, epfl.queue]);
+        epfl.queue = [];
+
+        epfl.flush_queued();
+    };
+
+    epfl.flush_queued = function () {
+        if (epfl.flush_queue_active || epfl.flush_queue.length == 0) {
+            return;
+        }
+        epfl.flush_queue_active = true;
+        var flush = epfl.flush_queue.shift();
+        console.log('flush_unqueued', flush[0], flush[1], flush[2], epfl.flush_queue);
+        epfl.flush_unqueued(flush[0], flush[1], flush[2]);
+    };
+
+    epfl.flush_unqueued = function (callback_func, sync, queue) {
         if (window.epfl_flush_active) {
             window.epfl_flush_again = true;
             return;
         }
 
-        if (epfl.queue.length == 0) {
+        if (queue.length == 0) {
             // queue empty
             if (callback_func) {
                 callback_func(null);
             }
-        } else {
-            window.epfl_flush_active = true;
-            // send and clear queue
-            var ajax_target_url = location.href;
-
-            if (epfl.show_please_wait_counter > 0) {
-                sync = true;
-            }
-
-            epfl.show_please_wait(true);
-            var queue = epfl.queue;
-            epfl.queue = [];
-            $.ajax({
-                url: ajax_target_url,
-                global: false,
-                async: !sync,
-                type: "POST",
-                cache: false,
-                data: JSON.stringify({"tid": epfl.tid, "q": queue}),
-                contentType: "application/json",
-                dataType: "script",
-                success: function (data) {
-                    if (callback_func) {
-                        callback_func(data);
-                    }
-                    epfl.hide_please_wait(true);
-                },
-                error: function (httpRequest, message, errorThrown) {
-                    if (callback_func) {
-                        try {
-                            callback_func($.parseJSON(data))
-                        } catch (e) {
-                            console.log('Caught Exception when trying to parse data as JSON. Did you provide a ' +
-                            'callback for an event without a json response?');
-                            console.log(e);
-                        }
-                    } else {
-                        epfl.show_fading_message("Server Error: " + errorThrown, "error");
-                        console.log(httpRequest);
-                    }
-                    epfl.hide_please_wait(true);
-                },
-                complete: function (jqXHR,status) {
-                    window.epfl_flush_active = false;
-                    if(window.epfl_flush_again){
-                        window.epfl_flush_again = false;
-                        epfl.flush(callback_func,sync);
-                    }
-                }
-            });
+            return;
         }
+        var ajax_target_url = location.href;
+
+        if (epfl.show_please_wait_counter > 0) {
+            sync = true;
+        }
+
+        epfl.show_please_wait(true);
+
+        return $.ajax({
+            url: ajax_target_url,
+            global: false,
+            async: !sync,
+            type: "POST",
+            cache: false,
+            data: JSON.stringify({"tid": epfl.tid, "q": queue}),
+            contentType: "application/json",
+            dataType: "script",
+            success: function (data) {
+                if (callback_func) {
+                    callback_func(data);
+                }
+                epfl.hide_please_wait(true);
+            },
+            error: function (httpRequest, message, errorThrown) {
+                if (callback_func) {
+                    try {
+                        callback_func($.parseJSON(data))
+                    } catch (e) {
+                        console.log('Caught Exception when trying to parse data as JSON. Did you provide a ' +
+                        'callback for an event without a json response?');
+                        console.log(e);
+                    }
+                } else {
+                    epfl.show_fading_message("Server Error: " + errorThrown, "error");
+                    console.log(httpRequest);
+                }
+                epfl.hide_please_wait(true);
+            },
+            complete: function (jqXHR, status) {
+                epfl.flush_queue_active = false;
+                epfl.flush_queued();
+            }
+        });
     };
 
     epfl.send = function(epflevent, callback_func) {
