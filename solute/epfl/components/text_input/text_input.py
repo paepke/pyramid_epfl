@@ -18,7 +18,12 @@ class TextInput(FormInputBase):
 
     js_name = FormInputBase.js_name + [("solute.epfl.components:text_input/static", "text_input.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:text_input/static", "text_input.css")]
-    
+
+    #: Maximum length for the input
+    max_length = None
+
+    #: Set True to show a input counter right to the field. Requires a max_length
+    show_count = False
 
     template_name = "text_input/text_input.html"
     

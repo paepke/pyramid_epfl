@@ -215,6 +215,12 @@ class Form(epflcomponentbase.ComponentContainerBase):
     def registered_fields(self):
         return [self.page.components[cid] for cid in self._registered_fields]
 
+    @property
+    def registered_names(self):
+        return dict([[self.page.components[cid].name, self.page.components[cid]]
+                     for cid in self._registered_fields
+                     if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
+
     def get_values(self):
         values = odict()
         print "get_values",self.registered_fields

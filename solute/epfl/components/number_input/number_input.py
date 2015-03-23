@@ -24,3 +24,4 @@ class NumberInput(FormInputBase):
     layout_vertical = False
     min_value = None #: If set, the minimum value to be supported by the control.
     max_value = None #: If set, the maximum value to be supported by the control.
+    currency = None #: If set, will be displayed next to the field

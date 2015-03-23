@@ -19,7 +19,13 @@
     	{% else %}
         	<input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
                value="{{ compo.value if compo.value is not none else '' }}"
-               placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+               placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
+               {% if compo.max_length is not none %}
+                   maxlength="{{ compo.max_length }}"
+               {% endif %}/>
+            {%  if compo.max_length is not none and compo.show_count is defined and compo.show_count %}
+                (<span id="{{ compo.cid }}_input_count">0</span>/{{ compo.max_length }})
+            {%  endif %}
         {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
