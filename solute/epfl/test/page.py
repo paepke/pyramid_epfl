@@ -253,3 +253,28 @@ class PageTest(unittest.TestCase):
             assert transaction.has_component('child_node_%s' % (i + 1)) is False
             for x in range(0, 3):
                 assert transaction.has_component('child_node_%s_%s' % (i + 1, x)) is False
+
+    def test_rendering_dynamically_added_components(self):
+        page = Page(self.request)
+        page.request.is_xhr = True
+        page.page_request.params = {"q": []}
+
+        transaction = page.transaction
+        transaction['components_assigned'] = True
+        transaction.set_component('root_node',
+                                  {'cid': 'root_node',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('root_node', None))})
+
+        page.create_components()
+        page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
+        page.root_node.redraw()
+
+        assert page.handle_ajax_request()
+        assert False not in [c.is_rendered for c in page.get_active_components()]
+
+        out = page.call_ajax()
+        print out

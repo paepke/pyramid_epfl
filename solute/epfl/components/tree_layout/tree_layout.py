@@ -95,10 +95,14 @@ class TreeLayout(ComponentContainerBase):
 
     def handle_show(self):
         self.show_children = True
+        for compo in self.components:
+            compo.set_visible()
         self.redraw()
 
     def handle_hide(self):
         self.show_children = False
+        for compo in self.components:
+            compo.set_hidden()
         self.redraw()
 
     def is_smart(self):

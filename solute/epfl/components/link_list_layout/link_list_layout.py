@@ -42,3 +42,12 @@ class LinkListLayout(PaginatedListLayout):
             except KeyError:
                 pass
         return links
+
+    def render(self, target='main'):
+        """
+        Since the row.html template from this lists theme does not actually render caller() we need to mark the child
+        components as hidden to avoid multiple extra instances from being rendered.
+        """
+        for compo in self.components:
+            compo.set_hidden()
+        super(LinkListLayout, self).render(target=target)

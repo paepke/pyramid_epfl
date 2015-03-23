@@ -15,8 +15,18 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
     active_tab_cid = ""
     lazy_load_tabs = False
 
+    def init_transaction(self):
+        super(TabsLayout, self).init_transaction()
+        self.handle_toggle_tab(self.components[0].cid)
+
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid
+
+        if self.lazy_load_tabs:
+            for compo in self.components:
+                compo.set_hidden()
+            getattr(self.page, selected_compo_cid).set_visible()
+
         self.redraw()
 
     def del_component(self, cid, slot=None):
