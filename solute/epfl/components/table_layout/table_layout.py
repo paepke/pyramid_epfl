@@ -27,7 +27,7 @@ class TableLayout(PaginatedListLayout):
                 data = {'row': row,
                         'key': key,
                         'compo_type': i,
-                        'id': "%s::%s" % (row['id'], i)}
+                        'id': "%s_%s" % (row['id'], i)}
 
                 for key, value in interface.items():
                     data[key] = row[value]
