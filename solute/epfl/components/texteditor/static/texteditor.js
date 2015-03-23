@@ -1,9 +1,9 @@
 epfl.TextEditor = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 	var compo = this;
-    var selector = "#" + cid + "_editor";
+    var selector = "#" + cid + "_texteditor";
 
-    var editor = CKEDITOR.replace(cid + "_editor");
+    var editor = CKEDITOR.replace(cid + "_texteditor");
     editor.on('change', function (evt) {
         epfl.repeat_enqueue(epfl.make_component_event(cid, 'change', {value:  evt.editor.getData()}), cid + "_change");
     });
