@@ -1,6 +1,6 @@
 epfl.BoxComponent = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    hover_box_remove_on_close=params["hover_box_remove_on_close"];
+    var hover_box_remove_on_close=params["hover_box_remove_on_close"];
 
     function remove_handler(event) {
     	event.stopImmediatePropagation();
@@ -14,6 +14,7 @@ epfl.BoxComponent = function(cid, params) {
     }
 
     $('#' + cid + ' > .epfl_box_remove_button, #' + cid + ' > .panel-heading > .epfl_box_remove_button').click(remove_handler);
+    var hover_box_remove_handler;
     if (hover_box_remove_on_close) {
     	hover_box_remove_handler = remove_handler;
     } else {
@@ -21,6 +22,7 @@ epfl.BoxComponent = function(cid, params) {
     }
     $('#' + cid + '.epfl_hover_box > div > .panel-heading > .epfl_box_remove_button, #' + cid + '.epfl_hover_box > div > .epfl_box_remove_button').click(hover_box_remove_handler);
     $('#' + cid + '.epfl_hover_box').click(function (event) {
+        console.log(event.target, event.target.id);
         if (event.target.id != cid) {
             return;
         }
