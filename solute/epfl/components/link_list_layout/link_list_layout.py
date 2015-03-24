@@ -19,7 +19,7 @@ class LinkListLayout(PaginatedListLayout):
     theme_path = PaginatedListLayout.theme_path.copy()
     theme_path['row'] = ['link_list_layout/theme']
         
-    js_parts = PaginatedListLayout.js_parts + ['link_list_layout/link_list_layout.js']
+    js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
 
     compo_state = PaginatedListLayout.compo_state + ['links']
     

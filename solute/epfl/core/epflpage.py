@@ -96,6 +96,7 @@ class Page(object):
 
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
+    redrawn_components = None
 
     def __init__(self, request, transaction=None):
         """
@@ -304,12 +305,15 @@ class Page(object):
         if not self.transaction.has_component(cid):
             self.transaction.set_component(cid, compo_obj)
 
-    def get_active_components(self):
+    def get_active_components(self, sorted_by_depth=False):
         """
         If :attr:`active_components` is set this method returns a list of the :class:`.epflcomponentbase.ComponentBase`
         instances that have registered there upon initialization and are still present on this page.
         """
-        return self.transaction.get_active_components()
+        active_components = self.transaction.get_active_components()[:]
+        if sorted_by_depth:
+            active_components.sort(key=lambda x: self.transaction.get_component_depth(x.cid))
+        return active_components
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this page.
@@ -470,7 +474,8 @@ class Page(object):
         ignored.
         """
         if cid is None:
-            for compo_obj in self.get_active_components():
+            self.redrawn_components = set()
+            for compo_obj in self.get_active_components(sorted_by_depth=True):
                 ccid = compo_obj.compo_info.get('ccid', None)
                 if ccid is not None and self.transaction.is_active_component(cid):
                     continue
@@ -479,6 +484,10 @@ class Page(object):
 
         if not self.transaction.is_active_component(cid) and cid != 'root_node':
             return
+
+        if cid in self.redrawn_components:
+            return
+        self.redrawn_components.add(cid)
 
         compo_obj = getattr(self, cid)
 

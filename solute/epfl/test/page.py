@@ -5,6 +5,7 @@ from pyramid import testing
 from solute.epfl.core.epflpage import Page
 from solute.epfl.core.epflcomponentbase import ComponentBase
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
+from solute.epfl import components
 
 from solute.epfl import get_epfl_jinja2_environment, includeme
 from pyramid_jinja2 import get_jinja2_environment
@@ -167,7 +168,7 @@ class PageTest(unittest.TestCase):
             out = out.replace('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1), '')
             out = out.replace('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1), '')
             for x in range(0, 3):
-                assert ('epfl.replace_component(\'child_node_%s_%s\', {"js":""});' % (i + 1, x)) in out
+                assert ('epfl.replace_component(\'child_node_%s_%s\', {"js":"' % (i + 1, x)) in out
                 assert ('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x)) in out
                 out = out.replace('epfl.replace_component(\'child_node_%s_%s\', {"js":""});' % (i + 1, x), '')
                 out = out.replace('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x),
@@ -254,11 +255,10 @@ class PageTest(unittest.TestCase):
             for x in range(0, 3):
                 assert transaction.has_component('child_node_%s_%s' % (i + 1, x)) is False
 
-    def test_rendering_dynamically_added_components(self):
+    def test_re_rendering_components(self):
         page = Page(self.request)
         page.request.is_xhr = True
         page.page_request.params = {"q": []}
-
         transaction = page.transaction
         transaction['components_assigned'] = True
         transaction.set_component('root_node',
@@ -268,13 +268,49 @@ class PageTest(unittest.TestCase):
                                    'class': (ComponentContainerBase,
                                              {},
                                              ('root_node', None))})
+        transaction.set_component('child_node_0',
+                                  {'ccid': 'root_node',
+                                   'cid': 'child_node_0',
+                                   'slot': None,
+                                   'config': {},
+                                   'class': (ComponentContainerBase,
+                                             {},
+                                             ('child_node_0', None))})
+
+        compo_depth = 5
+        compo_width = 10
+
+        for i in range(0, compo_depth):
+            transaction.set_component('child_node_%s' % (i + 1),
+                                      {'ccid': 'child_node_%s' % i,
+                                       'cid': 'child_node_%s' % (i + 1),
+                                       'slot': None,
+                                       'config': {},
+                                       'class': (ComponentContainerBase,
+                                                 {},
+                                                 ('child_node_%s' % (i + 1), None))})
+            for x in range(0, compo_width):
+                transaction.set_component('child_node_%s_%s' % (i + 1, x),
+                                          {'ccid': 'child_node_%s' % i,
+                                           'cid': 'child_node_%s_%s' % (i + 1, x),
+                                           'slot': None,
+                                           'config': {},
+                                           'class': (ComponentContainerBase,
+                                                     {},
+                                                     ('child_node_%s_%s' % (i + 1, x), None))})
 
         page.create_components()
-        page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
+
         page.root_node.redraw()
+        page.child_node_3_1.redraw()
 
         assert page.handle_ajax_request()
-        assert False not in [c.is_rendered for c in page.get_active_components()]
-
         out = page.call_ajax()
-        print out
+        for i in range(0, compo_depth):
+            assert out.count(
+                "epfl.replace_component('child_node_%s'" % (i + 1)
+            ) == out.count("epfl.replace_component('child_node_0'")
+            for x in range(0, compo_width):
+                assert out.count(
+                    "epfl.replace_component('child_node_%s_%s'" % (i + 1, x)
+                ) == out.count("epfl.replace_component('child_node_0'")
