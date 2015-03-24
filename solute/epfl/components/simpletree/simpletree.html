@@ -22,15 +22,12 @@
 
     <div class="row epfl-simple-tree-filter">
         <div class="col-sm-6">
-            <div class="input-group">
+            <div class="epfl-simple-tree-search-input-addon">
+                <i class="fa fa-search"></i>
                 <input type="text"
                        class="form-control epfl-simple-tree-search"
                        placeholder="Suchen..." {% if compo.search_string %}
                        value="{{ compo.search_string }}"{% endif %}>
-                  <span class="input-group-btn">
-                    <button class="btn btn-default epfl-simple-tree-search-btn" type="button"><i
-                            class="fa fa-search"></i></button>
-                  </span>
             </div>
         </div>
         <div class="col-sm-6">

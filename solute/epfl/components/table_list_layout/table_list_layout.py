@@ -1,6 +1,6 @@
 # * encoding: utf-8
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.components import ListLayout
+from solute.epfl.components import PaginatedListLayout
 
 
 class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
@@ -39,7 +39,7 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
         return compo
 
 
-class TableListLayout(ListLayout):
+class TableListLayout(PaginatedListLayout):
     """
 
     A container component that renders the given data in a table
@@ -97,10 +97,15 @@ class TableListLayout(ListLayout):
 
     """
 
-    theme_path = ['paginated_list_layout/theme', 'table_list_layout/theme']
+    #theme_path = ['paginated_list_layout/theme', 'table_list_layout/theme']
+    theme_path = {'default': ['table_list_layout/theme'],
+                  'container': ['table_list_layout/theme'],
+                  # context layout embraces paginated layout template  for before and after
+                  # templates
+                  'before': ['paginated_list_layout/theme', '<table_list_layout/theme'],
+                  'after': ['paginated_list_layout/theme', '<table_list_layout/theme']}
 
-    js_parts = ListLayout.js_parts[:]
-    js_parts.extend(['paginated_list_layout/paginated_list_layout.js', 'table_list_layout/table_list_layout.js'])
+    js_parts = PaginatedListLayout.js_parts + ['table_list_layout/table_list_layout.js']
     default_child_cls = TableLayoutRow
 
     show_pagination = True
@@ -109,13 +114,10 @@ class TableListLayout(ListLayout):
     #: False - You have to call update_children yourself, True - epfl call update_children automatically
     auto_update_children = False
 
-    compo_state = ListLayout.compo_state[:]
-    compo_state.extend(["orderby", "ordertype", "search", "height"])
+    compo_state = PaginatedListLayout.compo_state + ["orderby", "ordertype", "search", "height"]
 
-    js_name = ["table_list_layout.js"]
-    css_name = ["table_list_layout.css"]
-    asset_spec = "solute.epfl.components:table_list_layout/static"
-
+    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:table_list_layout/static", "table_list_layout.js")]
+    css_name = PaginatedListLayout.css_name + [("solute.epfl.components:table_list_layout/static", "table_list_layout.css")]
 
     orderby = ""
     ordertype = "asc"

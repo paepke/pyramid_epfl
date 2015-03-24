@@ -33,5 +33,5 @@ class PaginatedListLayout(PrettyListLayout):
                   'after': ['pretty_list_layout/theme', '<paginated_list_layout/theme']}
     
     js_parts = PrettyListLayout.js_parts + ["paginated_list_layout/paginated_list_layout.js"]
-
+    css_name = PrettyListLayout.css_name + [("solute.epfl.components:paginated_list_layout/static", "paginated_list_layout.css")]
 
