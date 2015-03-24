@@ -346,8 +346,6 @@ class PageTest(unittest.TestCase):
             ]
         )
 
-        print Page.root_node
-
         page = Page(self.request)
 
         page.create_components()
@@ -356,5 +354,4 @@ class PageTest(unittest.TestCase):
         page.handle_submit_request()
 
         for compo in page.root_node.components:
-            print compo.cid, compo.compo_info['compo_struct'].keys()[0], compo.__unbound_component__
             assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]
