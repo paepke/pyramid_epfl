@@ -140,7 +140,7 @@ epfl.Simpletree = function (cid, params) {
 
     $(selector + " button.epfl-simple-tree-search-btn").click(function () {
         epfl.dispatch_event(cid, "search", {
-            search_string: $(this).val(),
+            search_string: $(selector + " input.epfl-simple-tree-search").val(),
             filter_key: $(selector + " select.epfl-simple-tree-filter").val()
         });
     });
