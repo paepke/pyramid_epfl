@@ -93,6 +93,12 @@ class Transaction(MutableMapping):
         del self.data
 
     # EPFL Core Api methods
+    def get_component_depth(self, cid):
+        try:
+            return self.get_component_depth(self['compo_lookup'][cid]) + 1
+        except KeyError:
+            return 0
+
     def get_existing_components(self):
         return self['compo_lookup'].keys() + self['compo_struct'].keys()
 
