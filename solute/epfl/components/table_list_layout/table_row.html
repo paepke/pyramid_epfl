@@ -50,8 +50,8 @@
                     </button>
                 </div>
             {% elif cell.type == 'popover' %}
-                <span data-toggle="popover" data-content="{{ cell.popover_text }}"
-                      data-placement="top">{{ cell.text }} </span>
+                <a tabindex="0" role="button" class="epfl-popover-link" data-toggle="popover" data-content="{{ cell.popover_text }}" data-trigger="focus"
+                      data-placement="top">{{ cell.text }} </a>
             {% endif %}
         </td>
     {% endif %}
