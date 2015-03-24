@@ -22,7 +22,6 @@ epfl.BoxComponent = function(cid, params) {
     }
     $('#' + cid + '.epfl_hover_box > div > .panel-heading > .epfl_box_remove_button, #' + cid + '.epfl_hover_box > div > .epfl_box_remove_button').click(hover_box_remove_handler);
     $('#' + cid + '.epfl_hover_box').click(function (event) {
-        console.log(event.target, event.target.id);
         if (event.target.id != cid) {
             return;
         }
