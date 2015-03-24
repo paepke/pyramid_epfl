@@ -166,8 +166,11 @@ class UnboundComponent(object):
             except KeyError:
                 pass
 
-            cid = "{0:08x}".format(randint(0, 0xffffffff))
-            name = '{name}_auto_{cid}'.format(name=self.__unbound_cls__.__name__, cid=cid)
+            dynamic_class_id = "{0:08x}".format(randint(0, 0xffffffff))
+            name = '{name}_auto_{dynamic_class_id}'.format(
+                name=self.__unbound_cls__.__name__,
+                dynamic_class_id=dynamic_class_id
+            )
             self.__dynamic_class_store__ = type(name, (self.__unbound_cls__, ), {})
             for param in self.__unbound_config__:
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
@@ -221,8 +224,11 @@ class UnboundComponent(object):
         return True
 
     def __repr__(self):
-        return '<UnboundComponent of {cls} with config {conf}>'.format(cls=self.__unbound_cls__,
-                                                                       conf=self.__unbound_config__)
+        return '<UnboundComponent of {cls} with config {conf} and position {position}>'.format(
+            cls=self.__unbound_cls__,
+            conf=self.__unbound_config__,
+            position=self.position
+        )
 
 
 @epflacl.epfl_acl(['access'])
@@ -1055,7 +1061,6 @@ class ComponentContainerBase(ComponentBase):
         super(ComponentContainerBase, self).init_transaction()
 
         self.node_list = self.init_struct() or self.node_list  # if init_struct returns None, keep original value.
-
         for node in self.node_list:
             cid, slot = node.position
             self.add_component(node(self.page, cid, __instantiate__=True),

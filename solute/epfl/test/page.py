@@ -314,3 +314,47 @@ class PageTest(unittest.TestCase):
                 assert out.count(
                     "epfl.replace_component('child_node_%s_%s'" % (i + 1, x)
                 ) == out.count("epfl.replace_component('child_node_0'")
+
+    def test_container_assign(self):
+        Page.root_node = ComponentContainerBase(
+            cid='root_node',
+            node_list=[
+                ComponentContainerBase(
+                    cid='container_1',
+                    node_list=[
+                        ComponentBase(cid='compo_1')
+                    ]
+                ),
+                ComponentContainerBase(
+                    cid='container_2',
+                    node_list=[
+                        ComponentBase(cid='compo_2')
+                    ]
+                ),
+                ComponentContainerBase(
+                    cid='container_3',
+                    node_list=[
+                        ComponentBase(cid='compo_3')
+                    ]
+                ),
+                ComponentContainerBase(
+                    cid='container_4',
+                    node_list=[
+                        ComponentBase(cid='compo_4')
+                    ]
+                ),
+            ]
+        )
+
+        print Page.root_node
+
+        page = Page(self.request)
+
+        page.create_components()
+
+        assert not page.handle_ajax_request()
+        page.handle_submit_request()
+
+        for compo in page.root_node.components:
+            print compo.cid, compo.compo_info['compo_struct'].keys()[0], compo.__unbound_component__
+            assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]
