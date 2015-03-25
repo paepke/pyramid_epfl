@@ -123,7 +123,7 @@ class TableListLayout(PaginatedListLayout):
     ordertype = "asc"
     search = ""
     height = None
-    data_interface = {'id': None, 'data': None}
+    data_interface = {'id': None, 'context_class': None, 'data': None}
 
     def handle_set_row(self, row_offset, row_limit, row_data=None):
         self.row_offset, self.row_limit, self.row_data = row_offset, row_limit, row_data
@@ -147,7 +147,7 @@ class TableListLayout(PaginatedListLayout):
 
     @staticmethod
     def HeadRow(headings):
-        headrow = {'id': 0, 'data': []}
+        headrow = {'id': 0, 'context_class': None, 'data': []}
 
         for head in headings:
             headrow['data'].append(head)
@@ -162,7 +162,16 @@ class TableListLayout(PaginatedListLayout):
 
     @staticmethod
     def Row(rowid, fields):
-        row = {'id': rowid, 'data': []}
+        row = {'id': rowid, 'context_class': None, 'data': []}
+
+        for field in fields:
+            row['data'].append(field)
+
+        return row
+    
+    @staticmethod
+    def ContextRow(rowid, context_class, fields):
+        row = {'id': rowid, 'context_class': context_class, 'data': []}
 
         for field in fields:
             row['data'].append(field)
