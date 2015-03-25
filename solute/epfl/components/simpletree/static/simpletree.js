@@ -128,31 +128,6 @@ epfl.Simpletree = function (cid, params) {
     });
 
     /**************************************************************************
-     Search and Filter
-     *************************************************************************/
-
-    $(selector + " input.epfl-simple-tree-search").change(function () {
-        epfl.dispatch_event(cid, "search", {
-            search_string: $(this).val(),
-            filter_key: $(selector + " select.epfl-simple-tree-filter").val()
-        });
-    });
-
-    $(selector + " button.epfl-simple-tree-search-btn").click(function () {
-        epfl.dispatch_event(cid, "search", {
-            search_string: $(selector + " input.epfl-simple-tree-search").val(),
-            filter_key: $(selector + " select.epfl-simple-tree-filter").val()
-        });
-    });
-
-    $(selector + " select.epfl-simple-tree-filter").change(function () {
-        epfl.dispatch_event(cid, "search", {
-            search_string: $(selector + " input.epfl-simple-tree-search").val(),
-            filter_key: $(this).val()
-        });
-    });
-
-    /**************************************************************************
      Tree Leaf Events
      *************************************************************************/
 
@@ -293,7 +268,7 @@ epfl.Simpletree = function (cid, params) {
 
 epfl.Simpletree.inherits_from(epfl.ComponentBase);
 
-//This function is triggerd from init_transaction for loading the tree data 'async' which means you first see the
+//This function is triggered from init_transaction for loading the tree data 'async' which means you first see the
 //loading indicator on the tree and when the data are loaded they got shown via a epfl redraw
 epfl.Simpletree.LoadData = function(cid){
     epfl.enqueue(epfl.make_component_event(cid, 'load_data', {}), cid);
