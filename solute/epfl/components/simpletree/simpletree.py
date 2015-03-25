@@ -262,13 +262,27 @@ class Simpletree(epflcomponentbase.ComponentBase):
         # Overwrite for click handling
         pass
 
-    def handle_search(self, search_string, filter_key):
-        self.search_string = search_string
-        self.filter_key = filter_key
-        self.rebuild_tree_structure()
-
     def handle_drop(self,
                     drag_level, drag_level_0, drag_level_1, drag_level_2, drag_tree_cid,
                     drop_level, drop_level_0, drop_level_1, drop_level_2, drop_tree_cid):
         pass
+    
+    def expand_all(self):
+        """
+        Rebuild the tree and expand all closed nodes.
+        """
+        if self.open_leaf_0_ids is None:
+            self.open_leaf_0_ids = []
+        if self.open_leaf_1_ids is None:
+            self.open_leaf_1_ids = {} 
+        for level_0_id in self.tree_data:
+            if not level_0_id in self.open_leaf_0_ids:
+                self.add_level_1(self.load_level_1(level_0_id), level_0_id)
+                self.open_leaf_0_ids.append(level_0_id)
+            if "children" in self.tree_data[level_0_id]:
+                for level_1_id in self.tree_data[level_0_id]["children"]:
+                    if not level_1_id in self.open_leaf_1_ids.keys():
+                        self.add_level_2(self.load_level_2(level_1_id), level_1_id, level_0_id)
+                        self.open_leaf_1_ids[level_1_id] = {"leafid": level_1_id, "parent_id": level_0_id}
+        self.redraw()
 
