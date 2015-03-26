@@ -13,10 +13,9 @@ class ButtonRadio(FormInputBase):
 
     """
     template_name = "buttonradio/buttonradio.html"
+    compo_state = FormInputBase.compo_state + ['options']
 
-    js_parts = FormInputBase.js_parts[:]
-    js_parts.extend(['buttonradio/buttonradio.js'])
-
+    js_parts = FormInputBase.js_parts + ['buttonradio/buttonradio.js']
     js_name = FormInputBase.js_name + [("solute.epfl.components:buttonradio/static", "buttonradio.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:buttonradio/static", "buttonradio.css")]
 
