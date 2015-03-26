@@ -16,26 +16,35 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     compo_config = ['tree_data']
     compo_state = ["tree_data", "search_string", "open_leaf_0_ids", "open_leaf_1_ids", "all_filter", "filter_key",
-                   "scroll_top", "selected_0_id", "selected_1_id", "selected_2_id", "is_loading", "load_async"]
+                   "scroll_position", "selected_0_id", "selected_1_id", "selected_2_id", "is_loading", "load_async",
+                   "expanded"]
 
     tree_data = None
 
     open_leaf_0_ids = None
     open_leaf_1_ids = None
     all_filter = None
+    
+    expanded = False #: Indicates whether the tree is fully expanded or not.
 
     height = 400
 
     search_string = None
     filter_key = None
 
-    scroll_top = 0
+    scroll_position = 0
     selected_0_id = None
     selected_1_id = None
     selected_2_id = None
 
     is_loading = False
     load_async = True
+
+    def handle_scrolled(self, scroll_position):
+        """
+        Remember the scroll position.
+        """
+        self.scroll_position = scroll_position
 
     # TREE DATA
     def reset_tree_data(self):
@@ -192,8 +201,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def leaf_0_clicked(self, leafid):
         pass
 
-    def handle_leaf_0_open(self, leafid, scroll_top, hover):
-        self.scroll_top = scroll_top
+    def handle_leaf_0_open(self, leafid, hover):
         leafid = int(leafid)
 
         self.add_level_1(self.load_level_1(leafid), leafid)
@@ -210,8 +218,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.redraw()
 
 
-    def handle_leaf_0_close(self, leafid, scroll_top):
-        self.scroll_top = scroll_top
+    def handle_leaf_0_close(self, leafid):
         leafid = int(leafid)
         try:
             if self.open_leaf_0_ids is None:
@@ -227,8 +234,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
     def leaf_1_clicked(self, leafid, parent_id):
         pass
 
-    def handle_leaf_1_open(self, leafid, parent_id, scroll_top, hover):
-        self.scroll_top = scroll_top
+    def handle_leaf_1_open(self, leafid, parent_id, hover):
 
         self.add_level_2(self.load_level_2(leafid), leafid, parent_id)
 
@@ -241,8 +247,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.redraw()
 
-    def handle_leaf_1_close(self, leafid, parent_id, scroll_top):
-        self.scroll_top = scroll_top
+    def handle_leaf_1_close(self, leafid, parent_id):
         try:
 
             if self.open_leaf_1_ids is None:
@@ -257,8 +262,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
         self.redraw()
 
-    def handle_leaf_2_clicked(self, leafid, scroll_top):
-        self.scroll_top = scroll_top
+    def handle_leaf_2_clicked(self, leafid):
         # Overwrite for click handling
         pass
 
@@ -276,6 +280,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         if self.open_leaf_1_ids is None:
             self.open_leaf_1_ids = {} 
         for level_0_id in self.tree_data:
+            self.tree_data[level_0_id]["children"] = odict()
             if not level_0_id in self.open_leaf_0_ids:
                 self.add_level_1(self.load_level_1(level_0_id), level_0_id)
                 self.open_leaf_0_ids.append(level_0_id)
@@ -284,5 +289,20 @@ class Simpletree(epflcomponentbase.ComponentBase):
                     if not level_1_id in self.open_leaf_1_ids.keys():
                         self.add_level_2(self.load_level_2(level_1_id), level_1_id, level_0_id)
                         self.open_leaf_1_ids[level_1_id] = {"leafid": level_1_id, "parent_id": level_0_id}
+        self.expanded = True
         self.redraw()
 
+    def collapse_all(self):
+        """
+        Rebuild the tree and collapse all open nodes.
+        """
+        if self.open_leaf_0_ids is not None:
+            self.open_leaf_0_ids = []
+        if self.open_leaf_1_ids is not None:
+            self.open_leaf_1_ids = {} 
+        for level_0_id in self.tree_data:
+            if "children" in self.tree_data[level_0_id]:
+                del self.tree_data[level_0_id]["children"]
+                    
+        self.expanded = False
+        self.redraw()

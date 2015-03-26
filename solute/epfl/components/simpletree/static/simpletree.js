@@ -59,10 +59,17 @@ epfl.Simpletree = function (cid, params) {
      We need the hidden scroll area for scrolling when an element is dragging
      the user can move to the upper or lower area of the tree which then scrolls
      *************************************************************************/
+	
+	// Remember scroll position
+	$(dataAreaSelector).scroll(function () {
+        clearTimeout($.data(this, 'simpletree_scrolltimer'));
+        $.data(this, 'simpletree_scrolltimer', setTimeout(function () { // detect scroll stop
+            epfl.enqueue(epfl.make_component_event(cid, "scrolled", {scroll_position: $(dataAreaSelector).scrollTop()}));
+        }, 250));
+    });
 
-
-    //When the tree reloads go back to the last scroll position stored in transactio
-    $(dataAreaSelector).scrollTop(params["scrollTop"]);
+    //When the tree reloads go back to the last scroll position stored in transaction
+    $(dataAreaSelector).scrollTop(params["scroll_position"]);
 
     //Sets the positon of the scrollarea
     var setHiddenScrollArea = function () {
@@ -135,13 +142,11 @@ epfl.Simpletree = function (cid, params) {
         var open = $(this).data("open");
         if (open) {
             epfl.dispatch_event(cid, "leaf_0_close", {
-                leafid: parseInt($(this).data("leafid")),
-                scroll_top: $(dataAreaSelector).scrollTop()
+                leafid: parseInt($(this).data("leafid"))
             });
         } else {
             epfl.dispatch_event(cid, "leaf_0_open", {
                 leafid: parseInt($(this).data("leafid")),
-                scroll_top: $(dataAreaSelector).scrollTop(),
                 hover: false
             });
         }
@@ -150,13 +155,11 @@ epfl.Simpletree = function (cid, params) {
     epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, open, thiscid) {
         if (open) {
             epfl.dispatch_event(thiscid, "leaf_1_close", {
-                leafid: leafid, parent_id: parent_id,
-                scroll_top: $(dataAreaSelector).scrollTop()
+                leafid: leafid, parent_id: parent_id
             });
         } else {
             epfl.dispatch_event(thiscid, "leaf_1_open", {
                 leafid: leafid, parent_id: parent_id,
-                scroll_top: $(dataAreaSelector).scrollTop(),
                 hover: false
             });
         }
@@ -164,11 +167,10 @@ epfl.Simpletree = function (cid, params) {
 
     epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
         epfl.dispatch_event(thiscid, "leaf_2_clicked", {
-            leafid: leafid,
-            scroll_top: $(dataAreaSelector).scrollTop()
+            leafid: leafid
         });
     };
-
+    
     /**************************************************************************
      Drag and Drop
      window.epflSimpleTreeDragging is required for mouseover effects while dragging an element
@@ -241,7 +243,6 @@ epfl.Simpletree = function (cid, params) {
             if ($(that).hasClass("epfl-simple-tree-leaf-0")) {
                 epfl.dispatch_event(cid, "leaf_0_open", {
                     leafid: parseInt($(that).data("leafid")),
-                    scroll_top: $(dataAreaSelector).scrollTop(),
                     hover: true
                 });
             } else if ($(that).hasClass("epfl-simple-tree-leaf-1")) {
@@ -250,7 +251,6 @@ epfl.Simpletree = function (cid, params) {
                 epfl.dispatch_event(cid, "leaf_1_open", {
                     leafid: parseInt($(that).data("leafid")),
                     parent_id: parseInt(parent_id),
-                    scroll_top: $(dataAreaSelector).scrollTop(),
                     hover: true
                 });
 

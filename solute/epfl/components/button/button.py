@@ -20,7 +20,7 @@ class Button(ComponentBase):
     template_name = "button/button.html"
     js_parts = ["button/button.js"]
     js_name = ["button.js"]
-    compo_state = ComponentBase.compo_state + ['disabled']
+    compo_state = ComponentBase.compo_state + ['disabled', 'icon', 'value']
 
     label = None #: If set, the label is rendered before the button.
     value = None #: The value is used as button text if no icon is provided.
