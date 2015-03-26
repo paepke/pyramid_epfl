@@ -108,7 +108,7 @@ class EPFLView(object):
         active_modules = [m.strip() for m in config.registry.settings.get('epfl.active_modules', '').split(',')
                           if m.strip()]
         for m in active_modules:
-            module = config.maybe_dotted(m + '.views')
+            module = config.maybe_dotted(m)
             epflutil.Discover().discover_module(module)
             if hasattr(module, 'includeme'):
                 config.include(m)
