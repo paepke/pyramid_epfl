@@ -29,7 +29,7 @@ div.epfl-sidebar li.epfl-sidebar-navi-entry:hover {
 div.epfl-sidebar ul.epfl-sidebar-menu {
     display: none;
     position: relative;
-    left: 100px;
+    left: 99px;
     top: -57px;
     background-color: #F1F1F1;
     width: 200px;
