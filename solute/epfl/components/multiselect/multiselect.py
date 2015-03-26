@@ -33,6 +33,11 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         ["selected_child_cids", "hidden_child_cids", "selected_child_ids", "scroll_position",
             "search_string", "default_out_multiselect_transfer_cid"]
 
+    data_interface = {
+        'id': None,
+        'text': None
+    }
+
     default_child_cls = MultiSelectEntry
     selected_child_cids = None  #: A list of child cids that are currently selected.
     
