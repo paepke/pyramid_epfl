@@ -55,7 +55,9 @@ class EPFLView(object):
     register = []
     counter = {'id': 0}
 
-    def __init__(self, route_name=None, route_pattern=None, permission=None, route_text=None, rank=0):
+    def __init__(
+            self, route_name=None, route_pattern=None, permission=None, route_text=None, rank=0, forbidden_view=False
+    ):
         """
         Adds a route, adds the view with the given permissions to that route and creates a link that appears in
         :meth:`get_nav_list`.
@@ -63,22 +65,30 @@ class EPFLView(object):
         order.
         """
         self.route_name = route_name
-        self.route_text = route_text or self.route_name
+        self.route_text = route_text
         self.route_pattern = route_pattern
         self.permission = permission
         self.rank = rank
+        self.forbidden_view = forbidden_view
 
-        self._config.add_route(self.route_name, self.route_pattern)
+        if not self.forbidden_view:
+            self._config.add_route(self.route_name, self.route_pattern)
 
         self.add_link()
 
     def __call__(self, cb):
-        self._config.add_view(cb,
-                              route_name=self.route_name,
-                              permission=self.permission, )
+        if not self.forbidden_view:
+            self._config.add_view(cb,
+                                  route_name=self.route_name,
+                                  permission=self.permission, )
+        else:
+            self._config.add_forbidden_view(cb)
+
         return cb
 
     def add_link(self):
+        if not self.route_text:
+            return
         self.counter['id'] += 1
         self.register.append({'id': self.counter['id'],
                               'url': self.route_name,
@@ -112,7 +122,7 @@ class EPFLView(object):
         Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
         correct permissions.
         """
-        return EPFLViewLinks(links=EPFLView.register)
+        return EPFLViewLinks(links=EPFLView.register, show_search=False, show_pagination=False)
 
     @staticmethod
     def register_acl(*args, **kwargs):

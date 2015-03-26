@@ -9,6 +9,11 @@ import solute.epfl
 from pyramid import path
 from os.path import exists
 from solute.epfl import core
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
 
 
 class DictTransformer(object):
@@ -50,7 +55,7 @@ class ClassAttributeExtender(type):
         print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
-
+@profile
 def add_extra_contents(response, obj):
     """ Adds CSS and JS extra-Contents of this object to the response.
     The object must have the following attributes:
@@ -61,25 +66,33 @@ def add_extra_contents(response, obj):
 
     if obj.js_name:
         for js_name in obj.js_name:
-            url = create_static_url(obj, js_name)
-            js_script_src = core.epflclient.JSLink(url)
+            js_script_src = create_static_url(obj, js_name, wrapper_class=core.epflclient.JSLink)
             response.add_extra_content(js_script_src)
 
     if obj.css_name:
         for css_name in obj.css_name:
-            url = create_static_url(obj, css_name)
-            css_link_src = core.epflclient.CSSLink(url)
+            css_link_src = create_static_url(obj, css_name, wrapper_class=core.epflclient.CSSLink)
             response.add_extra_content(css_link_src)
 
+static_url_cache = {}
 
-def create_static_url(obj, mixin_name, spec=None):
+@profile
+def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
     if type(mixin_name) is tuple:
         spec, mixin_name = mixin_name
     asset_spec = "{spec}/{name}".format(spec=spec, name=mixin_name)
+    try:
+        return static_url_cache[(asset_spec, wrapper_class)]
+    except KeyError:
+        pass
+
     if spec[0:11] != 'solute.epfl':
-        return obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     static_path = obj.request.static_path(asset_spec)
 
     static_mixin = 'static/'
@@ -93,9 +106,15 @@ def create_static_url(obj, mixin_name, spec=None):
     absolute_path = "{base_path}{relative_path}{mixin}{mixin_name}".format(**output)
 
     if exists(absolute_path):
-        return obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     elif spec != 'solute.epfl:static':
-        return create_static_url(obj, mixin_name, 'solute.epfl:static')
+        static_url_cache[(asset_spec, wrapper_class)] = create_static_url(obj, mixin_name, 'solute.epfl:static')
+        if wrapper_class:
+            static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
+        return static_url_cache[(asset_spec, wrapper_class)]
     else:
         # return obj.request.static_url(asset_spec)
         raise Exception('Static dependency not found. %s' % asset_spec)
@@ -217,3 +236,46 @@ class URL(object):
                                        fragment=self.parsed_url.fragment)
 
         return new_url.geturl()
+
+
+import types, inspect
+
+
+class Discover(object):
+    instance = None
+
+    discovered_modules = set()
+    discovered_classes = set()
+
+    depth = 0
+
+    def __new__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super(Discover, cls).__new__(cls, *args, **kwargs)
+        return cls.instance
+
+    def __init__(self):
+        self.discover_module(solute.epfl)
+
+    def discover_module(self, module):
+        if module in self.discovered_modules:
+            return
+        self.discovered_modules.add(module)
+
+        for name in dir(module):
+            obj = getattr(module, name)
+            if type(obj) is not type:
+                continue
+            if issubclass(obj, core.epflcomponentbase.ComponentBase):
+                self.discover_class(obj)
+
+        for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
+            self.discover_module(m)
+
+    @classmethod
+    @profile
+    def discover_class(cls, input_class):
+        if input_class in cls.discovered_classes:
+            return
+        cls.discovered_classes.add(cls)
+        input_class.discover()

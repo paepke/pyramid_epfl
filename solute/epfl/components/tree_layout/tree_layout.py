@@ -95,10 +95,14 @@ class TreeLayout(ComponentContainerBase):
 
     def handle_show(self):
         self.show_children = True
+        for compo in self.components:
+            compo.set_visible()
         self.redraw()
 
     def handle_hide(self):
         self.show_children = False
+        for compo in self.components:
+            compo.set_hidden()
         self.redraw()
 
     def is_smart(self):
@@ -123,9 +127,9 @@ class TreeLayout(ComponentContainerBase):
                     c.update_children(force=True)
                 except AttributeError:
                     pass  # a base component
-    
-    def update_children(self, force=False):
-        ComponentContainerBase.update_children(self, force=force)
+
+    def update_children(self, *args, **kwargs):
+        ComponentContainerBase.update_children(self, *args, **kwargs)
         self._slotted_components = None
 
 

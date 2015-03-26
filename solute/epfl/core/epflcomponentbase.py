@@ -1,8 +1,15 @@
 # coding: utf-8
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
+from random import randint
 
 from pprint import pprint
 from collections2 import OrderedDict as odict
-from collections import MutableSequence
+from collections import MutableSequence, MutableMapping
 
 import types, copy, string, inspect, uuid
 
@@ -18,8 +25,73 @@ import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
 
 
+class MissingContainerComponentException(Exception):
+    pass
+
+
 class MissingEventHandlerException(Exception):
     pass
+
+
+class ComponentRenderEnvironment(MutableMapping):
+    def __iter__(self):
+        return self.data.__iter__()
+
+    def __delitem__(self, key):
+        return self.data.__delitem__(key)
+
+    def __len__(self):
+        return self.data.__len__()
+
+    def __setitem__(self, key, value):
+        return self.data.__setitem__(key, value)
+
+    def __getitem__(self, item):
+        if item in ['compo']:
+            return self.data[item]
+
+        if item not in ['container', 'row', 'before', 'after']:
+            raise KeyError()
+
+        callables = self.data[item]
+
+        def wrap(cb, parent=None):
+            if type(cb) is tuple:
+                direction, cb = cb
+                if len(cb) == 1:
+                    return wrap(cb[0])
+                if direction == '<':
+                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
+                return wrap(cb[0], parent=wrap((direction, cb[1:])))
+
+            def _cb(*args, **kwargs):
+                extra_kwargs = dict(self)
+                extra_kwargs.update(kwargs)
+                out = cb(*args, **extra_kwargs)
+                if parent is not None:
+                    extra_kwargs['caller'] = lambda: out
+                    out = parent(*args, **extra_kwargs)
+                return out
+
+            return _cb
+
+        return wrap(callables)
+
+    def __init__(self, compo, env):
+        self.data = {'compo': compo,
+                     'container': self.set_order(compo.get_themed_template(env, 'container')),
+                     'row': self.set_order(compo.get_themed_template(env, 'row')),
+                     'before': self.set_order(compo.get_themed_template(env, 'before')),
+                     'after': self.set_order(compo.get_themed_template(env, 'after'))}
+
+    @staticmethod
+    def set_order(template):
+        # if type(template) is not tuple:
+        #     return template
+        # direction, template = template
+        # if direction == '<':
+        #     template.reverse()
+        return template
 
 
 class UnboundComponent(object):
@@ -35,12 +107,8 @@ class UnboundComponent(object):
     :class:`.ComponentContainerBase`. :func:`ComponentContainerBase.add_component` will return the actually
     instantiated component if it is called with an :class:`.UnboundComponent`.
     """
-
-    __valid_subtypes__ = [bool, int, long, float, complex, str, unicode, bytearray, xrange, type, types.FunctionType,
-                          types.NoneType]
-    __debugging_on__ = False
-
     __dynamic_class_store__ = None  #: Internal caching for :attr:`UnboundComponent.__dynamic_class__`
+    __global_dynamic_class_store__ = {}  #: Global caching for :attr:`UnboundComponent.__dynamic_class__`
 
     def __init__(self, cls, config):
         """
@@ -51,9 +119,10 @@ class UnboundComponent(object):
         self.__unbound_config__ = config.copy()
 
         # Copy config and create a cid if none exists.
-        self.position = (self.__unbound_config__.pop('cid', None) or uuid.uuid4().hex,
+        self.position = (self.__unbound_config__.pop('cid', None) or "{0:08x}".format(randint(0, 0xffffffff)),
                          self.__unbound_config__.pop('slot', None))
 
+    @profile
     def __call__(self, *args, **kwargs):
         """
         Pseudo instantiation helper that returns a new UnboundComponent by updating the config. This can also be used to
@@ -71,7 +140,14 @@ class UnboundComponent(object):
         cls = self.__dynamic_class__
         return cls(*args, **kwargs)
 
+    @classmethod
+    def create_from_state(cls, state):
+        ubc = cls(None, {})
+        ubc.__setstate__(state)
+        return ubc
+
     @property
+    @profile
     def __dynamic_class__(self):
         """
         If the config contains entries besides cid and slot a dynamic class is returned. This offers just in time
@@ -84,16 +160,36 @@ class UnboundComponent(object):
         stripped_conf.pop('cid', None)
         stripped_conf.pop('slot', None)
         if len(stripped_conf) > 0:
-            self.__dynamic_class_store__ = type('%s_auto_%s' % (self.__unbound_cls__.__name__, uuid.uuid4().hex),
-                                                (self.__unbound_cls__, ),
-                                                {})
+            conf_hash = str(stripped_conf).__hash__()
+            try:
+                return self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)]
+            except KeyError:
+                pass
+
+            dynamic_class_id = "{0:08x}".format(randint(0, 0xffffffff))
+            name = '{name}_auto_{dynamic_class_id}'.format(
+                name=self.__unbound_cls__.__name__,
+                dynamic_class_id=dynamic_class_id
+            )
+            self.__dynamic_class_store__ = type(name, (self.__unbound_cls__, ), {})
             for param in self.__unbound_config__:
-                self.assure_valid_subtype(self.__unbound_config__[param])
                 setattr(self.__dynamic_class_store__, param, self.__unbound_config__[param])
-            setattr(self.__dynamic_class_store__, '__unbound_component__', self)
-            return self.__dynamic_class_store__
+            setattr(self.__dynamic_class_store__, '___unbound_component__', self)
+            self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)] = self.__dynamic_class_store__
+            return self.__global_dynamic_class_store__[(conf_hash, self.__unbound_cls__)]
+
         else:
             return self.__unbound_cls__
+
+    @profile
+    def register_in_transaction(self, container, slot=None, position=None):
+        compo_info = {'class': self.__getstate__(),
+                      'config': self.__unbound_config__,
+                      'ccid': container.cid,
+                      'cid': self.position[0],
+                      'slot': slot}
+        container.page.transaction.set_component(self.position[0], compo_info, position=position)
+        return getattr(container.page, self.position[0])
 
     def create_by_compo_info(self, *args, **kwargs):
         """
@@ -108,8 +204,6 @@ class UnboundComponent(object):
         """
         Pickling helper.
         """
-        for param in self.__unbound_config__:
-            self.assure_valid_subtype(self.__unbound_config__[param])
         return self.__unbound_cls__, self.__unbound_config__, self.position
 
     def __setstate__(self, state):
@@ -117,38 +211,6 @@ class UnboundComponent(object):
         Pickling helper.
         """
         self.__unbound_cls__, self.__unbound_config__, self.position = state
-
-    @staticmethod
-    def assure_valid_subtype(param):
-        """
-        Raise an exception if param is not among the valid subtypes or contains invalid subtypes.
-
-        ***epfl.debug***: This test is skipped if epfl.debug is set to False in the config.
-        """
-
-        # Safely read the epfl.debug flag from the settings.
-        registry = threadlocal.get_current_registry()
-        if not registry or not registry.settings or not registry.settings.get('epfl.debug', 'false') == 'true':
-            return
-
-        # There are some basic types that are always accepted.
-        if type(param) in UnboundComponent.__valid_subtypes__:
-            return
-
-        # If param is in the list of iterables all its entries are checked.
-        if type(param) in [list, tuple, set, frozenset]:
-            for item in param.__iter__():
-                UnboundComponent.assure_valid_subtype(item)
-            return
-        # If param is a dict all its entries are checked.
-        if type(param) is dict:
-            for item in param.values():
-                UnboundComponent.assure_valid_subtype(item)
-            return
-
-        if type(param) in [UnboundComponent]:
-            return
-        raise Exception('Tried adding unsupported %r to an unbound class.' % param)
 
     def __eq__(self, other):
         """
@@ -162,8 +224,11 @@ class UnboundComponent(object):
         return True
 
     def __repr__(self):
-        return '<UnboundComponent of {cls} with config {conf}>'.format(cls=self.__unbound_cls__,
-                                                                       conf=self.__unbound_config__)
+        return '<UnboundComponent of {cls} with config {conf} and position {position}>'.format(
+            cls=self.__unbound_cls__,
+            conf=self.__unbound_config__,
+            position=self.position
+        )
 
 
 @epflacl.epfl_acl(['access'])
@@ -222,10 +287,7 @@ class ComponentBase(object):
 
     #: Internal reference to this Components :class:`UnboundComponent`. If it is None and something breaks because of it
     #: this component has not been correctly passed through the :func:`__new__`/:class:`UnboundComponent` pipe.
-    __unbound_component__ = None
-
-    #: Contains a reference to this Components structure_dict in the :class:`.epfltransaction.Transaction`.
-    struct_dict = None
+    ___unbound_component__ = None
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
@@ -234,54 +296,13 @@ class ComponentBase(object):
     is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
-    redraw_requested = None  #: Set of parts requesting to be redrawn.
+    _redraw_requested = None  #: Set of parts requesting to be redrawn.
 
-    def __new__(cls, *args, **config):
-        """
-        Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
-        __instantiate__=True has been passed as a keyword argument.
-
-        Any component developer may thus overwrite the :func:`__init__` method without causing any problems in order to
-        expose runtime settable attributes for code completion and documentation purposes.
-        """
-        if config.pop('__instantiate__', None) is None:
-            return UnboundComponent(cls, config)
-
-        self = super(ComponentBase, cls).__new__(cls, **config)
-
-        if self.__unbound_component__ is None:
-            self.__unbound_component__ = cls()
-
-        self.redraw_requested = set()
-        self.container_compo = None
-        self.container_slot = None
-        self.deleted = False
-
-        self.__config = config
-
-        for attr_name in self.compo_config:
-            if attr_name in config:
-                config_value = config[attr_name]
-            else:
-                config_value = getattr(self, attr_name)
-
-            setattr(self, attr_name, copy.deepcopy(config_value))  # copy from class to instance
-
-        for attr_name in self.compo_state + self.base_compo_state:
-            if attr_name in config:
-                config_value = config[attr_name]
-                setattr(self, attr_name, copy.deepcopy(config_value))
-
-        self.cid = args[1]
-        self._set_page_obj(args[0])
-
-        return self
-
-    def __init__(self, *args, **kwargs):
-        """
-        Overwrite this for auto completion features on component level.
-        """
-        pass
+    _compo_info = None
+    _access = None
+    _handles = None
+    combined_compo_state = frozenset()
+    deleted = False
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -295,12 +316,6 @@ class ComponentBase(object):
         config.add_static_view(name="epfl/components/" + compo_path_part,
                                path="solute.epfl.components:" + compo_path_part + "/static")
 
-    def get_component_info(self):
-        return {"class": self.__unbound_component__,
-                "config": self.__config,
-                "cid": self.cid,
-                "slot": self.container_slot}
-
     @classmethod
     def create_by_compo_info(cls, page, compo_info, container_id):
         compo_obj = cls(page, compo_info['cid'], __instantiate__=True, **compo_info["config"])
@@ -310,19 +325,130 @@ class ComponentBase(object):
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
 
+    @profile
+    def __new__(cls, *args, **config):
+        """
+        Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
+        __instantiate__=True has been passed as a keyword argument.
+
+        Any component developer may thus overwrite the :func:`__init__` method without causing any problems in order to
+        expose runtime settable attributes for code completion and documentation purposes.
+        """
+        if config.pop('__instantiate__', None) is None:
+            return UnboundComponent(cls, config)
+
+        epflutil.Discover.discover_class(cls)
+
+        self = super(ComponentBase, cls).__new__(cls, **config)
+
+        self.cid = args[1]
+        self._set_page_obj(args[0])
+
+        self.__config = config
+
+        for attr_name in self.compo_config:
+            if attr_name in config:
+                config_value = config[attr_name]
+            else:
+                config_value = getattr(self, attr_name)
+
+            setattr(self, attr_name, copy.deepcopy(config_value))  # copy from class to instance
+
+        return self
+
+    def __init__(self, *args, **kwargs):
+        """
+        Overwrite this for auto completion features on component level.
+        """
+        pass
+
+    @profile
+    def __getattribute__(self, key):
+        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
+            return super(ComponentBase, self).__getattribute__(key)
+
+        return super(ComponentBase, self).__getattribute__('compo_info').get('compo_state',
+                                                                             {}).get(key,
+                                                                                     super(ComponentBase,
+                                                                                           self).__getattribute__(key))
+
+    @profile
+    def __setattr__(self, key, value):
+        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
+            return super(ComponentBase, self).__setattr__(key, value)
+        self.compo_info.setdefault('compo_state', {})[key] = value
+
+    @property
+    def compo_info(self):
+        if self._compo_info is None:
+            self._compo_info = self.page.transaction.get_component(self.cid)
+        return self._compo_info or {}
+
+    @property
+    def slot(self):
+        return self.compo_info['slot']
+
+    @property
+    def __unbound_component__(self):
+        if self.___unbound_component__ is None:
+            self.___unbound_component__ = self.__class__()
+        return self.___unbound_component__
+
+    @property
+    def redraw_requested(self):
+        if self._redraw_requested is None:
+            self._redraw_requested = set()
+        return self._redraw_requested
+
+    @property
+    def struct_dict(self):
+        return self.compo_info.setdefault('compo_struct', odict())
+
+    @property
+    def container_slot(self):
+        return self.compo_info.get('slot', None)
+
+    @container_slot.setter
+    def container_slot(self, value):
+        self.compo_info['slot'] = value
+
+    @property
+    def container_compo(self):
+        if self.compo_info.get('ccid', None) is None\
+                or 'ccid' not in self.compo_info\
+                or self.compo_info['ccid'] is None:
+            return None
+        return getattr(self.page, self.compo_info['ccid'])
+
+    @container_compo.setter
+    def container_compo(self, value):
+        self.compo_info['ccid'] = value.cid
+
+    def register_in_transaction(self, container, slot=None, position=None):
+        compo_info = {'class': self.__unbound_component__.__getstate__(),
+                      'config': self.__config,
+                      'ccid': container.cid,
+                      'cid': self.cid,
+                      'slot': slot}
+        self.page.transaction.set_component(self.cid, compo_info, position=position, compo_obj=self)
+
+    def get_component_info(self):
+        info = {"class": self.__unbound_component__.__getstate__(),
+                "config": self.__config,
+                "cid": self.cid,
+                "slot": self.container_slot}
+        if getattr(self, 'container_compo', None) is not None:
+            info['ccid'] = self.container_compo.cid
+        return info
+
+    @profile
     def _set_page_obj(self, page_obj):
         """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
         set up after being assigned its page.
         """
         self.page = page_obj
-        self.page_request = page_obj.page_request
         self.request = page_obj.request
         self.response = page_obj.response
-
-        # setup template
-
-        if not self.template_name:
-            raise Exception("You did not setup the 'self.template_name' in " + repr(self))
 
         # now we can setup the component-state
         self.setup_component_state()
@@ -335,43 +461,30 @@ class ComponentBase(object):
         self.container_compo = compo_obj
         self.container_slot = slot
 
-        #
-        parent_dict = compo_obj.struct_dict
-        if parent_dict is None:
-            parent_dict = self.page.transaction['compo_struct'].setdefault(compo_obj.cid, odict())
-
-        self.struct_dict = parent_dict.setdefault(self.cid, odict())
-
     def delete_component(self):
         """ Deletes itself. You can call this method on dynamically created components. After it's deletion
         you can not use this component any longer in the layout. """
         if not self.container_compo:
-            raise ValueError, "Only dynamically created components can be deleted"
+            raise ValueError("Only dynamically created components can be deleted")
 
-        self.container_compo.del_component(self, self.container_slot)
-
-        for attr_name in self.compo_state + self.base_compo_state:
-            self.page.transaction.pop(self.cid + "$" + attr_name, None)
-        self.page.transaction['__initialized_components__'].remove(self.cid)
+        self.page.transaction.del_component(self.cid)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
 
-        del self.page[self.cid]
+        self.page.transaction['__initialized_components__'].remove(self.cid)
 
     def finalize(self):
         """ Called from the page-object when the page is finalized
         [request-processing-flow]
         """
-        self.finalize_component_state()
+        pass
 
     def has_access(self):
         """ Checks if the current user has sufficient rights to see/access this component.
         Normally called by a condition in the jinja-template.
         """
-
-        if security.has_permission("access", self, self.request):
-            return True
-        else:
-            return False
+        if self._access is None:
+            self._access = security.has_permission("access", self, self.request)
+        return self._access
 
     def set_visible(self):
         """ Shows the complete component. You need to redraw it!
@@ -450,10 +563,6 @@ class ComponentBase(object):
         [request-processing-flow]
         """
 
-        for attr_name in self.compo_state + self.base_compo_state:
-            value = self._get_compo_state_attribute(attr_name)
-            setattr(self, attr_name, value)
-
     def setup_component(self):
         """ Called from the system every request when the component-state of all
         components in the page is setup.
@@ -476,11 +585,9 @@ class ComponentBase(object):
 
     def _get_compo_state_attribute(self, attr_name):
         transaction = self.page.transaction
-        if self.cid + "$" + attr_name in transaction:
-            value = transaction[self.cid + "$" + attr_name]
-            return value
-        else:
-            return copy.deepcopy(getattr(self, attr_name))
+        compo_info = transaction.get_component(self.cid)
+
+        return (compo_info or {}).get('compo_state', {}).get(attr_name, copy.deepcopy(getattr(self, attr_name)))
 
     def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
@@ -506,18 +613,6 @@ class ComponentBase(object):
              }""" % (json.encode(msg), self.cid, cmd_ok)
 
         self.page.add_js_response(js)
-
-    def finalize_component_state(self):
-        """
-        This function finalizes the compo_state attributes
-        """
-
-        values = {}
-        for attr_name in self.compo_state + self.base_compo_state:
-            value = getattr(self, attr_name)
-            values[self.cid + "$" + attr_name] = value
-
-        self.page.transaction.update(values)
 
     def get_component_id(self):
         return self.cid
@@ -600,9 +695,9 @@ class ComponentBase(object):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
         """
-
         epflutil.add_extra_contents(self.response, obj=self)
 
+    @profile
     def render_templates(self, env, templates):
         """
         Render one or many templates given as list using the given jinja2 environment env and the dict from
@@ -623,6 +718,7 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    @profile
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
@@ -657,8 +753,36 @@ class ComponentBase(object):
 
         return jinja2.Markup(out)
 
+    @classmethod
+    def discover(cls):
+        cls.set_handles(force_update=True)
+        cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
+
+        if not cls.template_name:
+            raise Exception("You did not setup the 'self.template_name' in " + repr(cls))
+
+        if hasattr(cls, 'cid'):
+            raise Exception("You illegally set a cid as a class attribute in " + repr(cls))
+
+        cls.prepare_extra_content()
+
+    @classmethod
+    def prepare_extra_content(cls):
+        pass
+
+    @classmethod
+    def set_handles(cls, force_update=True):
+        if cls._handles is None or force_update:
+            cls._handles = []
+            for name in dir(cls):
+                if not name.startswith('handle_') or name == 'handle_event':
+                    continue
+                cls._handles.append(name[7:])
+
+    @profile
     def get_handles(self):
-        return [name[7:] for name in dir(self) if name.startswith('handle_') and name != 'handle_event']
+        self.set_handles()
+        return self._handles
 
     def get_js_part(self, raw=False):
         """ gets the javascript-portion of the component """
@@ -684,8 +808,8 @@ class ComponentBase(object):
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
-            return  # a parent of me already needs redrawing!
+        # if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
+        #     return  # a parent of me already needs redrawing!
 
         if type(parts) is list:
             self.redraw_requested.update(set(parts))
@@ -694,6 +818,7 @@ class ComponentBase(object):
         else:
             self.redraw_requested.add(parts)
 
+    @profile
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
         as keys and thier content as values. No modification of the "response" is made. Only the parts that are
@@ -731,25 +856,7 @@ class ComponentBase(object):
         After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
         """
 
-        compo = getattr(self.page, cid)
-        target = getattr(self.page, target)
-        source = getattr(self.page, compo.container_compo.cid)
-
-        if getattr(source, 'struct_dict', None) is None:
-            source.struct_dict = self.page.transaction['compo_struct'][source.cid]
-        if getattr(target, 'struct_dict', None) is None:
-            target.struct_dict = self.page.transaction['compo_struct'][target.cid]
-
-        struct_dict = source.struct_dict.pop(cid)
-
-        compo.set_container_compo(target, slot)
-        if position is None:
-            target.struct_dict[cid] = struct_dict
-        else:
-            target.struct_dict.insert(cid, struct_dict, position)
-
-        target.redraw()
-        source.redraw()
+        self.page.transaction.switch_component(cid, target, position=position)
 
 
 class ComponentContainerBase(ComponentBase):
@@ -790,6 +897,8 @@ class ComponentContainerBase(ComponentBase):
 
     components_initialized = False
 
+    _themes = {}
+
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
         if isinstance(self, cls):
@@ -813,12 +922,15 @@ class ComponentContainerBase(ComponentBase):
                     direction = theme_path[0]
                     render_funcs.insert(0, env.get_template('%s/%s.html' % (theme_path[1:], target)).module.render)
                     continue
-                render_funcs.append(env.get_template('%s/%s.html' % (theme_path, target)).module.render)
+                tpl = env.get_template('%s/%s.html' % (theme_path, target))
+                render_funcs.append(tpl.module.render)
                 return direction, render_funcs
             except TemplateNotFound:
                 continue
 
-        render_funcs.append(env.get_template('%s/%s.html' % (self.theme_path_default, target)).module.render)
+        tpl = env.get_template('%s/%s.html' % (self.theme_path_default, target))
+        render_funcs.append(tpl.module.render)
+
         return direction, render_funcs
 
     def get_render_environment(self, env):
@@ -826,34 +938,7 @@ class ComponentContainerBase(ComponentBase):
         Creates a dictionary containing references to the different theme parts and the component. Theme parts are
         wrapped as callables containing their respective inheritance chains as defined by :attr:`theme_path`.
         """
-        result = {}
-
-        def wrap(cb, parent=None):
-            if type(cb) is tuple:
-                direction, cb = cb
-                if len(cb) == 1:
-                    return wrap(cb[0])
-                if direction == '<':
-                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
-                return wrap(cb[0], parent=wrap((direction, cb[1:])))
-
-            def _cb(*args, **kwargs):
-                extra_kwargs = result.copy()
-                extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs)
-                if parent is not None:
-                    extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs)
-                return out
-
-            return _cb
-
-        result.update({'compo': self,
-                       'container': wrap(self.get_themed_template(env, 'container')),
-                       'row': wrap(self.get_themed_template(env, 'row')),
-                       'before': wrap(self.get_themed_template(env, 'before')),
-                       'after': wrap(self.get_themed_template(env, 'after'))})
-        return result
+        return ComponentRenderEnvironment(self, env)
 
     def after_event_handling(self):
         """
@@ -868,7 +953,8 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    def update_children(self, force=False):
+    @profile
+    def update_children(self, force=False, init_transaction=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
 
@@ -906,7 +992,10 @@ class ComponentContainerBase(ComponentBase):
 
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
-            data_cid_dict[data_id] = self.add_component(self.default_child_cls(**data_dict[data_id])).cid
+            ubc = self.default_child_cls(**data_dict[data_id])
+            bc = self.add_component(ubc, init_transaction=init_transaction)
+            data_cid_dict[data_id] = bc.cid
+
             self.redraw()
 
         # IDs of data represented by a component. Matching components are updated.
@@ -918,10 +1007,15 @@ class ComponentContainerBase(ComponentBase):
                     self.redraw()
 
         # Rebuild order.
+        compo_struct = self.compo_info['compo_struct']
         for i, data_id in enumerate(new_order):
-            if getattr(self.components[i + tipping_point], 'id', None) != data_id:
-                self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
-                self.redraw()
+            try:
+                key = compo_struct.keys()[i + tipping_point]
+                if compo_struct[key].get('config', {}).get('id', None) != data_id:
+                    self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
+                    self.redraw()
+            except AttributeError:
+                pass
 
     def _get_data(self, *args, **kwargs):
         """
@@ -957,6 +1051,7 @@ class ComponentContainerBase(ComponentBase):
         """
         pass
 
+    @profile
     def init_transaction(self):
         """
         Components derived from :class:`ComponentContainerBase` will use their :attr:`node_list` to generate their
@@ -966,13 +1061,15 @@ class ComponentContainerBase(ComponentBase):
         super(ComponentContainerBase, self).init_transaction()
 
         self.node_list = self.init_struct() or self.node_list  # if init_struct returns None, keep original value.
-
         for node in self.node_list:
             cid, slot = node.position
+            self.add_component(node(self.page, cid, __instantiate__=True),
+                               slot=slot,
+                               cid=cid,
+                               init_transaction=True)
 
-            self.add_component(node(self.page, cid, __instantiate__=True), slot=slot, cid=cid)
         if self.auto_initialize_children:
-            self.update_children(force=True)
+            self.update_children(force=True, init_transaction=True)
 
     def replace_component(self, old_compo_obj, new_compo_obj):
         """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
@@ -981,7 +1078,8 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    def add_component(self, compo_obj, slot=None, cid=None, position=None):
+    @profile
+    def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
         compo_obj, position can be used to insert at a specific location.
@@ -989,22 +1087,19 @@ class ComponentContainerBase(ComponentBase):
 
         if isinstance(compo_obj, UnboundComponent):
             cid, slot = compo_obj.position
-            compo_obj = compo_obj(self.page, cid, __instantiate__=True)
+            compo_obj = compo_obj.register_in_transaction(self, slot, position=position)
+        else:
+            # Generate UUID if no cid has been set previously.
+            if not cid:
+                cid = str(uuid.uuid4())
+            compo_obj.register_in_transaction(self, slot, position=position)
 
-        # we have no nice cid, so use a UUID
-        if not cid:
-            cid = str(uuid.uuid4())
-        # assign the container
-        compo_obj.set_container_compo(self, slot, position=position)
-        # handle the static part
-        self.page.add_static_component(cid, compo_obj)
-        # now remember it
-        self.page.transaction["compo_info"][cid] = compo_obj.get_component_info()
-        # and make it available in this container
-        self.add_component_to_slot(compo_obj, slot, position=position)
         # the transaction-setup has to be redone because the component can
         # directly be displayed in this request.
-        self.page.handle_transaction()
+        compo_obj.init_transaction()
+        self.page.transaction['__initialized_components__'].add(cid)
+        if init_transaction is False:
+            self.page.handle_transaction()
 
         return compo_obj
 
@@ -1020,23 +1115,11 @@ class ComponentContainerBase(ComponentBase):
         else:
             self.components.append(compo_obj)
 
-    def del_component(self, compo_obj, slot=None):
+    def del_component(self, cid, slot=None):
         """
         Removes the component from the slot and form the compo_info. Accepts either a component instance or a cid.
         """
-        if type(compo_obj) is str:
-            return getattr(self.page, compo_obj).delete_component()
-
-        compo_obj.compo_destruct()
-        if compo_obj.struct_dict is not None:
-            for compo in compo_obj.struct_dict.keys()[:]:
-                getattr(self.page, compo).delete_component()
-        self.components.remove(compo_obj)
-        if self.struct_dict is None:
-            self.page.transaction['compo_struct'][self.cid].pop(compo_obj.cid)
-        else:
-            self.struct_dict.pop(compo_obj.cid)
-        self.page.transaction['compo_info'].pop(compo_obj.cid)
+        return getattr(self.page, cid).delete_component()
 
 
 class ComponentList(MutableSequence):
@@ -1047,13 +1130,6 @@ class ComponentList(MutableSequence):
     def __init__(self, container_compo):
         self.container_compo = container_compo
 
-    @property
-    def struct_dict(self):
-        struct_dict = getattr(self.container_compo, 'struct_dict', None)
-        if struct_dict is not None:
-            return struct_dict
-        return self.container_compo.page.transaction['compo_struct'][self.container_compo.cid]
-
     def __setitem__(self, index, value):
         pass
 
@@ -1061,10 +1137,10 @@ class ComponentList(MutableSequence):
         pass
 
     def __len__(self):
-        return len(self.struct_dict)
+        return len(self.container_compo.struct_dict)
 
     def __getitem__(self, index):
-        cid = self.struct_dict.keys()[index]
+        cid = self.container_compo.struct_dict.keys()[index]
         return getattr(self.container_compo.page, cid)
 
     def __delitem__(self, index):

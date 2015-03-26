@@ -5,7 +5,6 @@
 The components must be imported in the namespace of this library.
 """
 
-from canvas.canvas import Canvas  # A canvas component
 from flipflop.flipflop import FlipFlop
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
@@ -54,6 +53,7 @@ from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
 from tree_layout.tree_layout import TreeLayout, TreeLeafEntry, DraggableTreeLeafEntry, DroppableTreeLayout
 from context_list_layout.context_list_layout import ContextListLayout, ContextListEntry
+from table_layout.table_layout import TableLayout
 
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
@@ -69,7 +69,6 @@ def add_routes(config):
     through this package.
     """
 
-    Canvas.add_pyramid_routes(config)
     Box.add_pyramid_routes(config)
     DragBox.add_pyramid_routes(config)
     DroppableBox.add_pyramid_routes(config)
@@ -88,6 +87,7 @@ def add_routes(config):
     TableListLayout.add_pyramid_routes(config)
     TreeLayout.add_pyramid_routes(config)
     ContextListLayout.add_pyramid_routes(config)
+    TableLayout.add_pyramid_routes(config)
 
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)

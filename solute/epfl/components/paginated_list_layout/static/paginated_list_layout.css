@@ -1,0 +1,13 @@
+.epfl-search-input-addon {
+    position: relative; 
+}
+
+/* style icon */
+.epfl-search-input-addon .fa {
+  position: absolute;
+  right:  0px;
+  padding: 10px;
+  pointer-events: none;
+}
+
+.epfl-search-input-addon input { padding-right: 30px; }

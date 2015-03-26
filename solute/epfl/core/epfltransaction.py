@@ -5,15 +5,21 @@
 A Dict-Like Object that represents a epfl-transaction
 """
 
-
 from pprint import pprint
 from redis import StrictRedis
 import cPickle as pickle
 from copy import deepcopy
+from collections2 import OrderedDict as odict
 
 import types, copy, string, uuid, time
 
-from collections import MutableMapping
+from collections import MutableMapping, defaultdict
+from solute.epfl.core import epflcomponentbase
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
 
 
 class Transaction(MutableMapping):
@@ -46,10 +52,13 @@ class Transaction(MutableMapping):
     def __init__(self, request, tid=None):
         """ Give tid = None to create a new one """
 
+        self.instances = {}
         self.request = request
         self.session = request.session
         self.tid = tid
         self.created = False
+
+        self.compo_reference = {}
 
         if not self.tid:
             self.tid = uuid.uuid4().hex
@@ -82,6 +91,119 @@ class Transaction(MutableMapping):
         Deletes this transaction and all child-transactions.
         """
         del self.data
+
+    # EPFL Core Api methods
+    def get_component_depth(self, cid):
+        try:
+            return self.get_component_depth(self['compo_lookup'][cid]) + 1
+        except KeyError:
+            return 0
+
+    def get_existing_components(self):
+        return self['compo_lookup'].keys() + self['compo_struct'].keys()
+
+    @profile
+    def get_component_instance(self, page, cid):
+        if cid not in self.instances:
+            compo_info = self.get_component(cid)
+            ubc = epflcomponentbase.UnboundComponent.create_from_state(compo_info['class'])
+            self.instances[cid] = ubc(page,
+                                      cid,
+                                      __instantiate__=True,
+                                      **compo_info['config'])
+        return self.instances[cid]
+
+    def get_active_components(self):
+        return self.instances.values()
+
+    def is_active_component(self, cid):
+        return cid in self.instances
+
+    def switch_component(self, cid, ccid, position=None):
+        compo_info = self.pop_component(cid)
+        compo_info['ccid'] = ccid
+        self.set_component(cid, compo_info, position=position)
+
+    def pop_component(self, cid):
+        try:
+            return self['compo_struct'].pop(cid)
+        except KeyError:
+            pass
+
+        try:
+            return self.pop_child_component(self['compo_lookup'][cid],
+                                            cid)
+        except KeyError:
+            return None
+
+    def get_component(self, cid):
+        try:
+            return self['compo_struct'][cid]
+        except KeyError:
+            pass
+
+        try:
+            return self.get_child_component(self['compo_lookup'][cid],
+                                            cid)
+        except KeyError:
+            return None
+
+    def get_child_component(self, ccid, cid):
+        compo = self.get_component(ccid)
+        try:
+            return compo['compo_struct'][cid]
+        except (TypeError, KeyError):
+            return None
+
+    def pop_child_component(self, ccid, cid):
+        compo = self.get_component(ccid)
+        try:
+            return compo['compo_struct'].pop(cid)
+        except (TypeError, KeyError):
+            return None
+
+    def set_component(self, cid, compo_info, position=None, compo_obj=None):
+        if not isinstance(compo_info, dict):
+            compo_obj = compo_info
+            compo_info = compo_obj.get_component_info()
+        if compo_obj:
+            self.instances[cid] = compo_obj
+
+        container = self
+        if 'ccid' in compo_info:
+            self.setdefault('compo_lookup', {})[cid] = compo_info['ccid']
+            container = self.get_component(compo_info['ccid'])
+        if 'cid' not in compo_info:
+            compo_info['cid'] = cid
+
+        compo_struct = container.setdefault('compo_struct', odict())
+        if position is None:
+            compo_struct[cid] = compo_info
+        else:
+            compo_struct.insert(cid, compo_info, position)
+
+    def del_component(self, cid):
+        compo = self.get_component(cid)
+        container = self
+        if 'ccid' in compo:
+            container = self.get_component(compo['ccid'])
+
+        for child_cid in compo.get('compo_struct', {}).keys():
+            if self.has_component(child_cid):
+                self.del_component(child_cid)
+
+        if 'compo_lookup' in self and cid in self['compo_lookup']:
+            del self['compo_lookup'][cid]
+        if cid in self.instances:
+            del self.instances[cid]
+        if cid in container['compo_struct']:
+            del container['compo_struct'][cid]
+
+    def has_component(self, cid):
+        try:
+            return self.get_component(cid) is not None
+        except KeyError:
+            return False
 
     # MutableMapping requirements:
     def __getitem__(self, key):
@@ -160,16 +282,17 @@ class Transaction(MutableMapping):
         if not self.tid:
             raise Exception('Transaction store was accessed before transaction id was set.')
 
-        default_data = {"overlays": []}
+        default_data = {}
 
         store_type = self.request.registry.settings.get('epfl.transaction.store')
         if store_type == 'redis':
             data = self.redis.get('TA_%s' % self.tid)
             if data:
                 self._data = pickle.loads(data)
+                self._data_original = pickle.loads(data)
             else:
                 self._data = default_data
-            self._data_original = deepcopy(self._data)
+                self._data_original = deepcopy(self._data)
             if not self.is_clean:
                 raise Exception("what the fuck? ")
             return self._data
