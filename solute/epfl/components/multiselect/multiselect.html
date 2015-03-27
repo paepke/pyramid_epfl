@@ -10,7 +10,7 @@
 	{% for child_compo in compo.components %}
         <li class="list-group-item
         {% if compo.grouped %}
-        	{% if child_compo.data.multiselect_group is defined %}multiselect-group
+        	{% if child_compo.multiselect_group is defined %}multiselect-group
         	{% else %}
         		in-multiselect-group multiselect-selectable{{ " selected" if ((compo.selected_child_cids is not none) and (child_compo.cid in compo.selected_child_cids)) else "" }}
         	{% endif %}	
