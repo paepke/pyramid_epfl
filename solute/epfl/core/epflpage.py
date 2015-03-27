@@ -12,27 +12,6 @@ import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
-import cProfile
-
-from traceback import extract_stack
-
-
-def cprofiler(func):
-    def wrapper(*args, **kwargs):
-        datafn = func.__name__ + ".profile" # Name the data file sensibly
-        prof = cProfile.Profile()
-        retval = prof.runcall(func, *args, **kwargs)
-        prof.dump_stats(datafn)
-        return retval
-
-    return wrapper
-
 class LazyProperty(object):
     """
     Wrapper function used for just in time initialization of components by calling the registered callback.
@@ -117,8 +96,6 @@ class Page(object):
 
         self.setup_model()
 
-    # @profile
-    @cprofiler
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -170,7 +147,6 @@ class Page(object):
 
         return out
 
-    @profile
     def call_default(self):
         """
         Sub-method of :meth:`__call__` used for normal requests.
@@ -377,7 +353,7 @@ class Page(object):
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
-    @profile
+
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         self.add_js_response(self.get_page_init_js())
@@ -422,7 +398,6 @@ class Page(object):
         """
         self.transaction.store_as_new()
 
-    @profile
     def handle_ajax_request(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
@@ -476,7 +451,6 @@ class Page(object):
 
         return True
 
-    @profile
     def traversing_redraw(self, cid=None, js_only=False):
         """
         Handle redrawing components by traversing the structure as deep as necessary. Subtrees of redrawn components are
@@ -522,7 +496,6 @@ class Page(object):
         for compo in self.get_active_components():
             compo.redraw()
 
-    @profile
     def handle_submit_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
         This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
