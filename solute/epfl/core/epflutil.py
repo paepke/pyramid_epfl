@@ -9,12 +9,6 @@ import solute.epfl
 from pyramid import path
 from os.path import exists
 from solute.epfl import core
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 
 class DictTransformer(object):
     def __init__(self, target_keys):
@@ -55,7 +49,6 @@ class ClassAttributeExtender(type):
         print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
-@profile
 def add_extra_contents(response, obj):
     """ Adds CSS and JS extra-Contents of this object to the response.
     The object must have the following attributes:
@@ -76,7 +69,6 @@ def add_extra_contents(response, obj):
 
 static_url_cache = {}
 
-@profile
 def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
@@ -273,7 +265,6 @@ class Discover(object):
             self.discover_module(m)
 
     @classmethod
-    @profile
     def discover_class(cls, input_class):
         if input_class in cls.discovered_classes:
             return

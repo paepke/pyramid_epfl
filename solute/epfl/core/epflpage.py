@@ -206,7 +206,6 @@ class Page(object):
             else:
                 self.model = self.model(self.request)
 
-    # @profile
     def create_components(self):
         """
         Used every request to instantiate the components by traversing the transaction['compo_struct'] and once
