@@ -255,7 +255,10 @@ class Discover(object):
         self.discovered_modules.add(module)
 
         for name in dir(module):
-            obj = getattr(module, name)
+            try:
+                obj = getattr(module, name)
+            except AttributeError:
+                continue
             if type(obj) is not type:
                 continue
             if issubclass(obj, core.epflcomponentbase.ComponentBase):
