@@ -257,7 +257,7 @@ class Discover(object):
         for name in dir(module):
             try:
                 obj = getattr(module, name)
-            except AttributeError:
+            except (AttributeError, ImportError):
                 continue
             if type(obj) is not type:
                 continue
