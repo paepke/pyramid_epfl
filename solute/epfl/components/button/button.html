@@ -8,9 +8,11 @@
             {% if compo.icon is defined and (not compo.icon is none) %}
 
             <i class="fa {{ compo.icon }}"></i>
-            {% else %}
-            {{ compo.value }}
             {% endif %}
+            {% if compo.value is defined and not compo.value is none %}
+                {{ compo.value }}
+            {% endif %}
+
         </button>
     </div>
  </div>
