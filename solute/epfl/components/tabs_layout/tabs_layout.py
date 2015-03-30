@@ -17,7 +17,8 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
 
     def init_transaction(self):
         super(TabsLayout, self).init_transaction()
-        self.handle_toggle_tab(self.components[0].cid)
+        if (len(self.components) > 0) and (self.active_tab_cid != self.components[0].cid):
+            self.handle_toggle_tab(self.components[0].cid)
 
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid

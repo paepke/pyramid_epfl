@@ -20,48 +20,6 @@
             </div>
 {% else %}
 
-    <div class="row epfl-simple-tree-filter">
-        <div class="col-sm-6">
-            <div class="input-group">
-                <input type="text"
-                       class="form-control epfl-simple-tree-search"
-                       placeholder="Suchen..." {% if compo.search_string %}
-                       value="{{ compo.search_string }}"{% endif %}>
-                  <span class="input-group-btn">
-                    <button class="btn btn-default epfl-simple-tree-search-btn" type="button"><i
-                            class="fa fa-search"></i></button>
-                  </span>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <select class="form-control epfl-simple-tree-filter">
-                {% for filter_key in compo.all_filter %}
-                    {% if filter_key is string %}
-                        {% set value = filter_key %}
-                        {% set visual = filter_key %}
-                    {% else %}
-                        {% if filter_key[0] is defined and filter_key[1] is defined %}
-                            {% set value = filter_key[0] %}
-                            {% set visual = filter_key[1] %}
-                        {% endif %}
-                        {% if filter_key["visual"] is defined %}
-                            {% set visual = filter_key["visual"] %}
-                            {% if filter_key["value"] is defined %}
-                                {% set value = filter_key["value"] %}
-                            {% endif %}
-                            {% if filter_key["id"] is defined %}
-                                {% set value = filter_key["id"] %}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    <option value="{{ value }}"{% if compo.filter_key == value %}
-                            selected="selected"{% endif %}>{{ visual }}</option>
-                {% endfor %}
-
-
-            </select>
-        </div>
-    </div>
     <div class="epfl-simple-tree-data" style="height:{{ compo.height }}px;overflow-y:scroll;overflow-x:hidden">
     <div class="epfl-simple-tree-scroll-upper"></div>
 

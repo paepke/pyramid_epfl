@@ -25,6 +25,7 @@ class Button(ComponentBase):
     label = None #: If set, the label is rendered before the button.
     value = None #: The value is used as button text if no icon is provided.
     icon = None #: Optional font-awesome icon to be rendered as button value instead of :attr:`value` text.
+    tooltip = None #: Optional tooltip text that is placed on the button.
     event_name = None #: Mandatory name of the event handling method (without trailing "handle\_").
     event_target = None #: Optional target where the event handling method can be found.
     is_submit = False #: Set to true if button should have html type "submit".

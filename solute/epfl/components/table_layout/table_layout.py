@@ -3,7 +3,12 @@ from collections2.dicts import OrderedDict
 
 
 class TableLayout(PaginatedListLayout):
-    theme_path = PaginatedListLayout.theme_path.copy()
+
+    js_parts = ['table_layout/table_layout.js']
+    js_name = [('solute.epfl.components:table_layout/static', 'table_layout.js'),
+               ('solute.epfl.components:table_layout/static', 'jquery.fixedheadertable.min.js')]
+
+    theme_path = PaginatedListLayout.theme_path['default']
 
     template_name = 'table_layout/table_layout.html'
 

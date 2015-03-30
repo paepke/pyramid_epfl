@@ -3,6 +3,7 @@
          role="progressbar"
          aria-valuenow="{{compo.value}}"
          aria-valuemin="{{compo.min}}" aria-valuemax="{{compo.max}}"
-         style="width: {{compo.value}}%;"></div>
-     {{compo.value}}%
+         style="width: {{((compo.value/compo.max)*100)|round|int}}%;">
+     	{{((compo.value/compo.max)*100)|round|int}}%
+	</div>
 </div>

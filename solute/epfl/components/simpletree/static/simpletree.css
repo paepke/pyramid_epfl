@@ -158,3 +158,16 @@ div.epfl-simple-tree-leaf-dragging {
     border: 1px dashed #1BB7A0;
 }
 
+
+.epfl-simple-tree-search-input-addon {
+    position: relative; 
+}
+
+.epfl-simple-tree-search-input-addon .fa {
+  position: absolute;
+  right:  0px;
+  padding: 10px;
+  pointer-events: none;
+}
+
+.epfl-simple-tree-search-input-addon input { padding-right: 30px; }

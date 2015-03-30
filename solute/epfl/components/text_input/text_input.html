@@ -9,7 +9,11 @@
             </div>
         {% else %}
             {% set compo_col = compo_col - compo.label_col %}
-            <label for="{{ compo.cid }}_input" class="control-label col-sm-{{ compo.label_col }}">{{ compo.label }}</label>
+            <label for="{{ compo.cid }}_input" class="control-label col-sm-{{ compo.label_col }}"
+                {% if compo.label_style is defined %}
+                    style="{{ compo.label_style }}"
+                {% endif %}
+                >{{ compo.label }}</label>
         {% endif %}
     {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
@@ -24,7 +28,7 @@
                    maxlength="{{ compo.max_length }}"
                {% endif %}/>
             {%  if compo.max_length is not none and compo.show_count is defined and compo.show_count %}
-                (<span id="{{ compo.cid }}_input_count">0</span>/{{ compo.max_length }})
+                <div style="float: left;">(<span id="{{ compo.cid }}_input_count">0</span>/{{ compo.max_length }})</div>
             {%  endif %}
         {% endif %}
         {% if compo.validation_error %}

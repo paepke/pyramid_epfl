@@ -159,9 +159,17 @@ epfl_module = function() {
     epfl.flush_queue_active = false;
 
     epfl.flush = function (callback_func, sync) {
+
+        if (epfl.queue.length == 0) {
+            // queue empty
+            if (callback_func) {
+                callback_func(null);
+            }
+            return;
+        }
+
         epfl.flush_queue.push([callback_func, sync, epfl.queue]);
         epfl.queue = [];
-
         epfl.flush_queued();
     };
 
@@ -178,14 +186,6 @@ epfl_module = function() {
     epfl.flush_unqueued = function (callback_func, sync, queue) {
         if (window.epfl_flush_active) {
             window.epfl_flush_again = true;
-            return;
-        }
-
-        if (queue.length == 0) {
-            // queue empty
-            if (callback_func) {
-                callback_func(null);
-            }
             return;
         }
         var ajax_target_url = location.href;

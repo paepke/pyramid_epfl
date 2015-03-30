@@ -1,23 +1,44 @@
-<table epflid="{{ compo.cid }}">
-    <tr>
-        <td colspan="{{ compo.map_child_cls.__len__() }}">
-            {% call before() %}
-            {% endcall %}
-        </td>
-    </tr>
-    {% for slot_name, slot_content in compo.slotted_components.items() %}
-        <tr>
-        {% for compo_obj in slot_content %}
-            <td>
-                {{ compo_obj.render() }}
-            </td>
-        {% endfor %}
-        </tr>
-    {% endfor %}
-    <tr>
-        <td colspan="{{ compo.map_child_cls.__len__() }}">
-            {% call after() %}
-            {% endcall %}
-        </td>
-    </tr>
-</table>
+<div class="panel panel-default" id="{{ compo.cid }}_panel" epflid="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
+    {% if compo.title is defined %}
+        <div class="panel-heading">{{ compo.title }}</div>
+    {% endif %}
+    <div id="{{ compo.cid }}_container" style="overflow: hidden;{% if compo.height %}height: {{ compo.height - 80 }}px;{% endif %}">
+        <table id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="table table-condensed table-hover epfl-table"
+            {% if compo.style is defined %}
+                style="{{ compo.style }}"
+            {% endif %} >
+            {% if compo.headings is defined %}
+                <thead>
+                    <tr>
+                        {% for header in compo.headings %}
+                            <th {% if header.width is defined %}style="width: {{ header.width }}px;"{% endif %}>{{ header.title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            {% endif %}
+            <tbody>
+            {% if compo.show_search is defined and compo.show_search == True %}
+                <tr>
+                    <td colspan="{{ compo.map_child_cls.__len__() }}">
+                        {% call before() %}
+                        {% endcall %}
+                    </td>
+                </tr>
+            {% endif %}
+            {% for slot_name, slot_content in compo.slotted_components.items() %}
+                <tr>
+                {% for compo_obj in slot_content %}
+                    <td>
+                        {{ compo_obj.render() }}
+                    </td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        {% call after() %}
+        {% endcall %}
+    </div>
+</div>

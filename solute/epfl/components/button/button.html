@@ -2,7 +2,6 @@
     {% if compo.label %}
         <label for="{{ compo.cid }}" class="col-sm-{% if compo.label_col is defined and compo.label_col is not none %}{{ compo.label_col }}{% else %}2{% endif %} control-label">{{ compo.label }}</label>
     {% endif %}
-
     <div class="{% if compo.label_col is defined and compo.label_col is not none %}
                     {% if compo.compo_col is defined and compo.compo_col is not none %}
                         col-sm-{{ compo.compo_col - compo.label_col }}
@@ -12,7 +11,7 @@
                 {% else %}
                     {{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}
                 {% endif %}">
-        <button class="btn form-control epfl-button {% if compo.color is defined %} btn-{{ compo.color }}{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}"
+        <button title="{{ compo.tooltip if (compo.tooltip is not none) else '' }}" class="btn form-control epfl-button {% if compo.color is defined %} btn-{{ compo.color }}{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}"
                 type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{ compo.cid }}">
             {% if compo.icon is defined and (not compo.icon is none) %}
 

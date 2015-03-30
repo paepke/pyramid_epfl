@@ -126,6 +126,15 @@ class Page(object):
         [request-processing-flow]
         """
 
+        # In case the transaction has been lost, we need a full page reload and also a bit of housekeeping on the
+        # transaction itself.
+        if '__initialized_components__' not in self.transaction:
+            if self.request.is_xhr:
+                return Response(body='window.location.reload();',
+                                status=200,
+                                content_type='text/javascript')
+            self.transaction.set_page_obj(self)
+
         # handling the "main"-page...
         self.create_components()
 
