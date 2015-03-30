@@ -197,8 +197,8 @@ class Page(object):
             model = self.model
             if type(self.model) is list:
                 self.model = []
-                for i, m in enumerate(model):
-                    self.model[i] = m(self.request)
+                for m in model:
+                    self.model.append(m(self.request))
             elif type(self.model) is dict:
                 self.model = {}
                 for k, v in model.items():
