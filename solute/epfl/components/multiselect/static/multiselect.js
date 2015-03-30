@@ -4,6 +4,7 @@ epfl.MultiSelectComponent = function (cid, params) {
     }
 
     epfl.ComponentBase.call(this, cid, params);
+
     $('#' + cid + ' li.multiselect-selectable').click(function (event) {
         event.stopImmediatePropagation();
         event.preventDefault();
@@ -24,6 +25,7 @@ epfl.MultiSelectComponent = function (cid, params) {
         var child_cid = $(this).children().first().attr("epflid");
         epfl.dispatch_event(cid, "double_click", {child_cid: child_cid});
     });
+
     // Remember scroll position
     $('#' + cid + ' ul.list-group').scroll(function () {
         clearTimeout($.data(this, 'multiselect_scrolltimer'));
@@ -36,6 +38,9 @@ epfl.MultiSelectComponent = function (cid, params) {
         if (event.keyCode == 13) {
             epfl.dispatch_event(cid, "search", {search_string: $(this).val()});
         }
-    })
+    });
+    if(params["draggable"]){
+        epfl.PluginDraggable('#' + cid + " p","epfl-multiselect-draggable");
+    }
 };
 epfl.MultiSelectComponent.inherits_from(epfl.ComponentBase);

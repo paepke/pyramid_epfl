@@ -1,1 +1,6 @@
-epfl.init_component("{{compo.cid}}", "ContextListLayout", {row_offset:{{compo.row_offset}},row_limit:{{compo.row_limit}} });
+epfl.init_component("{{compo.cid}}",
+                    "ContextListLayout",
+                     {row_offset:{{compo.row_offset}},
+                      row_limit:{{compo.row_limit}},
+                      droppable:{{ compo.droppable | format_bool }}
+                      });

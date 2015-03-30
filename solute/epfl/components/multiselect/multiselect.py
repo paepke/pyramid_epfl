@@ -24,7 +24,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
 
     css_name = ["multiselect.css", "bootstrap.min.css",
                 "css/font-awesome/css/font-awesome.min.css"]
-    js_name = ["multiselect.js"]
+    js_name = ["multiselect.js",("solute.epfl:static", "plugin/draggable.js")]
 
     compo_config = epflcomponentbase.ComponentContainerBase.compo_config + \
         ["show_search", "grouped"]
@@ -60,6 +60,9 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     height = None
 
     grouped = False  #: Set to true if list contains grouped entries.
+
+
+    draggable = False #: Set to true if the list entries should be draggable to other multiselects
     
     def reset_state(self):
         """
