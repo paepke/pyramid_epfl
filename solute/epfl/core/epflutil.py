@@ -263,9 +263,11 @@ class Discover(object):
                 continue
             if issubclass(obj, core.epflcomponentbase.ComponentBase):
                 self.discover_class(obj)
-
-        for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
-            self.discover_module(m)
+        try:
+            for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
+                self.discover_module(m)
+        except ImportError:
+            pass
 
     @classmethod
     def discover_class(cls, input_class):
