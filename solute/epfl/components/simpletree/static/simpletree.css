@@ -117,6 +117,10 @@ div.epfl-simple-tree-leaf-selected {
     padding-right: 5px;
 }
 
+div.epfl-simple-tree-leaf-selected ul.context-dropdown-menu{
+    color: #767676;
+}
+
 div.epfl-simple-tree-leaf-selected:hover {
     background-color: #DDDDDD;
     color: #767676;

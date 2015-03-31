@@ -5,6 +5,7 @@
 The components must be imported in the namespace of this library.
 """
 
+#: Container
 from flipflop.flipflop import FlipFlop
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
@@ -14,6 +15,7 @@ from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
 
+#: Forms
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
@@ -28,10 +30,12 @@ from buttonradio.buttonradio import ButtonRadio
 from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 
+#: Special
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
 from simpletree.simpletree import Simpletree
 
+#: Visual
 from badge.badge import Badge
 from diagram.diagram import Diagram
 from progress.progress import Progress
@@ -40,6 +44,7 @@ from text.text import Text
 from placeholder.placeholder import Placeholder
 from popover.popover import Popover
 
+#: Lists
 from tabs_layout.tabs_layout import TabsLayout
 from nav_layout.nav_layout import NavLayout
 from col_layout.col_layout import ColLayout
@@ -60,6 +65,8 @@ from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 
 from modal.modal import Modal
 from dropdown.dropdown import Dropdown
+
+from loading.loading import Loading
 
 
 def add_routes(config):
@@ -123,3 +130,5 @@ def add_routes(config):
 
     Modal.add_pyramid_routes(config)
     Dropdown.add_pyramid_routes(config)
+
+    Loading.add_pyramid_routes(config)
