@@ -39,8 +39,5 @@ epfl.MultiSelectComponent = function (cid, params) {
             epfl.dispatch_event(cid, "search", {search_string: $(this).val()});
         }
     });
-    if(params["draggable"]){
-        epfl.PluginDraggable('#' + cid + " p","epfl-multiselect-draggable");
-    }
 };
 epfl.MultiSelectComponent.inherits_from(epfl.ComponentBase);
