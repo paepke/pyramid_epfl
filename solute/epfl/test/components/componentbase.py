@@ -115,7 +115,7 @@ class ComponentBaseTest(unittest.TestCase):
 
                 if os.path.exists(static_js_file_path):
                     js_file = file(static_js_file_path).read()
-                    assert js_file.startswith("epfl.{compo_name} = function(cid, params) {".format(
+                    assert js_file.startswith("epfl.{compo_name} = function(cid, params) ".format(
                         compo_name=compo_name)
                     )
 
