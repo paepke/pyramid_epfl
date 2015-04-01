@@ -110,12 +110,13 @@ class ComponentBaseTest(unittest.TestCase):
         pass
 
     def test_class_attributes_and_scaffold_construction(self):
+        import re
         component = self.component
 
         if getattr(component, 'asset_spec', None) is not None:
-            compo_name = component.__class__.__name__
+            compo_name = component.__name__
             if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
-                file_path = inspect.getsourcefile(component.__class__)
+                file_path = inspect.getsourcefile(component)
                 file_path = os.path.abspath(file_path)
                 js_file_path = file_path[:-3] + '.js'
 
@@ -132,13 +133,19 @@ class ComponentBaseTest(unittest.TestCase):
                     js_file = file(js_file_path).read()
                     assert js_file.startswith('epfl.init_component("{{ compo.cid }}"')
                     assert js_file.startswith('epfl.init_component("{{ compo.cid }}", "%s", {' % compo_name)
-
                 if os.path.exists(static_js_file_path):
                     js_file = file(static_js_file_path).read()
+
+                    r = re.compile("epfl\.{compo_name}\.inherits_from\(epfl\.([A-Za-z]*)\);".format(
+                        compo_name=compo_name))
+                    result = r.findall(js_file)
+                    assert len(result) == 1
+                    assert js_file.count("epfl.{base_compo}.call(this, cid, params);".format(base_compo=result[0])) == 1
+
                     assert js_file.startswith("epfl.{compo_name} = function(cid, params) ".format(
-                        compo_name=compo_name)
-                    )
-                    # inheritance and initiation
+                        compo_name=compo_name))
+                    assert js_file.count("epfl.{compo_name}.inherits_from(epfl.".format(
+                        compo_name=compo_name)) == 1
 
         init_func = component.__init__
         init_docs = init_func.__doc__
