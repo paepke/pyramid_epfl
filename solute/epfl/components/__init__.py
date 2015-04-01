@@ -6,7 +6,6 @@ The components must be imported in the namespace of this library.
 """
 
 #: Container
-from flipflop.flipflop import FlipFlop
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
 from droppable_box.droppable_box import DroppableBox
@@ -98,7 +97,6 @@ def add_routes(config):
 
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
-    FlipFlop.add_pyramid_routes(config)
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)

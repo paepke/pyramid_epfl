@@ -1,4 +1,4 @@
-epfl.MultiSelectComponent = function (cid, params) {
+epfl.MultiSelect = function (cid, params) {
     if (params.scroll_position > 0) {
         $('#' + cid + ' > .list-group').scrollTop(params.scroll_position);
     }
@@ -40,4 +40,4 @@ epfl.MultiSelectComponent = function (cid, params) {
         }
     });
 };
-epfl.MultiSelectComponent.inherits_from(epfl.ComponentBase);
+epfl.MultiSelect.inherits_from(epfl.ComponentBase);

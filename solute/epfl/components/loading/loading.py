@@ -32,7 +32,7 @@ class Loading(ComponentBase):
             self.delete_component()
             self.container_compo.redraw()
         else:
-            self.add_js_response("epfl.LoadingComponent.CheckForData('%s',%i)" % (self.cid, self.check_for_data_interval))
+            self.add_js_response("epfl.Loading.CheckForData('%s',%i)" % (self.cid, self.check_for_data_interval))
 
     def data_loaded(self):
         # overwrite me

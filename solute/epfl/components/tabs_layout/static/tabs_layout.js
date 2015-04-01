@@ -1,4 +1,4 @@
-epfl.TabsLayoutComponent = function(cid, params) {
+epfl.TabsLayout = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     $('#' + cid + '_tabmenu a').click(function(event) {
     	event.preventDefault();
@@ -13,4 +13,4 @@ epfl.TabsLayoutComponent = function(cid, params) {
 	},0);
 	
 };
-epfl.TabsLayoutComponent.inherits_from(epfl.ComponentBase);
+epfl.TabsLayout.inherits_from(epfl.ComponentBase);

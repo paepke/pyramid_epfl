@@ -1,4 +1,4 @@
-epfl.ProgressComponent = function(cid, params) {
+epfl.Progress = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 };
-epfl.ProgressComponent.inherits_from(epfl.ComponentBase);
+epfl.Progress.inherits_from(epfl.ComponentBase);

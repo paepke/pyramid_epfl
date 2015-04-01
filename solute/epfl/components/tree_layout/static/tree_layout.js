@@ -1,4 +1,4 @@
-epfl.TreeLayoutComponent = function(cid, params) {
+epfl.TreeLayout = function(cid, params) {
 
 	var show_context_menu_on_hover_only = params["show_context_menu_on_hover_only"];
     epfl.ComponentBase.call(this, cid, params);
@@ -22,4 +22,4 @@ epfl.TreeLayoutComponent = function(cid, params) {
 	
 	}
 };
-epfl.TreeLayoutComponent.inherits_from(epfl.ComponentBase);
+epfl.TreeLayout.inherits_from(epfl.ComponentBase);
