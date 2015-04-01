@@ -10,7 +10,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
 
     asset_spec = "solute.epfl.components:simpletree/static"
 
-    js_name = ["simpletree.js", ("solute.epfl:static", "plugin/contextmenu.js")]
+    js_name = ["simpletree.js", ("solute.epfl.components:context_list_layout/static", "contextmenu.js")]
 
     css_name = ["simpletree.css"]
 

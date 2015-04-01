@@ -63,6 +63,9 @@
                                             <i class="fa fa-{{ subchild["icon"] }}"></i>{% if subchild['marked'] is defined and subchild['marked'] == True %}<i class="fa fa-check"></i>{% endif %}
                                             {{ subchild['label'] }}
                                         </span>
+                                        {% if subchild['context_menu'] is defined %}
+				                            {{ contextmenu(subchild['context_menu'],subchild['id'],subchild['label']) }}
+				                        {% endif %}
                             </div>
                         {% endfor %}
                     {% endif %}
