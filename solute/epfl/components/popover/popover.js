@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "Popover", {});
+epfl.init_component("{{ compo.cid }}", "Popover", {});

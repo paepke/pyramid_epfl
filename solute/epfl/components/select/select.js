@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "Select", {"fire_change_immediately": {{ compo.fire_change_immediately|format_bool }}});
+epfl.init_component("{{ compo.cid }}", "Select", {"fire_change_immediately": {{ compo.fire_change_immediately|format_bool }}});

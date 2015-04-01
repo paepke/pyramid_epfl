@@ -1,4 +1,6 @@
-epfl.ModalComponent = function(cid, params) {
+epfl.init_component("{{ compo.cid }}" , "Modal", {});
+
+epfl.Modal = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
 
@@ -12,6 +14,5 @@ epfl.ModalComponent = function(cid, params) {
     	$(this).find("input").first().focus();
 	});
 };
-epfl.ModalComponent.inherits_from(epfl.ComponentBase);
+epfl.Modal.inherits_from(epfl.ComponentBase);
 
-epfl.init_component("{{compo.cid}}" , "ModalComponent", {});

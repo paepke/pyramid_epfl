@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "Loading", {});
+epfl.init_component("{{ compo.cid }}", "Loading", {});

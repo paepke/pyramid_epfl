@@ -1,4 +1,4 @@
-epfl.DroppableComponent = function (cid, params) {
+epfl.Droppable = function (cid, params) {
     var blocked_compos = {};
     this.blocked = 0;
     var delay = 700, clicks = 0, timer = null;
@@ -102,11 +102,11 @@ epfl.DroppableComponent = function (cid, params) {
     		}
 		});
 };
-epfl.DroppableComponent.inherits_from(epfl.ComponentBase);
+epfl.Droppable.inherits_from(epfl.ComponentBase);
 
 var droppable_blocked_cid = {};
 
-epfl.DroppableComponent.prototype.block_cid = function (cid) {
+epfl.Droppable.prototype.block_cid = function (cid) {
     var result = droppable_blocked_cid[cid] > 0;
     if (!droppable_blocked_cid[cid]) {
         droppable_blocked_cid[cid] = 0;

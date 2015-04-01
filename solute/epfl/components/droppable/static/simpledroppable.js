@@ -1,4 +1,4 @@
-epfl.SimpleDroppableComponent = function (cid, params) {
+epfl.SimpleDroppable = function (cid, params) {
     this.blocked = 0;
     var my_params =  params.type;
     epfl.ComponentBase.call(this, cid, params);
@@ -32,4 +32,4 @@ epfl.SimpleDroppableComponent = function (cid, params) {
         epfl.dispatch_event(cid, "remove_content", {});
     });
 };
-epfl.SimpleDroppableComponent.inherits_from(epfl.ComponentBase);
+epfl.SimpleDroppable.inherits_from(epfl.ComponentBase);

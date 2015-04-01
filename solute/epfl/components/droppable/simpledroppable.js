@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "SimpleDroppableComponent", {type: {{ compo.get_valid_types(False, True)|safe }}});
+epfl.init_component("{{ compo.cid }}", "SimpleDroppable", {type: {{ compo.get_valid_types(False, True)|safe }}});

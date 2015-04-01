@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "MultiSelectTransfer", {});
+epfl.init_component("{{ compo.cid }}", "MultiSelectTransfer", {});

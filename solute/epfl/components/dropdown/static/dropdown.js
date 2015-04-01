@@ -1,4 +1,4 @@
-epfl.DropdownComponent = function (cid, params) {
+epfl.Dropdown = function (cid, params) {
     $('#' + cid+ ' > .dropdown-toggle').click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();
@@ -12,4 +12,4 @@ epfl.DropdownComponent = function (cid, params) {
 	    epfl.dispatch_event(cid, "item_selected", {key: menu_key});
 	});
 };
-epfl.DropdownComponent.inherits_from(epfl.ComponentBase);
+epfl.Dropdown.inherits_from(epfl.ComponentBase);

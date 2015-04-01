@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "TextEditor", {});
+epfl.init_component("{{ compo.cid }}", "TextEditor", {});
