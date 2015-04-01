@@ -111,6 +111,7 @@ class ComponentBaseTest(unittest.TestCase):
 
     def test_class_attributes_and_scaffold_construction(self):
         import re
+
         component = self.component
 
         if getattr(component, 'asset_spec', None) is not None:
@@ -151,7 +152,10 @@ class ComponentBaseTest(unittest.TestCase):
         init_docs = init_func.__doc__
         init_code = init_func.func_code
         assert init_docs
-        assert 'page' in init_code.co_varnames
+        if component not in [epfl.core.epflcomponentbase.ComponentBase,
+                             epfl.core.epflcomponentbase.ComponentContainerBase]:
+            assert 'page' in init_code.co_varnames  # This parameter is not set in the ComponentBase, so it's only set
+            # for custom __init__ methods that are required for all components.
         for var in init_code.co_varnames:
             if var in ['self', 'page', 'args', 'kwargs', 'extra_params']:
                 continue
