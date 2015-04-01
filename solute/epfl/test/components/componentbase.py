@@ -102,6 +102,7 @@ class ComponentBaseTest(unittest.TestCase):
                 package_path = os.path.dirname(file_path)
 
                 static_path = package_path + '/static'
+                static_js_file_path = static_path + '/{compo_name}.js'.format(compo_name=compo_name.lower())
 
                 assert file_path.endswith(compo_name.lower() + '.py')
                 assert package_path.endswith(compo_name.lower())
@@ -111,6 +112,12 @@ class ComponentBaseTest(unittest.TestCase):
                     js_file = file(js_file_path).read()
                     assert js_file.startswith('epfl.init_component("{{ compo.cid }}"')
                     assert js_file.startswith('epfl.init_component("{{ compo.cid }}", "%s", {' % compo_name)
+
+                if os.path.exists(static_js_file_path):
+                    js_file = file(static_js_file_path).read()
+                    assert js_file.startswith("epfl.{compo_name} = function(cid, params) {".format(
+                        compo_name=compo_name)
+                    )
 
         assert component.slot == compo_info['slot']
         assert component.cid == compo_info['cid']
