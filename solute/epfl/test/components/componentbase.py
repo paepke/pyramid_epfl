@@ -204,15 +204,20 @@ class ComponentContainerBaseTest(ComponentBaseTest):
         test_node_0 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
             cid='test_node_0'
         ))
+        test_node_1 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
+            cid='test_node_1'
+        ))
 
         rendered_html = root_node.render()
         rendered_js = {
             'root_node': root_node.render(target='js'),
-            'test_node_0': test_node_0.render(target='js')
+            'test_node_0': test_node_0.render(target='js'),
+            'test_node_1': test_node_1.render(target='js')
         }
 
         self.assert_rendered_html_base_parameters(rendered_html, 'root_node')
         self.assert_rendered_html_base_parameters(rendered_html, 'test_node_0')
+        self.assert_rendered_html_base_parameters(rendered_html, 'test_node_1')
 
         for key, rendered_js in rendered_js.iteritems():
             self.assert_rendered_js_base_parameters(rendered_js)
