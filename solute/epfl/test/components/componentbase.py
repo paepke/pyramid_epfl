@@ -92,6 +92,26 @@ class ComponentBaseTest(unittest.TestCase):
     def assert_component_base_properties(self, component, compo_info):
         assert isinstance(component, epfl.core.epflcomponentbase.ComponentBase)
 
+        assert component.slot == compo_info['slot']
+        assert component.cid == compo_info['cid']
+        assert component.__unbound_component__.__getstate__() == compo_info['class']
+
+        assert component._ComponentBase__config == compo_info['config']
+
+        for name in component.combined_compo_state:
+            attr_value = getattr(component, name)
+            setattr(component, name, attr_value)
+            assert compo_info['compo_state'][name] == attr_value
+
+    def assert_rendered_html_base_parameters(self, html, cid):
+        assert html.count('epflid="{cid}"'.format(cid=cid)) == 1
+
+    def assert_rendered_js_base_parameters(self, html):
+        pass
+
+    def test_class_attributes_and_scaffold_construction(self):
+        component = self.component
+        
         if getattr(component, 'asset_spec', None) is not None:
             compo_name = component.__class__.__name__
             if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
@@ -118,23 +138,6 @@ class ComponentBaseTest(unittest.TestCase):
                     assert js_file.startswith("epfl.{compo_name} = function(cid, params) ".format(
                         compo_name=compo_name)
                     )
-
-        assert component.slot == compo_info['slot']
-        assert component.cid == compo_info['cid']
-        assert component.__unbound_component__.__getstate__() == compo_info['class']
-
-        assert component._ComponentBase__config == compo_info['config']
-
-        for name in component.combined_compo_state:
-            attr_value = getattr(component, name)
-            setattr(component, name, attr_value)
-            assert compo_info['compo_state'][name] == attr_value
-
-    def assert_rendered_html_base_parameters(self, html, cid):
-        assert html.count('epflid="{cid}"'.format(cid=cid)) == 1
-
-    def assert_rendered_js_base_parameters(self, html):
-        pass
 
 
 class ComponentContainerBaseTest(ComponentBaseTest):
