@@ -151,6 +151,7 @@ class ComponentBaseTest(unittest.TestCase):
         init_docs = init_func.__doc__
         init_code = init_func.func_code
         assert init_docs
+        assert 'page' in init_code.co_varnames
         for var in init_code.co_varnames:
             if var in ['self', 'page', 'args', 'kwargs', 'extra_params']:
                 continue
