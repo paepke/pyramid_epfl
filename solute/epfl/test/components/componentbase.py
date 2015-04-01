@@ -2,6 +2,8 @@ import unittest
 from pyramid import testing
 import solute.epfl as epfl
 import pyramid_jinja2
+import inspect
+import os
 
 
 class ComponentBaseTest(unittest.TestCase):
@@ -88,6 +90,27 @@ class ComponentBaseTest(unittest.TestCase):
         self.assert_component_base_properties(page.tested_component, compo_info)
 
     def assert_component_base_properties(self, component, compo_info):
+        assert isinstance(component, epfl.core.epflcomponentbase.ComponentBase)
+
+        if getattr(component, 'asset_spec', None) is not None:
+            compo_name = component.__class__.__name__
+            if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
+                file_path = inspect.getsourcefile(component.__class__)
+                file_path = os.path.abspath(file_path)
+                js_file_path = file_path[:-3] + '.js'
+
+                package_path = os.path.dirname(file_path)
+
+                static_path = package_path + '/static'
+
+                assert file_path.endswith(compo_name.lower() + '.py')
+                assert package_path.endswith(compo_name.lower())
+                assert os.path.exists(static_path)
+
+                if os.path.exists(js_file_path):
+                    js_file = file(js_file_path).read()
+                    assert js_file.startswith('epfl.init_component("{{compo.cid}}", "%s"' % compo_name)
+
         assert component.slot == compo_info['slot']
         assert component.cid == compo_info['cid']
         assert component.__unbound_component__.__getstate__() == compo_info['class']

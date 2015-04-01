@@ -733,10 +733,10 @@ class ComponentBase(object):
             out += ''.join(self.render_templates(env, self.js_parts))
         elif target == 'main':
             out += ''.join(self.render_templates(env, self.template_name))
+            handles = self.get_handles()
             set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
             set_component_info %= {'cid': self.cid,
-                                   'handles': self.get_handles()}
-            handles = self.get_handles()
+                                   'handles': handles}
             if handles:
                 # Add with execution_order set to 1 so it will be done after the defaults.
                 self.add_js_response((1, set_component_info))
