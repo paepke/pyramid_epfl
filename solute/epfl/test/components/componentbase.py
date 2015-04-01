@@ -109,7 +109,8 @@ class ComponentBaseTest(unittest.TestCase):
 
                 if os.path.exists(js_file_path):
                     js_file = file(js_file_path).read()
-                    assert js_file.startswith('epfl.init_component("{{compo.cid}}", "%s"' % compo_name)
+                    assert js_file.startswith('epfl.init_component("{{ compo.cid }}"')
+                    assert js_file.startswith('epfl.init_component("{{ compo.cid }}", "%s", {' % compo_name)
 
         assert component.slot == compo_info['slot']
         assert component.cid == compo_info['cid']
