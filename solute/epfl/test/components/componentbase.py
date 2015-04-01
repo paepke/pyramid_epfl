@@ -111,7 +111,7 @@ class ComponentBaseTest(unittest.TestCase):
 
     def test_class_attributes_and_scaffold_construction(self):
         component = self.component
-        
+
         if getattr(component, 'asset_spec', None) is not None:
             compo_name = component.__class__.__name__
             if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
@@ -138,7 +138,69 @@ class ComponentBaseTest(unittest.TestCase):
                     assert js_file.startswith("epfl.{compo_name} = function(cid, params) ".format(
                         compo_name=compo_name)
                     )
+                    # inheritance and initiation
+
+        init_func = component.__init__
+        init_docs = init_func.__doc__
+        init_code = init_func.func_code
+        assert init_docs
+        for var in init_code.co_varnames:
+            if var in ['self', 'page', 'args', 'kwargs', 'extra_params']:
+                continue
+            assert ":param {var}:".format(var=var) in init_docs
 
 
 class ComponentContainerBaseTest(ComponentBaseTest):
     component = epfl.core.epflcomponentbase.ComponentContainerBase
+
+    def test_adding_and_deleting_components(self):
+        page = self.page
+        transaction = page.transaction
+
+        page.root_node = self.component
+        page.setup_components()
+
+        root_node = page.root_node
+
+        test_node_0 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
+            cid='test_node_0'
+        ))
+        test_node_1 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
+            cid='test_node_1',
+            compo_state=['foobar'],
+            foobar=None
+        ))
+
+        self.assert_component_base_properties(root_node, transaction.get_component('root_node'))
+        self.assert_component_base_properties(test_node_0, transaction.get_component('test_node_0'))
+        self.assert_component_base_properties(test_node_1, transaction.get_component('test_node_1'))
+
+        test_node_0.delete_component()
+
+        assert root_node.components[0] == test_node_1
+        assert len(root_node.components) == 1
+
+    def test_rendering_sub_components(self):
+        page = self.page
+        transaction = page.transaction
+
+        page.root_node = self.component
+        page.setup_components()
+
+        root_node = page.root_node
+
+        test_node_0 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
+            cid='test_node_0'
+        ))
+
+        rendered_html = root_node.render()
+        rendered_js = {
+            'root_node': root_node.render(target='js'),
+            'test_node_0': test_node_0.render(target='js')
+        }
+
+        self.assert_rendered_html_base_parameters(rendered_html, 'root_node')
+        self.assert_rendered_html_base_parameters(rendered_html, 'test_node_0')
+
+        for key, rendered_js in rendered_js.iteritems():
+            self.assert_rendered_js_base_parameters(rendered_js)

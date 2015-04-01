@@ -15,4 +15,6 @@ for compo in inspect.getmembers(epfl.components, predicate=inspect.isclass):
     if issubclass(compo_class, epfl.core.epflcomponentbase.ComponentContainerBase):
         sub_class = ComponentContainerBaseTest
     name = compo_name + 'Test'
-    globals()[name] = type(name, (sub_class, ), {})
+    cls = type(name, (sub_class, ), {})
+    cls.component = compo_class
+    globals()[name] = cls
