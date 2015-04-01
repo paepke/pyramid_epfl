@@ -379,7 +379,12 @@ class ComponentBase(object):
     @property
     def __unbound_component__(self):
         if self.___unbound_component__ is None:
-            self.___unbound_component__ = self.__class__()
+            slot = None
+            try:
+                slot = getattr(self, 'slot', None)
+            except KeyError:
+                pass
+            self.___unbound_component__ = self.__class__(cid=self.cid, slot=slot)
         return self.___unbound_component__
 
     @property
