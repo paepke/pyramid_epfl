@@ -217,7 +217,6 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     def get_values(self):
         values = odict()
-        print "get_values",self.registered_fields
 
         for field in self.registered_fields:
             if field.name is None:

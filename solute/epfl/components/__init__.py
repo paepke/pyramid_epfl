@@ -19,6 +19,7 @@ from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
 from number_input.number_input import NumberInput
+from upload.upload import Upload
 from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
 from texteditor.texteditor import TextEditor
@@ -103,6 +104,7 @@ def add_routes(config):
     Simpletree.add_pyramid_routes(config)
 
     Form.add_pyramid_routes(config)
+    Upload.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
     TextInput.add_pyramid_routes(config)
     TextEditor.add_pyramid_routes(config)
