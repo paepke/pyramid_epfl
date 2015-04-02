@@ -69,6 +69,7 @@ def add_extra_contents(response, obj):
 
 static_url_cache = {}
 
+
 def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
@@ -81,7 +82,7 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
         pass
 
     if spec[0:11] != 'solute.epfl':
-        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
@@ -98,17 +99,19 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     absolute_path = "{base_path}{relative_path}{mixin}{mixin_name}".format(**output)
 
     if exists(absolute_path):
-        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
+        print "hey", asset_spec, static_url_cache[(asset_spec, wrapper_class)]
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
     elif spec != 'solute.epfl:static':
         static_url_cache[(asset_spec, wrapper_class)] = create_static_url(obj, mixin_name, 'solute.epfl:static')
+        print "ho", obj, mixin_name, static_url_cache[(asset_spec, wrapper_class)]
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
     else:
-        # return obj.request.static_url(asset_spec)
+        # return obj.request.static_path(asset_spec)
         raise Exception('Static dependency not found. %s' % asset_spec)
 
 
