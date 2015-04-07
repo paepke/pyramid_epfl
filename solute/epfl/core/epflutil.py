@@ -42,11 +42,9 @@ def make_dict2list_transformer(target_keys):
 
 class ClassAttributeExtender(type):
     def __new__(cls, name, bases, dct):
-        print "Allocating memory for class", name
         return type.__new__(cls, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
-        print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
 def add_extra_contents(response, obj):
@@ -100,13 +98,11 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
 
     if exists(absolute_path):
         static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
-        print "hey", asset_spec, static_url_cache[(asset_spec, wrapper_class)]
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
     elif spec != 'solute.epfl:static':
         static_url_cache[(asset_spec, wrapper_class)] = create_static_url(obj, mixin_name, 'solute.epfl:static')
-        print "ho", obj, mixin_name, static_url_cache[(asset_spec, wrapper_class)]
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
