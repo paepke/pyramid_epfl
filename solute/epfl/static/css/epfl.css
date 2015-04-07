@@ -27,3 +27,15 @@
 .clickable {
 	cursor: pointer !important;
 }
+
+/* layover icons for input fields */
+.epfl-input-addon {
+    position: relative; 
+}
+.epfl-input-addon .fa {
+  position: absolute;
+  right:  0px;
+  padding: 10px;
+  pointer-events: none;
+}
+.epfl-input-addon input { padding-right: 30px; }

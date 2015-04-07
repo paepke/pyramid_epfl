@@ -17,9 +17,15 @@
     	{% if compo.readonly is defined and compo.readonly %}
     		<p class="form-control-static">{% if compo.password %}{% else %}{{ compo.value if compo.value is not none else '' }}{% endif %}</p>
     	{% else %}
+    	{% if compo.layover_icon is not none %}
+    	<div class="epfl-input-addon"><i class="fa {{ compo.layover_icon }}"></i>
+    	{% endif %}		
         	<input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
                value="{{ compo.value if compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+        {% if compo.layover_icon is not none %}
+    	</div>
+    	{% endif %}
         {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
