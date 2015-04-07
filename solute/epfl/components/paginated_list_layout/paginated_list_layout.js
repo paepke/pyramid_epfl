@@ -53,17 +53,13 @@ search_{{ compo.cid }}
                 return;
             }
 
-        	if ($(elm).next().prop("tagName") != "SPAN") {
+        	if ($(elm).prev().prop("tagName") != "SPAN") {
 	        	$(elm)
-					.after($("<span></span>")
-						.addClass("form-control-feedback fa fa-spin fa-spinner")
-						.css("margin-right", "15px")
+					.before($("<span></span>")
+						.addClass("fa fa-spinner fa-spin")
+						.css("margin-right", "25px")
 					);
-				$(elm)
-					.parent()
-					.addClass("has-feedback");
 			}
-            console.log("!! {{compo.row_data}}");
             var row_data = {{compo.row_data |tojson|safe }};
             row_data.search = $(elm).val();
 
