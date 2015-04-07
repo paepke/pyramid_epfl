@@ -138,7 +138,7 @@ epfl.Simpletree = function (cid, params) {
      Tree Leaf Events
      *************************************************************************/
 
-    $(selector + " div.epfl-simple-tree-leaf-0").click(function () {
+    $(selector + " div.epfl-simple-tree-leaf-0 span i:first-child").click(function () {
         var open = $(this).data("open");
         if (open) {
             epfl.dispatch_event(cid, "leaf_0_close", {
@@ -152,7 +152,7 @@ epfl.Simpletree = function (cid, params) {
         }
     });
 
-    epfl.Simpletree.Leaf1Clicked = function (leafid, parent_id, open, thiscid) {
+    epfl.Simpletree.Leaf1OpenClose = function (leafid, parent_id, open, thiscid) {
         if (open) {
             epfl.dispatch_event(thiscid, "leaf_1_close", {
                 leafid: leafid, parent_id: parent_id
@@ -165,11 +165,25 @@ epfl.Simpletree = function (cid, params) {
         }
     };
 
-    epfl.Simpletree.Leaf2Clicked = function (leafid, thiscid) {
+    epfl.Simpletree.Leaf0Click = function (leafid, thiscid) {
+        epfl.dispatch_event(thiscid, "leaf_0_clicked", {
+            leafid: leafid
+        });
+    };
+
+    epfl.Simpletree.Leaf1Click = function (leafid, thiscid) {
+        epfl.dispatch_event(thiscid, "leaf_1_clicked", {
+            leafid: leafid
+        });
+    };
+
+    epfl.Simpletree.Leaf2Click = function (leafid, thiscid) {
         epfl.dispatch_event(thiscid, "leaf_2_clicked", {
             leafid: leafid
         });
     };
+
+
     
     /**************************************************************************
      Drag and Drop
