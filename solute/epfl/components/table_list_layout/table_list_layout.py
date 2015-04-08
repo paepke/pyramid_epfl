@@ -116,7 +116,8 @@ class TableListLayout(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ["orderby", "ordertype", "search", "height"]
 
-    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:table_list_layout/static", "table_list_layout.js")]
+    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:table_list_layout/static", "table_list_layout.js"),
+                                             ("solute.epfl.components:context_list_layout/static", "contextmenu.js")]
     css_name = PaginatedListLayout.css_name + [("solute.epfl.components:table_list_layout/static", "table_list_layout.css")]
 
     orderby = ""
@@ -229,3 +230,7 @@ class TableListLayout(PaginatedListLayout):
     @staticmethod
     def Popover(text,popover_text):
         return {"text":text,"popover_text":popover_text,"type": "popover"}
+
+    @staticmethod
+    def TextAndContextMenu(text, menu):
+        return {"text": text,"context_menu":menu, "type": "text_and_context"}
