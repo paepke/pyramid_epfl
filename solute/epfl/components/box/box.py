@@ -62,7 +62,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
             some_visible = False
             for el in self.components:
-                if el.is_visible():
+                if el.is_visible(check_parents=False):
                     some_visible = True  # at least one subelement is visible -> I am visible!
                     break
 
