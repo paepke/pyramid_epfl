@@ -34,7 +34,7 @@ epfl.MultiSelect = function (cid, params) {
         }, 250));
     });
     // Search
-    $('#' + cid + ' > .multiselect-search-input').keydown(function (event) {
+    $('#' + cid + ' > .epfl-input-addon > .multiselect-search-input').keydown(function (event) {
         if (event.keyCode == 13) {
             epfl.dispatch_event(cid, "search", {search_string: $(this).val()});
         }
