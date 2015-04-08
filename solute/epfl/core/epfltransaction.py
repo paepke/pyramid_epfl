@@ -72,12 +72,24 @@ class Transaction(MutableMapping):
         return self.created
 
     def get_id(self):
+        """Return the id of this this :class:`Transaction` instance.
+
+        :returns: str
+        """
         return self.tid
 
     def get_pid(self):
+        """Return the parent id of this this :class:`Transaction` instance.
+
+        :returns: str
+        """
         return self.get("__pid__", None)
 
     def set_pid(self, pid):
+        """Set the parent id of this this :class:`Transaction` instance.
+
+        :param pid: parent transaction id.
+        """
         self["__pid__"] = pid
 
     def delete(self):
@@ -88,15 +100,28 @@ class Transaction(MutableMapping):
 
     # EPFL Core Api methods
     def get_component_depth(self, cid):
+        """
+        :param cid: component id of target component.
+        :returns: the number of containers the component with the given cid is part of.
+        """
         try:
             return self.get_component_depth(self['compo_lookup'][cid]) + 1
         except KeyError:
             return 0
 
     def get_existing_components(self):
+        """
+        :returns: The combined list of all existing components ids.
+        """
         return self['compo_lookup'].keys() + self['compo_struct'].keys()
 
     def get_component_instance(self, page, cid):
+        """Initiates components on demand.
+
+        :param page: :class:`~solute.epfl.core.epflpage.Page` instance used to initiate components.
+        :param cid: component id of target component.
+        :returns: :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` instance.
+        """
         if cid not in self.instances:
             compo_info = self.get_component(cid)
             ubc = epflcomponentbase.UnboundComponent.create_from_state(compo_info['class'])
@@ -107,17 +132,37 @@ class Transaction(MutableMapping):
         return self.instances[cid]
 
     def get_active_components(self):
+        """
+        :returns: Return all :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` instances held in this
+                  :class:`Transaction` instance.
+        """
         return self.instances.values()
 
     def is_active_component(self, cid):
+        """Check if a component is currently initialized inside this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        :returns: True or False
+        """
         return cid in self.instances
 
     def switch_component(self, cid, ccid, position=None):
+        """Switch the component from its current container component to a new container.
+
+        :param cid: component id of target component.
+        :param ccid: component id of target container.
+        :param position: (optional) position the component should hold after the switch.
+        """
         compo_info = self.pop_component(cid)
         compo_info['ccid'] = ccid
         self.set_component(cid, compo_info, position=position)
 
     def pop_component(self, cid):
+        """Remove and return the components entry in this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        :returns: dict
+        """
         try:
             return self['compo_struct'].pop(cid)
         except KeyError:
@@ -130,6 +175,11 @@ class Transaction(MutableMapping):
             return None
 
     def get_component(self, cid):
+        """Return the components entry in this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        :returns: dict
+        """
         try:
             return self['compo_struct'][cid]
         except KeyError:
@@ -142,6 +192,12 @@ class Transaction(MutableMapping):
             return None
 
     def get_child_component(self, ccid, cid):
+        """Return the child components entry in this :class:`Transaction` instance.
+
+        :param ccid: component id of targets container component.
+        :param cid: component id of target component.
+        :returns: dict
+        """
         compo = self.get_component(ccid)
         try:
             return compo['compo_struct'][cid]
@@ -149,6 +205,12 @@ class Transaction(MutableMapping):
             return None
 
     def pop_child_component(self, ccid, cid):
+        """Remove and return the child components entry in this :class:`Transaction` instance.
+
+        :param ccid: component id of targets container component.
+        :param cid: component id of target component.
+        :returns: dict
+        """
         compo = self.get_component(ccid)
         try:
             return compo['compo_struct'].pop(cid)
@@ -156,6 +218,13 @@ class Transaction(MutableMapping):
             return None
 
     def set_component(self, cid, compo_info, position=None, compo_obj=None):
+        """Set the components entry in this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        :param compo_info: info dict of the component giving its sub structure, container id, class and config.
+        :param position: (optional) position this component shall hold inside its container.
+        :param compo_obj: (optional) :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` instance.
+        """
         if not isinstance(compo_info, dict):
             compo_obj = compo_info
             compo_info = compo_obj.get_component_info()
@@ -176,6 +245,10 @@ class Transaction(MutableMapping):
             compo_struct.insert(cid, compo_info, position)
 
     def del_component(self, cid):
+        """Remove the components entry in this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        """
         compo = self.get_component(cid)
         container = self
         if 'ccid' in compo:
@@ -193,6 +266,11 @@ class Transaction(MutableMapping):
             del container['compo_struct'][cid]
 
     def has_component(self, cid):
+        """Check if the child component has an entry in this :class:`Transaction` instance.
+
+        :param cid: component id of target component.
+        :returns: True or False
+        """
         try:
             return self.get_component(cid) is not None
         except KeyError:
