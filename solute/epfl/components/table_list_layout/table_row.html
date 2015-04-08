@@ -4,7 +4,7 @@
         {% for entry in menuentries %}
             {% if entry.type == "link" %}
                 <li class="entry" data-event="{{ entry.event }}" data-id="{{ child_id }}"
-                    data-data="{{ child_data }}">{{ entry.name }}</li>
+                    data-data='{{ child_data|tojson|safe }}'>{{ entry.name }}</li>
             {% else %}
                 <li class="divider"></li>
             {% endif %}
