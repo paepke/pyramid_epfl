@@ -198,7 +198,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.tree_data[level_0_id]["children"][level_1_id]["children"] = new_level_2_data
         self.redraw()
 
-    def handle_leaf_0_clicked(self,leafid):
+    def handle_leaf_0_clicked(self, leafid):
         pass
 
     def handle_leaf_0_open(self, leafid, hover):
@@ -230,7 +230,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
         self.redraw()
 
 
-    def handle_leaf_1_clicked(self,leafid):
+    def handle_leaf_1_clicked(self, leafid):
         pass
 
 
@@ -255,8 +255,6 @@ class Simpletree(epflcomponentbase.ComponentBase):
         except KeyError:
             pass
         self.remove_level_2(leafid, parent_id)
-
-        self.leaf_1_clicked(leafid, parent_id)
 
         self.redraw()
 
