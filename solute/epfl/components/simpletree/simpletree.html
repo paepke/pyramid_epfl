@@ -26,9 +26,9 @@
         {% for entry_obj in compo.tree_data.iteritems() %}
             {% set entry = entry_obj[1] %}
             <div class="epfl-simple-tree-leaf-0 epfl-simple-tree-openable{% if entry['draggable'] is defined and entry['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}{% if entry['droppable'] is defined and entry['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}{% if compo.selected_0_id ==  entry['id'] %} epfl-simple-tree-leaf-selected{% endif %}"
-                    data-leafid="{{ entry['id'] }}" data-open="{% if entry["children"] is defined %}true{% else %}false{% endif %}">
-            <span {% if compo.selected_0_id != entry['id'] and entry['marked'] is defined and entry['marked'] == True %}class="text-primary"{% endif %}
+                    data-leafid="{{ entry['id'] }}" data-open="{% if entry["children"] is defined %}true{% else %}false{% endif %}"
                     onclick="epfl.Simpletree.Leaf0Click({{ entry['id'] }},'{{ compo.cid }}')">
+            <span {% if compo.selected_0_id != entry['id'] and entry['marked'] is defined and entry['marked'] == True %}class="text-primary"{% endif %}>
                 <i class="fa {% if entry["children"] is defined %}fa fa-{{ entry["icon"]["opened"] }}{% else %}fa fa-{{ entry["icon"]["closed"] }}{% endif %}"
                          data-leafid="{{ entry['id'] }}" data-open="{% if entry["children"] is defined %}true{% else %}false{% endif %}"></i>
             {% if entry['marked'] is defined and entry['marked'] == True %}<i class="fa fa-check"></i>{% endif %}
@@ -43,9 +43,9 @@
                     {% set child = child_obj[1] %}
 
                     <div class="epfl-simple-tree-leaf-1 epfl-simple-tree-openable{% if child['draggable'] is defined and child['draggable'] == True %} epfl-simple-tree-leaf-dragable{% endif %}{% if child['droppable'] is defined and child['droppable'] == True %} epfl-simple-tree-leaf-droppable{% endif %}{% if compo.selected_1_id ==  child['id'] %} epfl-simple-tree-leaf-selected{% endif %}"
-                            data-leafid="{{ child['id'] }}" data-open="{% if child["children"] is defined %}true{% else %}false{% endif %}">
-                        <span {% if compo.selected_1_id != child['id'] and child['marked'] is defined and child['marked'] == True %}class="text-primary"{% endif %}
-                                onclick="epfl.Simpletree.Leaf1Click({{ child['id'] }},'{{ compo.cid }}')">
+                            data-leafid="{{ child['id'] }}" data-open="{% if child["children"] is defined %}true{% else %}false{% endif %}"
+                            onclick="epfl.Simpletree.Leaf1Click({{ child['id'] }},'{{ compo.cid }}')">
+                        <span {% if compo.selected_1_id != child['id'] and child['marked'] is defined and child['marked'] == True %}class="text-primary"{% endif %}>
                             <i class="{% if child["children"] is defined %}fa fa-{{ child["icon"]["opened"] }}{% else %}fa fa-{{ child["icon"]["closed"] }}{% endif %}"
                                      data-leafid="{{ child['id'] }}" data-open="{% if child["children"] is defined %}true{% else %}false{% endif %}"
                                      onclick="epfl.Simpletree.Leaf1OpenClose({{ child['id'] }},{{ entry['id'] }},{% if child["children"] is defined %}true{% else %}false{% endif %},'{{ compo.cid }}')"></i>
