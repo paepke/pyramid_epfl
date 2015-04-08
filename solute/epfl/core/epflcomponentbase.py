@@ -494,7 +494,7 @@ class ComponentBase(object):
         self.visible = False
         return current_visibility
 
-    def is_visible(self, check_parents=False):
+    def is_visible(self, check_parents=True):
         """ Checks wether the component should be displayed or not. This is affected by "has_access" and
         the "visible"-component-attribute.
         If check_parents is True, it also checks if the template-element-parents are all visible - so it checks
