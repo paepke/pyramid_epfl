@@ -12,7 +12,7 @@
     </ul>
 {% endmacro %}
 
-<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }}">
+<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }} epfl-table-row">
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
         <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}>

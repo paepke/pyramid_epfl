@@ -68,6 +68,6 @@ div.epfl-table-text-context button{
     display:none;
 }
 
-td.epfl-table-cell:hover div.epfl-table-text-context button{
+tr.epfl-table-row:hover div.epfl-table-text-context button{
     display:inline;
 }
