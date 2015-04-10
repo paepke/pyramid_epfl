@@ -111,29 +111,25 @@ class Page(object):
         [request-processing-flow]
         """
 
-        # In case the transaction has been lost, we need a full page reload and also a bit of housekeeping on the
-        # transaction itself.
-        if '__initialized_components__' not in self.transaction:
-            if self.request.is_xhr:
-                return Response(body='window.location.reload();',
-                                status=200,
-                                content_type='text/javascript')
-            self.transaction.set_page_obj(self)
+        # Check if we lost our transaction to a timeout.
+        transaction_loss = self.prevent_transaction_loss()
+        if transaction_loss:
+            return transaction_loss
 
-        # handling the "main"-page...
-        self.create_components()
+        self.handle_transaction()
 
         check_tid = False
         out = ''
         content_type = "text/html"
-        try:
-            if self.handle_ajax_request():
-                out, check_tid = self.call_ajax(), True
-                content_type = "text/javascript"
-            else:
-                out = self.call_default()
-        finally:
-            out += self.call_cleanup(check_tid)
+
+        if self.request.is_xhr:
+            out = self.handle_ajax_request()
+            check_tid = True
+            content_type = "text/javascript"
+        else:
+            out = self.handle_default_request()
+
+        out += self.call_cleanup(check_tid)
 
         response = Response(body=out.encode("utf-8"),
                             status=200,
@@ -141,7 +137,18 @@ class Page(object):
         response.headerlist.extend(self.remember_cookies)
         return response
 
-    def call_ajax(self):
+    def prevent_transaction_loss(self):
+        """In case the transaction has been lost, we need a full page reload and also a bit of housekeeping on the
+        transaction itself.
+        """
+        if '__initialized_components__' not in self.transaction:
+            if self.request.is_xhr:
+                return Response(body='window.location.reload();',
+                                status=200,
+                                content_type='text/javascript')
+            self.transaction.set_page_obj(self)
+
+    def generate_ajax_output(self):
         """
         Sub-method of :meth:`__call__` used in case of ajax calls.
         """
@@ -155,7 +162,7 @@ class Page(object):
 
         return out
 
-    def call_default(self):
+    def handle_default_request(self):
         """
         Sub-method of :meth:`__call__` used for normal requests.
         """
@@ -213,17 +220,6 @@ class Page(object):
                     self.model[k] = v(self.request)
             else:
                 self.model = self.model(self.request)
-
-    def create_components(self):
-        """
-        Used every request to instantiate the components by traversing the transaction['compo_struct'] and once
-        initially to initialize the transaction structure.
-        """
-
-        # Calling self.setup_components once and remember the compos as compo_info and their structure as compo_struct.
-        if not self.transaction.get("components_assigned"):
-            self.setup_components()
-            self.transaction["components_assigned"] = True
 
     def done_request(self):
         """ [request-processing-flow]
@@ -391,6 +387,11 @@ class Page(object):
         [request-processing-flow]
         """
 
+        # Calling self.setup_components once and remember the compos as compo_info and their structure as compo_struct.
+        if not self.transaction.get("components_assigned"):
+            self.setup_components()
+            self.transaction["components_assigned"] = True
+
         if 'root_node' not in self.transaction['__initialized_components__']:
             self.root_node.init_transaction()
             self.transaction['__initialized_components__'].add('root_node')
@@ -413,11 +414,6 @@ class Page(object):
 
         [request-processing-flow]
         """
-
-        if not self.request.is_xhr:
-            return False
-
-        self.handle_transaction()
 
         ajax_queue = self.page_request.get_queue()
         for event in ajax_queue:
@@ -457,7 +453,7 @@ class Page(object):
         for page in pages:
             page.traversing_redraw()
 
-        return True
+        return self.generate_ajax_output()
 
     def traversing_redraw(self, cid=None, js_only=False):
         """
@@ -518,8 +514,6 @@ class Page(object):
 
         It calls the handle_submit-method of all components in this page.
         """
-
-        self.handle_transaction()
 
         for component_obj in self.get_active_components():
             component_obj.request_handle_submit(dict(self.page_request.params))

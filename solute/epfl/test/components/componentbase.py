@@ -66,7 +66,7 @@ class ComponentBaseTest(unittest.TestCase):
         transaction = page.transaction
 
         page.root_node = epfl.core.epflcomponentbase.ComponentContainerBase
-        page.setup_components()
+        page.handle_transaction()
 
         container_component = page.root_node.add_component(
             epfl.core.epflcomponentbase.ComponentContainerBase(cid='container_component')
@@ -82,7 +82,7 @@ class ComponentBaseTest(unittest.TestCase):
         transaction = page.transaction
 
         page.root_node = epfl.core.epflcomponentbase.ComponentContainerBase
-        page.setup_components()
+        page.handle_transaction()
 
         page.root_node.add_component(compo_class(cid='tested_component'))
 
@@ -201,7 +201,7 @@ class ComponentContainerBaseTest(ComponentBaseTest):
         transaction = page.transaction
 
         page.root_node = self.component
-        page.setup_components()
+        page.handle_transaction()
 
         root_node = page.root_node
 
@@ -231,7 +231,7 @@ class ComponentContainerBaseTest(ComponentBaseTest):
         transaction = page.transaction
 
         page.root_node = self.component
-        page.setup_components()
+        page.handle_transaction()
 
         root_node = page.root_node
 
