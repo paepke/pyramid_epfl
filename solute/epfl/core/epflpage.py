@@ -12,6 +12,13 @@ import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 
+try:
+    profile
+except NameError:
+    def profile(func):
+        return func
+
+
 class LazyProperty(object):
     """
     Wrapper function used for just in time initialization of components by calling the registered callback.
@@ -96,6 +103,7 @@ class Page(object):
 
         self.setup_model()
 
+    @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -352,7 +360,7 @@ class Page(object):
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
-
+    @profile
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         self.add_js_response(self.get_page_init_js())
@@ -397,6 +405,7 @@ class Page(object):
         """
         self.transaction.store_as_new()
 
+    @profile
     def handle_ajax_request(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
