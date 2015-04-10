@@ -188,10 +188,9 @@ class ComponentBaseTest(unittest.TestCase):
                 "{compo_name} __init__ method is not correctly setup. " \
                 "(Missing page parameter, or not overwritten.)".format(compo_name=compo_name)
         for var in init_code.co_varnames:
-            if var in ['self', 'page', 'args', 'kwargs', 'extra_params']:
-                continue
-            assert ":param {var}:".format(var=var) in init_docs,\
-                "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
+            if var not in ['self', 'page', 'args', 'kwargs', 'extra_params']:
+                assert ":param {var}:".format(var=var) in init_docs,\
+                    "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
 
 
 class ComponentContainerBaseTest(ComponentBaseTest):
