@@ -123,13 +123,22 @@ class Page(object):
         content_type = "text/html"
 
         if self.request.is_xhr:
-            out = self.handle_ajax_request()
-            check_tid = True
-            content_type = "text/javascript"
+            self.handle_ajax_events()
         else:
-            out = self.handle_default_request()
+            self.handle_default_events()
 
-        out += self.call_cleanup(check_tid)
+        for compo in self.get_active_components():
+            compo.after_event_handling()
+
+        # TODO: Insert rendering here.
+
+        #     out = self.handle_ajax_request()
+        #     check_tid = True
+        #     content_type = "text/javascript"
+        # else:
+        #     out = self.handle_default_request()
+
+        # out += self.call_cleanup(check_tid)
 
         response = Response(body=out.encode("utf-8"),
                             status=200,
@@ -406,8 +415,7 @@ class Page(object):
         """
         self.transaction.store_as_new()
 
-    @profile
-    def handle_ajax_request(self):
+    def handle_ajax_events(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
         A "False" means we have a full-page-request. In this case self.render must be called.
@@ -444,16 +452,14 @@ class Page(object):
 
             else:
                 raise Exception("Unknown ajax-event: " + repr(event))
-
-        for compo in self.get_active_components():
-            compo.after_event_handling()
-
-        pages = self.page_request.get_handeled_pages()[:]
-        pages.append(self)
-        for page in pages:
-            page.traversing_redraw()
-
-        return self.generate_ajax_output()
+        #
+        #
+        # pages = self.page_request.get_handeled_pages()[:]
+        # pages.append(self)
+        # for page in pages:
+        #     page.traversing_redraw()
+        #
+        # return self.generate_ajax_output()
 
     def traversing_redraw(self, cid=None, js_only=False):
         """
@@ -500,7 +506,7 @@ class Page(object):
         for compo in self.get_active_components():
             compo.redraw()
 
-    def handle_submit_request(self):
+    def handle_default_request(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
         This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
         False should be called.
@@ -517,9 +523,6 @@ class Page(object):
 
         for component_obj in self.get_active_components():
             component_obj.request_handle_submit(dict(self.page_request.params))
-
-        for compo in self.get_active_components():
-            compo.after_event_handling()
 
     def add_js_response(self, js_string):
         """
