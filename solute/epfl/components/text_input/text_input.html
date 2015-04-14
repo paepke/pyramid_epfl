@@ -24,6 +24,9 @@
         	<input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
                value="{{ compo.value if compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
+               {% if compo.disabled is defined and compo.disabled %}
+                   disabled
+               {% endif %}
                {% if compo.max_length is not none %}
                    maxlength="{{ compo.max_length }}"
                {% endif %}/>
