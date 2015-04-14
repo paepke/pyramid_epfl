@@ -15,12 +15,6 @@ import types, copy, string, uuid, time
 
 from collections import MutableMapping, defaultdict
 from solute.epfl.core import epflcomponentbase
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 
 class Transaction(MutableMapping):
     """ An object that encapsulates the transaction-access.
@@ -102,7 +96,6 @@ class Transaction(MutableMapping):
     def get_existing_components(self):
         return self['compo_lookup'].keys() + self['compo_struct'].keys()
 
-    @profile
     def get_component_instance(self, page, cid):
         if cid not in self.instances:
             compo_info = self.get_component(cid)

@@ -2,6 +2,7 @@ from pyramid.view import view_config
 from pyramid import security
 from functools import wraps
 from solute.epfl.components import LinkListLayout
+from solute.epfl.core import epflutil
 
 from epflacl import epfl_acl, ACL
 
@@ -107,7 +108,10 @@ class EPFLView(object):
         active_modules = [m.strip() for m in config.registry.settings.get('epfl.active_modules', '').split(',')
                           if m.strip()]
         for m in active_modules:
-            config.maybe_dotted(m)
+            module = config.maybe_dotted(m)
+            epflutil.Discover().discover_module(module)
+            if hasattr(module, 'includeme'):
+                config.include(m)
 
         if EPFLView.acl:
             acl_wrapper = epfl_acl(EPFLView.acl, use_as_global=True)

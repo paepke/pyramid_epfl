@@ -33,6 +33,11 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         ["selected_child_cids", "hidden_child_cids", "selected_child_ids", "scroll_position",
             "search_string", "default_out_multiselect_transfer_cid"]
 
+    data_interface = {
+        'id': None,
+        'text': None
+    }
+
     default_child_cls = MultiSelectEntry
     selected_child_cids = None  #: A list of child cids that are currently selected.
     
@@ -97,7 +102,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         searchstring = self.search_string.lower()
         for compo in self.components:
             try:
-                if not searchstring in compo.data['text'].lower():
+                if not searchstring in compo.text.lower():
                     if self.hidden_child_cids is None:
                         self.hidden_child_cids = set()
                     self.hidden_child_cids.add(compo.cid)
@@ -113,13 +118,13 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
         current_group_matched = False
         searchstring = self.search_string.lower()
         for compo in self.components:
-            if "multiselect_group" in compo.data:
+            if compo.hasattr('multiselect_group'):
                 if (not current_group_cid is None) and (current_group_matched == False) and (number_of_matched_entries_for_group == 0):
                     if self.hidden_child_cids is None:
                         self.hidden_child_cids = set()
                     self.hidden_child_cids.add(current_group_cid)
                 try:
-                    if not searchstring in compo.data['text'].lower():
+                    if not searchstring in compo.text.lower():
                         current_group_matched = False
                     else:
                         current_group_matched = True
@@ -134,7 +139,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
                     number_of_matched_entries_for_group += 1
                     continue
                 try:
-                    if not searchstring in compo.data['text'].lower():
+                    if not searchstring in compo.text.lower():
                         if self.hidden_child_cids is None:
                             self.hidden_child_cids = set()
                         self.hidden_child_cids.add(compo.cid)

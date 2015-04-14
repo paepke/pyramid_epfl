@@ -9,12 +9,6 @@ import solute.epfl
 from pyramid import path
 from os.path import exists
 from solute.epfl import core
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 
 class DictTransformer(object):
     def __init__(self, target_keys):
@@ -55,7 +49,6 @@ class ClassAttributeExtender(type):
         print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
-@profile
 def add_extra_contents(response, obj):
     """ Adds CSS and JS extra-Contents of this object to the response.
     The object must have the following attributes:
@@ -76,7 +69,6 @@ def add_extra_contents(response, obj):
 
 static_url_cache = {}
 
-@profile
 def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
@@ -263,17 +255,21 @@ class Discover(object):
         self.discovered_modules.add(module)
 
         for name in dir(module):
-            obj = getattr(module, name)
+            try:
+                obj = getattr(module, name)
+            except (AttributeError, ImportError):
+                continue
             if type(obj) is not type:
                 continue
             if issubclass(obj, core.epflcomponentbase.ComponentBase):
                 self.discover_class(obj)
-
-        for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
-            self.discover_module(m)
+        try:
+            for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
+                self.discover_module(m)
+        except ImportError:
+            pass
 
     @classmethod
-    @profile
     def discover_class(cls, input_class):
         if input_class in cls.discovered_classes:
             return

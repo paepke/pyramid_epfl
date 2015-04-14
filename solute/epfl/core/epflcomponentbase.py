@@ -1,10 +1,4 @@
 # coding: utf-8
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
-
 from random import randint
 
 from pprint import pprint
@@ -122,7 +116,6 @@ class UnboundComponent(object):
         self.position = (self.__unbound_config__.pop('cid', None) or "{0:08x}".format(randint(0, 0xffffffff)),
                          self.__unbound_config__.pop('slot', None))
 
-    @profile
     def __call__(self, *args, **kwargs):
         """
         Pseudo instantiation helper that returns a new UnboundComponent by updating the config. This can also be used to
@@ -147,7 +140,6 @@ class UnboundComponent(object):
         return ubc
 
     @property
-    @profile
     def __dynamic_class__(self):
         """
         If the config contains entries besides cid and slot a dynamic class is returned. This offers just in time
@@ -181,7 +173,6 @@ class UnboundComponent(object):
         else:
             return self.__unbound_cls__
 
-    @profile
     def register_in_transaction(self, container, slot=None, position=None):
         compo_info = {'class': self.__getstate__(),
                       'config': self.__unbound_config__,
@@ -325,7 +316,6 @@ class ComponentBase(object):
             container_compo.add_component_to_slot(compo_obj, compo_info["slot"])
         return compo_obj
 
-    @profile
     def __new__(cls, *args, **config):
         """
         Calling a class derived from ComponentBase will normally return an UnboundComponent via this method unless
@@ -362,7 +352,6 @@ class ComponentBase(object):
         """
         pass
 
-    @profile
     def __getattribute__(self, key):
         if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
             return super(ComponentBase, self).__getattribute__(key)
@@ -372,7 +361,6 @@ class ComponentBase(object):
                                                                                      super(ComponentBase,
                                                                                            self).__getattribute__(key))
 
-    @profile
     def __setattr__(self, key, value):
         if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
             return super(ComponentBase, self).__setattr__(key, value)
@@ -441,7 +429,6 @@ class ComponentBase(object):
             info['ccid'] = self.container_compo.cid
         return info
 
-    @profile
     def _set_page_obj(self, page_obj):
         """ Will be called by __new__. Multiple initialisation-routines are called from here, so a component is only
         set up after being assigned its page.
@@ -697,7 +684,6 @@ class ComponentBase(object):
         """
         epflutil.add_extra_contents(self.response, obj=self)
 
-    @profile
     def render_templates(self, env, templates):
         """
         Render one or many templates given as list using the given jinja2 environment env and the dict from
@@ -718,7 +704,6 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
-    @profile
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
@@ -779,7 +764,6 @@ class ComponentBase(object):
                     continue
                 cls._handles.append(name[7:])
 
-    @profile
     def get_handles(self):
         self.set_handles()
         return self._handles
@@ -818,7 +802,6 @@ class ComponentBase(object):
         else:
             self.redraw_requested.add(parts)
 
-    @profile
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
         as keys and thier content as values. No modification of the "response" is made. Only the parts that are
@@ -953,7 +936,6 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    @profile
     def update_children(self, force=False, init_transaction=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
@@ -1051,7 +1033,6 @@ class ComponentContainerBase(ComponentBase):
         """
         pass
 
-    @profile
     def init_transaction(self):
         """
         Components derived from :class:`ComponentContainerBase` will use their :attr:`node_list` to generate their
@@ -1078,7 +1059,6 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    @profile
     def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
