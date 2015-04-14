@@ -39,9 +39,6 @@
 	        {% endif %}
 	        data-validation-type='{{ compo.validation_type }}'
 	        />
-            {% if compo.currency is not none %}
-                {{ compo.currency }}
-            {% endif %}
 	    {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
