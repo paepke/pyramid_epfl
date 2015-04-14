@@ -25,7 +25,7 @@ class Selectize(FormInputBase):
 
     compo_config = []
     compo_state = FormInputBase.compo_state + ["entries", "drop_down_height", "selected_text", "search_server_side",
-                                               "search_text"]
+                                               "search_text","load_asnyc","is_loading"]
 
     entries = None
     layout_vertical = False
@@ -34,6 +34,9 @@ class Selectize(FormInputBase):
 
     search_server_side = False
     search_text = ""
+
+    load_async = False
+    is_loading = False
 
     def handle_update_search(self, search_text):
         self.search_text = search_text
@@ -59,3 +62,19 @@ class Selectize(FormInputBase):
 
         self.validation_error = ''
         return True
+
+    def init_transaction(self):
+        if self.load_async:
+            self.is_loading = True
+            self.add_js_response("epfl.Selectize.LoadData('%s')" % self.cid);
+            self.load_async = False
+
+    def handle_load_data(self):
+        self.entries = self.load_data_async()
+        self.is_loading = False
+        self.redraw()
+
+    def load_data_async(self):
+        #; overwrite me
+        return []
+
