@@ -66,7 +66,8 @@ class ContextListLayout(PaginatedListLayout):
 
     auto_update_children = True
 
-    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.js"), ("solute.epfl:static", "plugin/contextmenu.js")]
+    js_name = PaginatedListLayout.js_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.js"),
+                                             ("solute.epfl.components:context_list_layout/static", "contextmenu.js")]
     css_name = PaginatedListLayout.css_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.css")]
 
     data_interface = {'id': None, 'data': None, 'menu': None}

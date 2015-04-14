@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "ProgressComponent",{});
+epfl.init_component("{{ compo.cid }}", "Progress",{});

@@ -1,4 +1,4 @@
-epfl.DragableComponent = function(cid, params) {
+epfl.Dragable = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var tmp = $('#' + cid).draggable({
         connectToSortable: '.droppable_type_' + params.type,
@@ -48,4 +48,4 @@ epfl.DragableComponent = function(cid, params) {
 		}
 	});
 };
-epfl.DragableComponent.inherits_from(epfl.ComponentBase);
+epfl.Dragable.inherits_from(epfl.ComponentBase);

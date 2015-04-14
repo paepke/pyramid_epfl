@@ -1,4 +1,4 @@
-epfl.ButtonComponent = function(cid, params) {
+epfl.Button = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var confirm_first=params["confirm_first"];
     var confirm_message=params["confirm_message"];
@@ -13,4 +13,4 @@ epfl.ButtonComponent = function(cid, params) {
 	});
 
 };
-epfl.ButtonComponent.inherits_from(epfl.ComponentBase);
+epfl.Button.inherits_from(epfl.ComponentBase);

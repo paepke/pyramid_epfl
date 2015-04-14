@@ -1,4 +1,4 @@
-epfl.ImageComponent = function(cid, params) {
+epfl.Image = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     
 	if ((params["opts"]["show_dominant_color"]) || (params["opts"]["show_additional_colors"])) {
@@ -21,7 +21,7 @@ epfl.ImageComponent = function(cid, params) {
 		});
 	}
 };
-epfl.ImageComponent.inherits_from(epfl.ComponentBase);
+epfl.Image.inherits_from(epfl.ComponentBase);
 
 $(".epfl-img-component-color").mouseover(function() {
 	$(this).css({"border-width":"2px", "border-style":"solid"});

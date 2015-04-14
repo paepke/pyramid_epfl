@@ -1,4 +1,18 @@
-<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }}">
+{% macro contextmenu(menuentries,child_id,child_data) %}
+    <button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>
+    <ul class="context-dropdown-menu">
+        {% for entry in menuentries %}
+            {% if entry.type == "link" %}
+                <li class="entry" data-event="{{ entry.event }}" data-id="{{ child_id }}"
+                    data-data='{{ child_data|tojson|safe }}'>{{ entry.name }}</li>
+            {% else %}
+                <li class="divider"></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }} epfl-table-row">
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
         <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}{% if cell.width is defined and cell.width is not none %} style="width:{{ cell.width }}px"{% endif %}>
@@ -60,6 +74,11 @@
             {% elif cell.type == 'popover' %}
                 <a tabindex="0" role="button" class="epfl-popover-link" data-toggle="popover" data-content="{{ cell.popover_text }}" data-trigger="focus"
                       data-placement="top">{{ cell.text }} </a>
+            {% elif cell.type == 'text_and_context' %}
+                <div class="epfl-table-text-context">
+                    <div class="pull-left">{{ cell.text }}</div>
+                    <div>{{ contextmenu(cell['context_menu'],compo.id,compo.data) }}</div>
+                </div>
             {% endif %}
         </td>
     {% endif %}

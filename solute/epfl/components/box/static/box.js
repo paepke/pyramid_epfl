@@ -1,4 +1,4 @@
-epfl.BoxComponent = function(cid, params) {
+epfl.Box = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var hover_box_remove_on_close=params["hover_box_remove_on_close"];
 
@@ -29,4 +29,4 @@ epfl.BoxComponent = function(cid, params) {
     });
 
 };
-epfl.BoxComponent.inherits_from(epfl.ComponentBase);
+epfl.Box.inherits_from(epfl.ComponentBase);

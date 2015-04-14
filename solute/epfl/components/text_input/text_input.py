@@ -4,13 +4,13 @@ from solute.epfl.components.form.form import FormInputBase
 class TextInput(FormInputBase):
     """
     A form text input.
-    
+
     Typically, this component is used in a form:
-    
+
     .. code:: python
-        
+
         form = Form(node_list=[TextInput(label="User name:", name="username")])
-    
+
     """
 
     js_parts = FormInputBase.js_parts[:]
@@ -29,7 +29,7 @@ class TextInput(FormInputBase):
     show_count = False
 
     template_name = "text_input/text_input.html"
-    
+
     validation_type = 'text'
 
     # : Set to true if typeahead should be provided by the input (if supported)
@@ -39,6 +39,9 @@ class TextInput(FormInputBase):
     type_func = 'typeahead'
 
     password = False
+    
+    #: optional font-awesome icon to be rendered as a layover icon above the input field (aligned to the right)
+    layover_icon = None
 
     date = False
 

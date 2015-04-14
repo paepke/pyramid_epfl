@@ -179,7 +179,6 @@ epfl_module = function() {
         }
         epfl.flush_queue_active = true;
         var flush = epfl.flush_queue.shift();
-        console.log('flush_unqueued', flush[0], flush[1], flush[2], epfl.flush_queue);
         epfl.flush_unqueued(flush[0], flush[1], flush[2]);
     };
 

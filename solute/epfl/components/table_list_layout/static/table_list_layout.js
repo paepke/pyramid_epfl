@@ -63,6 +63,10 @@ epfl.TableListLayout = function (cid, params) {
     epfl.TableListLayout.exportCSV = function () {
         epfl.dispatch_event(cid, "export_csv", {});
     };
+
+    epfl.PluginContextMenu("#" + cid + " ul.context-dropdown-menu", cid);
+
+
 };
 
 

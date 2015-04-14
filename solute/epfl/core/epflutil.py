@@ -42,11 +42,9 @@ def make_dict2list_transformer(target_keys):
 
 class ClassAttributeExtender(type):
     def __new__(cls, name, bases, dct):
-        print "Allocating memory for class", name
         return type.__new__(cls, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
-        print "Init'ing (configuring) class", name
         super(ClassAttributeExtender, cls).__init__(name, bases, dct)
 
 def add_extra_contents(response, obj):
@@ -69,6 +67,7 @@ def add_extra_contents(response, obj):
 
 static_url_cache = {}
 
+
 def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     if spec is None:
         spec = obj.asset_spec
@@ -81,7 +80,7 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
         pass
 
     if spec[0:11] != 'solute.epfl':
-        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
@@ -98,7 +97,7 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     absolute_path = "{base_path}{relative_path}{mixin}{mixin_name}".format(**output)
 
     if exists(absolute_path):
-        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_url(asset_spec)
+        static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
@@ -108,7 +107,7 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
         return static_url_cache[(asset_spec, wrapper_class)]
     else:
-        # return obj.request.static_url(asset_spec)
+        # return obj.request.static_path(asset_spec)
         raise Exception('Static dependency not found. %s' % asset_spec)
 
 

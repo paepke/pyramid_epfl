@@ -12,6 +12,7 @@
 	position:absolute;
 	width:65px;
 	height:65px;
+	z-index:2000;
 	/*background:#eee;*/
 	/*border:1px solid #a0a0a0;*/
 }
@@ -26,3 +27,15 @@
 .clickable {
 	cursor: pointer !important;
 }
+
+/* layover icons for input fields */
+.epfl-input-addon {
+    position: relative; 
+}
+.epfl-input-addon .fa {
+  position: absolute;
+  right:  0px;
+  padding: 10px;
+  pointer-events: none;
+}
+.epfl-input-addon input { padding-right: 30px; }

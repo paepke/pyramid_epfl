@@ -5,7 +5,7 @@
 The components must be imported in the namespace of this library.
 """
 
-from flipflop.flipflop import FlipFlop
+#: Container
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
 from droppable_box.droppable_box import DroppableBox
@@ -13,11 +13,14 @@ from sortable.sortable import Sortable
 from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
+from popover_container.popover_container import PopoverContainer
 
+#: Forms
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
 from number_input.number_input import NumberInput
+from upload.upload import Upload
 from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
 from texteditor.texteditor import TextEditor
@@ -30,10 +33,12 @@ from input_label.input_label import InputLabel
 from upload.upload import Upload
 from download.download import Download
 
+#: Special
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
 from simpletree.simpletree import Simpletree
 
+#: Visual
 from badge.badge import Badge
 from diagram.diagram import Diagram
 from progress.progress import Progress
@@ -42,6 +47,7 @@ from text.text import Text
 from placeholder.placeholder import Placeholder
 from popover.popover import Popover
 
+#: Lists
 from tabs_layout.tabs_layout import TabsLayout
 from nav_layout.nav_layout import NavLayout
 from col_layout.col_layout import ColLayout
@@ -63,6 +69,8 @@ from multiselect.multiselect import MultiSelect, MultiSelectTransfer
 from modal.modal import Modal
 from dropdown.dropdown import Dropdown
 
+from loading.loading import Loading
+
 
 def add_routes(config):
     """
@@ -79,6 +87,7 @@ def add_routes(config):
     ColLayout.add_pyramid_routes(config)
     CardinalLayout.add_pyramid_routes(config)
     Panel.add_pyramid_routes(config)
+    PopoverContainer.add_pyramid_routes(config)
 
     ListLayout.add_pyramid_routes(config)
     PrettyListLayout.add_pyramid_routes(config)
@@ -93,13 +102,13 @@ def add_routes(config):
 
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
-    FlipFlop.add_pyramid_routes(config)
     Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
     Simpletree.add_pyramid_routes(config)
 
     Form.add_pyramid_routes(config)
+    Upload.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
     TextInput.add_pyramid_routes(config)
     TextEditor.add_pyramid_routes(config)
@@ -127,3 +136,5 @@ def add_routes(config):
 
     Modal.add_pyramid_routes(config)
     Dropdown.add_pyramid_routes(config)
+
+    Loading.add_pyramid_routes(config)

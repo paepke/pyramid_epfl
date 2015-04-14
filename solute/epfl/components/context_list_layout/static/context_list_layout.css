@@ -3,7 +3,8 @@
 }
 
 li.epfl-context-list-entry {
-    padding:5px 5px 25px 15px;
+    padding:5px 5px 5px 5px;
+    min-height:35px;
 }
 
 li.epfl-context-list-entry:hover {
@@ -44,7 +45,7 @@ ul.context-dropdown-menu li.entry:hover{
 }
 ul.context-dropdown-menu li.entry{
     padding-top: 3px;
-     padding-left: 15px;
+    padding-left: 15px;
     padding-right: 15px;
 
 }
