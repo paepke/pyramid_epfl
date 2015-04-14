@@ -152,7 +152,7 @@ class PageTest(unittest.TestCase):
         for i in range(0, 10):
             getattr(page, 'child_node_%s' % i) \
                 .add_component(ComponentContainerBase(cid='child_node_%s' % (i + 1)))
-            for x in range(0, 3):
+            for x in range(0, 40):
                 getattr(page,
                         'child_node_%s' % (i + 1)) \
                     .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
@@ -164,7 +164,6 @@ class PageTest(unittest.TestCase):
         assert True not in [c.is_rendered for c in page.get_active_components()]
 
         out = page.render()
-        print out
 
         for i in range(0, 10):
             assert ('epfl.set_component_info(\\"child_node_%s\\", \\"handle\\", [\'set_row\']);' % (i + 1)) in out
@@ -175,6 +174,12 @@ class PageTest(unittest.TestCase):
                                   '')
         assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'set_row\']);' \
                'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'set_row\']);' in out
+
+        # for i in range(0, 10000):
+        #     page.root_node.is_visible()
+
+        for x in range(0, 10000):
+            super(ComponentBase, super(Page, page).__getattribute__('root_node')).__getattribute__('is_visible')()
 
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)

@@ -374,7 +374,10 @@ class Page(object):
                         cid=compo.cid,
                         parts=json.encode({'js': compo.render('js_raw'),
                                            'main': compo.render()})))
-            out = self.response.render_ajax_response()
+
+            out = "epfl.handle_dynamic_extra_content([%s]);\r\n" % json.dumps(
+                self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True))
+            out += self.response.render_ajax_response()
 
         return out
 
@@ -544,7 +547,7 @@ class Page(object):
         js = "alert(%s)" % (json.encode(msg),)
         self.add_js_response(js)
 
-    def get_names(self, name):
+    def get_names(self, name, only_fresh_names=False):
         names = []
         for compo in [self] + self.get_active_components():
             if not getattr(compo, 'is_rendered', True):
@@ -559,13 +562,16 @@ class Page(object):
                 if sub_name not in names:
                     names.append(sub_name)
 
+        if only_fresh_names:
+            names = [name for name in names if name not in self.transaction.get('rendered_extra_content', set())]
+
         return names
 
-    def get_css_imports(self):
+    def get_css_imports(self, only_fresh_imports=False):
         """ This function delivers the <style src=...>-tags for all stylesheets needed by this page and it's components.
         It is available in the template by the jinja-variable {{ css_imports() }}
         """
-        imports = self.get_names('css_name')
+        imports = self.get_names('css_name', only_fresh_names=only_fresh_imports)
 
         self.transaction.setdefault('rendered_extra_content', set()).update(imports)
 
@@ -579,12 +585,12 @@ class Page(object):
         self.add_js_response(self.get_page_init_js())
         return self.response.render_extra_content('footer')
 
-    def get_js_imports(self):
+    def get_js_imports(self, only_fresh_imports=False):
         """ This function delivers the <script src=...>-tags for all js needed by this page and it's components.
         Additionally it delivers all generated js-snippets from the components or page.
         It is available in the template by the jinja-variable {{ js_imports() }}
         """
-        imports = self.get_names('js_name')
+        imports = self.get_names('js_name', only_fresh_names=only_fresh_imports)
 
         self.transaction.setdefault('rendered_extra_content', set()).update(imports)
 

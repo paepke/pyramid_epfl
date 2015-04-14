@@ -495,14 +495,17 @@ class ComponentBase(object):
         if this compo is "really" visible to the user.
         """
 
-        if not self.visible:
+        if not super(ComponentBase, self).__getattribute__('visible'):
             return False
         if not self.has_access():
             return False
         if check_parents:
-            return not self.container_compo or self.container_compo.is_visible()
+            try:
+                return self.container_compo.is_visible()
+            except AttributeError:
+                pass
 
-        return self.has_access()
+        return True
 
     def add_ajax_response(self, resp_string):
         """ Adds to the response some string (ajax or js or whatever the clients expects here).
