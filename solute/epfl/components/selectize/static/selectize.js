@@ -1,14 +1,15 @@
 epfl.Selectize = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
 
+    var searchServerSide = params["search_server_side"];
+    var inputSearchText = params["search_text"];
+    var inputFocus = params["input_focus"];
+
     /**************************************************************************
      Search Server Side
      if the search server side flag is true every input change triggers the backend to reload the entries
      with this a mechanism you get a pagination style component
      *************************************************************************/
-    var searchServerSide = params["search_server_side"];
-    var inputSearchText = params["search_text"];
-
     if(searchServerSide === true && inputSearchText != ""){
         $("#selectize-input-" + cid).val(inputSearchText);
         epfl.Selectize.inputTextChanged(inputSearchText);
@@ -18,8 +19,13 @@ epfl.Selectize = function (cid, params) {
     /**************************************************************************
      Width correction
      this is required because you cant inherit the width when your html tag is position fixed
+     and Focus
      *************************************************************************/
     $('#' + cid + ' > ul').width($('#' + cid).width());
+
+    if(inputFocus){
+        $("#selectize-input-" + cid).focus();
+    }
 
     /**************************************************************************
      Helper
@@ -251,4 +257,14 @@ epfl.Selectize = function (cid, params) {
 
 epfl.Selectize.inherits_from(epfl.ComponentBase);
 
+
+//This function is triggered from init_transaction for loading the tree data 'async' which means you first see the
+//loading indicator on the page and when the data are loaded they got shown via a epfl redraw
+epfl.Selectize.LoadData = function(cid){
+    epfl.enqueue(epfl.make_component_event(cid, 'load_data', {}), cid);
+    setTimeout(function(){
+        epfl.flush();
+        $('#epfl_please_wait').hide();
+    },100);
+};
 

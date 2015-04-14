@@ -290,14 +290,20 @@ epfl.Simpletree = function (cid, params) {
                     hover: true
                 });
             } else if ($(that).hasClass("epfl-simple-tree-leaf-1")) {
-
                 var parent_id = get_parent_leafid($(that));
                 epfl.dispatch_event(cid, "leaf_1_open", {
                     leafid: String($(that).data("leafid")),
                     level_0_id: parent_id,
                     hover: true
                 });
-
+            } else if ($(that).hasClass("epfl-simple-tree-leaf-2")) {
+				parent_leaf_ids = get_leafids($(that));
+                epfl.dispatch_event(cid, "leaf_2_open", {
+                    leafid: String($(that).data("leafid")),
+                    level_1_id: parent_leaf_ids.level_1,
+                    level_0_id: parent_leaf_ids.level_0,
+                    hover: true
+                });
             }
         }, 500);
     }).mouseleave(function () {

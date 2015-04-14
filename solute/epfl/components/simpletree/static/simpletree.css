@@ -120,6 +120,12 @@ div.epfl-simple-tree-leaf-droppable-hover:hover {
     background-color: transparent;
 }
 
+div.epfl-simple-tree-leaf-1.ui-draggable-dragging {
+    width: 350px;
+    background-color: transparent;
+    border: 1px solid #1BB7A0;
+}
+
 div.epfl-simple-tree-leaf-2.ui-draggable-dragging {
     width: 350px;
     background-color: transparent;
@@ -128,6 +134,12 @@ div.epfl-simple-tree-leaf-2.ui-draggable-dragging {
 
 div.epfl-simple-tree-leaf-2.ui-draggable-dragging:hover {
     width: 100%;
+    background-color: transparent;
+    border: 1px solid #1BB7A0;
+}
+
+div.epfl-simple-tree-leaf-3.ui-draggable-dragging {
+    width: 350px;
     background-color: transparent;
     border: 1px solid #1BB7A0;
 }
