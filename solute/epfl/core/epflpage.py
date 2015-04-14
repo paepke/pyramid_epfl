@@ -341,21 +341,6 @@ class Page(object):
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
-    def render_node(self, node):
-        out = {'static': {'js': [],
-                          'css': []},
-               'dynamic': {'js': [node.render('js')],
-                           'html': node.render()}, }
-        # Static
-
-        # js_name
-        # css_name
-
-        if hasattr(node, 'components'):
-            pass
-
-        return out
-
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         out = ''
