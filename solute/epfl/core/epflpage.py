@@ -560,7 +560,7 @@ class Page(object):
                 if type(sub_name) is not tuple:
                     sub_name = compo.asset_spec, sub_name
                 if sub_name not in names:
-                    names.append(sub_name)
+                    names.append(epflutil.create_static_url(self, sub_name[1], sub_name[0]))
 
         if only_fresh_names:
             names = [name for name in names if name not in self.transaction.get('rendered_extra_content', set())]
@@ -576,7 +576,7 @@ class Page(object):
         self.transaction.setdefault('rendered_extra_content', set()).update(imports)
 
         return jinja2.Markup(''.join(['<link rel="stylesheet" type="text/css" href="%s"/>\r\n'
-                                      % epflutil.create_static_url(self, css[1], css[0]) for css in imports]))
+                                      % css for css in imports]))
 
     def get_js(self):
         return self.get_js_imports() + self.get_js_parts()
@@ -595,7 +595,7 @@ class Page(object):
         self.transaction.setdefault('rendered_extra_content', set()).update(imports)
 
         return jinja2.Markup(''.join(['<script type="text/javascript" src="%s"></script>\r\n'
-                                      % epflutil.create_static_url(self, js[1], js[0]) for js in imports]))
+                                      % js for js in imports]))
 
     def reload(self):
         """ Reloads the complete page.

@@ -501,7 +501,7 @@ class ComponentBase(object):
             return False
         if check_parents:
             try:
-                return self.container_compo.is_visible()
+                return super(ComponentBase, self).__getattribute__('container_compo').is_visible()
             except AttributeError:
                 pass
 

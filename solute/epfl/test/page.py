@@ -178,8 +178,17 @@ class PageTest(unittest.TestCase):
         # for i in range(0, 10000):
         #     page.root_node.is_visible()
 
-        for x in range(0, 10000):
-            super(ComponentBase, super(Page, page).__getattribute__('root_node')).__getattribute__('is_visible')()
+        root_node = page.root_node
+
+        for x in range(0, 100000):
+            assert True
+
+        for x in range(0, 100000):
+            assert super(ComponentBase, root_node).__getattribute__('is_visible')()
+
+        for x in range(0, 100000):
+            assert root_node.is_visible()
+
 
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)
