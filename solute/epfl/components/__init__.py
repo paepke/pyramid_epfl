@@ -28,6 +28,7 @@ from buttonradio.buttonradio import ButtonRadio
 from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 from upload.upload import Upload
+from download.download import Download
 
 from sidebar.sidebar import Sidebar
 from headbar.headbar import Headbar
@@ -112,6 +113,7 @@ def add_routes(config):
     Selectize.add_pyramid_routes(config)
     InputLabel.add_pyramid_routes(config)
     Upload.add_pyramid_routes(config)
+    Download.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
