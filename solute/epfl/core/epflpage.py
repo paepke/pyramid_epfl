@@ -4,6 +4,7 @@ import epflcomponentbase, epfltransaction
 
 from collections2 import OrderedDict as odict
 from collections import MutableMapping
+import jinja2
 
 from pyramid.response import Response
 from pyramid import security
@@ -11,12 +12,6 @@ from pyramid import security
 import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
-
-try:
-    profile
-except NameError:
-    def profile(func):
-        return func
 
 
 class LazyProperty(object):
@@ -98,18 +93,18 @@ class Page(object):
 
         if transaction:
             self.transaction = transaction
-        else:
+
+        if not hasattr(self, 'transaction'):
             self.transaction = self.__get_transaction_from_request()
 
-        self.setup_model()
-
-    @profile
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
         :meth:`call_default`, :meth:`call_cleanup`.
         [request-processing-flow]
         """
+
+        self.setup_model()
 
         # Check if we lost our transaction to a timeout.
         transaction_loss = self.prevent_transaction_loss()
@@ -118,27 +113,20 @@ class Page(object):
 
         self.handle_transaction()
 
-        check_tid = False
-        out = ''
         content_type = "text/html"
 
         if self.request.is_xhr:
             self.handle_ajax_events()
+            content_type = "text/javascript"
         else:
             self.handle_default_events()
 
         for compo in self.get_active_components():
             compo.after_event_handling()
 
-        # TODO: Insert rendering here.
+        out = self.render()
 
-        #     out = self.handle_ajax_request()
-        #     check_tid = True
-        #     content_type = "text/javascript"
-        # else:
-        #     out = self.handle_default_request()
-
-        # out += self.call_cleanup(check_tid)
+        out += self.call_cleanup(self.request.is_xhr)
 
         response = Response(body=out.encode("utf-8"),
                             status=200,
@@ -194,19 +182,7 @@ class Page(object):
         """
         self.done_request()
         self.transaction.store()
-        
-        
-        # TODO: the following request.session access makes use
-        # of pyramid_beaker session API. Since epfl may also be run upon a different
-        # sessions framework (e.g. pyramid_redis_sessions, these methods may not be
-        # available and don't have to be called. We currently circumvent this by
-        # catching any arising AttributeErrors, but the right way should be to
-        # encapsulate session API access properly.
-        try:
-            self.request.session.save()  # performance issue! should only be called, when session is modified!
-            self.request.session.persist()  # performance issue! should only be called, when session is modified!
-        except AttributeError:
-            pass
+
         out = ''
         if check_tid and self.transaction.tid_new:
             out = 'epfl.new_tid("%s");' % self.transaction.tid_new
@@ -359,32 +335,46 @@ class Page(object):
         env = {"epfl_base_html": self.base_html,
                "epfl_base_title": self.title,
                "css_imports": self.get_css_imports,
-               "js_imports": self.get_js_imports,
+               "js_imports": self.get_js,
                "root_node": self.root_node}
 
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
-    @profile
+    def render_node(self, node):
+        out = {'static': {'js': [],
+                          'css': []},
+               'dynamic': {'js': [node.render('js')],
+                           'html': node.render()}, }
+        # Static
+
+        # js_name
+        # css_name
+
+        if hasattr(node, 'components'):
+            pass
+
+        return out
+
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
-        self.add_js_response(self.get_page_init_js())
+        out = ''
 
-        epflutil.add_extra_contents(self.response, obj=self)
+        if not self.request.is_xhr:
+            self.root_node.render()
+            self.add_js_response(self.root_node.render('js_raw'))
 
-        # pre-render all components
-        for cid in self.transaction.get_existing_components():
-            getattr(self, cid).pre_render()
-
-        # exclusive extra-content
-        exclusive_extra_content = self.response.get_exclusive_extra_content()
-
-        # main-content
-        if exclusive_extra_content:
-            out = exclusive_extra_content
-        else:
             render_env = self.get_render_environment()
             out = self.response.render_jinja(self.template, **render_env)
+        else:
+            # Get render entry points.
+            for compo in self.get_active_components(sorted_by_depth=True)[:]:
+                if compo.redraw_requested and not compo.is_rendered:
+                    self.add_js_response("epfl.replace_component('{cid}', {parts})".format(
+                        cid=compo.cid,
+                        parts=json.encode({'js': compo.render('js_raw'),
+                                           'main': compo.render()})))
+            out = self.response.render_ajax_response()
 
         return out
 
@@ -506,7 +496,7 @@ class Page(object):
         for compo in self.get_active_components():
             compo.redraw()
 
-    def handle_default_request(self):
+    def handle_default_events(self):
         """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
         This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
         False should be called.
@@ -554,26 +544,52 @@ class Page(object):
         js = "alert(%s)" % (json.encode(msg),)
         self.add_js_response(js)
 
+    def get_names(self, name):
+        names = []
+        for compo in [self] + self.get_active_components():
+            if not getattr(compo, 'is_rendered', True):
+                continue
+
+            name_list = getattr(compo, name)
+            if type(name_list) is not list:
+                name_list = [name_list]
+            for sub_name in name_list:
+                if type(sub_name) is not tuple:
+                    sub_name = compo.asset_spec, sub_name
+                if sub_name not in names:
+                    names.append(sub_name)
+
+        return names
+
     def get_css_imports(self):
         """ This function delivers the <style src=...>-tags for all stylesheets needed by this page and it's components.
         It is available in the template by the jinja-variable {{ css_imports() }}
         """
-        return self.response.render_extra_content(target="head")
+        imports = self.get_names('css_name')
+
+        self.transaction.setdefault('rendered_extra_content', set()).update(imports)
+
+        return jinja2.Markup(''.join(['<link rel="stylesheet" type="text/css" href="%s"/>\r\n'
+                                      % epflutil.create_static_url(self, css[1], css[0]) for css in imports]))
+
+    def get_js(self):
+        return self.get_js_imports() + self.get_js_parts()
+
+    def get_js_parts(self):
+        self.add_js_response(self.get_page_init_js())
+        return self.response.render_extra_content('footer')
 
     def get_js_imports(self):
         """ This function delivers the <script src=...>-tags for all js needed by this page and it's components.
         Additionally it delivers all generated js-snippets from the components or page.
         It is available in the template by the jinja-variable {{ js_imports() }}
         """
+        imports = self.get_names('js_name')
 
-        # rendering all JS-parts of the components
-        for compo_obj in self.get_active_components():
-            if compo_obj.is_rendered:
-                init_js = compo_obj.get_js_part()
-                init_js = epflclient.JSBlockContent(init_js)
-                self.response.add_extra_content(init_js)
+        self.transaction.setdefault('rendered_extra_content', set()).update(imports)
 
-        return self.response.render_extra_content(target="footer")
+        return jinja2.Markup(''.join(['<script type="text/javascript" src="%s"></script>\r\n'
+                                      % epflutil.create_static_url(self, js[1], js[0]) for js in imports]))
 
     def reload(self):
         """ Reloads the complete page.

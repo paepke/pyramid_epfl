@@ -287,7 +287,7 @@ class ComponentBase(object):
     is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
-    _redraw_requested = None  #: Set of parts requesting to be redrawn.
+    redraw_requested = False  #: Set of parts requesting to be redrawn.
 
     _compo_info = None
     _access = None
@@ -386,12 +386,6 @@ class ComponentBase(object):
                 pass
             self.___unbound_component__ = self.__class__(cid=self.cid, slot=slot)
         return self.___unbound_component__
-
-    @property
-    def redraw_requested(self):
-        if self._redraw_requested is None:
-            self._redraw_requested = set()
-        return self._redraw_requested
 
     @property
     def struct_dict(self):
@@ -709,39 +703,56 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    render_cache = None
+
     def render(self, target='main'):
         """ Called to render the complete component.
         Used by a full-page render request.
         It returns HTML.
         """
 
+        if self.render_cache is not None:
+            return self.render_cache[target]
+
+        self.render_cache = {'main': '', 'js': '', 'js_raw': ''}
+
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
-            return jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
+            self.render_cache['main'] = jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
+            return self.render_cache[target]
+
+        js_raw = []
+
+        if hasattr(self, 'components'):
+            for compo in self.components:
+                compo.render()
+                js_raw.append(compo.render_cache['js_raw'])
 
         self.is_rendered = True
 
         # Prepare the environment and output of the render process.
         env = self.request.get_epfl_jinja2_environment()
 
-        out = ''
-        if target == 'js':
-            js_out = ''.join(self.render_templates(env, self.js_parts))
-            if len(js_out) > 0:
-                out += '<script type="text/javascript">%s</script>' % js_out
-        elif target == 'js_raw':
-            out += ''.join(self.render_templates(env, self.js_parts))
-        elif target == 'main':
-            out += ''.join(self.render_templates(env, self.template_name))
-            handles = self.get_handles()
+        context = self.get_render_environment(env)
+
+        for js_part in self.js_parts:
+            # Render context can be supplied as a dict.
+            js_raw.append(env.get_template(js_part).render(context))
+
+        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context))
+
+        handles = self.get_handles()
+        if handles:
             set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
             set_component_info %= {'cid': self.cid,
                                    'handles': handles}
-            if handles:
-                # Add with execution_order set to 1 so it will be done after the defaults.
-                self.add_js_response((1, set_component_info))
+            js_raw.append(set_component_info)
 
-        return jinja2.Markup(out)
+        self.render_cache['js_raw'] = ''.join(js_raw)
+        self.render_cache['js'] = jinja2.Markup('<script type="text/javascript">%s</script>'
+                                                % self.render_cache['js_raw'])
+
+        return self.render_cache[target]
 
     @classmethod
     def discover(cls):
@@ -753,6 +764,9 @@ class ComponentBase(object):
 
         if hasattr(cls, 'cid'):
             raise Exception("You illegally set a cid as a class attribute in " + repr(cls))
+
+        # from pyramid.paster import bootstrap
+        #
 
         cls.prepare_extra_content()
 
@@ -770,7 +784,7 @@ class ComponentBase(object):
                 cls._handles.append(name[7:])
 
     def get_handles(self):
-        self.set_handles()
+        self.set_handles(False)
         return self._handles
 
     def get_js_part(self, raw=False):
@@ -797,15 +811,11 @@ class ComponentBase(object):
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
         this one will not reqeust it's redrawing.
         """
-        # if self.container_compo and "main" in self.container_compo.redraw_requested:  # TODO: compo-parts!
-        #     return  # a parent of me already needs redrawing!
 
-        if type(parts) is list:
-            self.redraw_requested.update(set(parts))
-        elif parts is None:
-            self.redraw_requested.add("main")
-        else:
-            self.redraw_requested.add(parts)
+        if parts is not None:
+            raise Exception('Deprecated: Partial redraws are no longer possible.')
+
+        self.redraw_requested = True
 
     def get_redraw_parts(self):
         """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
@@ -818,7 +828,7 @@ class ComponentBase(object):
         self.pre_render()
         parts = {}
 
-        if "main" in self.redraw_requested:
+        if self.redraw_requested is True:
             parts["main"] = self.render()
 
         if self.redraw_requested or self.is_rendered:
