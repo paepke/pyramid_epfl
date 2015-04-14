@@ -13,6 +13,7 @@ from sortable.sortable import Sortable
 from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
+from popover_container.popover_container import PopoverContainer
 
 #: Forms
 from form.form import Form
@@ -84,6 +85,7 @@ def add_routes(config):
     ColLayout.add_pyramid_routes(config)
     CardinalLayout.add_pyramid_routes(config)
     Panel.add_pyramid_routes(config)
+    PopoverContainer.add_pyramid_routes(config)
 
     ListLayout.add_pyramid_routes(config)
     PrettyListLayout.add_pyramid_routes(config)

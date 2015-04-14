@@ -82,6 +82,34 @@ div.epfl-simple-tree-leaf-2 i {
     padding-right: 5px;
 }
 
+div.epfl-simple-tree-leaf-3 {
+    margin-left: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid #eeeeee;
+    margin-top: 3px;
+}
+
+div.epfl-simple-tree-leaf-3:hover {
+    background-color: #DDDDDD;
+}
+
+div.epfl-simple-tree-leaf-3:hover button {
+    display: block;
+}
+
+div.epfl-simple-tree-leaf-3 button {
+    display: none;
+}
+
+div.epfl-simple-tree-leaf-3 span {
+    padding-left: 5px;
+}
+
+div.epfl-simple-tree-leaf-3 i {
+    padding-right: 5px;
+}
+
 div.epfl-simple-tree-leaf-droppable-hover {
     border: 3px dotted #d1f0ec;
     background-color: transparent;
