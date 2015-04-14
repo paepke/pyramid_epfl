@@ -1,0 +1,39 @@
+{% set compo_col = compo.compo_col %}
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+    {% if compo.label %}
+        {% if compo.layout_vertical == True %}
+            <div class="row">
+                <div class="col-sm-{{ compo_col }}">
+                    <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+                </div>
+            </div>
+        {% else %}
+            {% set compo_col = compo_col - compo.label_col %}
+            <label for="{{ compo.cid }}_input" class="control-label col-sm-{{ compo.label_col }}"
+                {% if compo.label_style is defined %}
+                    style="{{ compo.label_style }}"
+                {% endif %}
+                >{{ compo.label }}</label>
+        {% endif %}
+    {% endif %}
+    {% if compo.layout_vertical == True %}<div class="row">{% endif %}
+    <div class="col-sm-{{ compo_col }}">
+    	{% if compo.readonly is defined and compo.readonly %}
+    		<p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
+    	{% else %}
+            <div id="{{ compo.cid }}_img">
+            {% if compo.value and not compo.no_preview%}
+                <img src="{{ compo.value }}" width="200" />
+            {% endif %}
+            </div>
+        	<input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"
+               value="{{ compo.value if compo.value is not none else '' }}"
+               placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+        {% endif %}
+        {% if compo.validation_error %}
+            <small class="help-block has-error">{{ compo.validation_error }}</small>
+        {% endif %}
+    </div>
+    {% if compo.layout_vertical == True %}</div>{% endif %}
+</div>
+
