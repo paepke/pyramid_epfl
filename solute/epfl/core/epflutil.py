@@ -79,7 +79,7 @@ def create_static_url(obj, mixin_name, spec=None, wrapper_class=None):
     except KeyError:
         pass
 
-    if spec[0:11] != 'solute.epfl':
+    if spec[0:12] != 'solute.epfl:':
         static_url_cache[(asset_spec, wrapper_class)] = obj.request.static_path(asset_spec)
         if wrapper_class:
             static_url_cache[(asset_spec, wrapper_class)] = wrapper_class(static_url_cache[(asset_spec, wrapper_class)])
