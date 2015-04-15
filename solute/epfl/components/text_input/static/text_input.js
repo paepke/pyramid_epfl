@@ -8,7 +8,13 @@ epfl.TextInput = function (cid, params) {
         epfl.FormInputBase.on_change(compo, $(selector).val(), cid, enqueue_event);
     };
 
-    $(selector).blur(change).change(change);
+    var elm = $(selector);
+
+    if (elm.val() != elm.attr('data-initial-value')) {
+        change();
+    }
+
+    elm.blur(change).change(change);
 };
 
 epfl.TextInput.inherits_from(epfl.ComponentBase);
