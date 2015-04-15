@@ -360,8 +360,9 @@ class Page(object):
                         parts=json.encode({'js': compo.render('js_raw'),
                                            'main': compo.render()})))
 
-            out = "epfl.handle_dynamic_extra_content([%s]);\r\n" % json.dumps(
-                self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True))
+            extra_content = self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True)
+            if len(extra_content) > 0:
+                out = "epfl.handle_dynamic_extra_content([%s]);\r\n" % json.dumps(extra_content)
             out += self.response.render_ajax_response()
 
         return out
