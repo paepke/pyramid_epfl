@@ -16,6 +16,7 @@ from dragable.dragable import Dragable
 from popover_container.popover_container import PopoverContainer
 
 #: Forms
+from recursive_tree.recursive_tree import RecursiveTree
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
@@ -87,6 +88,7 @@ def add_routes(config):
     Panel.add_pyramid_routes(config)
     PopoverContainer.add_pyramid_routes(config)
 
+    RecursiveTree.add_pyramid_routes(config)
     ListLayout.add_pyramid_routes(config)
     PrettyListLayout.add_pyramid_routes(config)
     ToggleListLayout.add_pyramid_routes(config)
