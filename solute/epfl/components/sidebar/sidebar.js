@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "Sidebar", {});
+epfl.init_component("{{ compo.cid }}", "Sidebar", {});

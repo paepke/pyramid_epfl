@@ -1,0 +1,6 @@
+<div epflid="{{ compo.cid }}" id="{{ compo.cid }}" class="epfl-loading">
+    <p class="text-center text-{% if compo.loading_icon_color == None %}primary{% else %}{{ compo.loading_icon_color }}{% endif %}">
+        <i class="{% if compo.loading_icon == None %}fa fa-spinner fa-spin fa-5x{% else %}{{ compo.loading_icon }}{% endif %}"></i>
+    </p>
+    <p class="text-center">{% if compo.loading_text == None %}Wird geladen{% else %}{{ compo.loading_text }}{% endif %}</p>
+</div>

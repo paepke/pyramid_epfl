@@ -23,14 +23,32 @@ class Selectize(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:selectize/static", "selectize.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:selectize/static", "selectize.css")]
 
-
     compo_config = []
-    compo_state = FormInputBase.compo_state + ["entries","drop_down_height","selected_text"]
+    compo_state = FormInputBase.compo_state + ["entries", "drop_down_height", "selected_text", "search_server_side",
+                                               "search_text","load_asnyc","is_loading"]
 
     entries = None
     layout_vertical = False
     drop_down_height = None
     selected_text = None
+
+    search_server_side = False
+    search_text = ""
+
+    load_async = False
+    is_loading = False
+
+    def handle_update_search(self, search_text):
+        self.search_text = search_text
+        self.entries = self.reload_entries(search_text)
+        self.redraw()
+
+    def reload_entries(self, search):
+        """
+        Overwrite me if you use serach_server_side true
+        Return values in the entries format
+        """
+        return []
 
     def handle_set_selection(self, selection_id, selection_text):
         self.value = selection_id
@@ -44,3 +62,19 @@ class Selectize(FormInputBase):
 
         self.validation_error = ''
         return True
+
+    def init_transaction(self):
+        if self.load_async:
+            self.is_loading = True
+            self.add_js_response("epfl.Selectize.LoadData('%s')" % self.cid);
+            self.load_async = False
+
+    def handle_load_data(self):
+        self.entries = self.load_data_async()
+        self.is_loading = False
+        self.redraw()
+
+    def load_data_async(self):
+        #; overwrite me
+        return []
+

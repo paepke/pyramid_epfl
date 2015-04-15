@@ -1,4 +1,4 @@
-epfl.DiagramComponent = function(cid, params) {
+epfl.Diagram = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     $('#'+cid).highcharts(
         params
@@ -19,4 +19,4 @@ epfl.DiagramComponent = function(cid, params) {
     });   
 };
 
-epfl.DiagramComponent.inherits_from(epfl.ComponentBase);
+epfl.Diagram.inherits_from(epfl.ComponentBase);

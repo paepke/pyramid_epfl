@@ -49,7 +49,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
         self.delete_component()
 
     def handle_hide(self):
-        self.visible = False
+        self.set_hidden()
 
     def after_event_handling(self):
         super(Box, self).after_event_handling()
@@ -62,7 +62,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
             some_visible = False
             for el in self.components:
-                if el.is_visible():
+                if el.is_visible(check_parents=False):
                     some_visible = True  # at least one subelement is visible -> I am visible!
                     break
 
@@ -90,7 +90,7 @@ class ModalBox(Box):
         """
         Open and display the modal box.
         """
-        self.visible = True
+        self.set_visible()
         self.redraw()
         self.add_ajax_response("$('body').css({ overflow: 'hidden' });")
 

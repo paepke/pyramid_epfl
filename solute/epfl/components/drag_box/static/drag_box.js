@@ -1,5 +1,5 @@
-epfl.DragBoxComponent = function(cid, params) {
+epfl.DragBox = function(cid, params) {
     epfl.BoxComponent.call(this, cid, params);
 };
 
-epfl.DragBoxComponent.inherits_from(epfl.BoxComponent);
+epfl.DragBox.inherits_from(epfl.Box);

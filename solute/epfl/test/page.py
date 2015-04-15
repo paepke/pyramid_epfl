@@ -33,7 +33,8 @@ class PageTest(unittest.TestCase):
         page = Page(self.request)
         t = page.transaction
 
-        page.root_node = ComponentContainerBase(page, 'root_node', __instantiate__=True)
+        page.root_node = ComponentContainerBase
+        page.handle_transaction()
         assert t.has_component('root_node')
 
         page.root_node.add_component(ComponentBase(cid='child_node',
@@ -66,7 +67,7 @@ class PageTest(unittest.TestCase):
                                        'cid': 'child_node',
                                        'compo_state': {'test': 'foobar'}})
 
-        page.create_components()
+        page.handle_transaction()
 
         assert page.root_node is not None and page.child_node is not None
         assert page.child_node.test == 'foobar'
@@ -76,7 +77,7 @@ class PageTest(unittest.TestCase):
         assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
 
         new_page = Page(self.request, transaction=t)
-        new_page.create_components()
+        new_page.handle_transaction()
 
         assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
         assert new_page.child_node.test == {'some': 'dict'}
@@ -125,7 +126,7 @@ class PageTest(unittest.TestCase):
                                                      ('child_node_%s_%s' % (i + 1, x), None))})
         steps.append(time.time())
 
-        page.create_components()
+        page.handle_transaction()
         steps.append(time.time())
 
         assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000
@@ -145,37 +146,34 @@ class PageTest(unittest.TestCase):
                                              {},
                                              ('root_node', None))})
 
-        page.create_components()
+        page.handle_transaction()
 
         page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
         for i in range(0, 10):
             getattr(page, 'child_node_%s' % i) \
                 .add_component(ComponentContainerBase(cid='child_node_%s' % (i + 1)))
-            for x in range(0, 3):
+            for x in range(0, 40):
                 getattr(page,
                         'child_node_%s' % (i + 1)) \
                     .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
 
         page.root_node.redraw()
 
-        assert page.handle_ajax_request()
-        assert False not in [c.is_rendered for c in page.get_active_components()]
+        page.handle_ajax_events()
 
-        out = page.call_ajax()
+        assert True not in [c.is_rendered for c in page.get_active_components()]
+
+        out = page.render()
+
         for i in range(0, 10):
-            assert ('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1)) in out
-            assert ('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1)) in out
-            out = out.replace('epfl.replace_component(\'child_node_%s\', {"js":""});' % (i + 1), '')
+            assert ('epfl.set_component_info(\\"child_node_%s\\", \\"handle\\", [\'set_row\']);' % (i + 1)) in out
             out = out.replace('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1), '')
             for x in range(0, 3):
-                assert ('epfl.replace_component(\'child_node_%s_%s\', {"js":"' % (i + 1, x)) in out
-                assert ('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x)) in out
-                out = out.replace('epfl.replace_component(\'child_node_%s_%s\', {"js":""});' % (i + 1, x), '')
+                assert ('epfl.set_component_info(\\"child_node_%s_%s\\", \\"handle\\", [\'set_row\']);' % (i + 1, x)) in out
                 out = out.replace('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x),
                                   '')
-        assert 'epfl.replace_component(\'child_node_0\', {"js":""});' \
-               'epfl.set_component_info("child_node_0", "handle", [\'set_row\']);' \
-               'epfl.set_component_info("root_node", "handle", [\'set_row\']);' in out
+        assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'set_row\']);' \
+               'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'set_row\']);' in out
 
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)
@@ -189,7 +187,7 @@ class PageTest(unittest.TestCase):
                                              {},
                                              ('root_node', None))})
 
-        page.create_components()
+        page.handle_transaction()
 
         def create_child_components():
             page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
@@ -233,7 +231,7 @@ class PageTest(unittest.TestCase):
                                              {},
                                              ('root_node', None))})
 
-        page.create_components()
+        page.handle_transaction()
 
         page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
 
@@ -299,13 +297,15 @@ class PageTest(unittest.TestCase):
                                                      {},
                                                      ('child_node_%s_%s' % (i + 1, x), None))})
 
-        page.create_components()
+        page.handle_transaction()
 
         page.root_node.redraw()
         page.child_node_3_1.redraw()
 
-        assert page.handle_ajax_request()
-        out = page.call_ajax()
+        page.handle_ajax_events()
+
+        out = page.render()
+
         for i in range(0, compo_depth):
             assert out.count(
                 "epfl.replace_component('child_node_%s'" % (i + 1)
@@ -348,10 +348,7 @@ class PageTest(unittest.TestCase):
 
         page = Page(self.request)
 
-        page.create_components()
-
-        assert not page.handle_ajax_request()
-        page.handle_submit_request()
+        page.handle_transaction()
 
         for compo in page.root_node.components:
             assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]

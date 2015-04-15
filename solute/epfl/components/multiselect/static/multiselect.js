@@ -1,9 +1,10 @@
-epfl.MultiSelectComponent = function (cid, params) {
+epfl.MultiSelect = function (cid, params) {
     if (params.scroll_position > 0) {
         $('#' + cid + ' > .list-group').scrollTop(params.scroll_position);
     }
 
     epfl.ComponentBase.call(this, cid, params);
+
     $('#' + cid + ' li.multiselect-selectable').click(function (event) {
         event.stopImmediatePropagation();
         event.preventDefault();
@@ -24,6 +25,7 @@ epfl.MultiSelectComponent = function (cid, params) {
         var child_cid = $(this).children().first().attr("epflid");
         epfl.dispatch_event(cid, "double_click", {child_cid: child_cid});
     });
+
     // Remember scroll position
     $('#' + cid + ' ul.list-group').scroll(function () {
         clearTimeout($.data(this, 'multiselect_scrolltimer'));
@@ -32,10 +34,10 @@ epfl.MultiSelectComponent = function (cid, params) {
         }, 250));
     });
     // Search
-    $('#' + cid + ' > .multiselect-search-input').keydown(function (event) {
+    $('#' + cid + ' > .epfl-input-addon > .multiselect-search-input').keydown(function (event) {
         if (event.keyCode == 13) {
             epfl.dispatch_event(cid, "search", {search_string: $(this).val()});
         }
-    })
+    });
 };
-epfl.MultiSelectComponent.inherits_from(epfl.ComponentBase);
+epfl.MultiSelect.inherits_from(epfl.ComponentBase);

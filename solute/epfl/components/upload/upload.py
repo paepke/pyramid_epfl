@@ -22,7 +22,6 @@ class Upload(FormInputBase):
     template_name = "upload/upload.html"
 
     def get_as_binary(self):
-        value = self.value
+        value = str(self.value)
         info, coded_string = str.split(value, ',')
-        print coded_string
         return base64.b64decode(coded_string)

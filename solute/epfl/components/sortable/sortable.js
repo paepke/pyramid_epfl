@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "SortableComponent", {});
+epfl.init_component("{{ compo.cid }}", "Sortable", {});

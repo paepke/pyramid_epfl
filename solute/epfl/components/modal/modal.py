@@ -18,8 +18,7 @@ class Modal(epflcomponentbase.ComponentContainerBase):
 
     asset_spec = "solute.epfl.components:modal/static"
 
-    js_name = []
-    css_name = ["bootstrap.min.css"]
+    js_name = ["modal.js"]
 
     compo_state = ["title","save_button"]
 

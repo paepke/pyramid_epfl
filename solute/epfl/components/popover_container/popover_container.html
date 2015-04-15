@@ -1,0 +1,13 @@
+<div id="{{compo.cid}}" epflid="{{ compo.cid }}">
+    <a class="btn-icon btn-icon-sm bg-info epfl-popover"
+            id="{{ compo.cid }}_popover_container"
+            {% if compo.title %}title="{{ compo.title }}"{% endif %}
+            data-container="body"
+            data-toggle="popover"
+            data-placement="{{ compo.position }}"
+            data-content='{% for compo_obj in compo.components %}{{ compo_obj.render() }}{% endfor %}'>
+  	{% if compo.icon is not none %}
+  	<i class="fa {{ compo.icon }}"></i>
+  	{% endif %}{{ compo.label if compo.label is not none else '' }}
+	</a>
+</div>

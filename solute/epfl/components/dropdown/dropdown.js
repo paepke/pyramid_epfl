@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "DropdownComponent", {});
+epfl.init_component("{{ compo.cid }}", "Dropdown", {});

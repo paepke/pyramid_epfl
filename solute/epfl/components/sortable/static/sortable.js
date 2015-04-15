@@ -1,4 +1,4 @@
-epfl.SortableComponent = function(cid, params) {
+epfl.Sortable = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var compo = this;
     var element = $("#" + cid);
@@ -16,9 +16,9 @@ epfl.SortableComponent = function(cid, params) {
     });
 	epfl.dispatch_event(cid, "loadingFinished", {});
 }; 
-epfl.SortableComponent.inherits_from(epfl.ComponentBase);
+epfl.Sortable.inherits_from(epfl.ComponentBase);
 
-epfl.SortableComponent.prototype.makeSortOrder = function(sort_order){
+epfl.Sortable.prototype.makeSortOrder = function(sort_order){
     var parent = $("li#"+sort_order[0]).parent();
     var elements = [];
     for(var i in sort_order){

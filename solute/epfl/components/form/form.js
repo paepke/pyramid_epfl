@@ -1,1 +1,1 @@
-epfl.init_component("{{compo.cid}}", "FormComponent", {});
+epfl.init_component("{{ compo.cid }}", "Form", {});
