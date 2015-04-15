@@ -545,8 +545,9 @@ class Page(object):
             for sub_name in name_list:
                 if type(sub_name) is not tuple:
                     sub_name = compo.asset_spec, sub_name
-                if sub_name not in names:
-                    names.append(epflutil.create_static_url(self, sub_name[1], sub_name[0]))
+                static_url = epflutil.create_static_url(self, sub_name[1], sub_name[0])
+                if static_url not in names:
+                    names.append(static_url)
 
         if only_fresh_names:
             names = [name for name in names if name not in self.transaction.get('rendered_extra_content', set())]
