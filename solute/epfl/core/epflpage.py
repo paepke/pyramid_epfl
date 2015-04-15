@@ -238,7 +238,6 @@ class Page(object):
 
         return super(Page, self).__getattribute__(item)
 
-
     def __getitem__(self, key):
         return getattr(self, key)
 
