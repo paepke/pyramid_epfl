@@ -44,6 +44,7 @@ class Selectize(FormInputBase):
         self.search_text = search_text
         self.cursor_position = cursor_position
         self.entries = self.reload_entries(search_text)
+        self.selected_text = None
         self.redraw()
 
     def reload_entries(self, search):
