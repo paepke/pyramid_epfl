@@ -54,8 +54,10 @@ class Selectize(FormInputBase):
         return []
 
     def handle_set_selection(self, selection_id, selection_value, selection_group_id, selection_group_value):
+
         self.value = selection_id
         self.selected_text = selection_value
+        print "handle_set_selection",selection_id, selection_value, selection_group_id, selection_group_value, self.selected_text
 
     def validate(self):
         if self.mandatory and ((self.value is None) or (self.value == "")):
