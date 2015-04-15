@@ -10,9 +10,9 @@ class Selectize(FormInputBase):
 
     .. code:: python
 
-        entries = [{"name": "Group4", "entries": [{"id" : "entry1_id", "value": "entry1" }, {"id" : "entry2_id", "value": "entry2" }, ...]},
-               {"name": "Group5", "entries": [{"id" : "entry3_id", "value": "entry3" }, ...]},
-               {"name": "Group6", "entries": [{"id" : "entry4_id", "value": "entry4" }, ...]}]
+        entries = [{"value": "Group4",id:0 "entries": [{"id" : "entry1_id", "value": "entry1" }, {"id" : "entry2_id", "value": "entry2" }, ...]},
+               {"value": "Group5",id:1 , "entries": [{"id" : "entry3_id", "value": "entry3" }, ...]},
+               {"value": "Group6",id:2 , "entries": [{"id" : "entry4_id", "value": "entry4" }, ...]}]
 
     """
 
@@ -25,7 +25,7 @@ class Selectize(FormInputBase):
 
     compo_config = []
     compo_state = FormInputBase.compo_state + ["entries", "drop_down_height", "selected_text", "search_server_side",
-                                               "search_text","load_asnyc","is_loading"]
+                                               "search_text","load_asnyc","is_loading","cursor_position"]
 
     entries = None
     layout_vertical = False
@@ -38,8 +38,11 @@ class Selectize(FormInputBase):
     load_async = False
     is_loading = False
 
-    def handle_update_search(self, search_text):
+    cursor_position = 0
+
+    def handle_update_search(self, search_text,cursor_position):
         self.search_text = search_text
+        self.cursor_position = cursor_position
         self.entries = self.reload_entries(search_text)
         self.redraw()
 
@@ -50,9 +53,9 @@ class Selectize(FormInputBase):
         """
         return []
 
-    def handle_set_selection(self, selection_id, selection_text):
+    def handle_set_selection(self, selection_id, selection_value, selection_group_id, selection_group_value):
         self.value = selection_id
-        self.selected_text = selection_text
+        self.selected_text = selection_value
 
     def validate(self):
         if self.mandatory and ((self.value is None) or (self.value == "")):

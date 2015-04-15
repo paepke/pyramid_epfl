@@ -34,8 +34,8 @@
         <ul class="epfl-selectize" id="selectize-{{ compo.cid }}" {% if compo.drop_down_height is defined and compo.drop_down_height != None %}style="max-height:{{ compo.drop_down_height }}px;overflow-y: scroll"{% endif %}>
         {% if compo.entries != None %}
             {% for entry in compo.entries %}
-                <li class="epfl-selectize epfl-selectize-head"><span
-                        class="epfl-selectize epfl-selectize-heading">{{ entry['name'] }}</span>
+                <li class="epfl-selectize epfl-selectize-head"><span data-selectize-groupid="{{ entry['id'] }}"
+                        class="epfl-selectize epfl-selectize-heading">{{ entry['value'] }}</span>
                     <ul class="epfl-selectize-innerlist">
                         {% for subentry in  entry['entries'] %}
 

@@ -4,13 +4,14 @@ epfl.Selectize = function (cid, params) {
     var searchServerSide = params["search_server_side"];
     var inputSearchText = params["search_text"];
     var inputFocus = params["input_focus"];
+    var cursorPosition = params["cursor_position"];
 
     /**************************************************************************
      Search Server Side
      if the search server side flag is true every input change triggers the backend to reload the entries
      with this a mechanism you get a pagination style component
      *************************************************************************/
-    if(searchServerSide === true && inputSearchText != ""){
+    if (searchServerSide === true && inputSearchText != "") {
         $("#selectize-input-" + cid).val(inputSearchText);
         epfl.Selectize.inputTextChanged(inputSearchText);
     }
@@ -23,10 +24,10 @@ epfl.Selectize = function (cid, params) {
      *************************************************************************/
     $('#' + cid + ' > ul').width($('#' + cid).width());
 
-    if(inputFocus){
+    if (inputFocus) {
         $("#selectize-input-" + cid).focus();
         var searchTextLength = $("#selectize-input-" + cid).val().length;
-        $("#selectize-input-" + cid)[0].setSelectionRange(searchTextLength, searchTextLength);
+        $("#selectize-input-" + cid)[0].setSelectionRange(parseInt(cursorPosition), parseInt(cursorPosition));
     }
 
     /**************************************************************************
@@ -98,7 +99,9 @@ epfl.Selectize = function (cid, params) {
             epfl.Selectize.hide(cid);
             epfl.dispatch_event(cid, "set_selection", {
                 selection_id: current.data('selectizeid'),
-                selection_text: current.text().trim()
+                selection_value: current.text().trim(),
+                selection_group_id:current.closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid"),
+                selection_group_value:current.closest("li.epfl-selectize-head").find("span").first().text()
             });
         }
     };
@@ -216,15 +219,19 @@ epfl.Selectize = function (cid, params) {
         } else if (event.which === 40) { //arrow down
             epfl.Selectize.inputArrowDown();
         } else {
-            clearTimeout(search_timeout);
-            search_timeout = setTimeout(function () {
-                var search = $("#selectize-input-" + cid).val();
-                if(searchServerSide) {
-                    epfl.dispatch_event(cid, "update_search", {search_text: search});
-                }
-                epfl.Selectize.inputTextChanged(search);
-            }, 500);
-
+            if (inputSearchText !== $("#selectize-input-" + cid).val()) {
+                inputSearchText = $("#selectize-input-" + cid).val();
+                clearTimeout(search_timeout);
+                search_timeout = setTimeout(function () {
+                    var search = $("#selectize-input-" + cid).val();
+                    var cursorPos =  $("#selectize-input-" + cid)[0].selectionStart;
+                    if (searchServerSide) {
+                        epfl.dispatch_event(cid, "update_search", {search_text: search,cursor_position: cursorPos});
+                    } else {
+                        epfl.Selectize.inputTextChanged(search);
+                    }
+                }, 500);
+            }
         }
     });
 
@@ -238,9 +245,12 @@ epfl.Selectize = function (cid, params) {
         epfl.Selectize.resetList($("ul.epfl-selectize"));
         $("#selectize-input-" + cid).val($(this).text().trim());
         epfl.Selectize.hide(cid);
+
         epfl.dispatch_event(cid, "set_selection", {
             selection_id: $(this).data('selectizeid'),
-            selection_text: $(this).text().trim()
+            selection_value: $(this).text().trim(),
+            selection_group_id: $(this).closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid")
+            selection_group_value: $(this).closest("li.epfl-selectize-head").find("span").first().text()
         });
     }).mouseenter(function () {
         $(this).addClass("selected");
@@ -262,11 +272,11 @@ epfl.Selectize.inherits_from(epfl.ComponentBase);
 
 //This function is triggered from init_transaction for loading the tree data 'async' which means you first see the
 //loading indicator on the page and when the data are loaded they got shown via a epfl redraw
-epfl.Selectize.LoadData = function(cid){
+epfl.Selectize.LoadData = function (cid) {
     epfl.enqueue(epfl.make_component_event(cid, 'load_data', {}), cid);
-    setTimeout(function(){
+    setTimeout(function () {
         epfl.flush();
         $('#epfl_please_wait').hide();
-    },100);
+    }, 100);
 };
 
