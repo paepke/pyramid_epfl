@@ -341,21 +341,6 @@ class Page(object):
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
-    def render_node(self, node):
-        out = {'static': {'js': [],
-                          'css': []},
-               'dynamic': {'js': [node.render('js')],
-                           'html': node.render()}, }
-        # Static
-
-        # js_name
-        # css_name
-
-        if hasattr(node, 'components'):
-            pass
-
-        return out
-
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         out = ''
@@ -375,8 +360,9 @@ class Page(object):
                         parts=json.encode({'js': compo.render('js_raw'),
                                            'main': compo.render()})))
 
-            out = "epfl.handle_dynamic_extra_content([%s]);\r\n" % json.dumps(
-                self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True))
+            extra_content = self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True)
+            if len(extra_content) > 0:
+                out = "epfl.handle_dynamic_extra_content([%s]);\r\n" % json.dumps(extra_content)
             out += self.response.render_ajax_response()
 
         return out

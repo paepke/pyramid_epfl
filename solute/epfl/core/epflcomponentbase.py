@@ -495,7 +495,7 @@ class ComponentBase(object):
         if this compo is "really" visible to the user.
         """
 
-        if not super(ComponentBase, self).__getattribute__('visible'):
+        if not self.visible:
             return False
         if not self.has_access():
             return False
