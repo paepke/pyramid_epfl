@@ -15,7 +15,8 @@
 <tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }} epfl-table-row">
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
-        <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}>
+        <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}{% if cell.width is defined and cell.width is not none %} style="width:{{ cell.width }}px"{% endif %}>
+
             {% if cell.sortable %}
                 <span class="tablelistlayout-sortcolumn">{{ cell.data }}
                     {% if cell.currentSortedBy == True %}
@@ -49,8 +50,14 @@
                     {% endfor %}
                 </div>
             {% elif cell.type == 'button' %}
-                <button type='button' class='btn btn-default'
-                        onclick='epfl.TableListLayout.buttonClickHandler("{{ cell.data.handler }}")'>{{ cell.data.text }}</button>
+                <button type='button' class='btn form-control epfl-button'
+                        onclick='epfl.TableListLayout.buttonClickHandler("{{ cell.data.handler }}"{% if cell.data.button_params is defined %},{{ cell.data.button_params }}{% endif %})'>
+                    {% if cell.data.icon is defined and not cell.data.icon is none %}
+                        <i class="fa {{ cell.data.icon }}"></i>
+                    {% else %}
+                        {{ cell.data.text }}
+                    {% endif %}
+                </button>
             {% elif cell.type == 'component' %}
                 {{ compo.get_next_component()() }}
             {% elif cell.type == 'badge' %}

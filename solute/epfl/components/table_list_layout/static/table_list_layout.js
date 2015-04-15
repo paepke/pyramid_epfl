@@ -49,8 +49,11 @@ epfl.TableListLayout = function (cid, params) {
         });
     });
 
-    epfl.TableListLayout.buttonClickHandler = function (eventname) {
-        epfl.dispatch_event(cid, eventname, {});
+    epfl.TableListLayout.buttonClickHandler = function (eventname, params) {
+        if(!params){
+            params = {};
+        }
+        epfl.dispatch_event(cid, eventname, params);
     };
     epfl.TableListLayout.EditClick = function (id, data) {
         epfl.dispatch_event(cid, 'edit', {'entry_id': id, 'data': data});

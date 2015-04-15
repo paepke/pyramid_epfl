@@ -18,12 +18,15 @@
     		<p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
     	{% else %}
 	        <input class="form-control"
-	               type="number"
 	               {% if compo.validation_type == "number"%}
+	               type="number"
 	               pattern="\d*"
-	               {% else %}
-	                pattern="[0-9]+([\.|,][0-9]+)?" step="any"
-	                {% endif %}
+	               {% elif compo.validation_type == "float" %}
+                   type="text"
+	               pattern="[0-9]+([\.|,][0-9]+)?" step="any"
+                   {% else %}
+	               pattern="[0-9]+([\.|,][0-9]+)?" step="any"
+	               {% endif %}
 	               id="{{ compo.cid }}_input"
 	               name="{{ compo.name }}"
 	               value="{{ compo.value if compo.value is not none else '' }}"

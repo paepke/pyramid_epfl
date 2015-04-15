@@ -156,9 +156,9 @@ class TableListLayout(PaginatedListLayout):
         return headrow
 
     @staticmethod
-    def HeadText(text, sortable=False, currentSortedBy=False, direction='asc'):
+    def HeadText(text, sortable=False, currentSortedBy=False, direction='asc', width=None):
         head = {'data': text, "sortable": sortable, "currentSortedBy": currentSortedBy, "direction": direction,
-                'type': 'head'}
+                'type': 'head', "width": width}
         return head
 
     @staticmethod
@@ -226,6 +226,18 @@ class TableListLayout(PaginatedListLayout):
         if disabled:
             edit["disabled"] = "disabled"
         return edit
+
+    @staticmethod
+    def Button(name, event_name, button_params=None, text=None, icon=None):
+        button = {"type": 'button'}
+        button['data'] = {"name": name, "handler": event_name}
+        if text:
+            button['data']['text'] = text
+        if icon:
+            button['data']['icon'] = icon
+        if button_params:
+            button['data']['button_params'] = button_params
+        return button
 
     @staticmethod
     def Popover(text,popover_text):

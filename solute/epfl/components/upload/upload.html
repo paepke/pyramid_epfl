@@ -22,8 +22,8 @@
     		<p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
     	{% else %}
             <div id="{{ compo.cid }}_img">
-            {% if compo.value %}
-                <img src="{{ compo.value }}" width="100" />
+            {% if compo.value and not compo.no_preview%}
+                <img src="{{ compo.value }}" width="200" />
             {% endif %}
             </div>
         	<input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"

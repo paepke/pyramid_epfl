@@ -21,7 +21,6 @@ from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
 from number_input.number_input import NumberInput
-from upload.upload import Upload
 from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
 from texteditor.texteditor import TextEditor
@@ -32,6 +31,7 @@ from buttonradio.buttonradio import ButtonRadio
 from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 from upload.upload import Upload
+from download.download import Download
 
 #: Special
 from sidebar.sidebar import Sidebar
@@ -109,7 +109,6 @@ def add_routes(config):
     Simpletree.add_pyramid_routes(config)
 
     Form.add_pyramid_routes(config)
-    Upload.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
     TextInput.add_pyramid_routes(config)
     TextEditor.add_pyramid_routes(config)
@@ -123,6 +122,7 @@ def add_routes(config):
     Selectize.add_pyramid_routes(config)
     InputLabel.add_pyramid_routes(config)
     Upload.add_pyramid_routes(config)
+    Download.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
