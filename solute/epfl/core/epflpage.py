@@ -65,6 +65,7 @@ class Page(object):
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
                 "css/font-awesome/css/font-awesome.min.css",
+                "css/bootstrap.min.css",
                 "css/toastr.min.css"]
 
     template = "page.html"  #: The name of the template used to render this page.

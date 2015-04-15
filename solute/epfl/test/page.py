@@ -175,21 +175,6 @@ class PageTest(unittest.TestCase):
         assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'set_row\']);' \
                'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'set_row\']);' in out
 
-        # for i in range(0, 10000):
-        #     page.root_node.is_visible()
-
-        root_node = page.root_node
-
-        for x in range(0, 100000):
-            assert True
-
-        for x in range(0, 100000):
-            assert super(ComponentBase, root_node).__getattribute__('is_visible')()
-
-        for x in range(0, 100000):
-            assert root_node.is_visible()
-
-
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)
         transaction = page.transaction
