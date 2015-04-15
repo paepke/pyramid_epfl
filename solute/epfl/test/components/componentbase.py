@@ -27,6 +27,15 @@ class ComponentBaseTest(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
+    def get_page_and_transaction(self):
+        return self.page, self.page.transaction
+
+    def bootstrap(self):
+        page, transaction = self.get_page_and_transaction()
+        page.root_node = self.component
+        page.handle_transaction()
+        return page, transaction
+
     def test_static_component_rendering(self):
         self.run_test_component_creation_as_root_node(self.component)
         self.run_render_test_component_creation_as_root_node()
@@ -188,7 +197,7 @@ class ComponentBaseTest(unittest.TestCase):
                 "{compo_name} __init__ method is not correctly setup. " \
                 "(Missing page parameter, or not overwritten.)".format(compo_name=compo_name)
         for var in init_code.co_varnames:
-            if var not in ['self', 'page', 'args', 'kwargs', 'extra_params']:
+            if var not in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
                 assert ":param {var}:".format(var=var) in init_docs,\
                     "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
 

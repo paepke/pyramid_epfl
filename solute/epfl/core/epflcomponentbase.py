@@ -290,7 +290,6 @@ class ComponentBase(object):
     redraw_requested = False  #: Set of parts requesting to be redrawn.
 
     _compo_info = None
-    _access = None
     _handles = None
     combined_compo_state = frozenset()
     deleted = False
@@ -468,14 +467,21 @@ class ComponentBase(object):
         """ Checks if the current user has sufficient rights to see/access this component.
         Normally called by a condition in the jinja-template.
         """
-        if self._access is None:
-            self._access = security.has_permission("access", self, self.request)
-        return self._access
+        try:
+            return super(ComponentBase, self).__getattribute__('_access')
+        except AttributeError:
+            super(ComponentBase, self).__setattr__('_access', security.has_permission("access", self, self.request))
+
+        return super(ComponentBase, self).__getattribute__('_access')
 
     def set_visible(self):
         """ Shows the complete component. You need to redraw it!
         It returns the visibility it had before.
         """
+        try:
+            super(ComponentBase, self).__delattr__('_is_visible')
+        except AttributeError:
+            pass
         current_visibility = self.visible
         self.visible = True
         return current_visibility
@@ -484,6 +490,10 @@ class ComponentBase(object):
         """ Hides the complete component. You need to redraw it!
         It returns the visibility it had before.
         """
+        try:
+            super(ComponentBase, self).__delattr__('_is_visible')
+        except AttributeError:
+            pass
         current_visibility = self.visible
         self.visible = False
         return current_visibility
@@ -494,18 +504,21 @@ class ComponentBase(object):
         If check_parents is True, it also checks if the template-element-parents are all visible - so it checks
         if this compo is "really" visible to the user.
         """
+        try:
+            return super(ComponentBase, self).__getattribute__('_is_visible')
+        except AttributeError:
+            pass
 
         if not self.visible:
-            return False
-        if not self.has_access():
-            return False
-        if check_parents:
-            try:
-                return super(ComponentBase, self).__getattribute__('container_compo').is_visible()
-            except AttributeError:
-                pass
+            super(ComponentBase, self).__setattr__('_is_visible', False)
+        elif not self.has_access():
+            super(ComponentBase, self).__setattr__('_is_visible', False)
+        elif check_parents and self.container_compo is not None:
+            super(ComponentBase, self).__setattr__('_is_visible', self.container_compo.is_visible())
+        else:
+            super(ComponentBase, self).__setattr__('_is_visible', True)
 
-        return True
+        return super(ComponentBase, self).__getattribute__('_is_visible')
 
     def add_ajax_response(self, resp_string):
         """ Adds to the response some string (ajax or js or whatever the clients expects here).

@@ -25,6 +25,8 @@ epfl.Selectize = function (cid, params) {
 
     if(inputFocus){
         $("#selectize-input-" + cid).focus();
+        var searchTextLength = $("#selectize-input-" + cid).val().length;
+        $("#selectize-input-" + cid)[0].setSelectionRange(searchTextLength, searchTextLength);
     }
 
     /**************************************************************************
