@@ -249,7 +249,7 @@ epfl.Selectize = function (cid, params) {
         epfl.dispatch_event(cid, "set_selection", {
             selection_id: $(this).data('selectizeid'),
             selection_value: $(this).text().trim(),
-            selection_group_id: $(this).closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid")
+            selection_group_id: $(this).closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid"),
             selection_group_value: $(this).closest("li.epfl-selectize-head").find("span").first().text()
         });
     }).mouseenter(function () {

@@ -22,7 +22,7 @@
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
         <div class="col-sm-{{ compo_col }}">
         <div class="input-group">
-            <input type="text" class="form-control epfl-selectize-input" id="selectize-input-{{ compo.cid }}" {% if compo.selected_text %}value="{{ compo.selected_text }}"{% endif %}>
+            <input type="text" class="form-control epfl-selectize-input" id="selectize-input-{{ compo.cid }}" {% if compo.selected_text %}value="{{ compo.selected_text }}"{% else %}value="{{ compo.search_text }}"{% endif %}>
             <div class="input-group-btn">
                 <button type="button" class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}"><span class="caret"></span></button>
             </div>
