@@ -8,8 +8,7 @@ class Droppable(epflcomponentbase.ComponentContainerBase):
     js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["droppable/droppable.js"]
     asset_spec = "solute.epfl.components:droppable/static"
 
-    css_name = ["droppable.css", "bootstrap.min.css",
-                "css/font-awesome/css/font-awesome.min.css"]
+    css_name = ["droppable.css"]
     js_name = ["droppable.js"]
 
     compo_config = epflcomponentbase.ComponentContainerBase.compo_config + ["valid_types"]
@@ -60,8 +59,7 @@ class SimpleDroppable(epflcomponentbase.ComponentContainerBase):
     js_parts.append("droppable/simpledroppable.js")
     asset_spec = "solute.epfl.components:droppable/static"
 
-    css_name = ["simpledroppable.css", "bootstrap.min.css",
-                "css/font-awesome/css/font-awesome.min.css"]
+    css_name = ["simpledroppable.css"]
     js_name = ["simpledroppable.js"]
 
     compo_config = ["valid_types"]

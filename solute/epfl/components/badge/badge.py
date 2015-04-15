@@ -18,7 +18,7 @@ class Badge(ComponentBase):
     asset_spec = "solute.epfl.components:badge/static"
     js_name = ["badge.js"]
 
-    css_name = ["badge.css", "bootstrap.min.css"]
+    css_name = ["badge.css"]
 
     compo_state = ["value"]
 
