@@ -10,7 +10,7 @@ class Progress(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:progress/static"
     js_name = ["progress.js"]
 
-    css_name = ["progress.css", "bootstrap.min.css"]
+    css_name = ["progress.css"]
 
     compo_state = ["value","min","max"]
 

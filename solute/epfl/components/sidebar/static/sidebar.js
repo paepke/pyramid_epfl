@@ -5,7 +5,6 @@ epfl.Sidebar = function (cid, params) {
     }).mouseleave(function () {
         $(this).children("ul.epfl-sidebar-menu").hide();
     });
-
     $("#" + cid + " li.epfl-sidebar-menu-entry").click(function () {
         epfl.dispatch_event(cid, "go_to_page", {
             url: $(this).data("url"),

@@ -99,4 +99,5 @@ class ModalBox(Box):
         Called when modal box is closed.
         """
         Box.handle_hide(self)
+        self.redraw()
         self.add_ajax_response("$('body').css({ overflow: 'inherit' });")

@@ -8,7 +8,7 @@ class SimpleTable(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:simpletable/static"
 
     js_name = []
-    css_name = ["bootstrap.min.css"]
+    css_name = []
 
     compo_state = ["table_data","table_head","title"]
 
