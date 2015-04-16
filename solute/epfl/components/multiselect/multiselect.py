@@ -22,8 +22,7 @@ class MultiSelect(epflcomponentbase.ComponentContainerBase):
     js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["multiselect/multiselect.js"]
     asset_spec = "solute.epfl.components:multiselect/static"
 
-    css_name = ["multiselect.css", "bootstrap.min.css",
-                "css/font-awesome/css/font-awesome.min.css"]
+    css_name = ["multiselect.css"]
     js_name = ["multiselect.js"]
 
     compo_config = epflcomponentbase.ComponentContainerBase.compo_config + \
@@ -201,8 +200,7 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
     js_parts.append("multiselect/multiselecttransfer.js")
     asset_spec = "solute.epfl.components:multiselect/static"
 
-    css_name = ["bootstrap.min.css",
-                "css/font-awesome/css/font-awesome.min.css"]
+    css_name = []
     js_name = ["multiselecttransfer.js"]
     #: The cid of the source :class:`solute.epfl.components.multiselect.multiselect.MultiSelect` component
     source_multi_select_cid = None
