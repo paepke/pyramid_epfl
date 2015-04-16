@@ -47,7 +47,13 @@ epfl.TextInput = function (cid, params) {
         }
     };
 
-    $(selector).blur(change).change(change).keydown(change);
+    var elm = $(selector);
+
+    if (elm.val() != elm.attr('data-initial-value')) {
+        change();
+    }
+
+    elm.blur(change).change(change).keydown(change);
 };
 
 epfl.TextInput.inherits_from(epfl.ComponentBase);

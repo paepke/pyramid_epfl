@@ -351,18 +351,13 @@ class ComponentBase(object):
         """
         pass
 
-    def __getattribute__(self, key):
-        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
-            return super(ComponentBase, self).__getattribute__(key)
+    def get_state_attr(self, key, value=None):
+        try:
+            return self.compo_info['compo_state'][key]
+        except KeyError:
+            return value
 
-        return super(ComponentBase, self).__getattribute__('compo_info').get('compo_state',
-                                                                             {}).get(key,
-                                                                                     super(ComponentBase,
-                                                                                           self).__getattribute__(key))
-
-    def __setattr__(self, key, value):
-        if key not in super(ComponentBase, self).__getattribute__('combined_compo_state'):
-            return super(ComponentBase, self).__setattr__(key, value)
+    def set_state_attr(self, key, value):
         self.compo_info.setdefault('compo_state', {})[key] = value
 
     @property
@@ -468,11 +463,11 @@ class ComponentBase(object):
         Normally called by a condition in the jinja-template.
         """
         try:
-            return super(ComponentBase, self).__getattribute__('_access')
+            return self._access
         except AttributeError:
-            super(ComponentBase, self).__setattr__('_access', security.has_permission("access", self, self.request))
+            self._access = security.has_permission("access", self, self.request)
 
-        return super(ComponentBase, self).__getattribute__('_access')
+        return self._access
 
     def set_visible(self):
         """ Shows the complete component. You need to redraw it!
@@ -491,7 +486,7 @@ class ComponentBase(object):
         It returns the visibility it had before.
         """
         try:
-            super(ComponentBase, self).__delattr__('_is_visible')
+            del self._is_visible
         except AttributeError:
             pass
         current_visibility = self.visible
@@ -505,20 +500,20 @@ class ComponentBase(object):
         if this compo is "really" visible to the user.
         """
         try:
-            return super(ComponentBase, self).__getattribute__('_is_visible')
+            return self._is_visible
         except AttributeError:
             pass
 
         if not self.visible:
-            super(ComponentBase, self).__setattr__('_is_visible', False)
+            self._is_visible = False
         elif not self.has_access():
-            super(ComponentBase, self).__setattr__('_is_visible', False)
+            self._is_visible = False
         elif check_parents and self.container_compo is not None:
-            super(ComponentBase, self).__setattr__('_is_visible', self.container_compo.is_visible())
+            self._is_visible = self.container_compo.is_visible()
         else:
-            super(ComponentBase, self).__setattr__('_is_visible', True)
+            self._is_visible = True
 
-        return super(ComponentBase, self).__getattribute__('_is_visible')
+        return self._is_visible
 
     def add_ajax_response(self, resp_string):
         """ Adds to the response some string (ajax or js or whatever the clients expects here).
@@ -775,14 +770,29 @@ class ComponentBase(object):
         cls.set_handles(force_update=True)
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
 
+        for name in cls.combined_compo_state:
+            original = getattr(cls, name, None)
+            if type(original) is property:
+                continue
+
+            setattr(cls, '__original_attribute_%s' % name, original)
+
+            def getter(n):
+                return lambda self: self.get_state_attr(n, getattr(self, '__original_attribute_%s' % n))
+
+            def setter(n):
+                return lambda self, value: self.set_state_attr(n, value)
+
+            setattr(cls, name, property(
+                fget=getter(name),
+                fset=setter(name),
+            ))
+
         if not cls.template_name:
             raise Exception("You did not setup the 'self.template_name' in " + repr(cls))
 
         if hasattr(cls, 'cid'):
             raise Exception("You illegally set a cid as a class attribute in " + repr(cls))
-
-        # from pyramid.paster import bootstrap
-        #
 
         cls.prepare_extra_content()
 

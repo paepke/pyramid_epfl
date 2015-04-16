@@ -172,7 +172,7 @@ class Simpletree(epflcomponentbase.ComponentBase):
                 (level_2_id in self.tree_data[leaf_obj['level_0_id']]['children'][leaf_obj['level_1_id']]['children'].keys()):
                 self.add_level_3(self.load_level_3(level_2_id), level_2_id, leaf_obj['level_1_id'], leaf_obj['level_0_id'])
             else:
-                deprecated_leaf_2_ids.append(level_1_id)
+                deprecated_leaf_2_ids.append(level_2_id)
         for leaf_id in deprecated_leaf_1_ids:
             del self.open_leaf_1_ids[leaf_id]
         for leaf_id in deprecated_leaf_2_ids:
