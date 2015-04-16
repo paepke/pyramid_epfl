@@ -148,6 +148,9 @@ class PageTest(unittest.TestCase):
 
         page.handle_transaction()
 
+        # import sys
+        # base_components = int(sys.original_args[1])
+        # leaf_components = int(sys.original_args[2])
         base_components = 10
         leaf_components = 200
 
