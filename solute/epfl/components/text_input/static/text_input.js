@@ -1,5 +1,5 @@
 epfl.TextInput = function (cid, params) {
-    epfl.ComponentBase.call(this, cid, params);
+    epfl.FormInputBase.call(this, cid, params);
 
     var selector = "#" + cid + "_input";
     var compo = this;
@@ -10,6 +10,7 @@ epfl.TextInput = function (cid, params) {
     var type_func = params["type_func"];
     var date = params["date"];
     var source = params["source"];
+    var submit_form_on_enter = params["submit_form_on_enter"];
 
     if(typeahead) {
         var type_function = function(query, process){
@@ -45,6 +46,9 @@ epfl.TextInput = function (cid, params) {
         if(show_count && max_length){
             $(selector + '_count').text($(selector).val().length);
         }
+        if(submit_form_on_enter && event.which == 13){
+            epfl.FormInputBase.event_submit_form_on_enter(cid);
+        }
     };
 
     var elm = $(selector);
@@ -56,4 +60,4 @@ epfl.TextInput = function (cid, params) {
     elm.blur(change).change(change).keydown(change);
 };
 
-epfl.TextInput.inherits_from(epfl.ComponentBase);
+epfl.TextInput.inherits_from(epfl.FormInputBase);
