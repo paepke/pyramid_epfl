@@ -41,3 +41,4 @@ class Upload(FormInputBase):
             info, coded_string = str.split(str(value), ',')
             binary = base64.b64decode(coded_string)
         return binary
+    
