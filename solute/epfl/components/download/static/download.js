@@ -1,4 +1,4 @@
-epfl.DownloadComponent = function(cid, params) {
+epfl.Download = function(cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     var confirm_first=params["confirm_first"];
     var confirm_message=params["confirm_message"];
@@ -24,4 +24,4 @@ epfl.DownloadComponent = function(cid, params) {
         });
 	});
 };
-epfl.DownloadComponent.inherits_from(epfl.ComponentBase);
+epfl.Download.inherits_from(epfl.ComponentBase);

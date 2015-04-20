@@ -4,7 +4,7 @@ epfl.init_component("{{compo.cid}}",
                                   "typeahead": {{ compo.typeahead|format_bool }},
                                   "date": {{ compo.date|format_bool }},
                                   {% if compo.type_func %}
-                                      "type_func": "{{ compo.type_func }}",
+                                      "type_func": {{ compo.type_func|tojson }},
                                   {% endif %}
                                   {% if compo.max_length is not none %}
                                     "max_length": {{ compo.max_length|int }},

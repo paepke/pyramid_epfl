@@ -18,7 +18,7 @@ class TextInput(FormInputBase):
 
     js_name = FormInputBase.js_name + [("solute.epfl.components:text_input/static", "text_input.js"),
                                        ("solute.epfl.components:text_input/static", "jquery.datetimepicker.js"),
-                                       "bootstrap3-typeahead.min.js"]
+                                       ("solute.epfl.components:text_input/static", "bootstrap3-typeahead.min.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:text_input/static", "text_input.css"),
                                          ("solute.epfl.components:text_input/static", "jquery.datetimepicker.css")]
 

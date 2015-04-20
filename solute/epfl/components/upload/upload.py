@@ -22,8 +22,13 @@ class Upload(FormInputBase):
 
     template_name = "upload/upload.html"
 
+    #: Set true to hide the preview image for the uploaded file.
     no_preview = False
 
+    #: The width of the preview image (if any).
+    preview_width = 200
+
+    #: The type of validator that will be used for this field.
     validation_type = 'text'
 
     fire_change_immediately = True
@@ -41,4 +46,13 @@ class Upload(FormInputBase):
             info, coded_string = str.split(str(value), ',')
             binary = base64.b64decode(coded_string)
         return binary
-    
+
+    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_params):
+        """Download component.
+
+        :param label: Optional label describing the input field.
+        :param name: An element without a name cannot have a value.
+        :param default: Default value that may be pre-set or pre-selected
+        :param validation_type: The type of validator that will be used for this field
+        """
+        super(Upload, self).__init__(page, cid, label, name, default, validation_type)

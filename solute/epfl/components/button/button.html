@@ -1,6 +1,6 @@
 <div id="{{compo.cid}}" epflid="{{ compo.cid }}" class="row">
     {% if compo.label %}
-        <label for="{{ compo.cid }}" class="col-sm-{% if compo.label_col is defined and compo.label_col is not none %}{{ compo.label_col }}{% else %}2{% endif %} control-label">{{ compo.label }}</label>
+        <label for="{{ compo.cid }}" class="col-sm-{{ "2" if compo.label_col is not defined or compo.label_col is none else compo.label_col }} control-label">{{ compo.label }}</label>
     {% endif %}
     <div class="{% if compo.label_col is defined and compo.label_col is not none %}
                     {% if compo.compo_col is defined and compo.compo_col is not none %}

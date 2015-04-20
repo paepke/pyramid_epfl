@@ -19,7 +19,7 @@ epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
     if (enqueue_event === undefined) {
         enqueue_event = true;
     }
-    
+
     var parent_form = $('#'+cid).closest('.epfl-form');
     if (parent_form.length == 1) {
     	var is_dirty = parent_form.data('dirty');

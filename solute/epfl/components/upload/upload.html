@@ -23,7 +23,7 @@
     	{% else %}
             <div id="{{ compo.cid }}_img">
             {% if compo.value and not compo.no_preview%}
-                <img src="{{ compo.value }}" width="200" />
+                <img src="{{ compo.value }}" width="{{ compo.preview_width }}" />
             {% endif %}
             </div>
         	<input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"
