@@ -14,10 +14,9 @@ epfl.Upload = function (cid, params) {
         }
         reader.readAsDataURL(file);
         reader.onload = function(){
-            if (img_container.find('img').length == 0) {
-                img_container.appendChild('<img width="100">');
+            if (img_container.find('img').length != 0) {
+                img_container.find('img').attr('src', reader.result);
             }
-            img_container.find('img').attr('src', reader.result);
             epfl.FormInputBase.on_change(compo, reader.result, cid, enqueue_event);
         }
     };

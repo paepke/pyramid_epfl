@@ -20,3 +20,9 @@ class TextEditor(FormInputBase):
     template_name = "texteditor/texteditor.html"
 
     validation_type = 'text'
+
+    #: The config-file that should be used for this instance. Available are at least "config" and "slimconfig"
+    editor_config_file = "config"
+
+    #: Set True to automatically remove all formatting on paste
+    clean_paste = False

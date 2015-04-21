@@ -20,7 +20,30 @@ class NumberInput(FormInputBase):
     template_name = "number_input/number_input.html"
     compo_state = FormInputBase.compo_state + ['min_value', 'max_value']
 
-    validation_type = 'number'#:float or number
+    #: Possible values are 'float' and 'number' (which is default). If set to 'float' a text-input will be displayed that takes only numbers and a '.' or ',' seperator
+    validation_type = 'number'
+
     layout_vertical = False
     min_value = None #: If set, the minimum value to be supported by the control.
     max_value = None #: If set, the maximum value to be supported by the control.
+
+    def handle_change(self, value):
+        if self.validation_type == 'float' and value is not None:
+            try:
+                value = float(str(value).replace(",", "."))
+            except AttributeError:
+                value = None
+        self.value = value
+
+    def __init__(self, page, cid, label=None, name=None, min_value=None, max_value=None, default="", validation_type="", **extra_params):
+        '''
+        NumberInput Component
+
+        :param label: Optional label describing the input field.
+        :param name: An element without a name cannot have a value.
+        :param default: Default value that may be pre-set or pre-selected
+        :param validation_type: The type of validator that will be used for this field
+        :param min_value: The minimum value that can be set to this field
+        :param max_value: The maximum value that can be set to this field
+        '''
+        super(NumberInput, self).__init__(page, cid, label, name, default, validation_type)

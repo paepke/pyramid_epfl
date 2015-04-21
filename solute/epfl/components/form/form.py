@@ -9,7 +9,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     compo_state = ['label', 'name', 'value', 'validation_error', 'readonly']
     js_parts = ["form/input_base.js"]
 
-    js_name = ["input_base.js", "bootstrap3-typeahead.min.js"]
+    js_name = ["input_base.js"]
     css_name = ["input_base.css"]
 
     label = None  #: Optional label describing the input field.
@@ -25,7 +25,6 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     validation_helper = []
     #: Set to true if value has to be provided for this element in order to yield a valid form.
     mandatory = False
-    typeahead = False  # : Set to true if typeahead should be provided by the input (if supported)
     #: If true, underlying form is submitted upon enter key in this input
     submit_form_on_enter = False
     input_focus = False  # : Set focus on this input when component is displayed
@@ -38,7 +37,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     label_style = None
     input_style = None
 
-    def __init__(self, page, cid, label=None, name=None, typeahead=False, default="", validation_type="",
+    def __init__(self, page, cid, label=None, name=None, default="", validation_type="",
                  **extra_params):
         super(FormInputBase, self).__init__()
 
@@ -168,10 +167,6 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     def handle_change(self, value):
         self.value = value
 
-    def handle_typeahead(self, query):
-        pass
-        # TODO: How to return typeahead data to the caller?
-
 
 class Form(epflcomponentbase.ComponentContainerBase):
     template_name = "form/form.html"
@@ -214,6 +209,12 @@ class Form(epflcomponentbase.ComponentContainerBase):
     @property
     def registered_fields(self):
         return [self.page.components[cid] for cid in self._registered_fields]
+
+    @property
+    def registered_names(self):
+        return dict([[self.page.components[cid].name, self.page.components[cid]]
+                     for cid in self._registered_fields
+                     if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
 
     def get_values(self):
         values = odict()
