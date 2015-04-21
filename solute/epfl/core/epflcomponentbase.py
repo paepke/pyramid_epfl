@@ -685,6 +685,13 @@ class ComponentBase(object):
                 raise
 
     def post_event_handling(self, post_event_handlers, event_params):
+        """Receives a post_event_handlers object and execute all callables found with event_params. epfl_event_trace
+         argument is still available at this time.
+
+        :param post_event_handlers: Either a string with a function name, tuple of cid and function name, or a list\n
+                                    of multiple of the previous two.
+        :param event_params: The original parameters of the previously called event.
+        """
         if type(post_event_handlers) is str:
             cid, post_event = self.cid, post_event_handlers
         elif type(post_event_handlers) is tuple:
