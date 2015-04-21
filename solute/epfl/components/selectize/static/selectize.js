@@ -7,7 +7,6 @@ epfl.Selectize = function (cid, params) {
     var cursorPosition = params["cursor_position"];
     var selectedText = params["selected_text"];
 
-
     /**************************************************************************
      Helper
      *************************************************************************/
