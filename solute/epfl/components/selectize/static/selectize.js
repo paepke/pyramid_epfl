@@ -249,7 +249,7 @@ epfl.Selectize = function (cid, params) {
      with this a mechanism you get a pagination style component
      *************************************************************************/
     if (searchServerSide === true && inputSearchText != "") {
-        if (selectedText === "None") {
+        if (selectedText === null) {
             $("#selectize-input-" + cid).val(inputSearchText);
             epfl.Selectize.inputTextChanged(inputSearchText);
         }
