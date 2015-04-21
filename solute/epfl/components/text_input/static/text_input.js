@@ -1,5 +1,5 @@
 epfl.TextInput = function (cid, params) {
-    epfl.ComponentBase.call(this, cid, params);
+    epfl.FormInputBase.call(this, cid, params);
 
     var selector = "#" + cid + "_input";
     var compo = this;
@@ -17,4 +17,4 @@ epfl.TextInput = function (cid, params) {
     elm.blur(change).change(change);
 };
 
-epfl.TextInput.inherits_from(epfl.ComponentBase);
+epfl.TextInput.inherits_from(epfl.FormInputBase);
