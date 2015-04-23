@@ -13,6 +13,9 @@ class Headbar(epflcomponentbase.ComponentBase):
 
     compo_state = ['username', 'title','titlelink','usergroup','optionslink',"breadcrumb_first","breadcrumb_second"]
 
+    js_name = ["headbar.js"]
+    js_parts = epflcomponentbase.ComponentBase.js_parts + ["headbar/headbar.js"]
+
     title = None #: The title shown in the left corner
     title_hover_text = None
     username = None #: Username shown next to title
