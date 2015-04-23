@@ -1,0 +1,12 @@
+.grouped-entry .list-group {
+    display: inline;
+    position: absolute;
+    padding: 0;
+    width: 200px;
+
+    visibility: hidden;
+}
+
+.grouped-entry:hover .list-group {
+    visibility: visible;
+}
