@@ -294,6 +294,8 @@ class ComponentBase(object):
     combined_compo_state = frozenset()
     deleted = False
 
+    post_event_handlers = None
+
     @classmethod
     def add_pyramid_routes(cls, config):
         """ Adds the static pyramid routes needed by this component. This only works for native components stored in
@@ -668,6 +670,8 @@ class ComponentBase(object):
 
             self.epfl_event_trace = epfl_event_trace
             event_handler(**event_params)
+            if self.post_event_handlers and self.post_event_handlers.get(event_name, None):
+                self.post_event_handling(self.post_event_handlers[event_name], event_params)
             self.epfl_event_trace = None
         except MissingEventHandlerException:
             if self.event_sink is True:
@@ -679,6 +683,34 @@ class ComponentBase(object):
                 pass
             else:
                 raise
+
+    def post_event_handling(self, post_event_handlers, event_params):
+        """Receives a post_event_handlers object and execute all callables found with event_params. epfl_event_trace
+         argument is still available at this time.
+
+        :param post_event_handlers: Either a string with a function name, tuple of cid and function name, or a list\n
+                                    of multiple of the previous two.
+        :param event_params: The original parameters of the previously called event.
+        """
+        if type(post_event_handlers) is str:
+            cid, post_event = self.cid, post_event_handlers
+        elif type(post_event_handlers) is tuple:
+            cid, post_event = post_event_handlers
+        elif type(post_event_handlers) is list:
+            for entry in post_event_handlers:
+                self.post_event_handling(entry, event_params)
+            return
+        else:
+            raise Exception('Programming Error: Unknown post event handler type.')
+
+        try:
+            post_event_callable = getattr(self.page.components[cid], 'on_%s' % post_event)
+        except AttributeError:
+            raise Exception('Programming Error: Component {cid} has no post event handler named {post_event}.'.format(
+                cid=cid, post_event=post_event
+            ))
+
+        post_event_callable(**event_params)
 
     def request_handle_submit(self, params):
         """

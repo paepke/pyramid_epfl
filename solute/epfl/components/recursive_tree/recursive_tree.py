@@ -9,6 +9,8 @@ class RecursiveTree(epflcomponentbase.ComponentContainerBase):
     js_parts = ['recursive_tree/recursive_tree.js']
     js_name = ['recursive_tree.js']
 
+    css_name = ['recursive_tree.css']
+
     compo_state = epflcomponentbase.ComponentContainerBase.compo_state + [
         'icon_open', 'icon_close', 'label', 'default_child_cls', 'get_data', 'show_children', 'data_interface'
     ]

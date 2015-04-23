@@ -33,7 +33,7 @@
                          data-leafid="{{ entry['id'] }}" data-open="{% if entry["children"] is defined %}true{% else %}false{% endif %}"></i>
             {% if entry['marked'] is defined and entry['marked'] == True %}<i class="fa fa-check"></i>{% endif %}
                 {{ entry['label'] }}</span>
-                {% if entry['context_menu'] is defined %}
+                {% if entry['context_menu'] is defined and entry['context_menu'] %}
                     {{ contextmenu(entry['context_menu'],entry['id'],entry['label']) }}
                 {% endif %}
             </div>
@@ -52,7 +52,7 @@
                             {% if child['marked'] is defined and child['marked'] == True %}<i class="fa fa-check"></i>{% endif %}
                             {{ child['label'] }}
                         </span>
-                        {% if child['context_menu'] is defined %}
+                        {% if child['context_menu'] is defined and entry['context_menu'] %}
                             {{ contextmenu(child['context_menu'],child['id'],child['label']) }}
                         {% endif %}
                     </div>
@@ -70,7 +70,7 @@
                             				{% if subchild['marked'] is defined and subchild['marked'] == True %}<i class="fa fa-check"></i>{% endif %}
                                             {{ subchild['label'] }}
                                         </span>
-                                        {% if subchild['context_menu'] is defined %}
+                                        {% if subchild['context_menu'] is defined and entry['context_menu'] %}
 				                            {{ contextmenu(subchild['context_menu'],subchild['id'],subchild['label']) }}
 				                        {% endif %}
                             </div>

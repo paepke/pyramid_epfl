@@ -7,7 +7,6 @@ epfl.Selectize = function (cid, params) {
     var cursorPosition = params["cursor_position"];
     var selectedText = params["selected_text"];
 
-
     /**************************************************************************
      Helper
      *************************************************************************/
@@ -69,7 +68,7 @@ epfl.Selectize = function (cid, params) {
     /**************************************************************************
      Input Events
      *************************************************************************/
-    epfl.Selectize.inputOnEnter = function () {
+    epfl.Selectize.inputOnEnter = function (event) {
         var current = $("li.epfl-selectize.selected:visible").find("li.epfl-selectize.selected:visible");
         if (current.length) {
             epfl.Selectize.resetList($("ul.epfl-selectize"));
@@ -84,7 +83,7 @@ epfl.Selectize = function (cid, params) {
         }
     };
 
-    epfl.Selectize.inputArrowUp = function () {
+    epfl.Selectize.inputArrowUp = function (event) {
         event.preventDefault();
 
         //check if something is selected
@@ -110,7 +109,7 @@ epfl.Selectize = function (cid, params) {
         }
     };
 
-    epfl.Selectize.inputArrowDown = function () {
+    epfl.Selectize.inputArrowDown = function (event) {
         event.preventDefault();
         if (!epfl.Selectize.isVisible(cid)) {
             epfl.Selectize.show(cid);
@@ -191,11 +190,11 @@ epfl.Selectize = function (cid, params) {
     var search_timeout = null;
     $("#selectize-input-" + cid).keyup(function (event) {
         if (event.which === 13) { // enter
-            epfl.Selectize.inputOnEnter();
+            epfl.Selectize.inputOnEnter(event);
         } else if (event.which === 38) { //arrow up
-            epfl.Selectize.inputArrowUp();
+            epfl.Selectize.inputArrowUp(event);
         } else if (event.which === 40) { //arrow down
-            epfl.Selectize.inputArrowDown();
+            epfl.Selectize.inputArrowDown(event);
         } else {
             if (inputSearchText !== $("#selectize-input-" + cid).val()) {
                 inputSearchText = $("#selectize-input-" + cid).val();
@@ -250,7 +249,7 @@ epfl.Selectize = function (cid, params) {
      with this a mechanism you get a pagination style component
      *************************************************************************/
     if (searchServerSide === true && inputSearchText != "") {
-        if (selectedText === "None") {
+        if (selectedText === null) {
             $("#selectize-input-" + cid).val(inputSearchText);
             epfl.Selectize.inputTextChanged(inputSearchText);
         }
