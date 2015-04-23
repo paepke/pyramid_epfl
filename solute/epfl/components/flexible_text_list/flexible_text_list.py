@@ -11,15 +11,12 @@ class FlexibleTextList(epflcomponentbase.ComponentContainerBase):
     The list can be configured as searchable and extensible.
     """
 
-    def __init__(self, page, cid, data_interface=None, get_data=None, default_child_cls=None, show_search=False,
+    def __init__(self, page, cid, data_interface=None, get_data=None, show_search=False,
                  height=None, show_add_form=False, context_menus=None, *args, **kwargs):
         """FlexibleTextList component
 
-        :param data_interface: Data interface to translate the results from get_data polling. If a list is given it will
-                               be used for the according levels given in the get_data list. Else this is used on all
-                               children.
-        :param get_data: List of get_data sources. First entry is used for first level, second for second, and so on.
-        :param default_child_cls: Default component to be used to initialize children.
+        :param data_interface: Data interface to translate the results from get_data polling.
+        :param get_data: A get_data source that is used for this component
         :param show_search: Show or hide a search form on top of the list
         :param height: Set a maximum height to the list
         :param show_add_form: Show or hide a form on the bottom of the list to dynamically add new entries to the list
@@ -28,7 +25,6 @@ class FlexibleTextList(epflcomponentbase.ComponentContainerBase):
         kwargs.update({
             'data_interface': data_interface,
             'get_data': get_data,
-            'default_child_cls': default_child_cls,
             'show_search': show_search,
             'height': height,
             'show_add_form': show_add_form,
