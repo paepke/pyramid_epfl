@@ -1,7 +1,7 @@
 from pyramid.view import view_config
 from pyramid import security
 from functools import wraps
-from solute.epfl.components import LinkListLayout
+from solute.epfl.components import GroupedLinkListLayout
 from solute.epfl.core import epflutil
 
 from epflacl import epfl_acl, ACL
@@ -57,7 +57,8 @@ class EPFLView(object):
     counter = {'id': 0}
 
     def __init__(
-            self, route_name=None, route_pattern=None, permission=None, route_text=None, rank=0, forbidden_view=False
+            self, route_name=None, route_pattern=None, menu_group=None,
+            permission=None, route_text=None, rank=0, forbidden_view=False
     ):
         """
         Adds a route, adds the view with the given permissions to that route and creates a link that appears in
@@ -68,6 +69,7 @@ class EPFLView(object):
         self.route_name = route_name
         self.route_text = route_text
         self.route_pattern = route_pattern
+        self.menu_group = menu_group
         self.permission = permission
         self.rank = rank
         self.forbidden_view = forbidden_view
@@ -93,7 +95,8 @@ class EPFLView(object):
         self.counter['id'] += 1
         self.register.append({'id': self.counter['id'],
                               'url': self.route_name,
-                              'text': self.route_text})
+                              'text': self.route_text,
+                              'menu_group': self.menu_group})
 
     @property
     def _config(self):
@@ -139,5 +142,5 @@ class EPFLView(object):
         EPFLView.acl.extend(acl.__acl__)
 
 
-class EPFLViewLinks(LinkListLayout):
+class EPFLViewLinks(GroupedLinkListLayout):
     pass

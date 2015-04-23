@@ -1,0 +1,29 @@
+{% call container() %}
+    {% call before() %}
+    {% endcall %}
+    {% for group in compo.groups %}
+        {% if group['type'] == 'entry' %}
+            {% set compo_obj = group['components'][0] %}
+            {% if compo_obj.is_visible() %}
+                {% call row(compo_obj=compo_obj) %}
+                    {{ compo_obj.render() }}
+                {% endcall %}
+            {% endif %}
+        {% else %}
+            <div class="grouped-entry">
+                <a class="list-group-item col-sm-12">{{ group['name'] }}</a>
+                <div class="list-group">
+                {% for compo_obj in group['components'] %}
+                    {% if compo_obj.is_visible() %}
+                        {% call row(compo_obj=compo_obj) %}
+                            {{ compo_obj.render() }}
+                        {% endcall %}
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% call after() %}
+    {% endcall %}
+{% endcall %}
