@@ -1,10 +1,15 @@
+{% if compo.menu is defined and not compo.menu is none %}
+    {% set menu = compo.menu %}
+{% elif compo.container_compo.menu is defined and not compo.container_compo.menu is none %}
+    {% set menu = compo.container_compo.default_menu %}
+{% endif %}
 <div class="pull-left">
     {{ compo.data }}
 </div>
-{% if compo.menu is defined and not compo.menu is none %}
+{% if menu is defined %}
     <button class='btn btn-default btn-xs pull-right'><i class='fa fa-bars'></i></button>
     <ul class="context-dropdown-menu">
-        {% for entry in compo.menu %}
+        {% for entry in menu %}
             {% if entry.type == "link" %}
                 <li class="entry" data-event="{{ entry.event }}" data-id="{{ compo.id }}" data-data="{{ compo.data }}">{{ entry.name }}</li>
             {% else %}
