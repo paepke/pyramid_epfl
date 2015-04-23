@@ -10,8 +10,9 @@
                 {% endcall %}
             {% endif %}
         {% else %}
-            <div class="grouped-entry">
-                <a class="list-group-item">{{ group['name'] }}</a>
+            <div class="grouped-entry col-sm-12">
+                <a class="list-group-item col-sm-12">{{ group['name'] }}</a>
+
                 <div class="list-group">
                 {% for compo_obj in group['components'] %}
                     {% if compo_obj.is_visible() %}

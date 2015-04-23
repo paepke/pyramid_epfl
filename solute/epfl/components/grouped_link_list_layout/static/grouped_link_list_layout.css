@@ -2,20 +2,22 @@
     overflow: visible;
 }
 
-.grouped-entry {
-    display: inline-block;
+.grouped-entry.col-sm-12 {
     padding: 0;
-    margin: 0 0 -5px;
     position: relative;
-    width: 200px;
 }
 
-.grouped-entry > .list-group {
+.grouped-entry .hover-container {
+    /*display: inline-block;*/
+    /*margin: 0 0 -5px;*/
+    /*position: relative;*/
+}
+
+.grouped-entry .list-group {
     position: absolute;
+
     top: 0;
     left: 200px;
-    z-index: 2;
-
     width: 200px;
 
     display: none;
