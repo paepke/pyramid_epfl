@@ -1,6 +1,10 @@
 epfl.PluginContextMenu = function (selector,cid) {
     var element = $(selector);
 
+    element.parent().mouseleave(function (event) {
+        element.hide();
+    });
+
     element.children("li.entry").click(function (event) {
         event.stopPropagation();
         $(this).parent().hide();
