@@ -38,7 +38,7 @@
 	        max="{{ compo.max_value }}"
 	        {% endif %}
 	        data-validation-type='{{ compo.validation_type }}'
-	        />
+	        {% if compo.readonly is defined and compo.readonly %}disabled{% endif %} />
 	    {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>

@@ -18,7 +18,8 @@
                   id="{{compo.cid}}_input"
                   name="{{ compo.name }}"
                   style="{{ compo.style if compo.style is defined else '' }}"
-                  placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}">{{ compo.value if compo.value is not none else '' }}</textarea>
+                  placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
+                  {% if compo.readonly is defined and compo.readonly %}disabled{% endif %} />{{ compo.value if compo.value is not none else '' }}</textarea>
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}

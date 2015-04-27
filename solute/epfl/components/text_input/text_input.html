@@ -18,9 +18,6 @@
     {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}">
-    	{% if compo.readonly is defined and compo.readonly %}
-    		<p class="form-control-static">{% if compo.password %}{% else %}{{ compo.value if compo.value is not none else '' }}{% endif %}</p>
-    	{% else %}
     	{% if compo.layover_icon is not none %}
     	<div class="epfl-input-addon"><i class="fa {{ compo.layover_icon }}"></i>
     	{% endif %}		
@@ -28,19 +25,15 @@
                value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                data-initial-value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
-               {% if compo.disabled is defined and compo.disabled %}
-                   disabled
-               {% endif %}
                {% if compo.max_length is not none %}
                    maxlength="{{ compo.max_length }}"
-               {% endif %}/>
+               {% endif %} {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
             {% if compo.layover_icon is not none %}
                 </div>
             {% endif %}
             {%  if compo.max_length is not none and compo.show_count is defined and compo.show_count %}
                 <div style="float: left;">(<span id="{{ compo.cid }}_input_count">0</span>/{{ compo.max_length }})</div>
             {%  endif %}
-        {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}
