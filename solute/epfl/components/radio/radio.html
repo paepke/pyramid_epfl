@@ -35,7 +35,11 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                <input type="radio" value="{{ value }}" {% if compo.value == value %}checked="checked"{% endif %} name="{{ compo.cid }}">{{ visual }}{% endfor %}{% endif %}
+                <input type="radio"
+                       value="{{ value }}"
+                       {% if compo.value == value %}checked="checked"{% endif %}
+                       name="{{ compo.cid }}"
+                       {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}>{{ visual }}{% endfor %}{% endif %}
         </div>
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>

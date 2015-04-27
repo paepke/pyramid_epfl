@@ -34,7 +34,7 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
             principal, permission = permission
         elif type(permission) is tuple and len(permission) == 3:
             action, principal, permission = permission
-            if action:
+            if action is True or action == security.Allow:
                 action = security.Allow
             else:
                 action = security.Deny

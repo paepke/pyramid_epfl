@@ -26,7 +26,7 @@
                    class="form-control epfl-selectize-input"
                    id="selectize-input-{{ compo.cid }}"
                    {% if compo.selected_text %}value="{{ compo.selected_text }}"{% else %}value="{{ compo.search_text }}"{% endif %}
-                   autocomplete="off">
+                   autocomplete="off" {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
             <div class="input-group-btn">
                 <button type="button" class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}"><span class="caret"></span></button>
             </div>

@@ -6,16 +6,23 @@
             {% set compo_obj = group['components'][0] %}
             {% if compo_obj.is_visible() %}
                 {% call row(compo_obj=compo_obj) %}
+                    {% if compo_obj.icon is defined and compo_obj.icon %}
+                        <i class="pull-left fa fa-{{ compo_obj.icon }}"></i>
+                    {% endif %}
                     {{ compo_obj.render() }}
                 {% endcall %}
             {% endif %}
         {% else %}
-            <div class="grouped-entry">
+            <div class="grouped-entry col-sm-12">
                 <a class="list-group-item col-sm-12">{{ group['name'] }}</a>
+
                 <div class="list-group">
                 {% for compo_obj in group['components'] %}
                     {% if compo_obj.is_visible() %}
                         {% call row(compo_obj=compo_obj) %}
+                            {% if compo_obj.icon is defined and compo_obj.icon %}
+                                <i class="pull-left fa fa-{{ compo_obj.icon }}"></i>
+                            {% endif %}
                             {{ compo_obj.render() }}
                         {% endcall %}
                     {% endif %}
