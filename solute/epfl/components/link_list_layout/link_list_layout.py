@@ -37,6 +37,8 @@ class LinkListLayout(PaginatedListLayout):
             links.append({'id': i,
                           'text': link['text'],
                           'url': link['url']})
+            if link.has_key('menu_group'):
+                links[-1]['menu_group'] = link['menu_group']
             try:
                 links[-1]['url'] = self.page.get_route_path(links[-1]['url']) or links[-1]['url']
             except KeyError:

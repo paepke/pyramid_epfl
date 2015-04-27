@@ -169,7 +169,7 @@ def has_permission_for_route(request, route_name, permission=None):
                 if r.type_name != 'permission':
                     continue
                 default = False
-                if security.has_permission(r['value'], request.root, request):
+                if request.has_permission(r['value'], request.root):
                     return True
 
             break

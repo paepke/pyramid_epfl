@@ -57,6 +57,7 @@ from pretty_list_layout.pretty_list_layout import PrettyListLayout
 from toggle_list_layout.toggle_list_layout import ToggleListLayout
 from paginated_list_layout.paginated_list_layout import PaginatedListLayout
 from link_list_layout.link_list_layout import LinkListLayout
+from grouped_link_list_layout.grouped_link_list_layout import GroupedLinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
 from table_list_layout.table_list_layout import TableListLayout
 from tree_layout.tree_layout import TreeLayout, TreeLeafEntry, DraggableTreeLeafEntry, DroppableTreeLayout
@@ -95,6 +96,7 @@ def add_routes(config):
     ToggleListLayout.add_pyramid_routes(config)
     PaginatedListLayout.add_pyramid_routes(config)
     LinkListLayout.add_pyramid_routes(config)
+    GroupedLinkListLayout.add_pyramid_routes(config)
     HoverLinkListLayout.add_pyramid_routes(config)
     TableListLayout.add_pyramid_routes(config)
     TreeLayout.add_pyramid_routes(config)
