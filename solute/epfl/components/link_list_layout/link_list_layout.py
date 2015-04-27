@@ -14,10 +14,9 @@ class LinkListLayout(PaginatedListLayout):
     data_interface = {'id': None,
                       'text': None,
                       'url': None}
-    
-    #theme_path = PaginatedListLayout.theme_path + ['link_list_layout/theme']
-    theme_path = PaginatedListLayout.theme_path.copy()
-    theme_path['row'] = ['link_list_layout/theme']
+
+    theme_path = {'default': PaginatedListLayout.theme_path,
+                  'row': ['link_list_layout/theme']}
         
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
 
