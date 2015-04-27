@@ -14,9 +14,6 @@
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}">
-    	{% if compo.readonly is defined and compo.readonly %}
-    		<p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
-    	{% else %}
 	        <input class="form-control"
 	               {% if compo.validation_type == "number"%}
 	               type="number"
@@ -39,7 +36,6 @@
 	        {% endif %}
 	        data-validation-type='{{ compo.validation_type }}'
 	        {% if compo.readonly is defined and compo.readonly %}disabled{% endif %} />
-	    {% endif %}
         {% if compo.validation_error %}
             <small class="help-block has-error">{{ compo.validation_error }}</small>
         {% endif %}
