@@ -1,0 +1,12 @@
+.fht-tbody {
+    overflow: auto;
+}
+
+.fht-table {
+    margin-bottom: 0px;
+}
+
+.fht-table>thead>tr>th,
+.fht-table>tbody>tr>td {
+    overflow: hidden;
+}
