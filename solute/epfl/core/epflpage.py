@@ -122,7 +122,6 @@ class Page(object):
         else:
             # Reset the rendered_extra_content list since none actually has been rendered yet!
             self.transaction['rendered_extra_content'] = set()
-            self.handle_default_events()
 
         for compo in self.get_active_components():
             compo.after_event_handling()
@@ -447,24 +446,6 @@ class Page(object):
         """
         for compo in self.get_active_components():
             compo.redraw()
-
-    def handle_default_events(self):
-        """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
-        This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
-        False should be called.
-
-        Example:
-
-        if page.handle_ajax_request(json):
-            return page.response.render_ajax_response()
-        else:
-            page.handle_submit_request()
-
-        It calls the handle_submit-method of all components in this page.
-        """
-
-        for component_obj in self.get_active_components():
-            component_obj.request_handle_submit(dict(self.page_request.params))
 
     def add_js_response(self, js_string):
         """

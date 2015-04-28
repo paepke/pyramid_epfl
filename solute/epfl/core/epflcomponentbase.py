@@ -712,14 +712,6 @@ class ComponentBase(object):
 
         post_event_callable(**event_params)
 
-    def request_handle_submit(self, params):
-        """
-        Called by the system (epflpage.Page.handle_submit_request) with the CGI-params once for
-        every non-ajax-request
-        Overwrite me!
-        """
-        pass
-
     def pre_render(self):
         """ Called just before the page jina-rendering occures.
         Overwrite me!!!
@@ -801,6 +793,9 @@ class ComponentBase(object):
     def discover(cls):
         cls.set_handles(force_update=True)
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
+
+        if hasattr(cls, 'request_handle_submit'):
+            raise Exception('Deprecated Feature: Submit requests are no longer supported by EPFL.')
 
         for name in cls.combined_compo_state:
             original = getattr(cls, name, None)
