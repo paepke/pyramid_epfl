@@ -120,7 +120,8 @@ class Page(object):
             self.handle_ajax_events()
             content_type = "text/javascript"
         else:
-            self.handle_default_events()
+            # Reset the rendered_extra_content list since none actually has been rendered yet!
+            self.transaction['rendered_extra_content'] = set()
 
         for compo in self.get_active_components():
             compo.after_event_handling()
@@ -145,37 +146,6 @@ class Page(object):
                                 status=200,
                                 content_type='text/javascript')
             self.transaction.set_page_obj(self)
-
-    def generate_ajax_output(self):
-        """
-        Sub-method of :meth:`__call__` used in case of ajax calls.
-        """
-        out = self.response.render_ajax_response()
-        extra_content = [s.render() for s in self.response.extra_content if s.enable_dynamic_rendering]
-        extra_content = [s for s in extra_content
-                         if s not in self.transaction.setdefault('rendered_extra_content', set())]
-        if extra_content:
-            out = "epfl.handle_dynamic_extra_content(%s);\r\n%s" % (json.dumps(extra_content), out)
-            self.transaction['rendered_extra_content'].update(extra_content)
-
-        return out
-
-    def handle_default_request(self):
-        """
-        Sub-method of :meth:`__call__` used for normal requests.
-        """
-        self.handle_submit_request()
-        out = self.render()
-
-        extra_content = set()
-        for s in self.response.extra_content:
-            if s.enable_dynamic_rendering:
-                extra_content.add(s.render())
-
-        self.transaction.setdefault('rendered_extra_content', set())
-        self.transaction['rendered_extra_content'].update(extra_content)
-
-        return out
 
     def call_cleanup(self, check_tid):
         """
@@ -431,14 +401,6 @@ class Page(object):
 
             else:
                 raise Exception("Unknown ajax-event: " + repr(event))
-        #
-        #
-        # pages = self.page_request.get_handeled_pages()[:]
-        # pages.append(self)
-        # for page in pages:
-        #     page.traversing_redraw()
-        #
-        # return self.generate_ajax_output()
 
     def traversing_redraw(self, cid=None, js_only=False):
         """
@@ -484,24 +446,6 @@ class Page(object):
         """
         for compo in self.get_active_components():
             compo.redraw()
-
-    def handle_default_events(self):
-        """ Handles the "normal" submit-request which is normally a GET or a POST request to the page.
-        This is the couterpart to the self.handle_ajax_request() which should be called first and if it returns
-        False should be called.
-
-        Example:
-
-        if page.handle_ajax_request(json):
-            return page.response.render_ajax_response()
-        else:
-            page.handle_submit_request()
-
-        It calls the handle_submit-method of all components in this page.
-        """
-
-        for component_obj in self.get_active_components():
-            component_obj.request_handle_submit(dict(self.page_request.params))
 
     def add_js_response(self, js_string):
         """
@@ -639,7 +583,7 @@ class Page(object):
 
     def toast(self, message, message_type):
         """
-        :param message_type: Can be success, info or error.
+        :param message_type
         """
         toastr_options = u"""
         toastr.options = {

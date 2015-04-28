@@ -1,6 +1,10 @@
+.epfl-multiselect {
+    overflow-y: auto;
+}
+
 .epfl-multiselect-list {
-   overflow-y:auto;
-   border: 1px solid #DFDFDF;
+    overflow-y: auto;
+    border: 1px solid #DFDFDF;
 }
 
 .multiselect-selectable.selected {
@@ -15,11 +19,12 @@ li.multiselect-selectable {
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
 }
+
 .in-multiselect-group {
     margin-left: 10px;
 }
 
-button.epfl-selecttransfer{
+button.epfl-selecttransfer {
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */

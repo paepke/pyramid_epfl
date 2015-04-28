@@ -25,12 +25,7 @@ class PaginatedListLayout(PrettyListLayout):
 
     search_focus = False
 
-    # theme_path = PrettyListLayout.theme_path + ["paginated_list_layout/theme"]
-    theme_path = {'default': ['paginated_list_layout/theme'],
-                  # paginated layout embraces pretty layout template  for before and after
-                  # templates
-                  'before': ['pretty_list_layout/theme', '<paginated_list_layout/theme'],
-                  'after': ['pretty_list_layout/theme', '<paginated_list_layout/theme']}
+    theme_path = ['pretty_list_layout/theme', '<paginated_list_layout/theme']
 
     js_parts = PrettyListLayout.js_parts + ["paginated_list_layout/paginated_list_layout.js"]
     js_name = PrettyListLayout.js_name + [(

@@ -32,7 +32,7 @@ class ModelBase(object):
         for row in getattr(self, 'load_' + key)(compo, *args, **kwargs):
             tmp_data = data_interface.copy()
             for k, v in tmp_data.items():
-                if type(v) is str:
+                if type(v) in [str, unicode]:
                     try:
                         v.format()
                         tmp_data[k] = get_item_or_attr(row, tmp_data[k])

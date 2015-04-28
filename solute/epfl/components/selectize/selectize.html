@@ -28,7 +28,7 @@
                    {% if compo.selected_text %}value="{{ compo.selected_text }}"{% else %}value="{{ compo.search_text }}"{% endif %}
                    autocomplete="off" {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
             <div class="input-group-btn">
-                <button type="button" class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}"><span class="caret"></span></button>
+                <button class="btn btn-default epfl-selectize-toggle" id="selectize-toggle-{{ compo.cid }}" {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}><span class="caret"></span></button>
             </div>
         </div>
         {% if compo.validation_error %}
