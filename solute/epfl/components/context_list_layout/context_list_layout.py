@@ -51,6 +51,20 @@ class ContextListLayout(PaginatedListLayout):
 
     """
 
+    def __init__(self, page, cid, show_search=True, get_data=None, data_interface=None, *args, **kwargs):
+        """ContextListLayout Component
+
+        :param get_data: A get_data source that is used for this component
+        :param show_search: Enables a search field on top of the ContextList
+        :param data_interface: Data interface to translate the results from get_data polling.
+        """
+        kwargs.update({
+            'show_search': show_search,
+            'get_data': get_data,
+            'data_interface': data_interface
+        })
+        super(ContextListLayout, self).__init__(page, cid, *args, **kwargs)
+
     theme_path = {'default': ['context_list_layout/theme'],
                   'container': ['pretty_list_layout/theme'],
                   # context layout embraces paginated layout template  for before and after
@@ -71,3 +85,12 @@ class ContextListLayout(PaginatedListLayout):
     css_name = PaginatedListLayout.css_name + [("solute.epfl.components:context_list_layout/static", "context_list_layout.css")]
 
     data_interface = {'id': None, 'data': None, 'menu': None}
+
+    default_menu = [{'name':u"Delete", 'event':"delete", 'type':"link"},
+                    {'name':"Rename", 'event':"rename", 'type':"link"}]
+
+    def handle_delete(self, entry_id, data):
+        pass
+
+    def handle_rename(self, entry_id, data):
+        pass
