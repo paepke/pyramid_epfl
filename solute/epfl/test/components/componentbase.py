@@ -201,6 +201,14 @@ class ComponentBaseTest(unittest.TestCase):
                 assert ":param {var}:".format(var=var) in init_docs,\
                     "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
 
+    def test_handle_submit_exception(self):
+        page = self.page
+
+        page.root_node = epfl.core.epflcomponentbase.ComponentBase(request_handle_submit='foo')
+
+        with self.assertRaises(Exception):
+            page.setup_components()
+
 
 class ComponentContainerBaseTest(ComponentBaseTest):
     component = epfl.core.epflcomponentbase.ComponentContainerBase

@@ -5,6 +5,8 @@ Cycling EPFL: Life of a request
 Previously this topic was kind of a hassle. There were actually a hand full of ways any request might walk through a
 given :class:`~solute.epfl.core.epflpage.Page` call. Thankfully we've had time to rearrange this a bit so take a look:
 
+A model for everyone
+--------------------
 .. code-block:: python
 
     def __call__(self):
@@ -16,8 +18,6 @@ given :class:`~solute.epfl.core.epflpage.Page` call. Thankfully we've had time t
 
         self.setup_model()
 
-A model for everyone
---------------------
 Previously EPFL was utilizing the reflection mechanisms of pyramid (and thus zope) to allow a user the creation of
 custom data sources. But since actually meddling with the config is frowned upon nowadays (there's really only a blessed
 few processes that absolutely require this still) a new solution had to be found. The new
@@ -26,6 +26,8 @@ tightly tied into the get_data pattern you should know well from working with
 :class:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase` and its offspring before. You can find more
 information on this mechanism in its own topic: :ref:`get_data`
 
+Only you can prevent transaction loss!
+--------------------------------------
 .. code-block:: python
 
         # Check if we lost our transaction to a timeout.
@@ -33,21 +35,17 @@ information on this mechanism in its own topic: :ref:`get_data`
         if transaction_loss:
             return transaction_loss
 
-
-Only you can prevent transaction loss!
---------------------------------------
 Since EPFL does no longer carry its own specific session handler some instances have arisen where transactions were
 partially or completely lost. This little helper function checks if the transaction is still well formed and if not
 creates a page reload in order to avoid exceptions and crashes from a malformed
 :class:`~solute.epfl.core.epfltransaction.Transaction`.
 
-
+Recursive statements are recursive because they are Recursions
+--------------------------------------------------------------
 .. code-block:: python
 
         self.handle_transaction()
 
-Recursive statements are recursive because they are Recursions
---------------------------------------------------------------
 This call is the first actual stepping stone in the official lifecycle. It invokes the following methods:
  1. :meth:`solute.epfl.core.epflpage.Page.setup_components` is called to assign the root_node.
  2. If the root_node has not already been initialized in this :class:`~solute.epfl.core.epfltransaction.Transaction`
@@ -56,7 +54,19 @@ This call is the first actual stepping stone in the official lifecycle. It invok
     initialized as necessary by calling their respective
     :meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.init_transaction` methods as well.
 
-These three steps build the lifecycle stage usually referred to as "init transaction" or similar names.
+These three steps build the lifecycle stage usually referred to as "init transaction" or similar names. The title of
+this topic refers to a very important fact about this stage: It's about as recursive as the rendering process, which
+is basically saying "it's really heavily relying on recursion". The reason is that during the individual call to
+:meth:`~solute.epfl.core.epflcomponentbase.ComponentBase.init_transaction` any
+:class:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase` component will instantiate all its children as
+directed by its :attr:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.node_list`. This would in turn cause
+that component to instantiate any potential children it might have. So that initial call in #3 kicks of all the fixed
+component instantiations for this page which can be a lot.
+
+Event handling
+--------------
+Now there's a short topic name for the place most EPFL requests spends more than half its total time. This is where
+almost all the fun happens.
 
 .. code-block:: python
 
@@ -69,6 +79,16 @@ These three steps build the lifecycle stage usually referred to as "init transac
             # Reset the rendered_extra_content list since none actually has been rendered yet!
             self.transaction['rendered_extra_content'] = set()
             self.handle_default_events()
+
+The default content type of any request is set to text/html and then subsequently overwritten if it's actually an AJAX
+request. Based on the pyramid request flag the actual handling is dispatched to either the ajax or default handlers.
+:meth:`~solute.epfl.core.epflpage.Page.handle_default_events` is almost never used anymore. It's main purpose is to
+provide a way for Components to define handlers to be used on actual POST requests. Since any Component can implement
+AJAX event handling in just as convenient a way without forcing an actual page reload this method is on its way out of
+the EPFL Core.
+
+
+.. code-block:: python
 
         for compo in self.get_active_components():
             compo.after_event_handling()
