@@ -791,11 +791,10 @@ class ComponentBase(object):
 
     @classmethod
     def discover(cls):
+        """Handles one time actions on this specific class. Should only be called once per individual class.
+        """
         cls.set_handles(force_update=True)
         cls.combined_compo_state = set(cls.compo_state + cls.base_compo_state)
-
-        if hasattr(cls, 'request_handle_submit'):
-            raise Exception('Deprecated Feature: Submit requests are no longer supported by EPFL.')
 
         for name in cls.combined_compo_state:
             original = getattr(cls, name, None)
@@ -815,20 +814,22 @@ class ComponentBase(object):
                 fset=setter(name),
             ))
 
+        if hasattr(cls, 'request_handle_submit'):
+            raise Exception('Deprecated Feature: Submit requests are no longer supported by EPFL.')
+
         if not cls.template_name:
             raise Exception("You did not setup the 'self.template_name' in " + repr(cls))
 
         if hasattr(cls, 'cid'):
             raise Exception("You illegally set a cid as a class attribute in " + repr(cls))
 
-        cls.prepare_extra_content()
-
-    @classmethod
-    def prepare_extra_content(cls):
-        pass
-
     @classmethod
     def set_handles(cls, force_update=True):
+        """Put the names of all handle functions this class provides into a list that can be supplied to the javascript.
+        This allows the client side epfl parts to be aware of which component actually handles which events.
+
+        :param force_update: If True the handles will be set anew irregardless of whether they have been set before.
+        """
         if cls._handles is None or force_update:
             cls._handles = []
             for name in dir(cls):
