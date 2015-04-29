@@ -15,7 +15,9 @@
                 type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{ compo.cid }}">
             {% if compo.icon is defined and (not compo.icon is none) %}
 
-            <i class="fa fa-{{ compo.icon }}{% if compo.icon_size is defined and (not compo.icon_size is none) %} fa-{{ compo.icon_size  }}x{% endif %}{% if compo.icon_color is defined and (not compo.icon_color is none) %} text-{{ compo.icon_color }}{% endif %}"></i>
+            <i class="fa fa-{{ compo.icon }}
+                      {% if compo.icon_size is defined and (not compo.icon_size is none) %} fa-{{ compo.icon_size  }}x{% endif %}
+                      {% if compo.icon_color is defined and (not compo.icon_color is none) %} text-{{ compo.icon_color }}{% endif %}"></i>
             {% endif %}
             {% if compo.value is defined and not compo.value is none %}
                 {{ compo.value }}
