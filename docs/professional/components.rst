@@ -272,7 +272,10 @@ Generating a usable object instance
 
         return self
 
-This part is straight forward thankfully. The original __new__ mechanism is used to
+This part is straight forward thankfully. The original __new__ mechanism is used to create an instance of the class
+provided by the :class:`~solute.epfl.core.epflcomponentbase.UnboundComponent`. The cid and page object are set to the
+instance and the config is stored. Finally the component config attributes are copied to destroy any possible
+references that might taint the objects stored there.
 
 .. |unbound_compo| replace:: :class:`~solute.epfl.core.epflcomponentbase.UnboundComponent`
 .. |compo_base| replace:: :class:`~solute.epfl.core.epflcomponentbase.ComponentBase`
