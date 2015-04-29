@@ -20,11 +20,13 @@ class Button(ComponentBase):
     template_name = "button/button.html"
     js_parts = ["button/button.js"]
     js_name = ["button.js"]
-    compo_state = ComponentBase.compo_state + ['disabled', 'icon', 'value']
+    compo_state = ComponentBase.compo_state + ['disabled', 'icon', 'value','icon_size','icon_color']
 
     label = None #: If set, the label is rendered before the button.
     value = None #: The value is used as button text if no icon is provided.
     icon = None #: Optional font-awesome icon to be rendered as button value instead of :attr:`value` text.
+    icon_size = None #: Optional font-awesome icon-size possible values= 2,3,4,5
+    icon_color = None#: Optional posible values default,primary,warning,danger,success
     tooltip = None #: Optional tooltip text that is placed on the button.
     event_name = None #: Mandatory name of the event handling method (without trailing "handle\_").
     event_target = None #: Optional target where the event handling method can be found.
