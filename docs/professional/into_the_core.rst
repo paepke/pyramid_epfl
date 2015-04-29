@@ -18,3 +18,4 @@ Have fun on your journey into the core of EPFL!
     get_data
     event_handling
     rendering
+    setting_up

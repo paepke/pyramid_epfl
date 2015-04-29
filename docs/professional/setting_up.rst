@@ -1,4 +1,4 @@
-.. _get_data:
+.. _setting_up:
 
-How do I get data?
-==================
+Setting up EPFL
+===============
