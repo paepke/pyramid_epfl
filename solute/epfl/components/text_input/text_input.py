@@ -45,5 +45,5 @@ class TextInput(FormInputBase):
 
     date = False
 
-    def handle_typeahead(self, query, compo):
+    def handle_typeahead(self, query):
         pass

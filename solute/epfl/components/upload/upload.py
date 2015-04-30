@@ -35,7 +35,8 @@ class Upload(FormInputBase):
 
     def handle_change(self, value):
         self.value = value
-        self.redraw()
+        if self.no_preview is False:
+            self.redraw()
 
     def get_as_binary(self):
         value = self.value
