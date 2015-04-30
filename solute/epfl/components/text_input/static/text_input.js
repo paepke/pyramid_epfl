@@ -27,7 +27,7 @@ epfl.TextInput = function (cid, params) {
                 });
             };
 
-            var event = epfl.make_component_event(cid, type_func, {"query": query, "compo": cid}, cid + '_typeahead');
+            var event = epfl.make_component_event(cid, type_func, {"query": query}, cid + '_typeahead');
             return get_source(event);
         };
         $(selector).typeahead({source: type_function,
