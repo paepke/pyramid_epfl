@@ -21,6 +21,7 @@ Subpackages
     solute.epfl.components.dropdown
     solute.epfl.components.droppable
     solute.epfl.components.droppable_box
+    solute.epfl.components.flexible_text_list
     solute.epfl.components.form
     solute.epfl.components.grouped_link_list_layout
     solute.epfl.components.headbar

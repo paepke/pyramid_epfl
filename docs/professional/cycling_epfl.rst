@@ -78,20 +78,22 @@ almost all the fun happens.
         else:
             # Reset the rendered_extra_content list since none actually has been rendered yet!
             self.transaction['rendered_extra_content'] = set()
-            self.handle_default_events()
-
-The default content type of any request is set to text/html and then subsequently overwritten if it's actually an AJAX
-request. Based on the pyramid request flag the actual handling is dispatched to either the ajax or default handlers.
-:meth:`~solute.epfl.core.epflpage.Page.handle_default_events` is almost never used anymore. It's main purpose is to
-provide a way for Components to define handlers to be used on actual POST requests. Since any Component can implement
-AJAX event handling in just as convenient a way without forcing an actual page reload this method is on its way out of
-the EPFL Core.
-
-
-.. code-block:: python
 
         for compo in self.get_active_components():
             compo.after_event_handling()
+
+The default content type of any request is set to text/html and then subsequently overwritten if it's actually an AJAX
+request. Based on the pyramid request flag the actual handling is dispatched to either the ajax or no special handlers.
+Previously it was possible to hook into submit requests directly, since this option had been disabled by a bug for over
+a month without it being noticed it was deprecated. The only important action in case of a full page reques is to reset
+the rendered_extra_content, if omitted this leads to devilishly hard to find bugs with missing static extra content.
+Finally the after_event_handling cycle is kicked off on all active components. You can find more information on this
+mechanism in its own topic: :ref:`event_handling`
+
+After Event Handling
+--------------------
+
+.. code-block:: python
 
         out = self.render()
 
@@ -102,3 +104,10 @@ the EPFL Core.
                             content_type=content_type)
         response.headerlist.extend(self.remember_cookies)
         return response
+
+
+The easy one up front: :meth:`~solute.epfl.core.epflpage.Page.call_cleanup` just appends a javascript snippet if the
+transaction ID has changed in order to update the client side state. In the end a pyramid Response is created using the
+rendered output string and the appropriate content_type. The remember_cookies are required for using the pyramid
+remember() and forget() API. You can find more information on the rendering mechanism in its own topic:
+:ref:`rendering`

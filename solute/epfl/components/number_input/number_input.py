@@ -31,7 +31,7 @@ class NumberInput(FormInputBase):
         if self.validation_type == 'float' and value is not None:
             try:
                 value = float(str(value).replace(",", "."))
-            except AttributeError:
+            except ValueError:
                 value = None
         self.value = value
 
