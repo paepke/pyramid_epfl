@@ -49,3 +49,10 @@ class Checkbox(FormInputBase):
                 check_box = getattr(self.page, chbox)
                 check_box.handle_change(False)
         self.redraw()
+
+    def __init__(self, page, cid, grouped=None, **extra_params):
+        """Checkbox component
+
+        :param grouped: Boolean that is used to distinct if a checkbox is part of a group.
+        """
+        super(Checkbox, self).__init__(page, cid, grouped)
