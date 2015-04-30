@@ -38,6 +38,13 @@ class Checkbox(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:checkbox/static", "checkbox.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:checkbox/static", "checkbox.css")]
 
+    def __init__(self, page, cid, grouped=None, **extra_params):
+        """Checkbox component
+
+        :param grouped: Boolean that is used to distinct if a checkbox is part of a group.
+        """
+        super(Checkbox, self).__init__(page, cid, grouped)
+
     def handle_change(self, value):
         self.value = value
         if not self.grouped and len(self.group) > 0:
@@ -49,10 +56,3 @@ class Checkbox(FormInputBase):
                 check_box = getattr(self.page, chbox)
                 check_box.handle_change(False)
         self.redraw()
-
-    def __init__(self, page, cid, grouped=None, **extra_params):
-        """Checkbox component
-
-        :param grouped: Boolean that is used to distinct if a checkbox is part of a group.
-        """
-        super(Checkbox, self).__init__(page, cid, grouped)
