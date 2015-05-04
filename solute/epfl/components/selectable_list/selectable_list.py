@@ -3,11 +3,15 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import PaginatedListLayout
 
 
+class SelectableEntry(epflcomponentbase.ComponentBase):
+    compo_state = PaginatedListLayout.compo_state + ['selected']
+    selected = False
+
 class SelectableList(PaginatedListLayout):
     """
     Selectable List is a MultiSelect Component, multiple values can be selected
     """
-    default_child_cls = epflcomponentbase.ComponentBase
+    default_child_cls = SelectableEntry
     data_interface = {'id': None,
                       'text': None}
 
@@ -16,15 +20,11 @@ class SelectableList(PaginatedListLayout):
 
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:selectable_list/static', 'selectable_list.js')]
 
-    compo_state = PaginatedListLayout.compo_state + ['selected_cids']
-
-    selected_cids = []
+    def __init__(self,page,cid, *args, **extra_params):
+        super(SelectableList, self).__init__(page,cid, *args, **extra_params)
 
     def handle_select(self, cid):
-        if cid in self.selected_cids:
-            self.selected_cids.remove(cid)
-        else:
-            self.selected_cids.append(cid)
+        self.page.components[cid].selected = not self.page.components[cid].selected
         self.redraw()
 
     def get_selected(self):
@@ -32,6 +32,7 @@ class SelectableList(PaginatedListLayout):
         :return: a list with the selected cids and their data (id and text)
         """
         selected = []
-        for cid in self.selected_cids:
-            selected.append({"cid": cid, "id": self.page.components[cid].id, "text": self.page.components[cid].text})
+        for compo in self.components:
+            if compo.selected:
+                selected.append({"cid": compo.cid, "id": compo.id, "text": compo.text})
         return selected
