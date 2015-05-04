@@ -28,7 +28,7 @@ class SelectableList(PaginatedListLayout):
         Selectable List is a MultiSelect Component, multiple values can be selected
         :param data_interface: data interface for child class needs id and text
         """
-        super(SelectableList, self).__init__(page,cid,data_interface, *args, **extra_params)
+        super(SelectableList, self).__init__(page,cid,data_interface=data_interface, *args, **extra_params)
 
     def handle_select(self, cid):
         self.page.components[cid].selected = not self.page.components[cid].selected
