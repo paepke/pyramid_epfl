@@ -449,7 +449,7 @@ class ComponentBase(object):
         if not self.container_compo:
             raise ValueError("Only dynamically created components can be deleted")
 
-        for compo in getattr(self, 'components', []):
+        for compo in getattr(self, 'components', [])[:]:
             compo.delete_component()
 
         self.page.transaction.del_component(self.cid)
