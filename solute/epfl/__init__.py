@@ -197,12 +197,14 @@ def includeme(config):
                 js = (cls.asset_spec, js)
             js_name.append(js)
             js_paths.append(ar.resolve('/'.join(js)).abspath())
+        cls.js_name += getattr(cls, 'js_name_no_bundle', [])
 
         for css in cls.css_name:
             if type(css) is not tuple:
                 css = (cls.asset_spec, css)
             css_name.append(css)
             css_paths.append(ar.resolve('/'.join(css)).abspath())
+        cls.js_name += getattr(cls, 'css_name_no_bundle', [])
 
     epfl_static = ar.resolve('solute.epfl:static')
 

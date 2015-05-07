@@ -14,8 +14,8 @@ class TextEditor(FormInputBase):
     """
 
     js_parts = ['texteditor/texteditor.js']
-    js_name = [('solute.epfl.components:texteditor/static', 'texteditor.js'),
-               ('solute.epfl.components:texteditor/static', 'ckeditor.js')]
+    js_name = [('solute.epfl.components:texteditor/static', 'texteditor.js')]
+    js_name_no_bundle = [('solute.epfl.components:texteditor/static', 'ckeditor.js')]
 
     template_name = "texteditor/texteditor.html"
 
