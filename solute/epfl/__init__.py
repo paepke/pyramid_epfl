@@ -22,6 +22,9 @@ from solute.epfl.core import (epfltransaction,
                               epflassets,
                               epflacl)
 
+from webassets import Bundle
+from webassets import Environment
+
 
 class IEPFLJinja2Environment(Interface):
     pass
@@ -179,3 +182,36 @@ def includeme(config):
     epflassets.EPFLView.configure(config)
 
     epflutil.Discover()
+
+    from pyramid.path import AssetResolver
+    ar = AssetResolver()
+
+    js_paths = []
+    js_name = []
+    css_paths = []
+    css_name = []
+
+    for cls in epflutil.Discover.discovered_classes:
+        for js in cls.js_name:
+            if type(js) is not tuple:
+                js = (cls.asset_spec, js)
+            js_name.append(js)
+            js_paths.append(ar.resolve('/'.join(js)).abspath())
+
+        for css in cls.css_name:
+            if type(css) is not tuple:
+                css = (cls.asset_spec, css)
+            css_name.append(css)
+            css_paths.append(ar.resolve('/'.join(css)).abspath())
+
+    epfl_static = ar.resolve('solute.epfl:static')
+
+    my_env = Environment('%s/bundles' % epfl_static.abspath(), 'bundles')
+
+    my_env.register('js', Bundle(js_paths, filters='rjsmin', output='epfl.%(version)s.js'))
+    my_env.register('css', Bundle(css_paths, output='epfl.%(version)s.css'))
+
+    epflpage.Page.js_name += [("solute.epfl:static", url) for url in my_env['js'].urls()]
+    epflpage.Page.css_name += [("solute.epfl:static", url) for url in my_env['css'].urls()]
+
+    epflpage.Page.bundled_names = js_name + css_name
