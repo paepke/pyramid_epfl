@@ -40,7 +40,7 @@ class Popover(epflcomponentbase.ComponentBase):
 
     def __init__(self, page, cid, label=None, icon=None, text=None, title=None, position="top", color="default", small_button=False, **extra_params):
         '''
-        NumberInput Component
+        Popover Component
 
         :param label: An optional label that should be displayed on the button
         :param icon: An optional font-awesome icon that should be displayed on the button
