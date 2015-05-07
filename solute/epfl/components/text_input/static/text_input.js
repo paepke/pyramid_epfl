@@ -43,9 +43,6 @@ epfl.TextInput = function (cid, params) {
     }
     var change = function (event) {
         epfl.FormInputBase.on_change(compo, $(selector).val(), cid, enqueue_event);
-        if(show_count && max_length){
-            $(selector + '_count').text($(selector).val().length);
-        }
         if(submit_form_on_enter && event.which == 13){
             epfl.FormInputBase.event_submit_form_on_enter(cid);
         }
@@ -57,7 +54,14 @@ epfl.TextInput = function (cid, params) {
         change();
     }
 
-    elm.blur(change).change(change).keydown(change);
+    elm.blur(change).change(change);
+    if(show_count){
+        elm.keydown(function(event){
+            if(max_length){
+                $(selector + '_count').text($(selector).val().length);
+            }
+        });
+    }
 };
 
 epfl.TextInput.inherits_from(epfl.FormInputBase);

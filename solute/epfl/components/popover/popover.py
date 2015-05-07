@@ -20,19 +20,34 @@ class Popover(epflcomponentbase.ComponentBase):
     js_name = ["popover.js"]
 
     compo_config = []
-    compo_state = ["text", "title", "position", "label", "icon"]
+    compo_state = ["disabled", "text", "title", "position", "label", "icon", "color"]
 
     text = ""
     title = None  # : if title is none it is not displayed
-    position = "top"  # : posible positions are top,left,right,bottom
+    position = "top"  # : possible positions are top, left, right, bottom
     #: An optional font-awesome icon that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order to yield a reasonable button.
+    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    # to yield a reasonable button.
     icon = None
     #: An optional label that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order to yield a reasonable button.
+    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    # to yield a reasonable button.
     label = None
-    
-    #def delete_component(self):
-    #    self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))
-    #    epflcomponentbase.ComponentBase.delete_component(self)
-        
+    disabled = None  # : Set to true if button should be disabled.
+    # : The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
+    color = "default"
+    small_button = False  # : Set to true if a small button should be rendered.
+
+    def __init__(self, page, cid, label=None, icon=None, text=None, title=None, position="top", color="default", small_button=False, **extra_params):
+        '''
+        Popover Component
+
+        :param label: An optional label that should be displayed on the button
+        :param icon: An optional font-awesome icon that should be displayed on the button
+        :param text: The text to display in the popover
+        :param title: An optional title to display in the popover
+        :param position: The position of the popover (possible values are top, left, right, bottom)
+        :param color: The color class to be used for the button
+        :param small_button: Set to true if a small button should be rendered
+        '''
+        super(Popover, self).__init__(page, cid, label, icon, text, title, position, color)
