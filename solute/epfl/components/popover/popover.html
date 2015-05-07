@@ -1,5 +1,5 @@
 <div id="{{compo.cid}}" epflid="{{ compo.cid }}">
-    <a class="btn-icon btn-icon-sm bg-info epfl-popover"
+    <a class="btn{% if compo.small_button is defined and compo.small_button %} btn-xs{% endif %} epfl-popover{% if compo.color is defined and compo.color is not none %} btn-{{ compo.color }}{% else %} btn-link{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}"
             id="{{ compo.cid }}_popover"
             {% if compo.title %}title="{{ compo.title }}"{% endif %}
             data-container="body"
