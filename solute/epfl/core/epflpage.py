@@ -234,7 +234,7 @@ class Page(object):
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
         if self.request.registry.settings.get('epfl.debug', 'false') == 'true' \
-                and self.__dict__.has_key(cid) and not overwrite:
+                and self.transaction.get_component(cid) is not None and not overwrite:
             raise Exception('A component with CID %(cid)s is already present in this page!\n'
                             'Existing component: %(existing_compo)r of type %(existing_compo_unbound)r\n'
                             'New component: %(new_compo)r of type %(new_compo_unbound)r\n'
