@@ -190,6 +190,7 @@ def get_component(request, tid, cid):
     page_obj.setup_components()
     return page_obj.components[cid]
 
+
 def get_component_from_root_node(request, tid, cid):
     """
     Same as get_component but for the new pages which always have a root node with the compos in it
@@ -203,6 +204,7 @@ def get_component_from_root_node(request, tid, cid):
     root_node = page_obj.components['root_node']
     root_node.init_transaction()
     return page_obj.components[cid]
+
 
 def get_widget(request, tid, cid, wid):
     """
@@ -272,5 +274,5 @@ class Discover(object):
     def discover_class(cls, input_class):
         if input_class in cls.discovered_classes:
             return
-        cls.discovered_classes.add(cls)
+        cls.discovered_classes.add(input_class)
         input_class.discover()
