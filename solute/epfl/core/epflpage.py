@@ -64,7 +64,7 @@ class Page(object):
     #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
-                "css/font-awesome/css/font-awesome.min.css",
+                "css/font-awesome/css/font-awesome.css",
                 "css/bootstrap.min.css",
                 "css/toastr.min.css"]
 

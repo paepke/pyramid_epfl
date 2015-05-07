@@ -191,7 +191,7 @@ def includeme(config):
     css_paths = []
     css_name = []
 
-    for cls in epflutil.Discover.discovered_classes:
+    for cls in [epflpage.Page] + list(epflutil.Discover.discovered_classes):
         for js in cls.js_name:
             if type(js) is not tuple:
                 js = (cls.asset_spec, js)
@@ -210,7 +210,7 @@ def includeme(config):
 
     my_env = Environment('%s/bundles' % epfl_static.abspath(), 'bundles')
 
-    my_env.register('js', Bundle(js_paths, filters='rjsmin', output='epfl.%(version)s.js'))
+    my_env.register('js', Bundle(js_paths, output='epfl.%(version)s.js'))  # filters='rjsmin',
     my_env.register('css', Bundle(css_paths, output='epfl.%(version)s.css'))
 
     epflpage.Page.js_name += [("solute.epfl:static", url) for url in my_env['js'].urls()]
