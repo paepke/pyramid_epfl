@@ -6,7 +6,7 @@ from collections2 import OrderedDict as odict
 class FormInputBase(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form/static"
 
-    compo_state = ['label', 'name', 'value', 'validation_error', 'readonly']
+    compo_state = ['label', 'name', 'value', 'validation_error', 'readonly', 'mandatory']
     js_parts = ["form/input_base.js"]
 
     js_name = ["input_base.js"]

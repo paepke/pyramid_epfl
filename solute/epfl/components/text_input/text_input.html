@@ -25,6 +25,9 @@
                value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                data-initial-value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
+               {% if compo.typeahead == True %}
+                   autocomplete="off"
+               {% endif %}
                {% if compo.max_length is not none %}
                    maxlength="{{ compo.max_length }}"
                {% endif %} {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
