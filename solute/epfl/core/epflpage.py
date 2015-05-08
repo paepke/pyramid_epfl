@@ -52,14 +52,16 @@ class Page(object):
     asset_spec = "solute.epfl:static"
 
     #: JavaScript files to be statically loaded.
-    js_name = ["js/jquery-1.11.2.min.js",
-               "js/jquery-ui.js",
-               "js/history.js",
-               "js/epfl.js",
-               "js/epflcomponentbase.js",
-               "js/json2-min.js",
-               "js/bootstrap.min.js",
-               "js/toastr.min.js"]
+    js_name = [
+        "js/jquery-1.11.3.js",
+        "js/jquery-ui.js",
+        "js/history.js",
+        "js/epfl.js",
+        "js/epflcomponentbase.js",
+        "js/json2-min.js",
+        "js/bootstrap.min.js",
+        "js/toastr.min.js"
+    ]
     #: JavaScript files to be statically loaded but never in a bundle.
     js_name_no_bundle = []
 
