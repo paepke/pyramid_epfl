@@ -9,7 +9,6 @@ The components must be imported in the namespace of this library.
 from box.box import Box, ModalBox
 from drag_box.drag_box import DragBox
 from droppable_box.droppable_box import DroppableBox
-from sortable.sortable import Sortable
 from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
@@ -109,7 +108,6 @@ def add_routes(config):
 
     SimpleTable.add_pyramid_routes(config)
     MultiSelect.add_pyramid_routes(config)
-    Sortable.add_pyramid_routes(config)
     Droppable.add_pyramid_routes(config)
     Dragable.add_pyramid_routes(config)
     Simpletree.add_pyramid_routes(config)
