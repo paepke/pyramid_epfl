@@ -1,6 +1,4 @@
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.components import Droppable, Dragable
-from collections2 import OrderedDict as odict
 
 
 class FormInputBase(epflcomponentbase.ComponentBase):
@@ -43,6 +41,13 @@ class FormInputBase(epflcomponentbase.ComponentBase):
 
     def is_numeric(self):
         return type(self.value) in [int, float]
+    
+    def get_parent_form(self, compo):
+        if isinstance(compo, Form):
+            return compo
+        if not hasattr(compo, 'container_compo'):
+            return None
+        return self.get_parent_form(compo.container_compo)
 
     def init_transaction(self):
         super(FormInputBase, self).init_transaction()
@@ -50,19 +55,20 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         if self.value is None and self.default is not None:
             self.value = self.default
 
-        def get_parent_form(compo):
-            if isinstance(compo, Form):
-                return compo
-            if not hasattr(compo, 'container_compo'):
-                return None
-            return get_parent_form(compo.container_compo)
 
         # try to find a parent form and register this component, but fail silently,
         # since components do not need to be nested inside a form
         try:
-            get_parent_form(self.container_compo).register_field(self) 
+            self.get_parent_form(self.container_compo).register_field(self)
         except AttributeError:
             pass
+
+    def delete_component(self):
+        try:
+            self.get_parent_form(self.container_compo).unregister_field(self) 
+        except AttributeError:
+            pass
+        super(FormInputBase, self).delete_component()
 
     def get_value(self):
         """
@@ -180,8 +186,6 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     fields = []
     _registered_fields = None
-    validation_errors = None
-    _registered_fields = None
     validation_errors = []
 
     validate_hidden_fields = False
@@ -203,8 +207,15 @@ class Form(epflcomponentbase.ComponentContainerBase):
         since these are called for all registered fields by the parent form.
         """
         if self._registered_fields is None:
-            self._registered_fields = []
-        self._registered_fields.append(field.cid)
+            self._registered_fields = set()
+        self._registered_fields.add(field.cid)
+        
+    def unregister_field(self,field):
+        try:
+            self._registered_fields.remove(field.cid)
+        except (AttributeError, KeyError):
+            pass
+
 
     @property
     def registered_fields(self):
@@ -217,7 +228,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
                      if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
 
     def get_values(self):
-        values = odict()
+        values = {}
 
         for field in self.registered_fields:
             if field.name is None:
