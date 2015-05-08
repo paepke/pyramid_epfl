@@ -33,6 +33,7 @@ setuptools.setup(
         "pyramid >= 1.4",
         "Jinja2 >= 2.7.2",
         "pyramid_jinja2 >= 1.10",
+        "pyramid_webassets",
         "ujson >= 1.33",
         "pytz >= 2014.4",
         "python-dateutil",

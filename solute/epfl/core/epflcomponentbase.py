@@ -267,7 +267,9 @@ class ComponentBase(object):
     template_name = "empty.html"  #: Filename of the template for this component (if any).
     js_parts = []  #: List of files to be parsed as js-parts of this component.
     js_name = []  #: List of javascript files to be statically loaded with this component.
+    js_name_no_bundle = []  #: List of js files to be statically loaded with this component but never in a bundle.
     css_name = []  #: List of css files to be statically loaded with this component.
+    css_name_no_bundle = []  #: List of css files to be statically loaded with this component but never in a bundle.
     compo_state = []  #: List of object attributes to be persisted into the :class:`.epfltransaction.Transaction`.
     compo_config = []  #: List of attributes to be copied into instance-variables using :func:`copy.deepcopy`.
 
@@ -328,7 +330,7 @@ class ComponentBase(object):
         if config.pop('__instantiate__', None) is None:
             return UnboundComponent(cls, config)
 
-        epflutil.Discover.discover_class(cls)
+        epflutil.Discover.discover_component(cls)
 
         self = super(ComponentBase, cls).__new__(cls, **config)
 
@@ -448,6 +450,9 @@ class ComponentBase(object):
         you can not use this component any longer in the layout. """
         if not self.container_compo:
             raise ValueError("Only dynamically created components can be deleted")
+
+        for compo in list(getattr(self, 'components', [])):
+            compo.delete_component()
 
         self.page.transaction.del_component(self.cid)
         self.add_js_response('epfl.destroy_component("{cid}");'.format(cid=self.cid))

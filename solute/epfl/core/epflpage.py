@@ -52,21 +52,27 @@ class Page(object):
     asset_spec = "solute.epfl:static"
 
     #: JavaScript files to be statically loaded.
-    js_name = ["js/jquery-1.11.2.min.js",
-               "js/jquery-ui.js",
-               "js/history.js",
-               "js/epfl.js",
-               "js/epflcomponentbase.js",
-               "js/json2-min.js",
-               "js/bootstrap.min.js",
-               "js/toastr.min.js"]
+    js_name = [
+        "js/jquery-1.11.3.js",
+        "js/jquery-ui.js",
+        "js/history.js",
+        "js/epfl.js",
+        "js/epflcomponentbase.js",
+        "js/json2-min.js",
+        "js/bootstrap.min.js",
+        "js/toastr.min.js"
+    ]
+    #: JavaScript files to be statically loaded but never in a bundle.
+    js_name_no_bundle = []
 
     #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",
                 "css/jquery-ui-lightness/jquery-ui-1.8.23.custom.css",
-                "css/font-awesome/css/font-awesome.min.css",
+                "css/font-awesome/css/font-awesome.css",
                 "css/bootstrap.min.css",
                 "css/toastr.min.css"]
+    #: CSS files to be statically loaded but never in a bundle.
+    css_name_no_bundle = []
 
     template = "page.html"  #: The name of the template used to render this page.
     base_html = 'base.html'  #: The template used as base for this page, given in get_render_environment.
@@ -196,6 +202,10 @@ class Page(object):
 
         return cls.__name
 
+    @classmethod
+    def discover(cls):
+        pass
+
     def __getattribute__(self, item):
         """
         Used to provide special handling for components in lazy_mode. Uses default behaviour of super otherwise. If the
@@ -234,7 +244,7 @@ class Page(object):
     def add_static_component(self, cid, compo_obj, overwrite=False):
         """ Registers the component in the page. """
         if self.request.registry.settings.get('epfl.debug', 'false') == 'true' \
-                and self.__dict__.has_key(cid) and not overwrite:
+                and self.transaction.get_component(cid) is not None and not overwrite:
             raise Exception('A component with CID %(cid)s is already present in this page!\n'
                             'Existing component: %(existing_compo)r of type %(existing_compo_unbound)r\n'
                             'New component: %(new_compo)r of type %(new_compo_unbound)r\n'
@@ -489,6 +499,8 @@ class Page(object):
             for sub_name in name_list:
                 if type(sub_name) is not tuple:
                     sub_name = compo.asset_spec, sub_name
+                if sub_name in getattr(self, 'bundled_names', []):
+                    continue
                 static_url = epflutil.create_static_url(self, sub_name[1], sub_name[0])
                 if static_url not in names:
                     names.append(static_url)
