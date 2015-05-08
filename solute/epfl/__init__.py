@@ -149,6 +149,9 @@ def set_nodeglobaldata_provider(config, nodeglobaldata_provider):
 
 
 def generate_webasset_bundles(config):
+    if config.registry.get('epfl.webassets.active') != 'true':
+        return
+
     ar = AssetResolver()
 
     js_paths = []
