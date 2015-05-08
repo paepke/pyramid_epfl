@@ -60,6 +60,8 @@ class Page(object):
                "js/json2-min.js",
                "js/bootstrap.min.js",
                "js/toastr.min.js"]
+    #: JavaScript files to be statically loaded but never in a bundle.
+    js_name_no_bundle = []
 
     #: CSS files to be statically loaded.
     css_name = ["css/epfl.css",
@@ -67,6 +69,8 @@ class Page(object):
                 "css/font-awesome/css/font-awesome.css",
                 "css/bootstrap.min.css",
                 "css/toastr.min.css"]
+    #: CSS files to be statically loaded but never in a bundle.
+    css_name_no_bundle = []
 
     template = "page.html"  #: The name of the template used to render this page.
     base_html = 'base.html'  #: The template used as base for this page, given in get_render_environment.
@@ -195,6 +199,10 @@ class Page(object):
             cls.__name = cls.__module__ + ":" + cls.__name__
 
         return cls.__name
+
+    @classmethod
+    def discover(cls):
+        pass
 
     def __getattribute__(self, item):
         """

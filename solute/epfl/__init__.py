@@ -191,10 +191,13 @@ def includeme(config):
     css_paths = []
     css_name = []
 
-    for cls in [epflpage.Page] + list(epflutil.Discover.discovered_classes):
+    # The Page needs to be in the webassets first, then all other pages, then all components.
+    for cls in [epflpage.Page] + epflutil.Discover.discovered_pages + epflutil.Discover.discovered_components:
         for js in cls.js_name:
             if type(js) is not tuple:
                 js = (cls.asset_spec, js)
+            if js in js_name:
+                continue
             js_name.append(js)
             js_paths.append(ar.resolve('/'.join(js)).abspath())
         cls.js_name += getattr(cls, 'js_name_no_bundle', [])
@@ -202,6 +205,8 @@ def includeme(config):
         for css in cls.css_name:
             if type(css) is not tuple:
                 css = (cls.asset_spec, css)
+            if css in css_name:
+                continue
             css_name.append(css)
             css_paths.append(ar.resolve('/'.join(css)).abspath())
         cls.js_name += getattr(cls, 'css_name_no_bundle', [])

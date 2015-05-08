@@ -238,7 +238,8 @@ class Discover(object):
     instance = None
 
     discovered_modules = set()
-    discovered_classes = set()
+    discovered_components = []
+    discovered_pages = []
 
     depth = 0
 
@@ -263,7 +264,9 @@ class Discover(object):
             if type(obj) is not type:
                 continue
             if issubclass(obj, core.epflcomponentbase.ComponentBase):
-                self.discover_class(obj)
+                self.discover_component(obj)
+            elif issubclass(obj, core.epflpage.Page):
+                self.discover_page(obj)
         try:
             for name, m in inspect.getmembers(module, predicate=inspect.ismodule):
                 self.discover_module(m)
@@ -271,8 +274,15 @@ class Discover(object):
             pass
 
     @classmethod
-    def discover_class(cls, input_class):
-        if input_class in cls.discovered_classes:
+    def discover_component(cls, input_class):
+        if input_class in cls.discovered_components:
             return
-        cls.discovered_classes.add(input_class)
+        cls.discovered_components.append(input_class)
+        input_class.discover()
+
+    @classmethod
+    def discover_page(cls, input_class):
+        if input_class in cls.discovered_pages:
+            return
+        cls.discovered_pages.append(input_class)
         input_class.discover()
