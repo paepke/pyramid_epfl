@@ -4,7 +4,6 @@ epfl.TableLayout = function(cid, params) {
     var selector = "#" + cid;
     var panel = $(selector + '_panel');
 	var panel_height = panel.height();
-    $(selector).fixedHeaderTable({autoShow: true, height: panel_height - 80, themeClass: 'deal-table'});
+    $(selector).fixedHeaderTable({autoShow: true, height: panel_height - 80});
 }; 
 epfl.TableLayout.inherits_from(epfl.ComponentBase);
-
