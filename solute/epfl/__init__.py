@@ -176,6 +176,9 @@ def generate_webasset_bundles(config):
             css_paths.append(ar.resolve('/'.join(css)).abspath())
         cls.js_name += getattr(cls, 'css_name_no_bundle', [])
 
+    if config.registry.get('epfl.webassets.active') != 'true':
+        return
+
     epfl_static = ar.resolve('solute.epfl:static')
 
     my_env = Environment('%s/bundles' % epfl_static.abspath(), 'bundles')
