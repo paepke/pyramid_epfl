@@ -2,7 +2,7 @@
     overflow: auto;
 }
 
-.fht-table {
+table.fht-table, .fht-table {
     margin-bottom: 0px;
 }
 
