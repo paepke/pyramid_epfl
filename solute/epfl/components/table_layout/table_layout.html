@@ -1,9 +1,9 @@
-<div class="panel panel-default" id="{{ compo.cid }}_panel" epflid="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
+<div class="panel panel-default" id="{{ compo.cid }}" epflid="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
     {% if compo.title is defined %}
         <div class="panel-heading">{{ compo.title }}</div>
     {% endif %}
-    <div id="{{ compo.cid }}_container" style="overflow: hidden;{% if compo.height %}height: {{ compo.height - 80 }}px;{% endif %}">
-        <table id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="table table-condensed table-hover epfl-table"
+    <div id="{{ compo.cid }}_container" style="overflow: hidden; {% if compo.height %}height: {{ compo.height - 80 }}px;{% endif %}">
+        <table id="table_{{ compo.cid }}" class="table table-condensed table-hover epfl-table"
             {% if compo.style is defined %}
                 style="{{ compo.style }}"
             {% endif %} >
