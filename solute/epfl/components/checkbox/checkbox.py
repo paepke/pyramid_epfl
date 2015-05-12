@@ -38,10 +38,12 @@ class Checkbox(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:checkbox/static", "checkbox.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:checkbox/static", "checkbox.css")]
 
-    def __init__(self, page, cid, grouped=None, **extra_params):
+    def __init__(self, page, cid, grouped=None, group=None, **extra_params):
         """Checkbox component
 
-        :param grouped: Boolean that is used to distinct if a checkbox is part of a group.
+        Args:
+            grouped (bool, optional): Used to distinct if a checkbox is part of a group.
+            group (list, optional): A list of cids, describing which checkboxes are part of this checkbox group.
         """
         super(Checkbox, self).__init__(page, cid, grouped)
 
