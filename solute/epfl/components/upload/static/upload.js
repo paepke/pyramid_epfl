@@ -9,25 +9,25 @@ epfl.Upload = function (cid, params) {
     var change = function (event) {
         var reader = new FileReader();
         var file = $(selector)[0].files[0];
-        if (!file){
+        if (!file) {
             try {
                 // Check if file was added with paste (only Chrome)
                 items = event.clipboardData.items;
                 var i = 0;
-                for(; i < items.length; i++){
+                for (; i < items.length; i++) {
                     file = items[i].getAsFile();
-                    if(file){
+                    if (file) {
                         // It's a file that was pasted
                         break;
                     }
                 }
             }
-            catch (e){
+            catch (e) {
                 return;
             }
         }
         reader.readAsDataURL(file);
-        reader.onload = function(){
+        reader.onload = function () {
             if (img_container.find('img').length !== 0) {
                 img_container.find('img').attr('src', reader.result);
             }
@@ -36,11 +36,11 @@ epfl.Upload = function (cid, params) {
     };
 
     $(selector).fileupload({
-        add: function(evt, data){
+        add: function (evt, data) {
             try {
                 evt = evt.delegatedEvent.originalEvent;
             }
-            catch (e){
+            catch (e) {
                 //ignore errors and just return
                 return;
             }
