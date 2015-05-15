@@ -87,8 +87,7 @@ epfl.make_compo_dragable = function (cid, params) {
                 e.stopImmediatePropagation();
 
                 epfl.dispatch_event(cid, 'drop_accepts', {cid: elm.attr('epflid'),
-                                                          elm: elm,
-                                                          originalEvent: e});
+                                                          over_cid: get_epflid(containing_elm)});
             });
     });
 };
