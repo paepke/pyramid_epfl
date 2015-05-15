@@ -18,7 +18,9 @@ class Upload(FormInputBase):
 
     js_parts = FormInputBase.js_parts + ['upload/upload.js']
 
-    js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js")]
+    js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js"),
+                                       ("solute.epfl.components:upload/static", "jquery.iframe-transport.js"),
+                                       ("solute.epfl.components:upload/static", "jquery.fileupload.js")]
 
     template_name = "upload/upload.html"
 
