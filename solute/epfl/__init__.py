@@ -148,7 +148,7 @@ def set_nodeglobaldata_provider(config, nodeglobaldata_provider):
     config.registry.registerUtility(nodeglobaldata_provider, epfltempdata.INodeGlobalDataProvider)
 
 
-def generate_webasset_bundles(config):
+def extract_static_assets_from_components(compo_list):
     ar = AssetResolver()
 
     js_paths = []
@@ -157,7 +157,7 @@ def generate_webasset_bundles(config):
     css_name = []
 
     # The Page needs to be in the webassets first, then all other pages, then all components.
-    for cls in [epflpage.Page] + epflutil.Discover.discovered_pages + epflutil.Discover.discovered_components:
+    for cls in compo_list:
         for js in cls.js_name:
             if type(js) is not tuple:
                 js = (cls.asset_spec, js)
@@ -176,20 +176,41 @@ def generate_webasset_bundles(config):
             css_paths.append(ar.resolve('/'.join(css)).abspath())
         cls.js_name += getattr(cls, 'css_name_no_bundle', [])
 
+    return js_paths, js_name, css_paths, css_name
+
+
+def generate_webasset_bundles(config):
+    compo_bundles = extract_static_assets_from_components(epflutil.Discover.discovered_components)
+
+    page_bundles = []
+    pages = [epflpage.Page] + epflutil.Discover.discovered_pages
+
+    for cls in pages:
+        page_bundles.append(extract_static_assets_from_components([cls]))
+
     if config.registry.settings.get('epfl.webassets.active') != 'true':
         return
 
+    ar = AssetResolver()
     epfl_static = ar.resolve('solute.epfl:static')
 
     my_env = Environment('%s/bundles' % epfl_static.abspath(), 'bundles')
 
-    my_env.register('js', Bundle(js_paths, filters='rjsmin', output='epfl.%(version)s.js'))
-    my_env.register('css', Bundle(css_paths, output='epfl.%(version)s.css'))
+    for i, page in enumerate(pages):
+        js_paths, js_name, css_paths, css_name = page_bundles[i]
 
-    epflpage.Page.js_name += [("solute.epfl:static", url) for url in my_env['js'].urls()]
-    epflpage.Page.css_name += [("solute.epfl:static", url) for url in my_env['css'].urls()]
+        js_paths += compo_bundles[0]
+        js_name += compo_bundles[1]
+        css_paths += compo_bundles[2]
+        css_name += compo_bundles[3]
 
-    epflpage.Page.bundled_names = js_name + css_name
+        my_env.register('js%s' % i, Bundle(js_paths, filters='rjsmin', output='epfl.%(version)s.js'))
+        my_env.register('css%s' % i, Bundle(css_paths, output='epfl.%(version)s.css'))
+
+        page.js_name += [("solute.epfl:static", url) for url in my_env['js%s' % i].urls()]
+        page.css_name += [("solute.epfl:static", url) for url in my_env['css%s' % i].urls()]
+
+        page.bundled_names = js_name + css_name
 
 
 def includeme(config):
