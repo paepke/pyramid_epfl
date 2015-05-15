@@ -4,7 +4,7 @@
 	<div class="row"><label class="col-sm-12">{{ compo.label }}</label></div>
 	<div class="row"><div class="col-sm-12">
 		{% if (compo.tag is defined and not compo.tag is none) %}
-        <{{ compo.tag }} class="{{ compo.tag_class }}">{{ compo.value }}</{{ compo.tag }}>
+        <{{ compo.tag }} class="{{ compo.tag_class if compo.tag_class is defined and (compo.tag_class is not none) else '' }}">{{ compo.value }}</{{ compo.tag }}>
 	    {% else %}
 	    {{ compo.value }}
 	    {% endif %}
@@ -15,7 +15,7 @@
 	<label class="col-sm-2 control-label">{{ compo.label }}</label>
 	<div class="col-sm-10">
 		{% if (compo.tag is defined and not compo.tag is none) %}
-        <{{ compo.tag }} class="{{ compo.tag_class }}">{{ compo.value }}</{{ compo.tag }}>
+        <{{ compo.tag }} class="{{ compo.tag_class if compo.tag_class is defined and (compo.tag_class is not none) else '' }}">{{ compo.value }}</{{ compo.tag }}>
 	    {% else %}
 	    {{ compo.value }}
 	    {% endif %}
@@ -24,7 +24,7 @@
 	{% endif %}
 {% elif compo.verbose is defined and compo.verbose %}
     {% if (compo.tag is defined and not compo.tag is none) %}
-        <{{ compo.tag }} id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="{{ compo.tag_class }}">{{ compo.value }}</{{ compo.tag }}>
+        <{{ compo.tag }} id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="{{ compo.tag_class if compo.tag_class is defined and (compo.tag_class is not none) else '' }}">{{ compo.value }}</{{ compo.tag }}>
     {% else %}
         <span id="{{ compo.cid }}" epflid="{{ compo.cid }}">{{ compo.value }}</span>
     {% endif %}
