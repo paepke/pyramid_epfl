@@ -1,5 +1,5 @@
 epfl.make_compo_dragable = function (cid, params) {
-	keep_in_place=params["keep_orig_in_place"];
+	var keep_in_place=params["keep_orig_in_place"];
     $('[epflid=' + cid +  ']').mousedown(function (e) {
         function reset_css() {
         	if (elm_copy) {
