@@ -1078,10 +1078,14 @@ class ComponentContainerBase(ComponentBase):
         Internal wrapper for :meth:`get_data` to decide wether it is to be called as a function or only contains a
         reference to a model on :attr:`.epflpage.Page.model`.
         """
+        # get_data is a string pointing to a model load function.
         if type(self.get_data) is str and self.page.model is not None:
             return self.page.model.get(self, self.get_data, (args, kwargs), self.data_interface)
+        # get_data is a tuple with a string or integer pointing to a model and a string pointing to a model load
+        # function.
         elif type(self.get_data) is tuple and self.page.model is not None:
             return self.page.model[self.get_data[0]].get(self, self.get_data[1], (args, kwargs), self.data_interface)
+        # default: get_data is a callable.
         return self.get_data(*args, **kwargs)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):

@@ -20,13 +20,22 @@ def get_item_or_attr(obj, key):
 
 class ModelBase(object):
     """
-    Use this class as a base for your own bound models. For any given method identificator a method of its nam prefiload_
+    Use this class as a base for your own bound models.
     """
 
     def __init__(self, request):
         self.request = request
 
     def get(self, compo, key, row, data_interface):
+        """Select the loading function defined by key, call it with the provided parameters and map its output using
+        data_interface.
+
+        Args:
+            compo (solute.epfl.epflcomponentbase.ComponentBase): The calling component.
+            key (str): The name of the load function to be called on the model.
+            row (tuple): The set of args and kwargs of the original _get_data call.
+            data_interface (dict): The map to be used on the output of the load function.
+        """
         args, kwargs = row
         output = []
         for row in getattr(self, 'load_' + key)(compo, *args, **kwargs):

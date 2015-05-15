@@ -45,11 +45,11 @@ Subpackages
     solute.epfl.components.radio
     solute.epfl.components.recursive_tree
     solute.epfl.components.select
+    solute.epfl.components.selectable_list
     solute.epfl.components.selectize
     solute.epfl.components.sidebar
     solute.epfl.components.simpletable
     solute.epfl.components.simpletree
-    solute.epfl.components.sortable
     solute.epfl.components.table_layout
     solute.epfl.components.table_list_layout
     solute.epfl.components.tabs_layout
