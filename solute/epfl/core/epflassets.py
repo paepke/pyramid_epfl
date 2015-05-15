@@ -26,17 +26,17 @@ class ModelBase(object):
     def __init__(self, request):
         self.request = request
 
-    def get(self, compo, key, row, data_interface):
+    def get(self, compo, key, old_args, data_interface):
         """Select the loading function defined by key, call it with the provided parameters and map its output using
         data_interface.
 
         Args:
             compo (solute.epfl.epflcomponentbase.ComponentBase): The calling component.
             key (str): The name of the load function to be called on the model.
-            row (tuple): The set of args and kwargs of the original _get_data call.
+            old_args (tuple): The set of args and kwargs of the original _get_data call.
             data_interface (dict): The map to be used on the output of the load function.
         """
-        args, kwargs = row
+        args, kwargs = old_args
         output = []
         for row in getattr(self, 'load_' + key)(compo, *args, **kwargs):
             tmp_data = data_interface.copy()

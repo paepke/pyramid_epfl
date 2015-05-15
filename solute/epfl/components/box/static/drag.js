@@ -80,6 +80,7 @@ epfl.make_compo_dragable = function (cid, params) {
                 reset_css();
             })
             .mouseover(function (e) {
+                var containing_elm = $(e.target);
                 var cid = get_epflid(e.target);
                 if (!cid) {
                     return;

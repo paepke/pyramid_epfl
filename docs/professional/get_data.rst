@@ -36,7 +36,7 @@ The actual mechanism enabling this method is in
 The three cases are separated here and put into the correct pipelines.
 
 Default handling
-................
+````````````````
 :meth:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.get_data` is called and its return value is used as
 data inside :meth:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.update_children`:
 
@@ -71,13 +71,82 @@ or used as attributes to create completely new components:
 In every case data needs to be a Sequence of Mappings.
 
 Loading from a model
-....................
-This method is straight forward and implemented in :meth:`~solute.epfl.core.epflassets.ModelBase.get` in
+````````````````````
+This part is pretty straight forward and implemented in :meth:`~solute.epfl.core.epflassets.ModelBase.get` in
 :class:`~solute.epfl.core.epflassets.ModelBase`. This method is one you have very probably never seen before, since it
-is most definitely a part of the core. While overwriting :class:`~solute.epfl.core.epflassets.ModelBase` is required to
-provide data, the :meth:`~solute.epfl.core.epflassets.ModelBase.get` is accessed only by
+is most definitely a deep part of the core. While providing your own :class:`~solute.epfl.core.epflassets.ModelBase`
+implementation to provide data is required, :meth:`~solute.epfl.core.epflassets.ModelBase.get` is accessed only by
 :meth:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase._get_data`.
+
+.. automethod:: solute.epfl.core.epflassets.ModelBase.get
+    :noindex:
+
+This method simply selects the load\_{key} function of the :class:`~solute.epfl.core.epflassets.ModelBase` instance, and
+calls it. The result has to be a Sequence of Objects.
+
+Creating a Mapping
+..................
+:meth:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.get_data` is expected to return a Sequence of
+Mappings. So :meth:`~solute.epfl.core.epflassets.ModelBase.get` needs to translate an object into a Sequence, for this
+very purpose the :attr:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.data_interface` dict is provided. The
+minimum contents of this dict has to be an entry for the id, since this is required for the get_data system to work at
+all.
+
+There are three possible scenarios for any item of
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.data_interface`: None, a string or a formatted string.
+Every row of the result is made off of a copy of
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.data_interface`:
+
+.. code-block:: python
+
+    tmp_data = data_interface.copy()
+
+For a complete reference of the possible actions refer to the `Format Specification Mini-Language`_ Section of the
+official python docs. To recognize a formatted string format() is called once without parameters. If this raises a
+KeyError the string contains formatting instructions requiring named parameters.
+
+.. code-block:: python
+
+    'foobar'.format()  # This passes fine.
+    '{foobar}'.format()  # This does not.
+
+If a formatted string is recognized the current row of the result is used like a mapping to provide keywords for the
+format call:
+
+.. code-block:: python
+
+    tmp_data[k] = v.format(**row)
+
+If the row is not a dict its __dict__ attribute is used instead:
+
+.. code-block:: python
+
+    tmp_data[k] = v.format(**row.__dict__)
+
+Unformatted strings will simply be used as attribute or item name respectively:
+
+.. code-block:: python
+
+    tmp_data[k] = get_item_or_attr(row, tmp_data[k])
+
+If no string is provided the key will be used instead:
+
+.. code-block:: python
+
+    tmp_data[k] = get_item_or_attr(row, k)
+
+At the end :meth:`~solute.epfl.core.epflassets.ModelBase.get` returns a list of
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentContainerBase.data_interface` copies filled with the appropriate
+values.
+
+Model Selection
+```````````````
+If a model selector is provided the appropriate model is selected as an item from
+:attr:`~solute.epfl.core.epflpage.Page.model`
 
 
 Update children
 ---------------
+
+
+.. _`Format Specification Mini-Language`: https://docs.python.org/2/library/string.html#format-specification-mini-language
