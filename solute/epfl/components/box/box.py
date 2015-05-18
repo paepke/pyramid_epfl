@@ -45,10 +45,9 @@ class Box(epflcomponentbase.ComponentContainerBase):
     is_removable = False
 
     new_style_compo = True
-    compo_js_name = 'Box'
     compo_js_params = ['hover_box_remove_on_close']
-
-    compo_js_lifecycle = ['handle_click']
+    compo_js_extras = ['handle_click']
+    compo_js_name = 'Box'
 
     def handle_removed(self):
         self.delete_component()
