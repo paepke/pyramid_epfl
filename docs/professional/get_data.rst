@@ -212,7 +212,8 @@ Although the result rows are used as attributes of the new components it is poss
 Of course this calls for an intersection. Everything else is just house keeping. Be aware: This previously might have
 caused problems with more complex components, e.g. If a component relied on treating data in its
 :meth:`~solute.epfl.core.epflcomponents.ComponentBase.init_transaction` method. In cases like this the
-:attr:`~solute.epfl.core.epflcomponents.ComponentBase.disable_auto_update` flag can be set to True.
+:attr:`~solute.epfl.core.epflcomponents.ComponentBase.disable_auto_update` flag can be set to True. The component is
+deleted and flagged for (re-)creation in cases such as this.
 
 Hello component
 ```````````````
