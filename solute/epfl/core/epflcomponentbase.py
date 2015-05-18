@@ -302,9 +302,10 @@ class ComponentBase(object):
     #: :meth:`ComponentContainerBase.update_children`. It will be deleted and recreated instead.
     disable_auto_update = False
 
+    #: New style components use the new default mechanism to update client side javascript states automatically.
+    new_style_compo = False
     compo_js_params = []
     compo_js_name = 'ComponentBase'
-    new_style_compo = False
 
     @classmethod
     def add_pyramid_routes(cls, config):
