@@ -305,6 +305,7 @@ class ComponentBase(object):
     #: New style components use the new default mechanism to update client side javascript states automatically.
     new_style_compo = False
     compo_js_params = []
+    compo_js_lifecycle = []
     compo_js_name = 'ComponentBase'
 
     @classmethod
@@ -840,6 +841,9 @@ class ComponentBase(object):
         params = {}
         for param_name in self.compo_js_params:
             params[param_name] = getattr(self, param_name)
+
+        for param_name in self.compo_js_lifecycle:
+            params['lifecycle_%s' % param_name] = True
 
         return 'epfl.init_component("{cid}", "{compo_cls}", {params});'.format(
             cid=self.cid,
