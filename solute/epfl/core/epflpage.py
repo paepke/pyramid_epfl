@@ -412,44 +412,6 @@ class Page(object):
             else:
                 raise Exception("Unknown ajax-event: " + repr(event))
 
-    def traversing_redraw(self, cid=None, js_only=False):
-        """
-        Handle redrawing components by traversing the structure as deep as necessary. Subtrees of redrawn components are
-        ignored.
-        """
-        if cid is None:
-            self.redrawn_components = set()
-            for compo_obj in self.get_active_components(sorted_by_depth=True):
-                ccid = compo_obj.compo_info.get('ccid', None)
-                if ccid is not None and self.transaction.is_active_component(cid):
-                    continue
-                self.traversing_redraw(compo_obj.cid)
-            return
-
-        if not self.transaction.is_active_component(cid) and cid != 'root_node':
-            return
-
-        if cid in self.redrawn_components:
-            return
-        self.redrawn_components.add(cid)
-
-        compo_obj = getattr(self, cid)
-
-        if compo_obj.is_visible(check_parents=True):
-            redraw_parts = compo_obj.get_redraw_parts()
-            if redraw_parts:
-                if js_only:
-                    redraw_parts = {'js': redraw_parts.get('js', None)}
-                js = "epfl.replace_component('{cid}', {parts})".format(cid=compo_obj.cid,
-                                                                       parts=json.encode(redraw_parts))
-                self.add_js_response(js)
-                js_only = True
-
-            for child_cid in compo_obj.compo_info.get('compo_struct', {}):
-                self.traversing_redraw(child_cid, js_only=js_only)
-        else:
-            self.add_js_response("epfl.hide_component('{cid}')".format(cid=cid))
-
     def handle_redraw_all(self):
         """
         Trigger a redraw for all components.

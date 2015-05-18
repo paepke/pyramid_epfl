@@ -438,9 +438,6 @@ class ComponentBase(object):
         self.request = page_obj.request
         self.response = page_obj.response
 
-        # now we can setup the component-state
-        self.setup_component_state()
-
     def set_container_compo(self, compo_obj, slot, position=None):
         """
         Set the container_compo for this component and create any required structural information in the transaction.
@@ -549,8 +546,7 @@ class ComponentBase(object):
     def init_transaction(self):
         """
         This function will be called only once a transaction for this component.
-        It is called just before the event-handling of the page take place,
-        so the state of all components is already completely setup (self.setup_component_state).
+        It is called just before the event-handling of the page takes place.
 
         You can overwrite this method to manipulate the initial state once.
         Use this to load data-objects you want to manipulate within this transaction.
@@ -560,16 +556,6 @@ class ComponentBase(object):
         [request-processing-flow]
         """
         pass
-
-    def setup_component_state(self):
-        """
-        This function sets up the compo_state attributes.
-        It is called every request. It copies the attribute-values from the transaction to the object.
-        Warning: Only the state of this component is set up. You can not rely on any other component here!
-        Overwrite this one if you need some additional setup of the component state.
-
-        [request-processing-flow]
-        """
 
     def setup_component(self):
         """ Called from the system every request when the component-state of all
@@ -624,28 +610,6 @@ class ComponentBase(object):
 
     def get_component_id(self):
         return self.cid
-
-    def js_call(self, method_name, *args):
-        """ returns a js-snipped calling a method of this component (if method_name starts with
-        'this.'), and the given parameters.
-        The parameters are escaped and quoted as necessary """
-
-        if method_name.startswith("this."):
-            js = ["epfl.components[\"" + self.cid + "\"]" + method_name[4:]]
-        else:
-            js = [method_name]
-
-        js.append("(")
-        first = True
-        for arg in args:
-            if first:
-                first = False
-            else:
-                js.append(",")
-            js.append(json.encode(arg))
-        js.append(")")
-
-        return string.join(js, "")
 
     @epflacl.epfl_has_permission('access')
     def handle_event(self, event_name, event_params):
@@ -720,26 +684,6 @@ class ComponentBase(object):
             ))
 
         post_event_callable(**event_params)
-
-    def pre_render(self):
-        """ Called just before the page jina-rendering occures.
-        Overwrite me!!!
-        """
-        epflutil.add_extra_contents(self.response, obj=self)
-
-    def render_templates(self, env, templates):
-        """
-        Render one or many templates given as list using the given jinja2 environment env and the dict from
-        :meth:`get_render_environment` as kwargs.
-        """
-        out = []
-        if type(templates) is not list:
-            templates = [templates]
-
-        for template in templates:
-            jinja_template = env.get_template(template)
-            out.append(jinja_template.render(**self.get_render_environment(env)))
-        return out
 
     def get_render_environment(self, env):
         """
@@ -850,23 +794,6 @@ class ComponentBase(object):
         self.set_handles(False)
         return self._handles
 
-    def get_js_part(self, raw=False):
-        """ gets the javascript-portion of the component """
-
-        if not self.is_visible():
-            # this js cleans up the browser for this component
-            return self.js_call("epfl.destroy_component", self.cid)
-        if raw:
-            return self.render('js_raw')
-        return self.render('js')
-
-    def notify_render_inline(self):
-        """ This one is called from the modified template (by the epfl-component-jinja-extension).
-        It's injected into the body of a inline-component-macro. So it is called when this component is
-        rendered. (Or a part - excluding js - of it)
-        """
-        self.is_rendered = True
-
     def redraw(self, parts=None):
         """ This requests a redraw. All components that are requested to be redrawn are redrawn when
         the ajax-response is generated (namely page.handle_ajax_request()).
@@ -879,25 +806,6 @@ class ComponentBase(object):
             raise Exception('Deprecated: Partial redraws are no longer possible.')
 
         self.redraw_requested = True
-
-    def get_redraw_parts(self):
-        """ This is used to redraw the component. In contrast to "render" it returns a dict with the component-parts
-        as keys and thier content as values. No modification of the "response" is made. Only the parts that are
-        requested to be redrawn are returned in the dict. The "js" part is special. It is rendered if some other 
-        part of the component is requested (means actively by the programmer) or rendered (means passively by
-        e.g. rerendering the container-component).
-        """
-
-        self.pre_render()
-        parts = {}
-
-        if self.redraw_requested is True:
-            parts["main"] = self.render()
-
-        if self.redraw_requested or self.is_rendered:
-            parts["js"] = self.get_js_part(raw=True)
-
-        return parts
 
     def __call__(self, *args, **kwargs):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
