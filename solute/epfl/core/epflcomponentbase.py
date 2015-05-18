@@ -303,6 +303,7 @@ class ComponentBase(object):
     disable_auto_update = False
 
     compo_js_params = []
+    compo_js_name = 'ComponentBase'
     new_style_compo = False
 
     @classmethod
@@ -841,10 +842,9 @@ class ComponentBase(object):
 
         return 'epfl.init_component("{cid}", "{compo_cls}", {params});'.format(
             cid=self.cid,
-            compo_cls=getattr(self, 'compo_js_name', self.__unbound_component__.__unbound_cls__.__name__),
+            compo_cls=self.compo_js_name,
             params=json.encode(params)
         )
-
 
 
 class ComponentContainerBase(ComponentBase):
