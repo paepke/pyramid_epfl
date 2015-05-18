@@ -22,8 +22,10 @@ class Popover(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["disabled", "text", "title", "position", "label", "icon", "color"]
 
+    #: Text to be displayed in the popover. Can be either a string or a list of strings.
+    #: In the latter case, the strings are displayed in separate paragraphs.
     text = ""
-    title = None  # : if title is none it is not displayed
+    title = None  # : title to be displayed in the popover. If set to None, no title is displayed.
     position = "top"  # : possible positions are top, left, right, bottom
     #: An optional font-awesome icon that should be displayed on the button.
     # Either the :attr:`icon` or the :attr:`label` have to be defined in order
