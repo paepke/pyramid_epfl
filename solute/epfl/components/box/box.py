@@ -54,6 +54,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
 
     def handle_hide(self):
         self.set_hidden()
+        self.redraw()
 
     def after_event_handling(self):
         super(Box, self).after_event_handling()
