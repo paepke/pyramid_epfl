@@ -15,6 +15,7 @@ class TextInput(FormInputBase):
 
     js_parts = FormInputBase.js_parts[:]
     js_parts.extend(['text_input/text_input.js'])
+    compo_state = FormInputBase.compo_state + ['layover_icon']
 
     js_name = FormInputBase.js_name + [("solute.epfl.components:text_input/static", "text_input.js"),
                                        ("solute.epfl.components:text_input/static", "jquery.datetimepicker.js"),
