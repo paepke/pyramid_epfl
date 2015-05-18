@@ -1,6 +1,15 @@
 
-if (typeof Object.create !== 'function') { Object.create = function (o) { function F() {}; F.prototype = o; return new F(); };}; // for older browsers
-Function.prototype.inherits_from = function(super_constructor) { this.prototype = Object.create(super_constructor.prototype); this.prototype.constructor = super_constructor }; // inheritance
+if (typeof Object.create !== 'function') {
+    Object.create = function (o) {
+        function F() {};
+        F.prototype = o;
+        return new F();
+    };
+} // for older browsers
+Function.prototype.inherits_from = function(super_constructor) {
+    this.prototype = Object.create(super_constructor.prototype);
+    this.prototype.constructor = super_constructor;
+}; // inheritance
 
 var epfl = new Object();
 
@@ -46,6 +55,7 @@ epfl_module = function() {
         epfl.ptid = opts["ptid"];
         $(document).attr("data:tid", epfl.tid);
         epfl.init_struct();
+        epfl.after_response();
     };
 
     epfl.dispatch_event = function (elm, type, data) {
@@ -177,6 +187,7 @@ epfl_module = function() {
         if (epfl.flush_queue_active || epfl.flush_queue.length == 0) {
             return;
         }
+        epfl.before_request();
         epfl.flush_queue_active = true;
         var flush = epfl.flush_queue.shift();
         epfl.flush_unqueued(flush[0], flush[1], flush[2]);
@@ -203,26 +214,31 @@ epfl_module = function() {
             cache: false,
             data: JSON.stringify({"tid": epfl.tid, "q": queue}),
             contentType: "application/json",
-            dataType: "script",
+            dataType: "text",
             success: function (data) {
+                try {
+                    data = $.parseJSON(data);
+                    epfl.before_response(data);
+                } catch(e) {
+                    if (e.name != 'SyntaxError') {
+                        throw e;
+                    }
+                    try {
+                        epfl.before_response();
+                        $.globalEval(data);
+                    } catch(e) {
+                        epfl.show_fading_message("Error (" + e.name + ") when running Server response: " + e.message);
+                    }
+                }
                 if (callback_func) {
                     callback_func(data);
                 }
+                epfl.after_response();
                 epfl.hide_please_wait(true);
             },
             error: function (httpRequest, message, errorThrown) {
-                if (callback_func) {
-                    try {
-                        callback_func($.parseJSON(data))
-                    } catch (e) {
-                        console.log('Caught Exception when trying to parse data as JSON. Did you provide a ' +
-                        'callback for an event without a json response?');
-                        console.log(e);
-                    }
-                } else {
-                    epfl.show_fading_message("Server Error: " + errorThrown, "error");
-                    console.log(httpRequest);
-                }
+                epfl.show_fading_message("Server Error: " + errorThrown, "error");
+                console.log(httpRequest);
                 epfl.hide_please_wait(true);
             },
             complete: function (jqXHR, status) {
@@ -427,6 +443,25 @@ epfl_module = function() {
         epfl.send(epfl.make_page_event('redraw_all'));
     });
 
+    /* Lifecycle methods */
+    epfl.before_request = function () {
+        for (var cid in epfl.components) {
+            epfl.components[cid].before_request();
+        }
+    };
+
+    epfl.before_response = function (data) {
+        for (var cid in epfl.components) {
+            epfl.components[cid].before_response(data);
+        }
+    };
+
+    epfl.after_response = function () {
+        for (var cid in epfl.components) {
+            epfl.components[cid].after_response();
+        }
+    };
+
 };
 
 epfl_module();
@@ -473,4 +508,3 @@ $(window).bind("beforeunload", epfl.unload_page);
 	   }
     });
 })(jQuery);
-
