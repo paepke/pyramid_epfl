@@ -298,6 +298,10 @@ class ComponentBase(object):
 
     post_event_handlers = None
 
+    #: True if this component has initialisation routines that prevent it from being correctly updated by
+    #: :meth:`ComponentContainerBase.update_children`. It will be deleted and recreated instead.
+    disable_auto_update = False
+
     @classmethod
     def add_pyramid_routes(cls, config):
         """ Adds the static pyramid routes needed by this component. This only works for native components stored in
@@ -1046,6 +1050,21 @@ class ComponentContainerBase(ComponentBase):
             self.del_component(data_cid_dict.pop(data_id))
             self.redraw()
 
+        # IDs of data represented by a component. Matching components are updated.
+        for data_id in set(new_order).intersection(current_order):
+            compo = getattr(self.page, data_cid_dict[data_id])
+            # A component may decide that it can not be updated by this mechanism. Relevant for components doing heavy
+            # lifting in their :meth:`ComponentBase.init_transaction`.
+            if compo.disable_auto_update:
+                self.del_component(data_cid_dict.pop(data_id))
+                current_order.remove(data_id)
+                self.redraw()
+                continue
+            for k, v in data_dict[data_id].items():
+                if getattr(compo, k) != v:
+                    setattr(compo, k, v)
+                    self.redraw()
+
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
             ubc = self.default_child_cls(**data_dict[data_id])
@@ -1053,14 +1072,6 @@ class ComponentContainerBase(ComponentBase):
             data_cid_dict[data_id] = bc.cid
 
             self.redraw()
-
-        # IDs of data represented by a component. Matching components are updated.
-        for data_id in set(new_order).intersection(current_order):
-            compo = getattr(self.page, data_cid_dict[data_id])
-            for k, v in data_dict[data_id].items():
-                if getattr(compo, k) != v:
-                    setattr(compo, k, v)
-                    self.redraw()
 
         # Rebuild order.
         compo_struct = self.compo_info['compo_struct']

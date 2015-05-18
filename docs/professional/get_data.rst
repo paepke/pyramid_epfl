@@ -187,6 +187,33 @@ Quite straight forward really:
 For easier reading the appropriate methods of `set`_ have been used. And you thought set theory was a useless math
 topic, huh?
 
+Updating components
+```````````````````
+Although the result rows are used as attributes of the new components it is possible to include them in the
+:attr:`~solute.epfl.core.epflcomponentbase.ComponentBase.compo_state`. In that scenario it may be necessary to update.
+
+.. code-block:: python
+
+    # IDs of data represented by a component. Matching components are updated.
+    for data_id in set(new_order).intersection(current_order):
+        compo = getattr(self.page, data_cid_dict[data_id])
+        # A component may decide that it can not be updated by this mechanism. Relevant for components doing heavy
+        # lifting in their :meth:`ComponentBase.init_transaction`.
+        if compo.disable_auto_update:
+            current_order.remove(data_id)
+            self.del_component(data_cid_dict.pop(data_id))
+            self.redraw()
+            continue
+        for k, v in data_dict[data_id].items():
+            if getattr(compo, k) != v:
+                setattr(compo, k, v)
+                self.redraw()
+
+Of course this calls for an intersection. Everything else is just house keeping. Be aware: This previously might have
+caused problems with more complex components, e.g. If a component relied on treating data in its
+:meth:`~solute.epfl.core.epflcomponents.ComponentBase.init_transaction` method. In cases like this the
+:attr:`~solute.epfl.core.epflcomponents.ComponentBase.disable_auto_update` flag can be set to True.
+
 Hello component
 ```````````````
 If you delete them you have to create them at one time:
@@ -209,25 +236,6 @@ feature that is actually used in the :class:`~solute.epfl.components.TableLayout
 :class:`~solute.epfl.core.epflcomponentbase.ComponentBase` derivative, but you may also provide an instance method, thus
 giving you the ability to dynamically pick and choose what component to use here! Once created the
 :class:`~solute.epfl.core.epflcomponentbase.UnboundComponent` instance is added.
-
-Updating components
-```````````````````
-Although the result rows are used as attributes of the new components it is possible to include them in the
-:attr:`~solute.epfl.core.epflcomponentbase.ComponentBase.compo_state`. In that scenario it may be necessary to update.
-
-.. code-block:: python
-
-    # IDs of data represented by a component. Matching components are updated.
-    for data_id in set(new_order).intersection(current_order):
-        compo = getattr(self.page, data_cid_dict[data_id])
-        for k, v in data_dict[data_id].items():
-            if getattr(compo, k) != v:
-                setattr(compo, k, v)
-                self.redraw()
-
-Of course this calls for an intersection. Everything else is just house keeping. Be aware: This might cause problems
-with more complex components. If a component relies on treating data in its
-:meth:`~solute.epfl.core.epflcomponents.ComponentBase.init_transaction` method this will not trigger an update!
 
 Order is everything
 ```````````````````
