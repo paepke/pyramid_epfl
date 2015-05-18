@@ -414,10 +414,9 @@ class Page(object):
 
     def handle_redraw_all(self):
         """
-        Trigger a redraw for all components.
+        Trigger a redraw for the root_node.
         """
-        for compo in self.get_active_components():
-            compo.redraw()
+        self.root_node.redraw()
 
     def add_js_response(self, js_string):
         """

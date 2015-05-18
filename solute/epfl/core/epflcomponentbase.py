@@ -302,6 +302,9 @@ class ComponentBase(object):
     #: :meth:`ComponentContainerBase.update_children`. It will be deleted and recreated instead.
     disable_auto_update = False
 
+    compo_js_params = []
+    new_style_compo = False
+
     @classmethod
     def add_pyramid_routes(cls, config):
         """ Adds the static pyramid routes needed by this component. This only works for native components stored in
@@ -723,6 +726,8 @@ class ComponentBase(object):
 
         context = self.get_render_environment(env)
 
+        js_raw.append(self.get_compo_init_js())
+
         for js_part in self.js_parts:
             # Render context can be supplied as a dict.
             js_raw.append(env.get_template(js_part).render(context))
@@ -826,6 +831,20 @@ class ComponentBase(object):
         """
 
         self.page.transaction.switch_component(cid, target, position=position)
+
+    def get_compo_init_js(self):
+        if not self.new_style_compo:
+            return ''
+        params = {}
+        for param_name in self.compo_js_params:
+            params[param_name] = getattr(self, param_name)
+
+        return 'epfl.init_component("{cid}", "{compo_cls}", {params});'.format(
+            cid=self.cid,
+            compo_cls=getattr(self, 'compo_js_name', self.__unbound_component__.__unbound_cls__.__name__),
+            params=json.encode(params)
+        )
+
 
 
 class ComponentContainerBase(ComponentBase):

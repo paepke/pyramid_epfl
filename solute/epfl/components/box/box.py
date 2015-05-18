@@ -21,7 +21,6 @@ class Box(epflcomponentbase.ComponentContainerBase):
     theme_path = ['box/theme']
 
     compo_state = epflcomponentbase.ComponentContainerBase.compo_state + ['title']
-    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["box/box.js"]
     css_name = ["box.css"]
     js_name = ["box.js"]
 
@@ -44,6 +43,9 @@ class Box(epflcomponentbase.ComponentContainerBase):
     show_title = True
     #: Indicates whether a box can be closed by clicking on a special 'close' button
     is_removable = False
+
+    new_style_compo = True
+    compo_js_params = ['hover_box_remove_on_close']
 
     def handle_removed(self):
         self.delete_component()
