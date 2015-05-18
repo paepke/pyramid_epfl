@@ -11,6 +11,10 @@ epfl.ComponentBase.prototype.make_event = function(event_name, params) {
 	return epfl.make_component_event(this.cid, event_name, params);
 };
 
+epfl.ComponentBase.prototype.send_event = function(event_name, params, callback) {
+	epfl.send(epfl.make_component_event(this.cid, event_name, params), callback);
+};
+
 epfl.ComponentBase.prototype.closest_cid = function(element) {
     var containing_elm = $(element);
     var cid = containing_elm.attr('epflid');
