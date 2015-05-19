@@ -11,7 +11,7 @@
                 {% else %}
                     {{ 'col-sm-10' if (compo.label is defined and not compo.label is none) else 'col-sm-12' }}
                 {% endif %}">
-        <button title="{{ compo.tooltip if (compo.tooltip is not none) else '' }}" class="btn form-control epfl-button{% if compo.color is defined and compo.color is not none %} btn-{{ compo.color }}{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}"
+        <button title="{{ compo.tooltip if (compo.tooltip is not none) else '' }}" class="btn{% if compo.button_size is defined and compo.button_size is not none %} {{ compo.button_size }}{% else %} form-control{% endif %} epfl-button{% if compo.color is defined and compo.color is not none %} btn-{{ compo.color }}{% endif %}{{ " disabled" if (compo.disabled is defined and compo.disabled) else "" }}"
                 type="{{ 'submit' if compo.is_submit else 'button' }}" id="{{ compo.cid }}">
             {% if compo.icon is defined and (not compo.icon is none) %}
 

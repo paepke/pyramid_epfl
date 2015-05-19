@@ -45,6 +45,7 @@ class Button(ComponentBase):
     confirm_first = False
     # : Adapt this text for a custom confirmation dialog message.
     confirm_message = "Do you want to proceed?"
+    button_size = None  # : Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
 
     def __init__(self, page, cid,
                  label=None,
@@ -59,6 +60,7 @@ class Button(ComponentBase):
                  is_submit=False,
                  confirm_first=False,
                  confirm_message="Do you want to proceed?",
+                 button_size=None,
                  **extra_params):
         """
         Button Component
@@ -76,6 +78,7 @@ class Button(ComponentBase):
         :param disabled: Set to true if button should be disabled
         :param confirm_first: Set to true if user should be asked for confirmation first before the button event is triggered
         :param confirm_message: Adapt this text for a custom confirmation dialog message
+        :param button_size: # : Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
         """
         super(Button, self).__init__(page=page, cid=cid,
                                      label=label,
@@ -89,6 +92,8 @@ class Button(ComponentBase):
                                      event_target=event_target,
                                      is_submit=is_submit,
                                      confirm_first=confirm_first,
-                                     confirm_message=confirm_message)
+                                     confirm_message=confirm_message,
+                                     button_size=button_size,
+                                     **extra_params)
         if not self.event_target:
             self.event_target = self.cid
