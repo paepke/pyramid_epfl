@@ -78,7 +78,7 @@ class Button(ComponentBase):
         :param disabled: Set to true if button should be disabled
         :param confirm_first: Set to true if user should be asked for confirmation first before the button event is triggered
         :param confirm_message: Adapt this text for a custom confirmation dialog message
-        :param button_size: # : Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
+        :param button_size: Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
         """
         super(Button, self).__init__(page=page, cid=cid,
                                      label=label,
