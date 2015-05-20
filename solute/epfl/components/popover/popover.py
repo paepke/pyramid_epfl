@@ -28,15 +28,15 @@ class Popover(epflcomponentbase.ComponentBase):
     title = None  # : title to be displayed in the popover. If set to None, no title is displayed.
     position = "top"  # : possible positions are top, left, right, bottom
     #: An optional font-awesome icon that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
-    # to yield a reasonable button.
+    #: Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    #: to yield a reasonable button.
     icon = None
     #: An optional label that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
-    # to yield a reasonable button.
+    #: Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    #: to yield a reasonable button.
     label = None
     disabled = None  # : Set to true if button should be disabled.
-    # : The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
+    #: The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
     color = "default"
     small_button = False  # : Set to true if a small button should be rendered.
 
