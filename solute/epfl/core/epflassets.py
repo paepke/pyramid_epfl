@@ -67,7 +67,8 @@ class EPFLView(object):
 
     def __init__(
             self, route_name=None, route_pattern=None, menu_group=None,
-            permission=None, route_text=None, rank=0, forbidden_view=False
+            permission=None, route_text=None, rank=0, forbidden_view=False,
+            slot=None
     ):
         """
         Adds a route, adds the view with the given permissions to that route and creates a link that appears in
@@ -81,6 +82,7 @@ class EPFLView(object):
         self.menu_group = menu_group
         self.permission = permission
         self.rank = rank
+        self.slot = slot
         self.forbidden_view = forbidden_view
 
         if not self.forbidden_view:
@@ -105,7 +107,8 @@ class EPFLView(object):
         self.register.append({'id': self.counter['id'],
                               'url': self.route_name,
                               'text': self.route_text,
-                              'menu_group': self.menu_group})
+                              'menu_group': self.menu_group,
+                              'slot': self.slot})
 
     @property
     def _config(self):
@@ -133,12 +136,12 @@ class EPFLView(object):
         EPFLView.config = None
 
     @staticmethod
-    def get_nav_list():
+    def get_nav_list(slot=None):
         """
         Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
         correct permissions.
         """
-        return EPFLViewLinks(links=EPFLView.register, show_search=False, show_pagination=False)
+        return EPFLViewLinks(links=[view for view in EPFLView.register if view.get('slot') is slot], show_search=False, show_pagination=False)
 
     @staticmethod
     def register_acl(*args, **kwargs):
