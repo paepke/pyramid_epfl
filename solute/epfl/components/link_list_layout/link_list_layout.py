@@ -17,11 +17,11 @@ class LinkListLayout(PaginatedListLayout):
 
     theme_path = {'default': PaginatedListLayout.theme_path,
                   'row': ['link_list_layout/theme']}
-        
+
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
 
     compo_state = PaginatedListLayout.compo_state + ['links']
-    
+
     links = None
 
     auto_update_children = False
@@ -33,11 +33,19 @@ class LinkListLayout(PaginatedListLayout):
         for i, link in enumerate(self.links):
             if not has_permission_for_route(self.request, link['url']):
                 continue
+
             links.append({'id': i,
-                          'text': link['text'],
-                          'url': link['url']})
-            if link.has_key('menu_group'):
+                        'text': link['text'],
+                        'url': link['url']})
+            if link.get('menu_group'):
                 links[-1]['menu_group'] = link['menu_group']
+            if link.get('icon'):
+                links[-1]['icon'] = link['icon']
+
+            try:
+                links[-1]['url'].format()
+            except KeyError:
+                links[-1]['url'] = links[-1]['url'].format(**self.page.request.matchdict)
             try:
                 links[-1]['url'] = self.page.get_route_path(links[-1]['url']) or links[-1]['url']
             except KeyError:
