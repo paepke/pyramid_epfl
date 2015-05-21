@@ -26,26 +26,26 @@ class Button(ComponentBase):
     compo_state = ComponentBase.compo_state + \
         ['disabled', 'icon', 'value', 'color', 'icon_size', 'icon_color']
 
-    label = None  # : If set, the label is rendered before the button.
-    value = None  # : The value is used as button text if no icon is provided.
-    # : Optional color of the button. Possible values: default, primary, warning, danger, success, transparent
+    label = None  #: If set, the label is rendered before the button.
+    value = None  #: The value is used as button text if no icon is provided.
+    #: Optional color of the button. Possible values: default, primary, warning, danger, success, transparent
     color = None
-    # : Optional font-awesome icon to be rendered as button value instead of :attr:`value` text.
+    #: Optional font-awesome icon to be rendered as button value instead of :attr:`value` text.
     icon = None
-    icon_size = None  # : Optional font-awesome icon-size possible values: 'lg', 2, 3, 4, 5
-    # : Optional color of the button icon. Possible values default, primary, warning, danger, success
+    icon_size = None  #: Optional font-awesome icon-size possible values: 'lg', 2, 3, 4, 5
+    #: Optional color of the button icon. Possible values default, primary, warning, danger, success
     icon_color = None
-    tooltip = None  # : Optional tooltip text that is placed on the button.
-    # : Mandatory name of the event handling method (without trailing "handle\_").
+    tooltip = None  #: Optional tooltip text that is placed on the button.
+    #: Mandatory name of the event handling method (without trailing "handle\_").
     event_name = None
-    event_target = None  # : Optional target where the event handling method can be found.
-    is_submit = False  # : Set to true if button should have html type "submit".
-    disabled = None  # : Set to true if button should be disabled.
-    # : Set to true if user should be asked for confirmation first before the button event is triggered
+    event_target = None  #: Optional target where the event handling method can be found.
+    is_submit = False  #: Set to true if button should have html type "submit".
+    disabled = None  #: Set to true if button should be disabled.
+    #: Set to true if user should be asked for confirmation first before the button event is triggered
     confirm_first = False
-    # : Adapt this text for a custom confirmation dialog message.
+    #: Adapt this text for a custom confirmation dialog message.
     confirm_message = "Do you want to proceed?"
-    button_size = None  # : Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
+    button_size = None  #: Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
 
     def __init__(self, page, cid,
                  label=None,
