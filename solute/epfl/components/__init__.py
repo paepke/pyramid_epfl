@@ -27,6 +27,7 @@ from select.select import Select
 from selectize.selectize import Selectize
 from radio.radio import Radio
 from buttonradio.buttonradio import ButtonRadio
+from simpletoggle.simpletoggle import SimpleToggle
 from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 from upload.upload import Upload
@@ -121,6 +122,7 @@ def add_routes(config):
     Radio.add_pyramid_routes(config)
     ButtonRadio.add_pyramid_routes(config)
     Toggle.add_pyramid_routes(config)
+    SimpleToggle.add_pyramid_routes(config)
     Checkbox.add_pyramid_routes(config)
     Select.add_pyramid_routes(config)
     Selectize.add_pyramid_routes(config)

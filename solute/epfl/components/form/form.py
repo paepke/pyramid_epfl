@@ -18,7 +18,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     readonly = False
     #: Set during call of :func:`validate` with an error message if validation fails.
     validation_error = ''
-    validation_type = None
+    validation_type = None  #: Form validation selector.
     #: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
     validation_helper = []
     #: Set to true if value has to be provided for this element in order to yield a valid form.
