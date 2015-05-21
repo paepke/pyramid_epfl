@@ -212,11 +212,12 @@ class ComponentBaseTest(unittest.TestCase):
                 assert ":param {var}:".format(var=var) in init_docs,\
                     "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
 
-        source = inspect.getsourcelines(self.component)[0]
+        source, starting_line = inspect.getsourcelines(self.component)
 
         custom_attributes = re.compile('^    [a-zA-Z_]* = .*$')
         doc_line = re.compile('^    #: .*$')
         for line_number, line in enumerate(source):
+            abs_line_number = line_number + starting_line + 1
             search_result = custom_attributes.findall(line)
             if not search_result:
                 continue
@@ -230,7 +231,8 @@ class ComponentBaseTest(unittest.TestCase):
             if '#' in attr_tail:
                 assert '  #: ' in attr_tail,\
                     "Bad format on docstring for {attr_name}. Expected string containing '  #: ', got '{attr_tail}'" \
-                    " instead".format(attr_name=attr_name, attr_tail=attr_tail)
+                    " instead. (Line: {line_number})".format(
+                        attr_name=attr_name, attr_tail=attr_tail, line_number=abs_line_number)
                 continue
 
             line_cursor = 1
@@ -238,12 +240,15 @@ class ComponentBaseTest(unittest.TestCase):
             # No doc string yet, so look backwards.
             assert doc_line.match(current_line),\
                 "No docstring found for {attr_name}. Expected a line starting with '#: ', got '{current_line}'" \
-                " instead.".format(attr_name=attr_name, current_line=current_line.strip())
+                " instead. (Line: {line_number})".format(
+                    attr_name=attr_name, current_line=current_line.strip(), line_number=abs_line_number - line_cursor)
 
             while current_line.strip().startswith('#') and line_cursor <= current_line:
                 assert doc_line.match(current_line),\
                     "Bad format docstring found for {attr_name}. Expected a line starting with '#: ', got " \
-                    "'{current_line}' instead.".format(attr_name=attr_name, current_line=current_line.strip())
+                    "'{current_line}' instead. (Line: {line_number})".format(
+                        attr_name=attr_name, current_line=current_line.strip(),
+                        line_number=abs_line_number - line_cursor)
                 current_line = source[line_number - line_cursor]
                 line_cursor += 1
 
