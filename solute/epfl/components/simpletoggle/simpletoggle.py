@@ -2,29 +2,32 @@ from solute.epfl.components.form.form import FormInputBase
 
 
 class SimpleToggle(FormInputBase):
+
     """
     A form checkbox styled as a simple on/off toggle.
     Compared to the Toggle component, this component does not display any texts on the toggle.
-    
+
     Typically, this component is used in a form:
-    
+
     .. code:: python
-        
+
         form = Form(node_list=[SimpleToggle(label="Enable/Disable user:", name="user_enable_toggle")])
-    
+
     """
-    
+
     template_name = "simpletoggle/simpletoggle.html"
-    
+
     validation_type = 'bool'
-    
-    js_name = FormInputBase.js_name + [("solute.epfl.components:simpletoggle/static", "simpletoggle.js")]
-    css_name = FormInputBase.css_name + [("solute.epfl.components:simpletoggle/static", "simpletoggle.css")]
-    
-    default = False #: The default value of the toggle.
+
+    js_name = FormInputBase.js_name + \
+        [("solute.epfl.components:simpletoggle/static", "simpletoggle.js")]
+    css_name = FormInputBase.css_name + \
+        [("solute.epfl.components:simpletoggle/static", "simpletoggle.css")]
+
+    default = False  #: The default value of the toggle.
 
     js_parts = FormInputBase.js_parts + ['simpletoggle/simpletoggle.js']
-    
+
     def __init__(self, page, cid,
                  label=None,
                  name=None,
@@ -63,17 +66,17 @@ class SimpleToggle(FormInputBase):
         :param layover_icon: Optional font-awesome icon to be rendered as a layover icon above the input field (aligned to the right)
         """
         super(SimpleToggle, self).__init__(page, cid,
-                                        label=label,
-                                        name=name,
-                                        value=value,
-                                        default=default,
-                                        readonly=readonly,
-                                        validation_error=validation_error,
-                                        mandatory=mandatory,
-                                        fire_change_immediately=fire_change_immediately,
-                                        compo_col=compo_col,
-                                        label_col=label_col,
-                                        layout_vertical=layout_vertical,
-                                        label_style=label_style,
-                                        input_style=input_style,
-                                        **extra_params)
+                                           label=label,
+                                           name=name,
+                                           value=value,
+                                           default=default,
+                                           readonly=readonly,
+                                           validation_error=validation_error,
+                                           mandatory=mandatory,
+                                           fire_change_immediately=fire_change_immediately,
+                                           compo_col=compo_col,
+                                           label_col=label_col,
+                                           layout_vertical=layout_vertical,
+                                           label_style=label_style,
+                                           input_style=input_style,
+                                           **extra_params)
