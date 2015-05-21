@@ -144,16 +144,18 @@ class EPFLView(object):
         Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
         correct permissions.
         """
-        return EPFLViewLinks(links=[view for view in EPFLView.register if view.get('slot') is slot],
-                             show_search=False,
-                             show_pagination=False,
-                             data_interface={
-                                 'id': None,
-                                 'text': None,
-                                 'url': None,
-                                 'menu_group': None,
-                                 'icon': None
-                             })
+        return EPFLViewLinks(
+            links=[view for view in EPFLView.register if view.get('slot') is slot],
+            show_search=False,
+            show_pagination=False,
+            data_interface={
+                'id': None,
+                'text': None,
+                'url': None,
+                'menu_group': None,
+                'icon': None
+            }
+        )
 
     @staticmethod
     def register_acl(*args, **kwargs):
