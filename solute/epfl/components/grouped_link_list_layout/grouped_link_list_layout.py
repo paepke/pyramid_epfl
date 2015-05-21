@@ -20,6 +20,7 @@ class GroupedLinkListLayout(LinkListLayout):
         for compo in self.components:
             if getattr(compo, 'menu_group', None):
                 groups.setdefault(compo.menu_group, {}).setdefault('components', []).append(compo)
+                groups[compo.menu_group]['icon'] = getattr(compo, 'icon', None)
                 groups[compo.menu_group]['type'] = 'group'
                 groups[compo.menu_group]['name'] = compo.menu_group
             else:
