@@ -17,7 +17,7 @@ class SimpleToggle(FormInputBase):
 
     template_name = "simpletoggle/simpletoggle.html"
 
-    validation_type = 'bool'
+    validation_type = 'bool'  #: Form validation selector.
 
     js_name = FormInputBase.js_name + \
         [("solute.epfl.components:simpletoggle/static", "simpletoggle.js")]
