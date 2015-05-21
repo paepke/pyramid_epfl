@@ -25,6 +25,9 @@ epfl.FormInputBase.event_change = function (cid, value, enqueue_event) {
     	var is_dirty = parent_form.data('dirty');
 		if (is_dirty == '0') {
 			parent_form.data('dirty', '1');
+			// first change to the form. always send event immediately so that
+			// the serve can handle is_dirty change
+			enqueue_event = false;
 			epfl.repeat_enqueue(epfl.make_component_event(cid, 'set_dirty', {}), cid + "_set_dirty");
 		}
     }

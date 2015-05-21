@@ -67,7 +67,8 @@ class EPFLView(object):
 
     def __init__(
             self, route_name=None, route_pattern=None, menu_group=None,
-            permission=None, route_text=None, rank=0, forbidden_view=False
+            permission=None, route_text=None, rank=0, forbidden_view=False,
+            slot=None, icon=None, route_url=None
     ):
         """
         Adds a route, adds the view with the given permissions to that route and creates a link that appears in
@@ -76,11 +77,14 @@ class EPFLView(object):
         order.
         """
         self.route_name = route_name
+        self.route_url = route_url or route_name
         self.route_text = route_text
         self.route_pattern = route_pattern
         self.menu_group = menu_group
         self.permission = permission
         self.rank = rank
+        self.slot = slot
+        self.icon = icon
         self.forbidden_view = forbidden_view
 
         if not self.forbidden_view:
@@ -103,9 +107,11 @@ class EPFLView(object):
             return
         self.counter['id'] += 1
         self.register.append({'id': self.counter['id'],
-                              'url': self.route_name,
+                              'url': self.route_url,
                               'text': self.route_text,
-                              'menu_group': self.menu_group})
+                              'menu_group': self.menu_group,
+                              'slot': self.slot,
+                              'icon': self.icon})
 
     @property
     def _config(self):
@@ -133,12 +139,23 @@ class EPFLView(object):
         EPFLView.config = None
 
     @staticmethod
-    def get_nav_list():
+    def get_nav_list(slot=None):
         """
         Return a LinkListLayout Component with links to all registered EPFLViews visible if the current user has the
         correct permissions.
         """
-        return EPFLViewLinks(links=EPFLView.register, show_search=False, show_pagination=False)
+        return EPFLViewLinks(
+            links=[view for view in EPFLView.register if view.get('slot') is slot],
+            show_search=False,
+            show_pagination=False,
+            data_interface={
+                'id': None,
+                'text': None,
+                'url': None,
+                'menu_group': None,
+                'icon': None
+            }
+        )
 
     @staticmethod
     def register_acl(*args, **kwargs):
