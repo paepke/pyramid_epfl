@@ -81,8 +81,8 @@ The main python file **should** contain a single class of the camelcase componen
 :class:`solute.epfl.core.epflcomponentbase.ComponentBase`,
 :class:`solute.epfl.core.epflcomponentbase.ComponentContainerBase` or another component inheriting from either of them.
 
-The __init__method
-^^^^^^^^^^^^^^^^^^
+The __init__ method
+^^^^^^^^^^^^^^^^^^^
 The component class **must** contain an __init__ method which **must** use these minimum 3 parameters in the given
 order:
 
