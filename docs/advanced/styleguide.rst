@@ -90,10 +90,10 @@ order:
  2. page
  3. cid
 
-The method also **must** use at least one the following parameters:
+The method also **must** use one of the following parameters:
 
  1. \*\*kwargs
- 2. \*\*extra_args
+ 2. \*\*extra_params
 
 The method **may** contain the additional parameter \*args.
 

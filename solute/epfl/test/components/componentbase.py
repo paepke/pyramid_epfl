@@ -201,6 +201,44 @@ class ComponentBaseTest(unittest.TestCase):
                 assert ":param {var}:".format(var=var) in init_docs,\
                     "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
 
+        source = inspect.getsourcelines(self.component)[0]
+
+        custom_attributes = re.compile('^    [a-zA-Z_]* = .*$')
+        doc_line = re.compile('^    #: .*$')
+        for line_number, line in enumerate(source):
+            search_result = custom_attributes.findall(line)
+            if not search_result:
+                continue
+            attr_name = search_result[0].strip().split(' ', 1)[0]
+
+            if attr_name in ['asset_spec', 'compo_state', 'theme_path', 'css_name', 'js_name', 'new_style_compo',
+                             'compo_js_params', 'compo_js_extras', 'compo_js_name']:
+                continue
+
+            attr_tail = search_result[0].strip().split(' ', 2)[2]
+            if '#' in attr_tail:
+                assert '  #: ' in attr_tail,\
+                    "Bad format on docstring for {attr_name}. Expected string containing '  #: ', got '{attr_tail}'" \
+                    " instead".format(attr_name=attr_name, attr_tail=attr_tail)
+                continue
+
+            line_cursor = 1
+            current_line = source[line_number - line_cursor]
+            # No doc string yet, so look backwards.
+            assert doc_line.match(current_line),\
+                "No docstring found for {attr_name}. Expected a line starting with '#: ', got '{current_line}'" \
+                " instead.".format(attr_name=attr_name, current_line=current_line.strip())
+
+            while current_line.strip().startswith('#') and line_cursor <= current_line:
+                assert doc_line.match(current_line),\
+                    "Bad format docstring found for {attr_name}. Expected a line starting with '#: ', got " \
+                    "'{current_line}' instead.".format(attr_name=attr_name, current_line=current_line.strip())
+                current_line = source[line_number - line_cursor]
+                line_cursor += 1
+
+        # import pdb
+        # pdb.set_trace()
+
 
 class ComponentContainerBaseTest(ComponentBaseTest):
     component = epfl.core.epflcomponentbase.ComponentContainerBase
