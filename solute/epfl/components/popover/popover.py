@@ -22,32 +22,52 @@ class Popover(epflcomponentbase.ComponentBase):
     compo_config = []
     compo_state = ["disabled", "text", "title", "position", "label", "icon", "color"]
 
+    #: Text to be displayed in the popover. Can be either a string or a list of strings.
+    #: In the latter case, the strings are displayed in separate paragraphs.
     text = ""
-    title = None  # : if title is none it is not displayed
-    position = "top"  # : possible positions are top, left, right, bottom
+    title = None  #: title to be displayed in the popover. If set to None, no title is displayed.
+    position = "top"  #: possible positions are top, left, right, bottom
     #: An optional font-awesome icon that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
-    # to yield a reasonable button.
+    #: Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    #: to yield a reasonable button.
     icon = None
     #: An optional label that should be displayed on the button.
-    # Either the :attr:`icon` or the :attr:`label` have to be defined in order
-    # to yield a reasonable button.
+    #: Either the :attr:`icon` or the :attr:`label` have to be defined in order
+    #: to yield a reasonable button.
     label = None
-    disabled = None  # : Set to true if button should be disabled.
-    # : The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
+    disabled = None  #: Set to true if button should be disabled.
+    #: The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
     color = "default"
-    small_button = False  # : Set to true if a small button should be rendered.
+    small_button = False  #: Set to true if a small button should be rendered.
 
-    def __init__(self, page, cid, label=None, icon=None, text=None, title=None, position="top", color="default", small_button=False, **extra_params):
-        '''
+    def __init__(self, page, cid,
+                 label=None,
+                 icon=None,
+                 text=None,
+                 title=None,
+                 position="top",
+                 color="default",
+                 disabled=False,
+                 small_button=False,
+                 **extra_params):
+        """
         Popover Component
 
         :param label: An optional label that should be displayed on the button
         :param icon: An optional font-awesome icon that should be displayed on the button
-        :param text: The text to display in the popover
+        :param text: The text to display in the popover. Can be either a string or a list of strings. In the latter case, the strings are displayed in separate paragraphs
         :param title: An optional title to display in the popover
         :param position: The position of the popover (possible values are top, left, right, bottom)
         :param color: The color class to be used for the button
+        :param disabled: Set to true if button should be disabled
         :param small_button: Set to true if a small button should be rendered
-        '''
-        super(Popover, self).__init__(page, cid, label, icon, text, title, position, color)
+        """
+        super(Popover, self).__init__(page, cid,
+                                      label=label,
+                                      icon=icon,
+                                      text=text,
+                                      title=title,
+                                      position=position,
+                                      color=color,
+                                      disabled=disabled,
+                                      small_button=small_button)
