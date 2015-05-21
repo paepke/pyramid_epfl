@@ -131,9 +131,9 @@ class ComponentBaseTest(unittest.TestCase):
         import re
 
         component = self.component
+        compo_name = component.__name__
 
         if getattr(component, 'asset_spec', None) is not None:
-            compo_name = component.__name__
             if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
                 file_path = inspect.getsourcefile(component)
                 file_path = os.path.abspath(file_path)
@@ -196,6 +196,17 @@ class ComponentBaseTest(unittest.TestCase):
             assert 'page' in init_code.co_varnames,\
                 "{compo_name} __init__ method is not correctly setup. " \
                 "(Missing page parameter, or not overwritten.)".format(compo_name=compo_name)
+
+        assert init_code.co_varnames[0] == 'self',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'self'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[1] == 'page',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'page'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[2] == 'cid',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'cid'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[-1] in ['extra_params', 'kwargs'],\
+            "{compo_name} __init__ method is missing or misplacing parameter, 'extra_params' or 'kwargs'.".format(
+                compo_name=compo_name)
+
         for var in init_code.co_varnames:
             if var not in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
                 assert ":param {var}:".format(var=var) in init_docs,\
@@ -212,7 +223,7 @@ class ComponentBaseTest(unittest.TestCase):
             attr_name = search_result[0].strip().split(' ', 1)[0]
 
             if attr_name in ['asset_spec', 'compo_state', 'theme_path', 'css_name', 'js_name', 'new_style_compo',
-                             'compo_js_params', 'compo_js_extras', 'compo_js_name']:
+                             'compo_js_params', 'compo_js_extras', 'compo_js_name', 'template_name']:
                 continue
 
             attr_tail = search_result[0].strip().split(' ', 2)[2]
