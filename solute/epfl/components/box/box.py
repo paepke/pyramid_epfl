@@ -14,9 +14,6 @@ from solute.epfl.core import epflutil
 
 
 class Box(epflcomponentbase.ComponentContainerBase):
-
-    __acl__ = [(security.Allow, security.Everyone, 'access')]
-
     asset_spec = "solute.epfl.components:box/static"
     theme_path = ['box/theme']
 
@@ -24,7 +21,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     css_name = ["box.css"]
     js_name = ["box.js"]
 
-    # : The title of a box. If it is set, a heading panel is rendered that contains the title.
+    #: The title of a box. If it is set, a heading panel is rendered that contains the title.
     title = None
 
     #: the visibility of the box depends on the visibility of the containing template-elements
@@ -36,8 +33,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     hover_box = False
     #: Indicates whether a hover box component should be deleted upon close or just be hidden.
     hover_box_remove_on_close = True
-    #: Indicates of a border should be drawn around the box.
-    box_shown = True
+    box_shown = True  #: Indicates of a border should be drawn around the box.
     #: Indicates if the title of the box should be shown. Sometimes, you want to specify a title but not show it inside the box.
     #: For example, a box inside a :class:`solute.epfl.components.tabs_layout.tabs_layout.TabsLayout` component.
     show_title = True
@@ -45,14 +41,27 @@ class Box(epflcomponentbase.ComponentContainerBase):
     is_removable = False
 
     new_style_compo = True
-    compo_js_name = 'Box'
     compo_js_params = ['hover_box_remove_on_close']
+    compo_js_extras = ['handle_click']
+    compo_js_name = 'Box'
 
-    def handle_removed(self):
-        self.delete_component()
+    def __init__(self, page, cid, title=None, auto_visibility=None, hover_box=None, hover_box_remove_on_close=None,
+                 box_shown=None, show_title=None, is_removable=None, **extra_params):
+        """A simple box with a heading that can contain other components. It can be set to hover and/or be closable with
+        a cross on the top right.
 
-    def handle_hide(self):
-        self.set_hidden()
+        :param title: The title of the box will be shown on top of the container in its headbar.
+        :param auto_visibility: Defaulting to true any component with this set to true will be only visible if it
+         contains visible child components.
+        :param hover_box: If set to true the box will be hovering in the center of the screen with everything else being
+         forced into the background by a transparent gray overlay.
+        :param hover_box_remove_on_close: Defaulting to true any hover box will be removed when clicking the X, else it
+         will be set hidden.
+        :param box_shown: Defaulting to true the border around the box will only be visible if this is true.
+        :param show_title: Defaulting to true the title will only be shown if this is true.
+        :param is_removable: Defaulting to false the box will only show its removal button if this is true.
+        """
+        super(Box, self).__init__()
 
     def after_event_handling(self):
         super(Box, self).after_event_handling()
@@ -78,6 +87,13 @@ class Box(epflcomponentbase.ComponentContainerBase):
                 old_visibility = self.set_hidden()
                 if old_visibility:
                     self.redraw()
+
+    def handle_removed(self):
+        self.delete_component()
+
+    def handle_hide(self):
+        self.set_hidden()
+        self.redraw()
 
 
 class ModalBox(Box):

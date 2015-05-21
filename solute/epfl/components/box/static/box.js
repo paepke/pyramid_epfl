@@ -14,8 +14,8 @@ epfl.Box.prototype.handle_local_click = function (event) {
     event.preventDefault();
 
     if (this.elm.hasClass('epfl_hover_box') && !this.params.hover_box_remove_on_close) {
-        epfl.dispatch_event(this.cid, "hide", {});
+        this.send_event("hide", {});
     } else {
-        epfl.dispatch_event(this.cid, "removed", {});
+        this.send_event("removed", {});
     }
 };
