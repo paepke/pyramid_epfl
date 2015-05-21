@@ -1,4 +1,7 @@
-{% if compo.text is iterable %}
+{% if compo.text is string %}
+{% set compo_text = compo.text %}
+{% set compo_html = "false" %}
+{% elif compo.text is iterable %}
 {% set compo_text = '<p>%s</p>'|format(compo.text|join('</p><p>')) %}
 {% set compo_html = "true" %}
 {% else %}
