@@ -14,7 +14,12 @@
             {% endif %}
         {% else %}
             <div class="grouped-entry col-sm-12">
-                <a class="list-group-item col-sm-12">{{ group['name'] }}</a>
+                <a class="list-group-item col-sm-12">
+                    {% if group['icon'] is defined and group['icon'] %}
+                        <i class="fa fa-{{ group['icon'] }}"></i>
+                    {% endif %}
+                    {{ group['name'] }}
+                </a>
 
                 <div class="list-group">
                 {% for compo_obj in group['components'] %}

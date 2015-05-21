@@ -428,9 +428,9 @@ epfl_module = function() {
         if (false) {
             return;
         } else if (initial) {
-            History.replaceState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
+            History.replaceState({tid: tid}, window.document.title, window.location.pathname + "?tid=" + tid);
         } else {
-            History.pushState({tid: tid}, tid, window.location.pathname + "?tid=" + tid);
+            History.pushState({tid: tid}, window.document.title, window.location.pathname + "?tid=" + tid);
         }
     };
 

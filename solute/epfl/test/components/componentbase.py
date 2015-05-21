@@ -131,9 +131,9 @@ class ComponentBaseTest(unittest.TestCase):
         import re
 
         component = self.component
+        compo_name = component.__name__
 
         if getattr(component, 'asset_spec', None) is not None:
-            compo_name = component.__name__
             if ':{compo_name}/'.format(compo_name=compo_name.lower()) in component.asset_spec:
                 file_path = inspect.getsourcefile(component)
                 file_path = os.path.abspath(file_path)
@@ -196,10 +196,67 @@ class ComponentBaseTest(unittest.TestCase):
             assert 'page' in init_code.co_varnames,\
                 "{compo_name} __init__ method is not correctly setup. " \
                 "(Missing page parameter, or not overwritten.)".format(compo_name=compo_name)
+
+        assert init_code.co_varnames[0] == 'self',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'self'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[1] == 'page',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'page'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[2] == 'cid',\
+            "{compo_name} __init__ method is missing or misplacing parameter 'cid'.".format(compo_name=compo_name)
+        assert init_code.co_varnames[-1] in ['extra_params', 'kwargs'],\
+            "{compo_name} __init__ method is missing or misplacing parameter, 'extra_params' or 'kwargs'.".format(
+                compo_name=compo_name)
+
         for var in init_code.co_varnames:
             if var not in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
                 assert ":param {var}:".format(var=var) in init_docs,\
                     "{compo_name} __init__ method is missing docs for {param}.".format(compo_name=compo_name, param=var)
+
+        source, starting_line = inspect.getsourcelines(self.component)
+
+        custom_attributes = re.compile('^    [a-zA-Z_]* = .*$')
+        doc_line = re.compile('^    #: .*$')
+        for line_number, line in enumerate(source):
+            abs_line_number = line_number + starting_line + 1
+            search_result = custom_attributes.findall(line)
+            if not search_result:
+                continue
+            attr_name = search_result[0].strip().split(' ', 1)[0]
+
+            if attr_name in ['asset_spec', 'compo_state', 'theme_path', 'css_name', 'js_name', 'js_parts',
+                             'new_style_compo','compo_js_params', 'compo_js_extras', 'compo_js_name', 'template_name']:
+                continue
+
+            assert attr_name not in ['cid', 'slot'], "Invalid attribute set: 'slot' and 'cid' are reserved names." \
+                                                     " (Line: {line_number})".format(line_number=abs_line_number)
+
+            attr_tail = search_result[0].strip().split(' ', 2)[2]
+            if '#' in attr_tail:
+                assert '  #: ' in attr_tail,\
+                    "Bad format on docstring for {attr_name}. Expected string containing '  #: ', got '{attr_tail}'" \
+                    " instead. (Line: {line_number})".format(
+                        attr_name=attr_name, attr_tail=attr_tail, line_number=abs_line_number)
+                continue
+
+            line_cursor = 1
+            current_line = source[line_number - line_cursor]
+            # No doc string yet, so look backwards.
+            assert doc_line.match(current_line),\
+                "No docstring found for {attr_name}. Expected a line starting with '#: ', got '{current_line}'" \
+                " instead. (Line: {line_number})".format(
+                    attr_name=attr_name, current_line=current_line.strip(), line_number=abs_line_number - line_cursor)
+
+            while current_line.strip().startswith('#') and line_cursor <= current_line:
+                assert doc_line.match(current_line),\
+                    "Bad format docstring found for {attr_name}. Expected a line starting with '#: ', got " \
+                    "'{current_line}' instead. (Line: {line_number})".format(
+                        attr_name=attr_name, current_line=current_line.strip(),
+                        line_number=abs_line_number - line_cursor)
+                current_line = source[line_number - line_cursor]
+                line_cursor += 1
+
+        # import pdb
+        # pdb.set_trace()
 
 
 class ComponentContainerBaseTest(ComponentBaseTest):
