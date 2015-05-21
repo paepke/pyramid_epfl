@@ -227,6 +227,9 @@ class ComponentBaseTest(unittest.TestCase):
                              'compo_js_params', 'compo_js_extras', 'compo_js_name', 'template_name']:
                 continue
 
+            assert attr_name not in ['cid', 'slot'], "Invalid attribute set: 'slot' and 'cid' are reserved names." \
+                                                     " (Line: {line_number})".format(line_number=abs_line_number)
+
             attr_tail = search_result[0].strip().split(' ', 2)[2]
             if '#' in attr_tail:
                 assert '  #: ' in attr_tail,\
