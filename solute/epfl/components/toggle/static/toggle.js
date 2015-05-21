@@ -9,7 +9,7 @@ epfl.Toggle = function (cid, params) {
 
     $(selector).on('switchChange.bootstrapSwitch', function (event, state) {
         var val = $(this).closest("div").parent().hasClass("bootstrap-switch-on");
-        epfl.FormInputBase.on_change(compo, val, cid, enqueue_event);
+        epfl.FormInputBase.prototype.on_change(compo, val, cid, enqueue_event);
     });
 };
 

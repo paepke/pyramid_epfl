@@ -14,7 +14,7 @@ epfl.NumberInput = function (cid, params) {
     }
 
     var change = function (event) {
-        epfl.FormInputBase.on_change(compo, $(selector).val(), cid, enqueue_event);
+        epfl.FormInputBase.prototype.on_change(compo, $(selector).val(), cid, enqueue_event);
     };
 
     $(selector).keydown(function (event) {
