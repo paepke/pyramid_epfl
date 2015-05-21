@@ -31,7 +31,7 @@ epfl.Upload = function (cid, params) {
             if (img_container.find('img').length !== 0) {
                 img_container.find('img').attr('src', reader.result);
             }
-            epfl.FormInputBase.prototype.on_change(compo, reader.result, cid, enqueue_event);
+            epfl.FormInputBase.on_change(compo, reader.result, cid, enqueue_event);
         }
     };
 

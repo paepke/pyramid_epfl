@@ -42,7 +42,7 @@ epfl.TextInput = function (cid, params) {
         });
     }
     var change = function (event) {
-        epfl.FormInputBase.prototype.on_change(compo, $(selector).val(), cid, enqueue_event);
+        epfl.FormInputBase.on_change(compo, $(selector).val(), cid, enqueue_event);
     };
 
     var keydown = function(event){
