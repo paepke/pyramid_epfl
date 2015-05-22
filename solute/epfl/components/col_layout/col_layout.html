@@ -1,6 +1,6 @@
 <div class="row{{ " vertical-align" if compo.vertical_center else "" }}" id="{{ compo.cid }}" epflid="{{ compo.cid }}">
 {% for compo_obj in compo.components %}
-	<div class="col-md-{{ compo_obj.cols }}">
+	<div class="col-md-{{ compo_obj.cols }}{% if compo_obj.align is defined and compo_obj.align is not none %} text-{{ compo_obj.align }}{% endif %}">
     	{{ compo_obj.render() }}
     </div>
 {% endfor %}
