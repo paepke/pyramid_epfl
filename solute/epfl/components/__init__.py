@@ -65,6 +65,7 @@ from context_list_layout.context_list_layout import ContextListLayout, ContextLi
 from table_layout.table_layout import TableLayout
 from flexible_text_list.flexible_text_list import FlexibleTextList
 from selectable_list.selectable_list import SelectableList
+from text_list.text_list import TextList
 
 from simpletable.simpletable import SimpleTable
 from multiselect.multiselect import MultiSelect, MultiSelectTransfer
