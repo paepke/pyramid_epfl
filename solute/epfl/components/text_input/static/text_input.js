@@ -17,7 +17,6 @@ epfl.TextInput = function (cid, params) {
             var get_source = function(epfl_event){
                 epfl.send(epfl_event, function(response){
                     if(response && response !== "") {
-                        response = $.parseJSON(response);
                         var i = 0, result_set = [];
                         for (i; i < response.length; i++) {
                             result_set.push({'id': response[i][0], 'name': response[i][1]});
