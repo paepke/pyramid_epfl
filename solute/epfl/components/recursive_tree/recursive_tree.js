@@ -1,1 +1,1 @@
-epfl.init_component('{{ compo.cid }}', 'RecursiveTree');
+epfl.init_component('{{ compo.cid }}', 'RecursiveTree', {"scroll_position":"{{compo.scroll_position}}" });
