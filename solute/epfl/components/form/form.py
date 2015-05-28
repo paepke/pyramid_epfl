@@ -41,7 +41,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
 
     def is_numeric(self):
         return type(self.value) in [int, float]
-    
+
     def get_parent_form(self, compo):
         if isinstance(compo, Form):
             return compo
@@ -65,7 +65,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
 
     def delete_component(self):
         try:
-            self.get_parent_form(self.container_compo).unregister_field(self) 
+            self.get_parent_form(self.container_compo).unregister_field(self)
         except AttributeError:
             pass
         super(FormInputBase, self).delete_component()
@@ -86,11 +86,11 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         else:
             self.value = None
         self.validation_error = ""
-        
+
     def set_focus(self):
         self.add_js_response("setTimeout(function(){$('#%s_input').focus(); }, 0);" % self.cid)
         self.redraw()
-        
+
     def validate(self):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
@@ -123,7 +123,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
                     result, text = False, ('Value must not be lower than %s.' % self.min_value)
                 elif ((not self.max_value is None) and (int(self.value)>self.max_value)):
                     result, text = False, ('Value must not be higher than %s.' % self.max_value)
-                    
+
         # validation_type bool is always valid
 
         for helper in self.validation_helper:
@@ -196,20 +196,20 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     def handle_submit(self):
         pass
-    
+
     def handle_set_dirty(self):
         self.is_dirty = True
 
     def register_field(self, field):
         """
-        Make a field known to the parent form. Since any component can reside in a form, the child components 
+        Make a field known to the parent form. Since any component can reside in a form, the child components
         which register themselves as fields have to provide the methods reset() and validate() (see :class:`.FormInputBase`),
         since these are called for all registered fields by the parent form.
         """
         if self._registered_fields is None:
             self._registered_fields = set()
         self._registered_fields.add(field.cid)
-        
+
     def unregister_field(self,field):
         try:
             self._registered_fields.remove(field.cid)
@@ -219,10 +219,14 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     @property
     def registered_fields(self):
+        if self._registered_fields is None:
+            self._registered_fields = set()
         return [self.page.components[cid] for cid in self._registered_fields]
 
     @property
     def registered_names(self):
+        if self._registered_fields is None:
+            self._registered_fields = set()
         return dict([[self.page.components[cid].name, self.page.components[cid]]
                      for cid in self._registered_fields
                      if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
@@ -241,7 +245,7 @@ class Form(epflcomponentbase.ComponentContainerBase):
             if field.name == key:
                 field.value = value
                 return
-            
+
     def reset(self):
         """
         Initialize all registered form fields with its default value and clear all validation messages.
