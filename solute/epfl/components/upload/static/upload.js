@@ -8,7 +8,11 @@ epfl.Upload = function (cid, params) {
 
     var change = function (event) {
         var reader = new FileReader();
-        var file = $(selector)[0].files[0];
+        var file;
+        // First try if the event itself has a reference to the uploaded file
+        if (event.target && event.target.files) {
+            file = event.target.files[0];
+        }
         if (!file) {
             try {
                 // Check if file was added with paste (only Chrome)
@@ -23,6 +27,9 @@ epfl.Upload = function (cid, params) {
                 }
             }
             catch (e) {
+                // Change was triggered but there is no file, not selected by dialog, nor pasted via keyboard-commands,
+                // but it is possible that items contains a single text string which would result in an error when
+                // items[i].getAsFile() is executed on that string.
                 return;
             }
         }
