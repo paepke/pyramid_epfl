@@ -1,8 +1,5 @@
 # coding: utf-8
 
-"""
-
-"""
 from solute.epfl.core import epflcomponentbase
 
 
@@ -39,7 +36,6 @@ class ColLayout(epflcomponentbase.ComponentContainerBase):
 
     def __init__(self, page, cid, vertical_center=False, **extra_params):
         """
-
         A layout component that renders child components as cols (using Bootstrap's col layout).
 
         Every child component is required to have the cols attribute indicating the number of cols it
