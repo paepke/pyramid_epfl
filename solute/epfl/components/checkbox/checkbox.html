@@ -8,7 +8,6 @@
                    id="{{ compo.cid }}_input"
                    name="{{ compo.name }}"
                    value="{{ compo.value if compo.value is not none else '' }}"
-                   style="width:auto;"
                    {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
             {% if compo.label %}{{ compo.label }}</label>{% endif %}
             {% if compo.validation_error %}
@@ -35,7 +34,6 @@
                    id="{{ compo.cid }}_input"
                    name="{{ compo.name }}"
                    value="{{ compo.value if compo.value is not none else '' }}"
-                   style="width:auto;"
                    {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
             {% if compo.validation_error %}
                 <small class="help-block has-error">{{ compo.validation_error }}</small>
