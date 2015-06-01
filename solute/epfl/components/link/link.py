@@ -14,6 +14,8 @@ class Link(ComponentBase):
     url = '#'  #: The url this link points to. Used as src attribute of the A-Tag.
     name = 'Please change me!'  #: The name displayed for this link.
 
+    new_style_compo = True
+
     def __init__(self, page, cid, url=None, name=None, **extra_params):
         """Simple Link component.
 
