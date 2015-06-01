@@ -46,6 +46,7 @@ from image.image import Image, ImageList
 from text.text import Text
 from placeholder.placeholder import Placeholder
 from popover.popover import Popover
+from link.link import Link
 
 #: Lists
 from tabs_layout.tabs_layout import TabsLayout
@@ -92,6 +93,7 @@ def add_routes(config):
     CardinalLayout.add_pyramid_routes(config)
     Panel.add_pyramid_routes(config)
     PopoverContainer.add_pyramid_routes(config)
+    Link.add_pyramid_routes(config)
 
     RecursiveTree.add_pyramid_routes(config)
     ListLayout.add_pyramid_routes(config)
