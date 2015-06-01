@@ -15,6 +15,7 @@ class Link(ComponentBase):
     name = 'Please change me!'  #: The name displayed for this link.
 
     new_style_compo = True
+    compo_js_name = 'Link'
 
     def __init__(self, page, cid, url=None, name=None, **extra_params):
         """Simple Link component.
