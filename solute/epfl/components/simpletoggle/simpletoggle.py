@@ -29,12 +29,12 @@ class SimpleToggle(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["enabled_icon","disabled_icon","enabled_icon_size","disabled_icon_size","enabled_icon_color","disabled_icon_color"]
 
-    enabled_icon = None #: font-awesome icon to be renderd if value == True
-    disabled_icon = None #: font-awesome icon to be renderd if value == False
-    enabled_icon_size = None #: font-awesome icon size if value == True example lg,2x,3x etc
-    disabled_icon_size = None #: font-awesome icon size if value == False  lg,2x,3x etc
-    enabled_icon_color = None #: bootstrap color if value == True example: primary default warning etc
-    disabled_icon_color = None #: bootstrap color if value == False example: primary default warning etc
+    enabled_icon = "toggle-on"  #: font-awesome icon to be renderd if value == True
+    disabled_icon = "toggle-off"  #: font-awesome icon to be renderd if value == False
+    enabled_icon_size = "lg"  #: font-awesome icon size if value == True example lg,2x,3x etc
+    disabled_icon_size = "lg"  #: font-awesome icon size if value == False  lg,2x,3x etc
+    enabled_icon_color = "primary"  #: bootstrap color if value == True example: primary default warning etc
+    disabled_icon_color = "default"  #: bootstrap color if value == False example: primary default warning etc
 
     def __init__(self, page, cid,
                  label=None,
@@ -50,12 +50,12 @@ class SimpleToggle(FormInputBase):
                  layout_vertical=False,
                  label_style=None,
                  input_style=None,
-                 enabled_icon="toggle-on",
-                 disabled_icon="toggle-off",
-                 enabled_icon_size="lg",
-                 disabled_icon_size="lg",
-                 enabled_icon_color="primary",
-                 disabled_icon_color="default",
+                 enabled_icon=None,
+                 disabled_icon=None,
+                 enabled_icon_size=None,
+                 disabled_icon_size=None,
+                 enabled_icon_color=None,
+                 disabled_icon_color=None,
                  **extra_params):
         """
         Form simple toggle Component
