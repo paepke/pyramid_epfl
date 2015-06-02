@@ -65,6 +65,8 @@ class EPFLView(object):
     register = []
     counter = {'id': 0}
 
+    skip_init = False
+
     def __init__(
             self, route_name=None, route_pattern=None, menu_group=None,
             permission=None, route_text=None, rank=0, forbidden_view=False,
@@ -76,6 +78,9 @@ class EPFLView(object):
         For future expansion the parameters of this method might be extended to allow sub-links and fine tuning of link
         order.
         """
+        if self.skip_init:
+            return
+
         self.route_name = route_name
         self.route_url = route_url or route_name
         self.route_text = route_text
