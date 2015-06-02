@@ -25,9 +25,9 @@ class SimpleToggle(FormInputBase):
 
     default = False  #: The default value of the toggle.
 
-    js_parts = FormInputBase.js_parts + ['simpletoggle/simpletoggle.js']
-
-    compo_state = FormInputBase.compo_state + ["enabled_icon","disabled_icon","enabled_icon_size","disabled_icon_size","enabled_icon_color","disabled_icon_color"]
+    compo_state = FormInputBase.compo_state + [
+        "enabled_icon", "disabled_icon", "enabled_icon_size", "disabled_icon_size", "enabled_icon_color",
+        "disabled_icon_color"]
 
     enabled_icon = "toggle-on"  #: font-awesome icon to be renderd if value == True
     disabled_icon = "toggle-off"  #: font-awesome icon to be renderd if value == False
@@ -35,6 +35,14 @@ class SimpleToggle(FormInputBase):
     disabled_icon_size = "lg"  #: font-awesome icon size if value == False  lg,2x,3x etc
     enabled_icon_color = "primary"  #: bootstrap color if value == True example: primary default warning etc
     disabled_icon_color = "default"  #: bootstrap color if value == False example: primary default warning etc
+
+    js_parts = []
+
+    new_style_compo = True
+    compo_js_name = 'SimpleToggle'
+    compo_js_params = ['enabled_icon', "disabled_icon", "enabled_icon_size", "disabled_icon_size",
+                       "fire_change_immediately", "enabled_icon_color", "disabled_icon_color"]
+    compo_js_extras = ['handle_click']
 
     def __init__(self, page, cid,
                  label=None,
