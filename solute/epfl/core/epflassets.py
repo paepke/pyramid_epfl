@@ -66,6 +66,7 @@ class EPFLView(object):
     counter = {'id': 0}
 
     skip_init = False
+    forbidden_view = False
 
     def __init__(
             self, route_name=None, route_pattern=None, menu_group=None,
