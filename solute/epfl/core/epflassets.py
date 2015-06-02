@@ -99,6 +99,8 @@ class EPFLView(object):
         self.add_link()
 
     def __call__(self, cb):
+        if self.skip_init:
+            return cb
         if not self.forbidden_view:
             self._config.add_view(cb,
                                   route_name=self.route_name,
