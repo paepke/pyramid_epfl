@@ -28,6 +28,7 @@ Subpackages
     solute.epfl.components.hover_link_list_layout
     solute.epfl.components.image
     solute.epfl.components.input_label
+    solute.epfl.components.link
     solute.epfl.components.link_list_layout
     solute.epfl.components.list_layout
     solute.epfl.components.loading
@@ -49,12 +50,14 @@ Subpackages
     solute.epfl.components.selectize
     solute.epfl.components.sidebar
     solute.epfl.components.simpletable
+    solute.epfl.components.simpletoggle
     solute.epfl.components.simpletree
     solute.epfl.components.table_layout
     solute.epfl.components.table_list_layout
     solute.epfl.components.tabs_layout
     solute.epfl.components.text
     solute.epfl.components.text_input
+    solute.epfl.components.text_list
     solute.epfl.components.textarea
     solute.epfl.components.texteditor
     solute.epfl.components.toggle
