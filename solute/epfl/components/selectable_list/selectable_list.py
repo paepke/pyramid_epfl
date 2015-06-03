@@ -21,7 +21,14 @@ class SelectableList(PaginatedListLayout):
     theme_path = {'default': PaginatedListLayout.theme_path,
                   'row': ['selectable_list/theme']}
 
+
+
+    js_parts = PaginatedListLayout.js_parts + ["selectable_list/selectable_list.js"]
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:selectable_list/static', 'selectable_list.js')]
+
+    compo_state = PaginatedListLayout.compo_state + ["search_text"]
+
+    search_text = None
 
     def __init__(self,page,cid, data_interface=None, *args, **extra_params):
         """
@@ -34,8 +41,18 @@ class SelectableList(PaginatedListLayout):
         self.page.components[cid].selected = not self.page.components[cid].selected
         self.redraw()
 
+    def handle_double_click(self, cid):
+        # Overwrite me for doubleclick handling
+        pass
+
     def get_selected(self):
         """
         :return: a list with selected compontents
         """
         return [compo for compo in self.components if compo.selected]
+
+    def handle_set_row(self, row_offset, row_limit, row_data=None):
+        if row_data is not None:
+            self.search_text = row_data.get("search")
+        self.update_children()
+        self.redraw()
