@@ -851,6 +851,14 @@ class ComponentBase(object):
             params=json.encode(params)
         )
 
+    def handle_reinitialize(self):
+        """Deletes the component and recreates it at the same position with the same cid it had before.
+        Requires a component that has a container component!
+        """
+        self.container_compo.add_component(self.__unbound_component__())
+        self.container_compo.redraw()
+        self.delete_component()
+
 
 class ComponentContainerBase(ComponentBase):
     """
