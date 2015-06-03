@@ -22,6 +22,7 @@ epfl.SimpleToggle.prototype.handle_click = function (event) {
             val = "False";
         }
         input_field.val(val);
+        var toggle_value = (val == "True");
         obj.elm.
             find("i").
             toggleClass("fa-" + obj.params["disabled_icon"]).
@@ -30,6 +31,6 @@ epfl.SimpleToggle.prototype.handle_click = function (event) {
             toggleClass("fa-" + obj.params["enabled_icon"]).
             toggleClass("fa-" + obj.params["enabled_icon_size"]).
             toggleClass("text-" + obj.params["enabled_icon_color"]);
-        epfl.FormInputBase.on_change(obj, val, obj.cid, !obj.params["fire_change_immediately"]);
+        epfl.FormInputBase.on_change(obj, toggle_value, obj.cid, !obj.params["fire_change_immediately"]);
     }
 };
