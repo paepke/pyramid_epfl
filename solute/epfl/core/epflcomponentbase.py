@@ -855,6 +855,8 @@ class ComponentBase(object):
         """Deletes the component and recreates it at the same position with the same cid it had before.
         Requires a component that has a container component!
         """
+        if not self.container_compo:
+            raise Exception('Tried using handle_reinitialize on a component without a container component.')
         self.container_compo.add_component(self.__unbound_component__())
         self.container_compo.redraw()
         self.delete_component()
