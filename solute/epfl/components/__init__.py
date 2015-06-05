@@ -6,9 +6,10 @@ The components must be imported in the namespace of this library.
 """
 
 #: Container
-from box.box import Box, ModalBox
+from box.box import Box
 from drag_box.drag_box import DragBox
 from droppable_box.droppable_box import DroppableBox
+from modal_box.modal_box import ModalBox
 from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
@@ -86,6 +87,7 @@ def add_routes(config):
 
     Box.add_pyramid_routes(config)
     DragBox.add_pyramid_routes(config)
+    ModalBox.add_pyramid_routes(config)
     DroppableBox.add_pyramid_routes(config)
     TabsLayout.add_pyramid_routes(config)
     NavLayout.add_pyramid_routes(config)
