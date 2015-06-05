@@ -458,7 +458,12 @@ epfl_module = function() {
 
     epfl.after_response = function () {
         for (var cid in epfl.components) {
-            epfl.components[cid].after_response();
+            var compo = epfl.components[cid];
+            if (compo._elm && compo._elm.get(0) == compo.elm.get(0)) {
+                continue;
+            }
+            compo.after_response();
+            compo._elm = compo.elm;
         }
     };
 
