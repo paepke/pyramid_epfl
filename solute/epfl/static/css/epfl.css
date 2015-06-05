@@ -39,3 +39,14 @@
   pointer-events: none;
 }
 .epfl-input-addon input { padding-right: 30px; }
+
+.active_drop {
+    border-top: 1px dashed black;
+    margin-top: -1px;
+}
+.active_drop.root_drop {
+    border-top: none;
+    margin-top: 0;
+    border-bottom: 1px dashed black;
+    margin-bottom: -1px;
+}

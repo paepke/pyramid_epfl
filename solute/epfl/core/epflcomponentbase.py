@@ -637,16 +637,6 @@ class ComponentBase(object):
             elif not hasattr(event_handler, '__call__'):
                 raise MissingEventHandlerException('Received non callable for event handling.')
 
-            # Special handling for drag_stop event in order to provide a stable position argument.
-            if event_name in ['drag_stop', 'drop_accepts']:
-                if len(epfl_event_trace) > 0:
-                    last_compo = getattr(self.page, epfl_event_trace[-1])
-                    compo = getattr(self.page, event_params['cid'])
-                    position = self.components.index(last_compo)
-                    if compo in self.components and self.components.index(compo) < position:
-                        position -= 1
-                    event_params.setdefault('position', position)
-
             self.epfl_event_trace = epfl_event_trace
             event_handler(**event_params)
             if self.post_event_handlers and self.post_event_handlers.get(event_name, None):
