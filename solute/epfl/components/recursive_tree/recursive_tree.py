@@ -6,7 +6,6 @@ class RecursiveTree(epflcomponentbase.ComponentContainerBase):
 
     theme_path = ['recursive_tree/theme']
 
-    js_parts = ['recursive_tree/recursive_tree.js']
     js_name = ['recursive_tree.js']
 
     css_name = ['recursive_tree.css']
@@ -25,6 +24,12 @@ class RecursiveTree(epflcomponentbase.ComponentContainerBase):
     show_children = False
 
     scroll_position = None
+
+    new_style_compo = True
+    compo_js_params = ['scroll_position']
+    compo_js_extras = []
+    compo_js_name = 'RecursiveTree'
+
 
     def __init__(self, page, cid, show_children=False, get_data=None, default_child_cls=None, data_interface=None,
                  *args, **kwargs):
