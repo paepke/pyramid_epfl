@@ -1,0 +1,78 @@
+ul.epfl-new-selectize {
+    display: none;
+    border: 1px solid black;
+    list-style-type: none;
+    padding-left: 0;
+    background-clip: padding-box;
+    border-color: #DDDDDD;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    position: absolute;
+    z-index: 5;
+}
+
+ul.epfl-new-selectize-innerlist {
+    list-style-type: none;
+    padding-left: 0;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+}
+
+li.epfl-new-selectize{
+    background-color: #ffffff;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-head {
+    padding: 0px 0 0px 0px;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-head.selected {
+    background-color: #F5F5F5;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-head:hover {
+    background-color: #F5F5F5;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-entry {
+    padding-left: 0;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-entry.selected {
+    background-color: #DDDDDD;
+}
+
+li.epfl-new-selectize.epfl-new-selectize-entry:hover {
+    background-color: #DDDDDD;
+}
+
+
+li.epfl-new-selectize-divider {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+span.epfl-new-selectize-heading {
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+span.epfl-new-selectize-text {
+    padding-left: 20px;
+}
+
+
+ul.epfl-new-selectize:hover{
+    cursor: default;
+}
+
+div.epfl-new-selectize-controls{
+    display:table;
+}
+
+div.epfl-new-selectize-search-field{
+    display: table-cell;
+}
+
+div.epfl-new-selectize-toggle{
+    display: table-cell;
+}
