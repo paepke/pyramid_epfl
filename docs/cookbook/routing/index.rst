@@ -5,3 +5,4 @@ Routing
 
     basics
     optional_parameters
+    permissions

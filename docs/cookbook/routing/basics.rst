@@ -27,4 +27,4 @@ The pyramid_epfl_starter scaffold already carries all you really need:
         )
 
 Using an :class:`~solute.epfl.core.epflassets.EPFLView` allows you to create both a route and link a view to that route
-in a single command.  That however is just the beginning of the capabilities of this feature!
+in a single command. That however is just the beginning of the capabilities of this feature!
