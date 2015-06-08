@@ -35,6 +35,7 @@ class Selectize(FormInputBase):
 
     cursor_position = 0
 
+    js_parts = [] # Overwrites the js parts from Forminput base, this is required for new style compo to work correct
     new_style_compo = True
     compo_js_name = 'Selectize'
     compo_js_params = ['fire_change_immediately', "search_server_side", "search_text", "input_focus",
@@ -43,7 +44,6 @@ class Selectize(FormInputBase):
 
 
     def handle_update_search(self, search_text,cursor_position):
-        print "update search"
         self.search_text = search_text
         self.cursor_position = cursor_position
         self.entries = self.reload_entries(search_text)

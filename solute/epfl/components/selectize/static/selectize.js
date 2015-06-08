@@ -34,24 +34,8 @@ epfl.Selectize = function (cid, params) {
         }
     });
 
-//    $("#selectize-toggle-" + cid).click(function () {
-//        $("#selectize-input-" + cid).focus();
-//        epfl.Selectize.toggle(cid);
-//    });
 
-
-    $(".epfl-selectize-entry." + cid).click(function () {
-        epfl.Selectize.resetList($("ul.epfl-selectize"));
-        $("#selectize-input-" + cid).val($(this).text().trim());
-        epfl.Selectize.hide(cid);
-
-        epfl.dispatch_event(cid, "set_selection", {
-            selection_id: $(this).data('selectizeid'),
-            selection_value: $(this).text().trim(),
-            selection_group_id: $(this).closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid"),
-            selection_group_value: $(this).closest("li.epfl-selectize-head").find("span").first().text()
-        });
-    }).mouseenter(function () {
+    $(".epfl-selectize-entry." + cid).mouseenter(function () {
         $(this).addClass("selected");
         $(this).parent().parent().addClass("selected");
     }).mouseleave(function () {
@@ -83,7 +67,6 @@ epfl.Selectize = function (cid, params) {
      and Focus
      *************************************************************************/
     $('#' + cid + ' > ul').width($('#' + cid).width());
-
     if (inputFocus) {
         $("#selectize-input-" + cid).focus();
         var searchTextLength = $("#selectize-input-" + cid).val().length;
@@ -93,16 +76,40 @@ epfl.Selectize = function (cid, params) {
 
 epfl.Selectize.inherits_from(epfl.ComponentBase);
 
-
+/**************************************************************************
+ EPFL New Style Event Handler
+ listener are automatically registered
+ *************************************************************************/
 epfl.Selectize.prototype.handle_click = function (event) {
     epfl.ComponentBase.prototype.handle_click.call(this, event);
     var target = $(event.target);
     var obj = this;
-    console.log("handle_click", target, obj);
 
-    if (target.attr("id") === "#selectize-toggle-" + obj.cid) {
-        $("#selectize-input-" + cid).focus();
-        epfl.Selectize.toggle(cid);
+    //click on the drop down button
+    if (target.attr("id") === "selectize-toggle-" + obj.cid) {
+        $("#selectize-input-" + obj.cid).focus();
+        epfl.Selectize.toggle(obj.cid);
+    }
+
+    //click on an entry
+    if ((target.hasClass("epfl-selectize-entry") && target.hasClass(obj.cid)) ||
+            (target.prop("tagName") === "SPAN" && target.hasClass("epfl-selectize") && target.hasClass("epfl-selectize-text"))) {
+        epfl.Selectize.resetList($("ul.epfl-selectize"));
+        $("#selectize-input-" + obj.cid).val(target.text().trim());
+        epfl.Selectize.hide(obj.cid);
+
+        var data = {
+            selection_id: target.data('selectizeid'),
+            selection_value: target.text().trim(),
+            selection_group_id: target.closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid"),
+            selection_group_value: target.closest("li.epfl-selectize-head").find("span").first().text()
+        };
+
+        if (data.selection_id === undefined) {
+            data.selection_id = target.parent().data('selectizeid');
+        }
+
+        epfl.dispatch_event(obj.cid, "set_selection", data);
     }
 };
 
