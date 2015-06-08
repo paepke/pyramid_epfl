@@ -34,10 +34,10 @@ epfl.Selectize = function (cid, params) {
         }
     });
 
-    $("#selectize-toggle-" + cid).click(function () {
-        $("#selectize-input-" + cid).focus();
-        epfl.Selectize.toggle(cid);
-    });
+//    $("#selectize-toggle-" + cid).click(function () {
+//        $("#selectize-input-" + cid).focus();
+//        epfl.Selectize.toggle(cid);
+//    });
 
 
     $(".epfl-selectize-entry." + cid).click(function () {
@@ -92,6 +92,19 @@ epfl.Selectize = function (cid, params) {
 };
 
 epfl.Selectize.inherits_from(epfl.ComponentBase);
+
+
+epfl.Selectize.prototype.handle_click = function (event) {
+    epfl.ComponentBase.prototype.handle_click.call(this, event);
+    var target = $(event.target);
+    var obj = this;
+    console.log("handle_click", target, obj);
+
+    if (target.attr("id") === "#selectize-toggle-" + obj.cid) {
+        $("#selectize-input-" + cid).focus();
+        epfl.Selectize.toggle(cid);
+    }
+};
 
 /*************************************************************************
  Helper

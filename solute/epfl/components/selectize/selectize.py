@@ -39,7 +39,7 @@ class Selectize(FormInputBase):
     compo_js_name = 'Selectize'
     compo_js_params = ['fire_change_immediately', "search_server_side", "search_text", "input_focus",
                        "cursor_position", "selected_text"]
-    #compo_js_extras = ['handle_click']
+    compo_js_extras = ['handle_click']
 
 
     def handle_update_search(self, search_text,cursor_position):
