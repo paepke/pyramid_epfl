@@ -1,11 +1,21 @@
 epfl.Selectize = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
+};
+
+epfl.Selectize.inherits_from(epfl.ComponentBase);
+
+epfl.Selectize.prototype.after_response = function (data) {
+    epfl.ComponentBase.prototype.after_response.call(this, data);
+
+    var target = $(event.target);
+    var obj = this;
+
     var searchServerSide = this.params["search_server_side"];
     var inputSearchText = this.params["search_text"];
     var inputFocus = this.params["input_focus"];
     var cursorPosition = this.params["cursor_position"];
     var selectedText = this.params["selected_text"];
-    var selectizeInput = $("#selectize-input-" + cid);
+    var selectizeInput = $("#selectize-input-" + obj.cid);
 
     /**************************************************************************
      Event Listener
@@ -30,16 +40,15 @@ epfl.Selectize = function (cid, params) {
     if (searchServerSide === true && inputSearchText != "") {
         if (selectedText === null) {
             selectizeInput.val(inputSearchText);
-            epfl.Selectize.inputTextChanged(cid, inputSearchText);
+            obj.inputTextChanged(inputSearchText);
         }
-
     }
     /**************************************************************************
      Width correction
      this is required because you cant inherit the width when your html tag is position fixed
      and Focus
      *************************************************************************/
-    $('#' + cid + ' > ul').width($('#' + cid).width());
+    $('#' + obj.cid + ' > ul').width($('#' + obj.cid).width());
     if (inputFocus) {
         selectizeInput.focus();
         var searchTextLength = selectizeInput.val().length;
@@ -47,7 +56,6 @@ epfl.Selectize = function (cid, params) {
     }
 };
 
-epfl.Selectize.inherits_from(epfl.ComponentBase);
 
 /**************************************************************************
  EPFL New Style Event Handler
@@ -61,15 +69,15 @@ epfl.Selectize.prototype.handle_click = function (event) {
     //click on the drop down button
     if (target.attr("id") === "selectize-toggle-" + obj.cid) {
         $("#selectize-input-" + obj.cid).focus();
-        epfl.Selectize.toggle(obj.cid);
+        obj.toggle();
     }
 
     //click on an entry
     if ((target.hasClass("epfl-selectize-entry") && target.hasClass(obj.cid)) ||
             (target.prop("tagName") === "SPAN" && target.hasClass("epfl-selectize") && target.hasClass("epfl-selectize-text"))) {
-        epfl.Selectize.resetList($("ul.epfl-selectize"));
+        obj.resetList($("ul.epfl-selectize"));
         $("#selectize-input-" + obj.cid).val(target.text().trim());
-        epfl.Selectize.hide(obj.cid);
+        obj.hide(obj.cid);
 
         var data = {
             selection_id: target.data('selectizeid'),
@@ -97,11 +105,11 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
     var searchInputElement = $("#selectize-input-" + obj.cid);
     if (target.attr("id") === "selectize-input-" + obj.cid) {
         if (event.which === 13) { // enter
-            epfl.Selectize.inputOnEnter(obj.cid, event);
+            obj.inputOnEnter(event);
         } else if (event.which === 38) { //arrow up
-            epfl.Selectize.inputArrowUp(obj.cid, event);
+            obj.inputArrowUp(event);
         } else if (event.which === 40) { //arrow down
-            epfl.Selectize.inputArrowDown(obj.cid, event);
+            obj.inputArrowDown(event);
         } else { //all other keys: start search after timeout
             if (inputSearchText !== searchInputElement.val()) {
                 inputSearchText = searchInputElement.val();
@@ -116,7 +124,7 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
                             cursor_position: cursorPos
                         });
                     } else {
-                        epfl.Selectize.inputTextChanged(obj.cid, search);
+                        obj.inputTextChanged();
                     }
                 }, 500);
             }
@@ -127,27 +135,27 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
 /*************************************************************************
  Helper
  *************************************************************************/
-epfl.Selectize.isVisible = function (cid) {
-    return $("#selectize-" + cid + ":visible").length !== 0;
+epfl.Selectize.prototype.isVisible = function () {
+    return $("#selectize-" + this.cid + ":visible").length !== 0;
 };
 
-epfl.Selectize.resetText = function (ele) {
+epfl.Selectize.prototype.resetText = function (ele) {
     ele.html(ele.text());
 };
 
-epfl.Selectize.hide = function (cid) {
-    $("#selectize-" + cid).hide();
+epfl.Selectize.prototype.hide = function () {
+    $("#selectize-" + this.cid).hide();
 };
 
-epfl.Selectize.show = function (cid) {
-    $("#selectize-" + cid).show().css({"min-width": $("#selectize-input-" + cid).parent().parent().width() + "px"});
+epfl.Selectize.prototype.show = function () {
+    $("#selectize-" + this.cid).show().css({"min-width": $("#selectize-input-" + this.cid).parent().parent().width() + "px"});
 };
 
-epfl.Selectize.toggle = function (cid) {
-    if (epfl.Selectize.isVisible(cid)) {
-        epfl.Selectize.hide(cid);
+epfl.Selectize.prototype.toggle = function () {
+    if (this.isVisible()) {
+        this.hide();
     } else {
-        epfl.Selectize.show(cid);
+        this.show();
     }
 };
 
@@ -155,7 +163,8 @@ epfl.Selectize.toggle = function (cid) {
  Text decoraction
  using the mark tag bootstrap has css classes for highlighting
  *************************************************************************/
-epfl.Selectize.markText = function (ele, search) {
+epfl.Selectize.prototype.markText = function (ele, search) {
+    var obj = this;
     var text = ele.text();
     var textlower = text.toLowerCase();
     var searchlower = search.toLowerCase();
@@ -168,10 +177,11 @@ epfl.Selectize.markText = function (ele, search) {
 /**************************************************************************
  Resets the list, remove all classes and show everything
  *************************************************************************/
-epfl.Selectize.resetList = function (list) {
+epfl.Selectize.prototype.resetList = function (list) {
+    var obj = this;
     list.find("li").each(function () {
         $(this).find("span").each(function () {
-            epfl.Selectize.resetText($(this));
+            obj.resetText($(this));
         });
 
         $(this).removeClass("selected").show().parent().parent().next("li.epfl-selectize-divider").show();
@@ -181,13 +191,14 @@ epfl.Selectize.resetList = function (list) {
 /**************************************************************************
  Input Events
  *************************************************************************/
-epfl.Selectize.inputOnEnter = function (cid, event) {
+epfl.Selectize.prototype.inputOnEnter = function (event) {
+    var obj = this;
     var current = $("li.epfl-selectize.selected:visible").find("li.epfl-selectize.selected:visible");
     if (current.length) {
-        epfl.Selectize.resetList($("ul.epfl-selectize"));
-        $("#selectize-input-" + cid).val(current.text().trim());
-        epfl.Selectize.hide(cid);
-        epfl.dispatch_event(cid, "set_selection", {
+        obj.resetList($("ul.epfl-selectize"));
+        $("#selectize-input-" + obj.cid).val(current.text().trim());
+        obj.hide();
+        epfl.dispatch_event(obj.cid, "set_selection", {
             selection_id: current.data('selectizeid'),
             selection_value: current.text().trim(),
             selection_group_id: current.closest("li.epfl-selectize-head").find("span").first().data("selectize-groupid"),
@@ -196,7 +207,8 @@ epfl.Selectize.inputOnEnter = function (cid, event) {
     }
 };
 
-epfl.Selectize.inputArrowUp = function (cid, event) {
+epfl.Selectize.prototype.inputArrowUp = function (event) {
+    var obj = this;
     event.preventDefault();
 
     //check if something is selected
@@ -222,10 +234,11 @@ epfl.Selectize.inputArrowUp = function (cid, event) {
     }
 };
 
-epfl.Selectize.inputArrowDown = function (cid, event) {
+epfl.Selectize.prototype.inputArrowDown = function (event) {
+    var obj = this;
     event.preventDefault();
-    if (!epfl.Selectize.isVisible(cid)) {
-        epfl.Selectize.show(cid);
+    if (!obj.isVisible()) {
+        obj.show();
     }
 
     //check if something is selected
@@ -251,20 +264,22 @@ epfl.Selectize.inputArrowDown = function (cid, event) {
     }
 };
 
-epfl.Selectize.inputTextChanged = function (cid, searchText) {
+epfl.Selectize.prototype.inputTextChanged = function () {
+    var obj = this;
+    var searchText = $("#selectize-input-" + obj.cid).val();
     if (searchText.length > 0) {
-        epfl.Selectize.show(cid);
+        obj.show();
     }
 
     $(".epfl-selectize-head").each(function () {
-        epfl.Selectize.resetText($(this).find("span.epfl-selectize-heading"));
+        obj.resetText($(this).find("span.epfl-selectize-heading"));
 
         if ($(this).find("span.epfl-selectize-heading").text().toLowerCase().indexOf(searchText.toLowerCase()) === -1) {
             //not found check siblings
             var found = false;
 
             $(this).find(".epfl-selectize-entry").each(function () {
-                epfl.Selectize.resetText($(this).find("span"));
+                obj.resetText($(this).find("span"));
 
                 var foundInSibling = $(this).find("span").text().toLowerCase().indexOf(searchText.toLowerCase())
 
@@ -272,7 +287,7 @@ epfl.Selectize.inputTextChanged = function (cid, searchText) {
                     $(this).hide().parent().parent().next("li.epfl-selectize-divider").hide();
                 } else {
                     $(this).show().parent().parent().next("li.epfl-selectize-divider").show();
-                    epfl.Selectize.markText($(this).find("span"), searchText);
+                    obj.markText($(this).find("span"), searchText);
                     found = true;
                 }
             });
@@ -285,11 +300,10 @@ epfl.Selectize.inputTextChanged = function (cid, searchText) {
         } else {
             //found show all
             $(this).show().next("li.epfl-selectize-divider").show().find(".epfl-selectize-entry").each(function () {
-                epfl.Selectize.resetText($(this).find("span"));
+                obj.resetText($(this).find("span"));
                 $(this).show();
             });
-            epfl.Selectize.markText($(this).find("span.epfl-selectize-heading"), searchText);
+            obj.markText($(this).find("span.epfl-selectize-heading"), searchText);
         }
     });
 };
-
