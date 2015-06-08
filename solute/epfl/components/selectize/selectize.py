@@ -18,14 +18,12 @@ class Selectize(FormInputBase):
 
     template_name = "selectize/selectize.html"
 
-    js_parts = FormInputBase.js_parts[:]
-    js_parts.extend(['selectize/selectize.js'])
     js_name = FormInputBase.js_name + [("solute.epfl.components:selectize/static", "selectize.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:selectize/static", "selectize.css")]
 
     compo_config = []
     compo_state = FormInputBase.compo_state + ["entries", "drop_down_height", "selected_text", "search_server_side",
-                                               "search_text","load_asnyc","is_loading","cursor_position"]
+                                               "search_text","cursor_position"]
 
     entries = None
     layout_vertical = False
@@ -35,10 +33,14 @@ class Selectize(FormInputBase):
     search_server_side = False
     search_text = ""
 
-    load_async = False
-    is_loading = False
-
     cursor_position = 0
+
+    new_style_compo = True
+    compo_js_name = 'Selectize'
+    compo_js_params = ['fire_change_immediately', "search_server_side", "search_text", "input_focus",
+                       "cursor_position", "selected_text"]
+    #compo_js_extras = ['handle_click']
+
 
     def handle_update_search(self, search_text,cursor_position):
         self.search_text = search_text
@@ -67,17 +69,6 @@ class Selectize(FormInputBase):
 
         self.validation_error = ''
         return True
-
-    def init_transaction(self):
-        if self.load_async:
-            self.is_loading = True
-            self.add_js_response("epfl.Selectize.LoadData('%s')" % self.cid);
-            self.load_async = False
-
-    def handle_load_data(self):
-        self.entries = self.load_data_async()
-        self.is_loading = False
-        self.redraw()
 
     def load_data_async(self):
         #; overwrite me

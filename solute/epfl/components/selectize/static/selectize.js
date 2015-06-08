@@ -272,15 +272,3 @@ epfl.Selectize = function (cid, params) {
 };
 
 epfl.Selectize.inherits_from(epfl.ComponentBase);
-
-
-//This function is triggered from init_transaction for loading the tree data 'async' which means you first see the
-//loading indicator on the page and when the data are loaded they got shown via a epfl redraw
-epfl.Selectize.LoadData = function (cid) {
-    epfl.enqueue(epfl.make_component_event(cid, 'load_data', {}), cid);
-    setTimeout(function () {
-        epfl.flush();
-        $('#epfl_please_wait').hide();
-    }, 100);
-};
-
