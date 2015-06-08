@@ -33,7 +33,6 @@ nosetests.xml
 # Mr Developer
 .mr.developer.cfg
 .project
-<<<<<<< HEAD
 /docs/_autodoc/*
 /docs/_build/*
 /docs/_autodoc/*
@@ -41,3 +40,13 @@ nosetests.xml
 /.settings/
 .idea
 .eggs/
+
+combine.py
+foo.py
+htmlcov/
+test.py
+test.py.lprof
+test.py.prof
+test.sh
+test.txt
+transactiondump.txt
