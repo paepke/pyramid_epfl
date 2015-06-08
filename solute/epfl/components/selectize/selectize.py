@@ -43,6 +43,7 @@ class Selectize(FormInputBase):
 
 
     def handle_update_search(self, search_text,cursor_position):
+        print "update search"
         self.search_text = search_text
         self.cursor_position = cursor_position
         self.entries = self.reload_entries(search_text)
