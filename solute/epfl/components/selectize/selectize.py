@@ -40,7 +40,7 @@ class Selectize(FormInputBase):
     compo_js_name = 'Selectize'
     compo_js_params = ['fire_change_immediately', "search_server_side", "search_text", "input_focus",
                        "cursor_position", "selected_text"]
-    compo_js_extras = ['handle_click']
+    compo_js_extras = ['handle_click','handle_keyup']
 
 
     def handle_update_search(self, search_text,cursor_position):
@@ -58,7 +58,9 @@ class Selectize(FormInputBase):
         return []
 
     def handle_set_selection(self, selection_id, selection_value, selection_group_id, selection_group_value):
-
+        """
+        Don't overwrite this use the post_event_handler system
+        """
         self.value = selection_id
         self.selected_text = selection_value
 

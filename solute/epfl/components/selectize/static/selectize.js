@@ -6,35 +6,11 @@ epfl.Selectize = function (cid, params) {
     var cursorPosition = this.params["cursor_position"];
     var selectedText = this.params["selected_text"];
 
+    var selectizeInput = $("#selectize-input-" + cid);
+
     /**************************************************************************
      Event Listener
      *************************************************************************/
-    var search_timeout = null;
-    $("#selectize-input-" + cid).keyup(function (event) {
-        if (event.which === 13) { // enter
-            epfl.Selectize.inputOnEnter(cid, event);
-        } else if (event.which === 38) { //arrow up
-            epfl.Selectize.inputArrowUp(cid, event);
-        } else if (event.which === 40) { //arrow down
-            epfl.Selectize.inputArrowDown(cid, event);
-        } else {
-            if (inputSearchText !== $("#selectize-input-" + cid).val()) {
-                inputSearchText = $("#selectize-input-" + cid).val();
-                clearTimeout(search_timeout);
-                search_timeout = setTimeout(function () {
-                    var search = $("#selectize-input-" + cid).val();
-                    var cursorPos = $("#selectize-input-" + cid)[0].selectionStart;
-                    if (searchServerSide) {
-                        epfl.dispatch_event(cid, "update_search", {search_text: search, cursor_position: cursorPos});
-                    } else {
-                        epfl.Selectize.inputTextChanged(cid, search);
-                    }
-                }, 500);
-            }
-        }
-    });
-
-
     $(".epfl-selectize-entry." + cid).mouseenter(function () {
         $(this).addClass("selected");
         $(this).parent().parent().addClass("selected");
@@ -56,7 +32,7 @@ epfl.Selectize = function (cid, params) {
      *************************************************************************/
     if (searchServerSide === true && inputSearchText != "") {
         if (selectedText === null) {
-            $("#selectize-input-" + cid).val(inputSearchText);
+            selectizeInput.val(inputSearchText);
             epfl.Selectize.inputTextChanged(cid, inputSearchText);
         }
 
@@ -68,9 +44,9 @@ epfl.Selectize = function (cid, params) {
      *************************************************************************/
     $('#' + cid + ' > ul').width($('#' + cid).width());
     if (inputFocus) {
-        $("#selectize-input-" + cid).focus();
-        var searchTextLength = $("#selectize-input-" + cid).val().length;
-        $("#selectize-input-" + cid)[0].setSelectionRange(parseInt(cursorPosition), parseInt(cursorPosition));
+        selectizeInput.focus();
+        var searchTextLength = selectizeInput.val().length;
+        selectizeInput[0].setSelectionRange(parseInt(cursorPosition), parseInt(cursorPosition));
     }
 };
 
@@ -113,6 +89,40 @@ epfl.Selectize.prototype.handle_click = function (event) {
     }
 };
 
+epfl.Selectize.prototype.handle_keyup = function (event) {
+    epfl.ComponentBase.prototype.handle_keyup.call(this, event);
+    var target = $(event.target);
+    var obj = this;
+
+    var search_timeout = null;
+    var inputSearchText = this.params["search_text"];
+    var searchServerSide = this.params["search_server_side"];
+    var searchInputElement = $("#selectize-input-" + obj.cid);
+    if (target.attr("id") === "selectize-input-" + obj.cid) {
+        if (event.which === 13) { // enter
+            epfl.Selectize.inputOnEnter(obj.cid, event);
+        } else if (event.which === 38) { //arrow up
+            epfl.Selectize.inputArrowUp(obj.cid, event);
+        } else if (event.which === 40) { //arrow down
+            epfl.Selectize.inputArrowDown(obj.cid, event);
+        } else {
+            if (inputSearchText !== searchInputElement.val()) {
+                inputSearchText = searchInputElement.val();
+                clearTimeout(search_timeout);
+                search_timeout = setTimeout(function () {
+                    var search = searchInputElement.val();
+                    var cursorPos = searchInputElement[0].selectionStart;
+                    if (searchServerSide) {
+                        searchInputElement.prop( "disabled", true );
+                        epfl.dispatch_event(obj.cid, "update_search", {search_text: search, cursor_position: cursorPos});
+                    } else {
+                        epfl.Selectize.inputTextChanged(obj.cid, search);
+                    }
+                }, 500);
+            }
+        }
+    }
+};
 /*************************************************************************
  Helper
  *************************************************************************/

@@ -88,6 +88,12 @@ epfl.ComponentBase.prototype.after_response = function (data) {
                 obj.handle_drag_start(event);
             });
     }
+
+    if (this.params && this.params.extras_handle_keyup) {
+        obj.elm.keyup(function (event) {
+            obj.handle_keyup(event);
+        });
+    }
 };
 
 epfl.ComponentBase.prototype.before_response = function (data) {
@@ -156,4 +162,8 @@ epfl.ComponentBase.prototype.handle_drop = function (event) {
 epfl.ComponentBase.prototype.handle_drag_start = function (event, dd) {
     /* Executed on EPFL drag events if extras_handle_drag is set to true. Overwrite to provide behaviour when dragging
        is started. */
+};
+
+epfl.ComponentBase.prototype.handle_keyup = function (event) {
+    /* Executed on EPFL keyup event, overwrite to provide behaviour on keyup event */
 };
