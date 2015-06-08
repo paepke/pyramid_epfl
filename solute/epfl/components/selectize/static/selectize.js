@@ -5,23 +5,20 @@ epfl.Selectize = function (cid, params) {
     var inputFocus = this.params["input_focus"];
     var cursorPosition = this.params["cursor_position"];
     var selectedText = this.params["selected_text"];
-
     var selectizeInput = $("#selectize-input-" + cid);
 
     /**************************************************************************
      Event Listener
      *************************************************************************/
-    $(".epfl-selectize-entry." + cid).mouseenter(function () {
-        $(this).addClass("selected");
-        $(this).parent().parent().addClass("selected");
-    }).mouseleave(function () {
-        $(this).removeClass("selected");
-        $(this).parent().parent().removeClass("selected");
+    $(".epfl-selectize-entry").hover(function () {
+        $(this).addClass("selected").parent().parent().addClass("selected");
+    }, function () {
+        $(this).removeClass("selected").parent().parent().removeClass("selected");
     });
 
-    $(".epfl-selectize-head").mouseenter(function () {
+    $(".epfl-selectize-head").hover(function () {
         $(this).addClass("selected");
-    }).mouseleave(function () {
+    }, function () {
         $(this).removeClass("selected");
     });
 
@@ -105,7 +102,7 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
             epfl.Selectize.inputArrowUp(obj.cid, event);
         } else if (event.which === 40) { //arrow down
             epfl.Selectize.inputArrowDown(obj.cid, event);
-        } else {
+        } else { //all other keys: start search after timeout
             if (inputSearchText !== searchInputElement.val()) {
                 inputSearchText = searchInputElement.val();
                 clearTimeout(search_timeout);
@@ -113,8 +110,11 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
                     var search = searchInputElement.val();
                     var cursorPos = searchInputElement[0].selectionStart;
                     if (searchServerSide) {
-                        searchInputElement.prop( "disabled", true );
-                        epfl.dispatch_event(obj.cid, "update_search", {search_text: search, cursor_position: cursorPos});
+                        searchInputElement.prop("disabled", true);
+                        epfl.dispatch_event(obj.cid, "update_search", {
+                            search_text: search,
+                            cursor_position: cursorPos
+                        });
                     } else {
                         epfl.Selectize.inputTextChanged(obj.cid, search);
                     }
@@ -123,6 +123,7 @@ epfl.Selectize.prototype.handle_keyup = function (event) {
         }
     }
 };
+
 /*************************************************************************
  Helper
  *************************************************************************/
@@ -139,8 +140,7 @@ epfl.Selectize.hide = function (cid) {
 };
 
 epfl.Selectize.show = function (cid) {
-    $("#selectize-" + cid).show();
-    $("#selectize-" + cid).css({"min-width": $("#selectize-input-" + cid).parent().parent().width() + "px"});
+    $("#selectize-" + cid).show().css({"min-width": $("#selectize-input-" + cid).parent().parent().width() + "px"});
 };
 
 epfl.Selectize.toggle = function (cid) {
@@ -174,12 +174,9 @@ epfl.Selectize.resetList = function (list) {
             epfl.Selectize.resetText($(this));
         });
 
-        $(this).parent().parent().next("li.epfl-selectize-divider").show();
-        $(this).show();
-        $(this).removeClass("selected");
+        $(this).removeClass("selected").show().parent().parent().next("li.epfl-selectize-divider").show();
     });
 };
-
 
 /**************************************************************************
  Input Events
@@ -220,8 +217,8 @@ epfl.Selectize.inputArrowUp = function (cid, event) {
         }
     } else {
         //select first visible
-        $("li.epfl-selectize:visible").first().addClass("selected");
-        $("li.epfl-selectize:visible").first().find("li.epfl-selectize:visible").first().addClass("selected");
+        $("li.epfl-selectize:visible").first().addClass("selected")
+                .first().find("li.epfl-selectize:visible").first().addClass("selected");
     }
 };
 
@@ -249,8 +246,8 @@ epfl.Selectize.inputArrowDown = function (cid, event) {
         }
     } else {
         //select first visible
-        $("li.epfl-selectize:visible").first().addClass("selected");
-        $("li.epfl-selectize:visible").first().find("li.epfl-selectize:visible").first().addClass("selected");
+        $("li.epfl-selectize:visible").first().addClass("selected")
+                .first().find("li.epfl-selectize:visible").first().addClass("selected");
     }
 };
 
@@ -272,11 +269,9 @@ epfl.Selectize.inputTextChanged = function (cid, searchText) {
                 var foundInSibling = $(this).find("span").text().toLowerCase().indexOf(searchText.toLowerCase())
 
                 if (foundInSibling === -1) {
-                    $(this).hide();
-                    $(this).parent().parent().next("li.epfl-selectize-divider").hide();
+                    $(this).hide().parent().parent().next("li.epfl-selectize-divider").hide();
                 } else {
-                    $(this).show();
-                    $(this).parent().parent().next("li.epfl-selectize-divider").show();
+                    $(this).show().parent().parent().next("li.epfl-selectize-divider").show();
                     epfl.Selectize.markText($(this).find("span"), searchText);
                     found = true;
                 }
@@ -289,9 +284,7 @@ epfl.Selectize.inputTextChanged = function (cid, searchText) {
             }
         } else {
             //found show all
-            $(this).show();
-            $(this).next("li.epfl-selectize-divider").show();
-            $(this).find(".epfl-selectize-entry").each(function () {
+            $(this).show().next("li.epfl-selectize-divider").show().find(".epfl-selectize-entry").each(function () {
                 epfl.Selectize.resetText($(this).find("span"));
                 $(this).show();
             });
