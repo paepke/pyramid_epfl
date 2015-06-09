@@ -1,8 +1,8 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% if compo.show_search %}
-        <div class="epfl-new-selectize-controls">
-            <div class="epfl-input-addon epfl-new-selectize-search-field">
+        <div class="epfl-cat-select-controls">
+            <div class="epfl-input-addon epfl-cat-select-search-field">
                 <i class="fa fa-search"></i>
                 <input class="form-control epfl-search-input"
                        type="text"
@@ -12,13 +12,13 @@
                                                 and compo.row_data is mapping
                                                 and compo.row_data['search'] is defined else '' }}"/>
             </div>
-            <div class="input-group-btn epfl-new-selectize-toggle">
+            <div class="input-group-btn epfl-cat-select-toggle">
                 <button class="btn btn-default " id="selectize-toggle-{{ compo.cid }}"
                         {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}><span
                         class="caret"></span></button>
             </div>
         </div>
     {% endif %}
-    <ul class="epfl-new-selectize" id="selectize-{{ compo.cid }}"
+    <ul class="epfl-cat-select" id="selectize-{{ compo.cid }}"
         {% if compo.drop_down_height is defined and compo.drop_down_height != None %}style="max-height:{{ compo.drop_down_height }}px;overflow-y: scroll"{% endif %}>
 {% endmacro %}

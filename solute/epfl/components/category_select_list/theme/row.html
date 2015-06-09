@@ -1,19 +1,19 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% set compo_obj = kwargs.compo_obj %}
-    <li class="epfl-new-selectize epfl-new-selectize-head"><span data-selectize-groupid="{{ compo_obj['id'] }}"
-                                                         class="epfl-new-selectize epfl-new-selectize-heading">{{ compo_obj['value'] }}</span>
-        <ul class="epfl-new-selectize-innerlist">
+    <li class="epfl-cat-select epfl-cat-select-head"><span data-selectize-groupid="{{ compo_obj['id'] }}"
+                                                         class="epfl-cat-select epfl-cat-select-heading">{{ compo_obj['value'] }}</span>
+        <ul class="epfl-cat-select-innerlist">
             {% for subentry in  compo_obj['entries'] %}
 
-                <li class="epfl-new-selectize epfl-new-selectize-entry {{ compo.cid }}"
+                <li class="epfl-cat-select epfl-cat-select-entry {{ compo.cid }}"
                     id="selectize-entry-{{ compo.cid }}" data-selectizeid="{{ subentry.id }}">
-                    <span class="epfl-new-selectize epfl-new-selectize-text">{{ subentry.value }}</span>
+                    <span class="epfl-cat-select epfl-cat-select-text">{{ subentry.value }}</span>
                 </li>
             {% endfor %}
         </ul>
     </li>
-    <li class="epfl-new-selectize-divider"></li>
+    <li class="epfl-cat-select-divider"></li>
 
 
 

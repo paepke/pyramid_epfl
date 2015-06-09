@@ -1,78 +1,75 @@
-ul.epfl-new-selectize {
+ul.epfl-cat-select {
     display: none;
-    border: 1px solid black;
+    border: 1px solid #DDDDDD;
     list-style-type: none;
     padding-left: 0;
     background-clip: padding-box;
-    border-color: #DDDDDD;
     border-radius: 4px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
     position: absolute;
     z-index: 5;
 }
 
-ul.epfl-new-selectize-innerlist {
+ul.epfl-cat-select-innerlist {
     list-style-type: none;
     padding-left: 0;
     border-top: 1px solid #ddd;
     background-color: #fff;
 }
 
-li.epfl-new-selectize{
+li.epfl-cat-select{
     background-color: #ffffff;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-head {
+li.epfl-cat-select.epfl-cat-select-head {
     padding: 0px 0 0px 0px;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-head.selected {
+li.epfl-cat-select.epfl-cat-select-head.selected {
     background-color: #F5F5F5;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-head:hover {
+li.epfl-cat-select.epfl-cat-select-head:hover {
     background-color: #F5F5F5;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-entry {
+li.epfl-cat-select.epfl-cat-select-entry {
     padding-left: 0;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-entry.selected {
+li.epfl-cat-select.epfl-cat-select-entry.selected {
     background-color: #DDDDDD;
 }
 
-li.epfl-new-selectize.epfl-new-selectize-entry:hover {
+li.epfl-cat-select.epfl-cat-select-entry:hover {
     background-color: #DDDDDD;
 }
 
-
-li.epfl-new-selectize-divider {
+li.epfl-cat-select-divider {
     border-bottom: 1px solid #DDDDDD;
 }
 
-span.epfl-new-selectize-heading {
+span.epfl-cat-select-heading {
     font-weight: bold;
     padding-left: 10px;
 }
 
-span.epfl-new-selectize-text {
+span.epfl-cat-select-text {
     padding-left: 20px;
 }
 
-
-ul.epfl-new-selectize:hover{
+ul.epfl-cat-select:hover{
     cursor: default;
 }
 
-div.epfl-new-selectize-controls{
+div.epfl-cat-select-controls{
     display:table;
 }
 
-div.epfl-new-selectize-search-field{
+div.epfl-cat-select-search-field{
     display: table-cell;
 }
 
-div.epfl-new-selectize-toggle{
+div.epfl-cat-select-toggle{
     display: table-cell;
 }

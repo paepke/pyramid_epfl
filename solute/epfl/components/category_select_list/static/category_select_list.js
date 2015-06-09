@@ -8,6 +8,7 @@ epfl.CategorySelectList.prototype.after_response = function (data) {
     epfl.PaginatedListLayout.prototype.after_response.call(this, data);
     var obj = this;
 
+    //if a searchText is entered show the dropdown with results and focus the input
     var searchText = obj.elm.find("#" + obj.cid + "_search").val();
     if (searchText.length > 0) {
         obj.show();
@@ -19,18 +20,32 @@ epfl.CategorySelectList.prototype.handle_click = function (event) {
     epfl.PaginatedListLayout.prototype.handle_click.call(this, event);
     var target = $(event.target);
     var obj = this;
+
     if (target.hasClass("btn")) {
+        //Click on the Dropdown Button opens the dropdown
         obj.toggle();
-    } else if (target.hasClass("epfl-new-selectize-text")) {
+    } else if (target.hasClass("epfl-cat-select-text")) {
+        //Click on a Text sets the text as value
         $("#" + obj.cid + "_search").val(target.text().trim());
         obj.hide(obj.cid);
         var data = {
             selection_id: target.parent().data('selectizeid'),
             selection_value: target.text().trim(),
-            selection_group_id: target.closest("li.epfl-new-selectize-head").find("span").first().data("selectize-groupid"),
-            selection_group_value: target.closest("li.epfl-new-selectize-head").find("span").first().text()
+            selection_group_id: target.closest("li.epfl-cat-select-head").find("span").first().data("selectize-groupid"),
+            selection_group_value: target.closest("li.epfl-cat-select-head").find("span").first().text()
         };
-
+        console.log("click data",data);
+        epfl.dispatch_event(obj.cid, "set_selection", data);
+    }else if(target.hasClass("epfl-cat-select-entry")){
+        //Click in a row with text
+        $("#" + obj.cid + "_search").val(target.text().trim());
+        obj.hide(obj.cid);
+        var data = {
+            selection_id: target.data('selectizeid'),
+            selection_value: target.children().first().text().trim(),
+            selection_group_id: target.closest("li.epfl-cat-select-head").find("span").first().data("selectize-groupid"),
+            selection_group_value: target.closest("li.epfl-cat-select-head").find("span").first().text()
+        };
         epfl.dispatch_event(obj.cid, "set_selection", data);
     }
 };
@@ -41,24 +56,25 @@ epfl.CategorySelectList.prototype.handle_keyup = function (event) {
     var obj = this;
     var searchText = obj.elm.find("#" + obj.cid + "_search").val();
 
-
     if (target.attr("id") === obj.cid + "_search" && obj.isVisible()) {
-        if (event.which === 13) { // enter
-            var selected = obj.elm.find("li.epfl-new-selectize-entry.selected");
+        if (event.which === 13) {
+            //Press Enter, if a entry is selected set it, if not ignore enter
+            var selected = obj.elm.find("li.epfl-cat-select-entry.selected");
             if (selected.length) {
-                $("#" + obj.cid + "_search").val(target.text().trim());
+                $("#" + obj.cid + "_search").val(selected.children().first().text().trim());
                 obj.hide(obj.cid);
                 var data = {
                     selection_id: selected.data('selectizeid'),
                     selection_value: selected.children().first().text().trim(),
-                    selection_group_id: selected.closest("li.epfl-new-selectize-head").find("span").first().data("selectize-groupid"),
-                    selection_group_value: selected.closest("li.epfl-new-selectize-head").find("span").first().text()
+                    selection_group_id: selected.closest("li.epfl-cat-select-head").find("span").first().data("selectize-groupid"),
+                    selection_group_value: selected.closest("li.epfl-cat-select-head").find("span").first().text()
                 };
+
                 epfl.dispatch_event(obj.cid, "set_selection", data);
             }
-
-        } else if (event.which === 38 || event.which === 40) { //arrow up //arrow down
-            var entries = obj.elm.find("li.epfl-new-selectize-entry");
+        } else if (event.which === 38 || event.which === 40) {
+            //Up and Down arrows move the selection
+            var entries = obj.elm.find("li.epfl-cat-select-entry");
             if (entries.length !== 0) {
                 var selectedIndex = null;
                 for (var i = 0; i < entries.length; i++) {

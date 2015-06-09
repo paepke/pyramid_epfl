@@ -6,18 +6,11 @@ from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import PaginatedListLayout
 
 
-class CategoryEntry(epflcomponentbase.ComponentBase):
-    """
-    Internal use only
-    """
-    compo_state = PaginatedListLayout.compo_state + ['selected']
-    selected = False
-
 class CategorySelectList(PaginatedListLayout):
     """
-    Selectable List is a MultiSelect Component, multiple values can be selected
+    CategorySelectList is a typeahead input containing a list of entries and sub entries
     """
-    default_child_cls = CategoryEntry
+    default_child_cls = epflcomponentbase.ComponentBase
     data_interface = {'id': None,
                       'value': None,
                       'entries':None}
@@ -28,15 +21,18 @@ class CategorySelectList(PaginatedListLayout):
                   'after': ['category_select_list/theme'],}
 
 
-    js_parts = []
 
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:category_select_list/static', 'category_select_list.js')]
     css_name = PaginatedListLayout.js_name + [('solute.epfl.components:category_select_list/static', 'category_select_list.css')]
 
-    new_style_compo = True
-    compo_js_name = 'CategorySelectList'
+    compo_state = PaginatedListLayout.compo_state + ["selected_text"]
 
-    compo_js_params = ['show_search','show_pagination','row_limit','row_offset']
+    selected_text = None #: Current Selected text
+
+    new_style_compo = True
+    js_parts = []
+    compo_js_name = 'CategorySelectList'
+    compo_js_params = ['show_search','show_pagination','row_limit','row_offset','selected_text']
     compo_js_extras = ['handle_click','handle_keyup']
 
 
@@ -46,8 +42,8 @@ class CategorySelectList(PaginatedListLayout):
 
     def __init__(self,page,cid, data_interface=None, *args, **extra_params):
         """
-        Selectable List is a MultiSelect Component, multiple values can be selected
-        :param data_interface: data interface for child class needs id and text
+        CategorySelectList is a typeahead input containing a list of entries and sub entries
+        :param data_interface: data interface for child class needs id and text and entries
         """
         super(CategorySelectList, self).__init__(page,cid,data_interface=data_interface, *args, **extra_params)
 
@@ -55,6 +51,5 @@ class CategorySelectList(PaginatedListLayout):
         """
         Don't overwrite this use the post_event_handler system
         """
-        print "SET SELECTION",selection_id, selection_value, selection_group_id, selection_group_value
         self.value = selection_id
         self.selected_text = selection_value
