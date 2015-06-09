@@ -6,7 +6,7 @@ from solute.epfl.components import Box, Form, TextInput, Text, Link
 
 class LoginBox(Box):
     title = 'Login'  #: Default title for the login box.
-    hover_box = True
+    hover_box = True  #: Show the login box hovering in the center of the page.
 
     unauthorized_warning = 'You are not authorized to see this page!'  #: Default Warning for a forbidden page.
     unauthorized_title = 'Forbidden View'  #: Default title for a forbidden page.
