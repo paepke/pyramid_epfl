@@ -14,9 +14,9 @@ from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
 from popover_container.popover_container import PopoverContainer
+from recursive_tree.recursive_tree import RecursiveTree
 
 #: Forms
-from recursive_tree.recursive_tree import RecursiveTree
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
