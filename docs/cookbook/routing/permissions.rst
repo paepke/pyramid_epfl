@@ -40,44 +40,14 @@ is possible to use an EPFLView as a pyramid forbidden view, in order to provide 
 
 .. code-block:: python
 
-    class LoginBox(components.Box):
-        hover_box = True
-        title = 'Login'
-
-        node_list = [
-            components.Form(
-                cid='login_form',
-                post_event_handlers={
-                    'submit': ('root_node', 'login')
-                },
-                node_list=[
-                    components.TextInput(
-                        name='username',
-                        label='Username',
-                        placeholder='Username',
-                    ),
-                    components.TextInput(
-                        name='password',
-                        label='Password',
-                        placeholder='Password',
-                        password=True
-                    )
-                ]
-            )
-        ]
-
-        def on_login(self):
-            values = self.page.login_form.get_values()
-            if values['username'] != 'admin' or values['password'] != '12345':
-                self.show_fading_message('Invalid username or password.', 'error')
-                return
-
-            self.page.remember(values['username'])
-            self.page.jump(self.page.request.matched_route.name)
-
     @epflassets.EPFLView(forbidden_view=True)
     class ForbiddenPage(epfl.Page):
-        root_node = LoginBox
+        root_node = components.LoginBox
+
+        def login(self, username=None, password=None):
+            if (username, password) == ('admin', '12345'):
+                self.remember(username)
+                return True
 
 Now this just redirects us to the same place as before, but if we do this:
 
@@ -93,45 +63,21 @@ We are now on the Home page and logged in!
 
 Advanced Permission Handling
 ----------------------------
-We are still missing our third page: The forbidden page. While it is viable to always show the login page it would be
-better for the user to be able to recognize that he reached a forbidden place, and hasn't just lost his login.
+Unseen to our eyes the third page is handled automatically by the login box: The forbidden page. While it is viable to
+always show the login page it would be better for the user to be able to recognize that he reached a forbidden place,
+and hasn't just lost his login. The login box handles that like this:
 
 .. code-block:: python
 
-    from solute.epfl import epflacl
-
-    [...]
-
     def init_struct(self):
-        self.node_list = [
-            components.Form(
-                cid='login_form',
-                post_event_handlers={
-                    'submit': ('root_node', 'login')
-                },
-                node_list=[
-                    components.TextInput(
-                        name='username',
-                        label='Username',
-                        placeholder='Username',
-                    ),
-                    components.TextInput(
-                        name='password',
-                        label='Password',
-                        placeholder='Password',
-                        password=True
-                    )
-                ]
-            )
-        ]
-
+        [...]
         if epflacl.epfl_check_role('system.Authenticated', self.page.request):
             self.title = 'Forbidden View'
             self.node_list = [
-                components.Text(
+                Text(
                     value='You are not authorized to see this page!'
                 ),
-                components.Link(
+                Link(
                     url='/',
                     name='Return to Home'
                 )

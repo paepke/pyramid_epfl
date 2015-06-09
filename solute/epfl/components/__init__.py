@@ -77,6 +77,9 @@ from dropdown.dropdown import Dropdown
 
 from loading.loading import Loading
 
+# Convenience Components
+from login_box.login_box import LoginBox
+
 
 def add_routes(config):
     """
@@ -86,6 +89,7 @@ def add_routes(config):
     """
 
     Box.add_pyramid_routes(config)
+    LoginBox.add_pyramid_routes(config)
     DragBox.add_pyramid_routes(config)
     ModalBox.add_pyramid_routes(config)
     DroppableBox.add_pyramid_routes(config)
