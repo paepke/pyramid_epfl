@@ -33,6 +33,7 @@ from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 from upload.upload import Upload
 from download.download import Download
+from plain_html.plain_html import PlainHtml
 
 #: Special
 from sidebar.sidebar import Sidebar
@@ -138,6 +139,7 @@ def add_routes(config):
     InputLabel.add_pyramid_routes(config)
     Upload.add_pyramid_routes(config)
     Download.add_pyramid_routes(config)
+    PlainHtml.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
