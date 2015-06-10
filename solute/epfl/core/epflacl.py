@@ -70,13 +70,15 @@ def epfl_acl(permissions, default_allow=True, default_principal='system.Everyone
     return wrapper
 
 
-def epfl_has_permission(permission, fail_callback=None, obj=None):
+def epfl_has_permission(permission, fail_callback=None, obj=None, use_global_acl=False):
     def wrapper(func):
         @wraps(func)
         def wrap(*args, **kwargs):
-            self = args[0]
-            _request = self.request
-            if not _request.has_permission(permission, self):
+            target = args[0]
+            if use_global_acl:
+                target = DefaultACLRootFactory
+            _request = target.request
+            if not _request.has_permission(permission, target):
                 if fail_callback:
                     return fail_callback(*args, **kwargs)
                 return
