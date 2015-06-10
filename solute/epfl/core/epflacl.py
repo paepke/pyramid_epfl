@@ -74,10 +74,11 @@ def epfl_has_permission(permission, fail_callback=None, obj=None, use_global_acl
     def wrapper(func):
         @wraps(func)
         def wrap(*args, **kwargs):
-            target = args[0]
+            self = args[0]
+            target = self
             if use_global_acl:
                 target = DefaultACLRootFactory
-            _request = target.request
+            _request = self.request
             if not _request.has_permission(permission, target):
                 if fail_callback:
                     return fail_callback(*args, **kwargs)
