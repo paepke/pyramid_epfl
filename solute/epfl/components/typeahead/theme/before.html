@@ -1,0 +1,10 @@
+{% macro render() %}
+    {% set compo = kwargs.compo %}
+    <div>
+        <div style="float: right;" class="btn btn-primary fa fa-chevron-down"></div>
+
+        <div style="overflow: hidden;">
+            {{ caller() }}
+        </div>
+    </div>
+{% endmacro %}

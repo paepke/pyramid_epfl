@@ -13,6 +13,8 @@ class GroupedLinkListLayout(LinkListLayout):
                       'url': None,
                       'menu_group': None}
 
+    use_headings = False
+
     @property
     def groups(self):
         groups = OrderedDict()
