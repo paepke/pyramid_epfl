@@ -225,7 +225,8 @@ class ComponentBaseTest(unittest.TestCase):
 
             if attr_name in ['asset_spec', 'compo_state', 'theme_path', 'css_name', 'js_name', 'js_parts',
                              'new_style_compo', 'compo_js_params', 'compo_js_extras', 'compo_js_name', 'template_name',
-                             'compo_config', 'data_interface', 'default_child_cls', 'auto_update_children']:
+                             'compo_config', 'data_interface', 'default_child_cls', 'auto_update_children',
+                             'theme_path_default']:
                 continue
 
             assert attr_name not in ['cid', 'slot'], "Invalid attribute set: 'slot' and 'cid' are reserved names." \
