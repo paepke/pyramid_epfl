@@ -51,7 +51,7 @@ class FlexibleTextList(epflcomponentbase.ComponentContainerBase):
     #: If true, a search bar and search functionality is provided.
     show_search = False
 
-    # : The max height of the list view. If the entries exceed the height, a scrollbar is displayed.
+    #: The max height of the list view. If the entries exceed the height, a scrollbar is displayed.
     height = None
 
     #: If true, an input field and a button will be displayed at the bottom to handle adding new entries.

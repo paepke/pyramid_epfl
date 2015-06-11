@@ -6,6 +6,7 @@
 
 from solute.epfl.components import LinkListLayout
 
+
 class HoverLinkListLayout(LinkListLayout):
     data_interface = {'id': None,
                       'text': None,
