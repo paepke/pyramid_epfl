@@ -9,20 +9,21 @@ class PlainHtml(FormInputBase):
 
     compo_state = ["html"]
 
-    html = ''  #: The HTML this component displays
+    value = ''  #: The HTML this component displays
     new_style_compo = True
     compo_js_name = 'PlainHtml'
+    validation_type = 'text'
 
-    def __init__(self, page, cid, html='', **extra_params):
+    def __init__(self, page, cid, value='', **extra_params):
         """ Simple component to display plain html
 
         Useage:
         .. code-block:: python
 
             PlainHtml(
-                html=u'<h1>Some nice heading</h1><span>With a span</span>'
+                value=u'<h1>Some nice heading</h1><span>With a span</span>'
             )
 
-        :param html: The html this component will display
+        :param value: The html this component will display
         """
-        super(PlainHtml, self).__init__(page, cid, html=html, **extra_params)
+        super(PlainHtml, self).__init__(page, cid, value=value, **extra_params)
