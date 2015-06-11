@@ -1,5 +1,6 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
+    {{ caller() }}
     {% if compo.height %}
     <div class="epfl-list" style="height: {{ compo.height }}px;" height="{{ compo.height }}">
     {% else %}
