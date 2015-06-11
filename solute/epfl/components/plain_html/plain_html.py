@@ -1,8 +1,8 @@
 # coding: utf-8
-from solute.epfl.core.epflcomponentbase import ComponentBase
+from solute.epfl.components.form.form import FormInputBase
 
 
-class PlainHtml(ComponentBase):
+class PlainHtml(FormInputBase):
     asset_spec = "solute.epfl.components:plain_html/static"
     template_name = "plain_html/plain_html.html"
     js_name = ["plain_html.js"]
