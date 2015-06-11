@@ -22,9 +22,24 @@ class LinkListLayout(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ['links']
 
-    links = None
+    links = None  #: List of dicts to be used as entries.
 
     auto_update_children = False
+
+    def __init__(self, page, cid, links=None, event_name=None, show_search=None, height=None, **kwargs):
+        """Paginated list using the PrettyListLayout based on bootstrap. Offers search bar above and pagination below
+        using the EPFL theming mechanism. Links given as parameters are checked against the existing routes
+        automatically showing or hiding them based on the users permissions.
+
+        :param links: List of dicts with text and url. May contain an icon entry.
+        :param event_name: The name of an event to be triggered instead of rendering normal links.
+        :param height: Set the list to the given height in pixels.
+        :param show_search: Toggle weather the search field is shown or not.
+        :param show_pagination: Toggle weather the pagination is shown or not.
+        :param search_focus: Toggle weather the search field receives focus on load or not.
+        """
+        super(PaginatedListLayout, self).__init__(page, cid, links=None, event_name=None, show_search=None, height=None,
+                                                  **kwargs)
 
     def get_data(self, row_offset=None, row_limit=None, row_data=None):
         links = []

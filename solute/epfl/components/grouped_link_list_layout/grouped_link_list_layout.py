@@ -13,7 +13,25 @@ class GroupedLinkListLayout(LinkListLayout):
                       'url': None,
                       'menu_group': None}
 
-    use_headings = False
+    use_headings = False  #: Use menu_group strings as headings instead of submenus.
+
+    def __init__(self, page, cid, links=None, use_headings=None, event_name=None, show_search=None, height=None,
+                 **kwargs):
+        """Paginated list using the PrettyListLayout based on bootstrap. Offers search bar above and pagination below
+        using the EPFL theming mechanism. Links given as parameters are checked against the existing routes
+        automatically showing or hiding them based on the users permissions. Entries can be grouped in submenus or below
+        a common heading given in the menu_group entry.
+
+        :param links: List of dicts with text and url. May contain an icon and a menu_group entry.
+        :param use_headings: Use menu_group strings as headings instead of submenus.
+        :param event_name: The name of an event to be triggered instead of rendering normal links.
+        :param height: Set the list to the given height in pixels.
+        :param show_search: Toggle weather the search field is shown or not.
+        :param show_pagination: Toggle weather the pagination is shown or not.
+        :param search_focus: Toggle weather the search field receives focus on load or not.
+        """
+        super(GroupedLinkListLayout, self).__init__(page, cid, links=None, use_headings=None, event_name=None,
+                                                    show_search=None, height=None, **kwargs)
 
     @property
     def groups(self):

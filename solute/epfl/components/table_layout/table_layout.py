@@ -16,6 +16,38 @@ class TableLayout(PaginatedListLayout):
 
     map_child_cls = {}
 
+    def __init__(self, page, cid, show_search=None, height=None, **kwargs):
+        """Table based on a paginated list. Offers searchbar above and pagination below using the EPFL theming
+        mechanism.
+
+        components.TableLayout(
+            get_data='objects',
+            show_search=False,
+            headings=[
+                {'title': 'Name'},
+                {'title': 'Wert'},
+                {'title': 'Einheit'},
+            ],
+            map_child_cls=[
+                ('name', components.Text, {'value': 'name'}),
+                ('value', components.Text, {'value': 'value'}),
+                ('unit', components.Text, {'value': 'unit'}),
+            ],
+            data_interface={
+                'id': None,
+                'name': None,
+                'value': None,
+                'unit': None,
+            }
+        )
+
+        :param height: Set the table to the given height in pixels.
+        :param show_search: Toggle weather the search field is shown or not.
+        :param show_pagination: Toggle weather the pagination is shown or not.
+        :param search_focus: Toggle weather the search field receives focus on load or not.
+        """
+        super(PaginatedListLayout, self).__init__(page, cid, show_search=None, height=height, **kwargs)
+
     def default_child_cls(self, **compo_info):
         return self.map_child_cls[compo_info['compo_type']][1](**compo_info)
 
@@ -42,7 +74,6 @@ class TableLayout(PaginatedListLayout):
                 out.append(data)
 
         return out
-
 
     @property
     def slotted_components(self):
