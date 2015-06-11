@@ -17,12 +17,21 @@
     position: absolute;
 
     top: 0;
-    left: 210px;
-    width: 200px;
+    left: 100%;
+    width: 100%;
 
     display: none;
 }
 
 .grouped-entry:hover .list-group {
     display: block;
+}
+
+div.headed-entry.col-sm-12 a.list-group-item {
+    padding-left: 30px;
+}
+
+div.headed-entry.col-sm-12 {
+    margin: 0;
+    padding: 0;
 }
