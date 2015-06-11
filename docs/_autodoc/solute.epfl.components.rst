@@ -32,13 +32,16 @@ Subpackages
     solute.epfl.components.link_list_layout
     solute.epfl.components.list_layout
     solute.epfl.components.loading
+    solute.epfl.components.login_box
     solute.epfl.components.modal
+    solute.epfl.components.modal_box
     solute.epfl.components.multiselect
     solute.epfl.components.nav_layout
     solute.epfl.components.number_input
     solute.epfl.components.paginated_list_layout
     solute.epfl.components.panel
     solute.epfl.components.placeholder
+    solute.epfl.components.plain_html
     solute.epfl.components.popover
     solute.epfl.components.popover_container
     solute.epfl.components.pretty_list_layout
@@ -63,6 +66,7 @@ Subpackages
     solute.epfl.components.toggle
     solute.epfl.components.toggle_list_layout
     solute.epfl.components.tree_layout
+    solute.epfl.components.typeahead
     solute.epfl.components.upload
 
 Module contents
