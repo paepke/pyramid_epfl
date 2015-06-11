@@ -27,6 +27,30 @@ class MissingEventHandlerException(Exception):
     pass
 
 
+class CallWrap(object):
+    caller = None
+
+    def __init__(self, direction, callables, env):
+        self.callables = callables
+        if direction == '<':
+            self.callables.reverse()
+        self.env = env
+
+    def __call__(self, *args, **kwargs):
+        self.caller = kwargs.get('caller')
+
+        extra_kwargs = dict(self.env)
+        extra_kwargs.update(kwargs)
+
+        out = self.caller()
+
+        for cb in self.callables:
+            extra_kwargs['caller'] = lambda *a, **k: out
+            out = cb(*args, **extra_kwargs)
+
+        return out
+
+
 class ComponentRenderEnvironment(MutableMapping):
     def __iter__(self):
         return self.data.__iter__()
@@ -47,29 +71,9 @@ class ComponentRenderEnvironment(MutableMapping):
         if item not in ['container', 'row', 'before', 'after']:
             raise KeyError()
 
-        callables = self.data[item]
+        direction, callables = self.data[item]
 
-        def wrap(cb, parent=None):
-            if type(cb) is tuple:
-                direction, cb = cb
-                if len(cb) == 1:
-                    return wrap(cb[0])
-                if direction == '<':
-                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
-                return wrap(cb[0], parent=wrap((direction, cb[1:])))
-
-            def _cb(*args, **kwargs):
-                extra_kwargs = dict(self)
-                extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs)
-                if parent is not None:
-                    extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs)
-                return out
-
-            return _cb
-
-        return wrap(callables)
+        return CallWrap(direction, callables, self)
 
     def __init__(self, compo, env):
         self.data = {'compo': compo,

@@ -1,5 +1,6 @@
 from solute.epfl.components import Button
 
+
 class Download(Button):
     """
     This component provides basic download button functionality.
@@ -17,11 +18,9 @@ class Download(Button):
 
    """
 
-    asset_spec = "solute.epfl.components:download/static"
-
     js_parts = ["download/download.js"]
-    js_name = ["download.js",
-               "FileSaver.min.js"]
+    js_name = [("solute.epfl.components:download/static", "download.js"),
+               ("solute.epfl.components:download/static", "FileSaver.min.js")]
 
     def __init__(self, page, cid, label=None, value=None, event_name=None, event_target=None, is_submit=False,
                  **extra_params):

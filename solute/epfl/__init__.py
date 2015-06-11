@@ -174,7 +174,7 @@ def extract_static_assets_from_components(compo_list):
                 continue
             css_name.append(css)
             css_paths.append(ar.resolve('/'.join(css)).abspath())
-        cls.js_name += getattr(cls, 'css_name_no_bundle', [])
+        cls.css_name += getattr(cls, 'css_name_no_bundle', [])
 
     return js_paths, js_name, css_paths, css_name
 

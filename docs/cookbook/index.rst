@@ -11,6 +11,8 @@ All recipes are starting from a clean install of the starter scaffold, so just c
 
     pcreate -s pyramid_epfl_starter example_recipe
 
+Unless specified otherwise all code examples belong in the epfl_pyramid_barebone/views/home.py
+
 .. toctree::
 
     routing/index

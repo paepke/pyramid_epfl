@@ -14,9 +14,9 @@ from panel.panel import Panel
 from droppable.droppable import Droppable, SimpleDroppable
 from dragable.dragable import Dragable
 from popover_container.popover_container import PopoverContainer
+from recursive_tree.recursive_tree import RecursiveTree
 
 #: Forms
-from recursive_tree.recursive_tree import RecursiveTree
 from form.form import Form
 from button.button import Button
 from text_input.text_input import TextInput
@@ -78,6 +78,9 @@ from dropdown.dropdown import Dropdown
 
 from loading.loading import Loading
 
+# Convenience Components
+from login_box.login_box import LoginBox
+
 
 def add_routes(config):
     """
@@ -87,6 +90,7 @@ def add_routes(config):
     """
 
     Box.add_pyramid_routes(config)
+    LoginBox.add_pyramid_routes(config)
     DragBox.add_pyramid_routes(config)
     ModalBox.add_pyramid_routes(config)
     DroppableBox.add_pyramid_routes(config)

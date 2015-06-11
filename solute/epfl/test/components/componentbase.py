@@ -274,12 +274,12 @@ class ComponentContainerBaseTest(ComponentBaseTest):
 
         test_node_0 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
             cid='test_node_0'
-        ))
+        ), position=0)
         test_node_1 = root_node.add_component(epfl.core.epflcomponentbase.ComponentBase(
             cid='test_node_1',
             compo_state=['foobar'],
             foobar=None
-        ))
+        ), position=1)
 
         self.assert_component_base_properties(root_node, transaction.get_component('root_node'))
         self.assert_component_base_properties(test_node_0, transaction.get_component('test_node_0'))
@@ -290,7 +290,7 @@ class ComponentContainerBaseTest(ComponentBaseTest):
         assert root_node.components[0] == test_node_1,\
             "{component} failed during deletion of child. (Wrong child found in position 1)".format(
                 component=self.component)
-        assert len(root_node.components) == 1,\
+        assert 'test_node_0' not in [compo.cid for compo in root_node.components],\
             "{component} failed during deletion of child. (Too many children left)".format(component=self.component)
 
     def test_rendering_sub_components(self):
