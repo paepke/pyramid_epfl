@@ -30,18 +30,20 @@ class TypeAhead(GroupedLinkListLayout):
         routes automatically showing or hiding them based on the users permissions. Entries can be grouped below a
         common heading given in the menu_group entry.
 
-        components.TypeAhead(
-            event_name='selected_category',
-            links=[
-                {'text': 'foo0', 'url': '#foo', 'menu_group': 'bar'},
-                {'text': 'foo1', 'url': '#foo', 'menu_group': 'bar'},
-                {'text': 'foo2', 'url': '#foo', 'menu_group': 'bar2'},
-                {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
-                {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
-                {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
-                {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
-            ]
-        )
+        .. code-block:: python
+
+            components.TypeAhead(
+                event_name='selected_category',
+                links=[
+                    {'text': 'foo0', 'url': '#foo', 'menu_group': 'bar'},
+                    {'text': 'foo1', 'url': '#foo', 'menu_group': 'bar'},
+                    {'text': 'foo2', 'url': '#foo', 'menu_group': 'bar2'},
+                    {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
+                    {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
+                    {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
+                    {'text': 'foo3', 'url': '#foo', 'menu_group': 'bar2'},
+                ]
+            )
 
         :param links: List of dicts with text and url. May contain an icon and a menu_group entry.
         :param use_headings: Use menu_group strings as headings instead of submenus.

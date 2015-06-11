@@ -49,7 +49,7 @@ epfl.TypeAhead.prototype.after_response = function (data) {
         padding: 0,
         zIndex: 10,
         width: '100%',
-        height: 200,
+        maxHeight: 200,
         overflow: 'auto'
     });
 
