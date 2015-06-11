@@ -7,7 +7,7 @@ class PlainHtml(FormInputBase):
     template_name = "plain_html/plain_html.html"
     js_name = ["plain_html.js"]
 
-    compo_state = ["html"]
+    compo_state = ["value"]
 
     value = ''  #: The HTML this component displays
     new_style_compo = True
