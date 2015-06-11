@@ -3,9 +3,8 @@ from solute.epfl.components.form.form import FormInputBase
 
 
 class PlainHtml(FormInputBase):
-    asset_spec = "solute.epfl.components:plain_html/static"
     template_name = "plain_html/plain_html.html"
-    js_name = ["plain_html.js"]
+    js_name = [("solute.epfl.components:plain_html/static", "plain_html.js")]
 
     compo_state = ["value"]
 
