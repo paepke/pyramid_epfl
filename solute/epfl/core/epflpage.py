@@ -446,6 +446,8 @@ class Page(object):
         typ = "info" | "ok" | "error"
         """
         js = "alert(%s)" % (json.encode(msg),)
+        if 'info' == typ:
+            js = "epfl.show_message(%s, %s)" % (json.encode(msg), json.encode(typ))
         self.add_js_response(js)
 
     def get_names(self, name, only_fresh_names=False):
