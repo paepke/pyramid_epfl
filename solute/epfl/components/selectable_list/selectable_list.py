@@ -52,6 +52,7 @@ class SelectableList(PaginatedListLayout):
         return [compo for compo in self.components if compo.selected]
 
     def handle_set_row(self, row_offset, row_limit, row_data=None):
+        super(SelectableList, self).handle_set_row(row_offset, row_limit, row_data)
         if row_data is not None:
             self.search_text = row_data.get("search")
         self.update_children()
