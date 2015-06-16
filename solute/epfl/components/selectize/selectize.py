@@ -69,6 +69,7 @@ class Selectize(FormInputBase):
         return True
 
     def init_transaction(self):
+        FormInputBase.init_transaction(self)
         if self.load_async:
             self.is_loading = True
             self.add_js_response("epfl.Selectize.LoadData('%s')" % self.cid);
