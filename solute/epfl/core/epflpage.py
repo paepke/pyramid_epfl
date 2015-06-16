@@ -440,14 +440,12 @@ class Page(object):
 
         self.add_js_response(js)
 
-    def show_message(self, msg, typ):
+    def show_message(self, msg, typ=None, fading=False):
         """
         Displays a simple alert box to the user.
-        typ = "info" | "ok" | "error"
+        typ = "info" | "ok" | "error" | "alert"
         """
-        js = "alert(%s)" % (json.encode(msg),)
-        if 'info' == typ:
-            js = "epfl.show_message(%s, %s)" % (json.encode(msg), json.encode(typ))
+        js = "epfl.show_message(%s)" % (json.encode({'msg': msg, 'typ': typ, 'fading': fading}))
         self.add_js_response(js)
 
     def get_names(self, name, only_fresh_names=False):

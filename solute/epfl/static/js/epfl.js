@@ -380,7 +380,10 @@ epfl_module = function() {
         };
     };
 
-    epfl.show_message = function(msg, typ, fading) {
+    epfl.show_message = function(params) {
+        var msg = params['msg'];
+        var typ = params['typ'];
+        var fading = params['fading'];
         fading = fading || false;
         toastr.options = {
             "closeButton": true,
@@ -406,6 +409,8 @@ epfl_module = function() {
             toastr.success(msg);
         } else if (typ == "error") {
             toastr.error(msg);
+        } else {
+            alert(msg);
         }
     };
 
