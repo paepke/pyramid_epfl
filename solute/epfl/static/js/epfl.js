@@ -409,6 +409,8 @@ epfl_module = function() {
             toastr.success(msg);
         } else if (typ == "error") {
             toastr.error(msg);
+        } else if (typ == "warning") {
+            toastr.warning(msg);
         } else {
             alert(msg);
         }

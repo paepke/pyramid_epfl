@@ -443,7 +443,7 @@ class Page(object):
     def show_message(self, msg, typ=None, fading=False):
         """
         Displays a simple alert box to the user.
-        typ = "info" | "ok" | "error" | "alert"
+        typ = "info" | "ok" | "error" | "alert" | "warning"
         """
         js = "epfl.show_message(%s)" % (json.encode({'msg': msg, 'typ': typ, 'fading': fading}))
         self.add_js_response(js)
