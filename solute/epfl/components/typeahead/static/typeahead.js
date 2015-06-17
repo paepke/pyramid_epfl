@@ -1,14 +1,14 @@
 epfl.TypeAhead = function(cid, params) {
-    epfl.PaginatedListLayout.call(this, cid, params);
+    epfl.LinkListLayout.call(this, cid, params);
 };
-epfl.TypeAhead.inherits_from(epfl.PaginatedListLayout);
+epfl.TypeAhead.inherits_from(epfl.LinkListLayout);
 
 epfl.TypeAhead.prototype.handle_local_click = function (event) {
-    epfl.PaginatedListLayout.prototype.handle_local_click.call(this, event);
+    epfl.LinkListLayout.prototype.handle_local_click.call(this, event);
     var btn = this.dropdown_toggle;
 
     if (btn.is(event.target)) {
-        this.list.toggle();
+        this.update_visibility(true);
     }
 };
 
@@ -30,18 +30,20 @@ Object.defineProperty(epfl.TypeAhead.prototype, 'dropdown_toggle', {
     }
 });
 
-epfl.TypeAhead.prototype.update_visibility = function (event) {
+epfl.TypeAhead.prototype.update_visibility = function (toggle) {
     var available_entries = this.elm.find('[data-parent-epflid=' + this.cid + ']');
     if (available_entries.length == 0 ||
         (!this.search_input.is(':focus') && this.elm.find(':hover').length == 0)) {
         this.list.hide();
+    } else if (toggle) {
+        this.list.toggle();
     } else {
         this.list.show();
     }
 };
 
 epfl.TypeAhead.prototype.after_response = function (data) {
-    epfl.PaginatedListLayout.prototype.after_response.call(this, data);
+    epfl.LinkListLayout.prototype.after_response.call(this, data);
 
     var obj = this;
     obj.list.hide().css({
@@ -82,7 +84,7 @@ epfl.TypeAhead.prototype.after_response = function (data) {
 
         switch (event.keyCode) {
             case 13: // enter
-                active_entry.click();
+                obj.handle_click({target: active_entry});
                 break;
             case 38: // arrow up
                 position -= 1;

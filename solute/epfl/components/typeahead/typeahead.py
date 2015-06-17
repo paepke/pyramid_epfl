@@ -11,8 +11,8 @@ class TypeAhead(GroupedLinkListLayout):
 
     new_style_compo = True
     compo_js_name = 'TypeAhead'
-    compo_js_params = ['row_offset', 'row_limit', 'row_count', 'row_data', 'show_pagination', 'show_search',
-                       'search_focus']
+    compo_js_params = GroupedLinkListLayout.compo_js_params + ['row_offset', 'row_limit', 'row_count', 'row_data',
+                                                               'show_pagination', 'show_search', 'search_focus']
     compo_js_extras = ['handle_click']
 
     theme_path = GroupedLinkListLayout.theme_path.copy()
@@ -22,6 +22,12 @@ class TypeAhead(GroupedLinkListLayout):
         'id': None,
         'text': None
     }
+
+    @property
+    def hide_list(self):
+        """The list container is supposed to be hidden if no entries are available.
+        """
+        return len(self.components) == 0
 
     def __init__(self, page, cid, links=None, use_headings=None, event_name=None, show_search=None, height=None,
                  **kwargs):
