@@ -380,6 +380,42 @@ epfl_module = function() {
         };
     };
 
+    epfl.show_message = function(params) {
+        var msg = params['msg'];
+        var typ = params['typ'];
+        var fading = params['fading'];
+        fading = fading || false;
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": (fading ? "5000" : "0"),
+            "extendedTimeOut": (fading ? "1000" : "0"),
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "tapToDismiss": fading || false
+        };
+        if (typ == "info") {
+            toastr.info(msg);
+        } else if (typ == "ok") {
+            toastr.success(msg);
+        } else if (typ == "error") {
+            toastr.error(msg);
+        } else if (typ == "warning") {
+            toastr.warning(msg);
+        } else {
+            alert(msg);
+        }
+    };
+
     epfl.reload_page = function() {
         var frm = $('<form id="__epfl_submit_form__" method="POST" action="#"></form>');
         frm.append('<input type="hidden" name="tid" value="' + epfl.tid + '">');
