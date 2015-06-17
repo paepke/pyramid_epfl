@@ -14,6 +14,7 @@ class PrettyListLayout(ListLayout):
 
     #: The max height of the list view. If the entries exceed the height, a scrollbar is displayed.
     height = None
+    hide_list = False  #: Hides the list container but nothing else.
 
     css_name = ListLayout.css_name + \
         [("solute.epfl.components:pretty_list_layout/static", "pretty_list_layout.css")]
