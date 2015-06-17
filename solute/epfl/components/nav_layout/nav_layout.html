@@ -1,4 +1,4 @@
-<nav class="nav navbar-default" role="navigation" id="{{compo.cid}}" epflid="{{ compo.cid }}">
+<nav class="nav navbar-inverse" role="navigation" id="{{compo.cid}}" epflid="{{ compo.cid }}">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -9,19 +9,33 @@
                 <span class="icon-bar"></span>
             </button>
             {% if compo.title %}
-            <a class="navbar-brand" href="/">{{ compo.title }}</a>
+                <a class="navbar-brand" href="/">
+                {% if compo.img %}
+                        <img src="{{ compo.img }}" alt="{{ compo.title }}" class="pull-left">
+                {% endif %}
+                    {{ compo.title }}
+                </a>
             {% endif %}
         </div>
 
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-            {% if compo.links is not none %}
-            {% for name, href in compo.links %}
-                <li>
-                    <a href="{{ href }}">{{ name }}</a>
-                </li>
-            {% endfor %}
-            {% endif %}
+                {% for compo_obj in compo.components %}
+                    {% if compo_obj.slot == 'left' %}
+                        <li>
+                            {{ compo_obj.render() }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% for compo_obj in compo.components %}
+                    {% if compo_obj.slot == 'right' %}
+                        <li>
+                            {{ compo_obj.render() }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </div>

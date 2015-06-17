@@ -6,11 +6,15 @@
 
 from solute.epfl.core import epflcomponentbase
 
-class NavLayout(epflcomponentbase.ComponentBase):
+class NavLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "nav_layout/nav_layout.html"
+    asset_spec = 'solute.epfl.components:nav_layout/static'
 
-    compo_state = ['links', 'title']
+    css_name = epflcomponentbase.ComponentBase.css_name + ['nav_layout.css']
 
+    compo_state = ['links', 'title', 'img']
+
+    img = None
     title = None
     links = None
 
