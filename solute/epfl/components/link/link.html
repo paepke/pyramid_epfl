@@ -1,1 +1,6 @@
-<a epflid="{{ compo.cid }}" href="{{ compo.url }}">{{compo.name}}</a>
+<a epflid="{{ compo.cid }}" href="{{ compo.url }}">
+    {% if compo.icon %}
+        <i class="fa fa-{{ compo.icon }}"></i>
+    {% endif %}
+    {{ compo.name }}
+</a>
