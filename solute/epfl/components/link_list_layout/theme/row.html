@@ -5,8 +5,7 @@
     	{{ caller() }}
     {% elif compo.event_name is defined and compo.event_name %}
         <a class="list-group-item col-sm-12"
-           epflid="{{ compo_obj.cid }}"
-           onclick="epfl.link_list_click(this, '{{ compo.event_name }}', '{{ compo_obj.cid }}')">
+           epflid="{{ compo_obj.cid }}">
         {% if compo_obj.icon is defined and compo_obj.icon %}
             <i class="fa fa-{{ compo_obj.icon }}"></i>
         {% endif %}
