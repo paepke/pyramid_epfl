@@ -46,6 +46,10 @@ class Button(ComponentBase):
     #: Adapt this text for a custom confirmation dialog message.
     confirm_message = "Do you want to proceed?"
     button_size = None  #: Optional button size. Possible values: 'btn-lg', 'btn-sm', 'btn-xs'
+    #: If set to true, the button is set to disabled on a click. Caution: Currently, only the html part is set to disabled
+    #: in order to avoid multiple clicks on the button. to set the component attribute to disabled as well, this has
+    #: to be done in the event handling method.
+    disable_on_click = False
 
     def __init__(self, page, cid,
                  label=None,
@@ -61,6 +65,7 @@ class Button(ComponentBase):
                  confirm_first=False,
                  confirm_message="Do you want to proceed?",
                  button_size=None,
+                 disable_on_click=False,
                  **extra_params):
         """
         Button Component
@@ -94,6 +99,7 @@ class Button(ComponentBase):
                                      confirm_first=confirm_first,
                                      confirm_message=confirm_message,
                                      button_size=button_size,
+                                     disable_on_click=disable_on_click,
                                      **extra_params)
         if not self.event_target:
             self.event_target = self.cid
