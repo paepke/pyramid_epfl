@@ -1,4 +1,6 @@
 <div class="panel panel-default" id="{{ compo.cid }}" epflid="{{ compo.cid }}" {% if compo.height %}style="height: {{ compo.height }}px;"{% endif %}>
+    {% call before() %}
+    {% endcall %}
     {% if compo.title is defined %}
         <div class="panel-heading">{{ compo.title }}</div>
     {% endif %}
@@ -17,14 +19,6 @@
                 </thead>
             {% endif %}
             <tbody>
-            {% if compo.show_search is defined and compo.show_search == True %}
-                <tr>
-                    <td colspan="{{ compo.map_child_cls.__len__() }}">
-                        {% call before() %}
-                        {% endcall %}
-                    </td>
-                </tr>
-            {% endif %}
             {% for slot_name, slot_content in compo.slotted_components.items() %}
                 <tr>
                 {% for compo_obj in slot_content %}
