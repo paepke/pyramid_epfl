@@ -1,28 +1,28 @@
-div.epfl-table-cell{
+div.epfl-table-list-layout-cell{
     height:15px;
     padding: 0px;
     margin: 0px;
 }
 
-div.epfl-table-edit{
+div.epfl-table-list-layout-edit{
     position: relative;
     top:-5px;
     height: 3px;
 }
 
-.epfl-table {
-	overflow-y: auto;
-	display: block;
-	height: 100%;
+.epfl-table-list-layout {
+  overflow-y: auto;
+  display: block;
+  height: 100%;
 }
 
-.epfl-table tbody {
-	width: 100%;
-	display: table;
+.epfl-table-list-layout tbody {
+  width: 100%;
+  display: table;
 }
 
 .tablelistlayout-sortcolumn {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 
@@ -58,16 +58,16 @@ ul.context-dropdown-menu li.divider {
     padding-top: 3px;
 }
 
-div.epfl-table-text-context div{
+div.epfl-table-list-layout-text-context div{
     height:20px;
     padding: 0px;
     margin: 0px;
 }
 
-div.epfl-table-text-context button{
+div.epfl-table-list-layout-text-context button{
     display:none;
 }
 
-tr.epfl-table-row:hover div.epfl-table-text-context button{
+tr.epfl-table-list-layout-row:hover div.epfl-table-list-layout-text-context button{
     display:inline;
 }

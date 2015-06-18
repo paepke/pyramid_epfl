@@ -12,7 +12,7 @@
     </ul>
 {% endmacro %}
 
-<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }} epfl-table-row">
+<tr class="{{ compo.context_class if (compo.context_class is defined) and (compo.context_class is not none) else "" }} epfl-table-list-layout-row">
 {% for cell in compo.data %}
     {% if cell.type == "head" %}
         <th epflid="{{ compo.cid }}" {% if cell.currentSortedBy == True %}class="tablelistlayout-sortedby"{% endif %}{% if cell.width is defined and cell.width is not none %} style="width:{{ cell.width }}px"{% endif %}>
@@ -34,7 +34,7 @@
             {% endif %}
         </th>
     {% else %}
-        <td epflid="{{ compo.cid }}" class="epfl-table-cell">
+        <td epflid="{{ compo.cid }}" class="epfl-table-list-layout-cell">
             {% if cell.type == 'text' %}
                 {{ cell.data }}
             {% elif cell.type == 'icon' %}
@@ -64,7 +64,7 @@
                 {{ cell.text }}
                 <span class="badge {% if cell.color is defined %}alert-{{ cell.color }}{% endif %}">{{ cell.badgetext }}</span>
             {% elif cell.type == 'edit' %}
-                <div class="epfl-table-edit">
+                <div class="epfl-table-list-layout-edit">
                     <button
                             class="btn btn-default btn-sm {% if cell.disabled is defined %}disabled{% else %}enabled{% endif %}"
                             {% if cell.disabled is not defined %}onclick='epfl.TableListLayout.EditClick("{{ compo.id }}","{{ compo.data }}")'{% endif %}>
@@ -75,7 +75,7 @@
                 <a tabindex="0" role="button" class="epfl-popover-link" data-toggle="popover" data-content="{{ cell.popover_text }}" data-trigger="focus"
                       data-placement="top">{{ cell.text }} </a>
             {% elif cell.type == 'text_and_context' %}
-                <div class="epfl-table-text-context">
+                <div class="epfl-table-list-layout-text-context">
                     <div class="pull-left">{{ cell.text }}</div>
                     <div>{{ contextmenu(cell['context_menu'],compo.id,compo.data) }}</div>
                 </div>
