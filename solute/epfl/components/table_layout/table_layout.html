@@ -5,7 +5,7 @@
         <div class="panel-heading">{{ compo.title }}</div>
     {% endif %}
     <div id="{{ compo.cid }}_container" style="overflow: hidden; {% if compo.height %}height: {{ compo.height - 80 }}px;{% endif %}">
-        <table id="table_{{ compo.cid }}" class="table table-condensed table-hover epfl-table"
+        <table id="table_{{ compo.cid }}" class="table table-condensed table-hover epfl-table-layout"
             {% if compo.style is defined %}
                 style="{{ compo.style }}"
             {% endif %} >
