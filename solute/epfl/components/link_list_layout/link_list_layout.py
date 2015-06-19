@@ -21,6 +21,7 @@ class LinkListLayout(PaginatedListLayout):
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
 
     compo_state = PaginatedListLayout.compo_state + ['links']
+    list_type = PaginatedListLayout.list_type + ['link']
 
     links = None  #: List of dicts to be used as entries.
     event_name = None  #: Default event to be triggered on clicks.

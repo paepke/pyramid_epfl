@@ -12,6 +12,10 @@ class ListLayout(epflcomponentbase.ComponentContainerBase):
 
     theme_path_default = 'list_layout/default_theme'
     theme_path = []
+    #: inheriting lists should override this attribute. It may be used in parent lists to
+    #: identify the actual list type
+    list_type = ["epfl-list"]
+
 
     def __init__(self, page, cid, **extra_params):
         """Simple list style container component.

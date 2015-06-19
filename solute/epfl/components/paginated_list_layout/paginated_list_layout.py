@@ -32,6 +32,7 @@ class PaginatedListLayout(PrettyListLayout):
                                               'solute.epfl.components:paginated_list_layout/static',
                                               'paginated_list_layout.js'
                                           )]
+    list_type = PrettyListLayout.list_type + ['paginated']
 
     def __init__(self, page, cid, show_search=None, height=None, **kwargs):
         """Paginated list using the PrettyListLayout based on bootstrap. Offers searchbar above and pagination below

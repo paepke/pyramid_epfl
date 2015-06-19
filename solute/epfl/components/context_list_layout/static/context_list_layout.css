@@ -1,5 +1,5 @@
 .epfl-context-list-group {
-	margin-bottom:0px;
+  margin-bottom:0px;
 }
 
 li.epfl-context-list-entry {
@@ -13,6 +13,9 @@ li.epfl-context-list-entry:hover {
 
 li.epfl-context-list-entry:hover button {
     display: block;
+    position: absolute;
+    top:5px;
+    right:10px;
 }
 
 li.epfl-context-list-entry button {

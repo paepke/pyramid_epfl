@@ -14,6 +14,7 @@ class GroupedLinkListLayout(LinkListLayout):
                       'menu_group': None}
 
     use_headings = False  #: Use menu_group strings as headings instead of submenus.
+    list_type = LinkListLayout.list_type + ['grouped']
 
     def __init__(self, page, cid, links=None, use_headings=None, event_name=None, show_search=None, height=None,
                  **kwargs):
