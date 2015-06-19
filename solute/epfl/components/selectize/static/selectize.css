@@ -11,6 +11,11 @@ ul.epfl-selectize {
     z-index: 5;
 }
 
+.epfl-selectize.empty {
+  height:0px;
+  border: none;
+}
+
 ul.epfl-selectize-innerlist {
     list-style-type: none;
     padding-left: 0;
