@@ -1,10 +1,7 @@
 # coding: utf-8
 
-"""
-
-"""
-
 from solute.epfl.core import epflcomponentbase
+
 
 class NavLayout(epflcomponentbase.ComponentContainerBase):
     template_name = "nav_layout/nav_layout.html"
@@ -14,9 +11,10 @@ class NavLayout(epflcomponentbase.ComponentContainerBase):
 
     compo_state = ['links', 'title', 'img']
 
-    img = None
-    title = None
-    links = None
+    img = None  #: Logo to be used on the top left.
+    title = None  #: Title to be displayed on the top left.
 
-    def __init__(self, page, cid, title=None, links=[], **extra_params):
+    def __init__(self, page, cid, title=None, img=None, **extra_params):
+        """
+        """
         super(NavLayout, self).__init__()
