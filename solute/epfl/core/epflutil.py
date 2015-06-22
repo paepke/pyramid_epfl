@@ -15,7 +15,7 @@ class Lifecycle(object):
     state = []
 
     def __init__(self, name):
-        self.name = name, hash(self)
+        self.name = name
 
     def checkin(self):
         self.state.append(self.name)
