@@ -197,15 +197,15 @@ class ComponentBaseTest(unittest.TestCase):
                 "{compo_name} __init__ method is not correctly setup. " \
                 "(Missing page parameter, or not overwritten.)".format(compo_name=compo_name)
 
-        assert init_code.co_varnames[0] == 'self',\
-            "{compo_name} __init__ method is missing or misplacing parameter 'self'.".format(compo_name=compo_name)
-        assert init_code.co_varnames[1] == 'page',\
-            "{compo_name} __init__ method is missing or misplacing parameter 'page'.".format(compo_name=compo_name)
-        assert init_code.co_varnames[2] == 'cid',\
-            "{compo_name} __init__ method is missing or misplacing parameter 'cid'.".format(compo_name=compo_name)
-        assert init_code.co_varnames[-1] in ['extra_params', 'kwargs'],\
-            "{compo_name} __init__ method is missing or misplacing parameter, 'extra_params' or 'kwargs'.".format(
-                compo_name=compo_name)
+            assert init_code.co_varnames[0] == 'self',\
+                "{compo_name} __init__ method is missing or misplacing parameter 'self'.".format(compo_name=compo_name)
+            assert init_code.co_varnames[1] == 'page',\
+                "{compo_name} __init__ method is missing or misplacing parameter 'page'.".format(compo_name=compo_name)
+            assert init_code.co_varnames[2] == 'cid',\
+                "{compo_name} __init__ method is missing or misplacing parameter 'cid'.".format(compo_name=compo_name)
+            assert init_code.co_varnames[-1] in ['extra_params', 'kwargs'],\
+                "{compo_name} __init__ method is missing or misplacing parameter, 'extra_params' or 'kwargs'.".format(
+                    compo_name=compo_name)
 
         for var in init_code.co_varnames:
             if var not in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:

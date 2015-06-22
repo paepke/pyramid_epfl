@@ -174,16 +174,16 @@ class PageTest(unittest.TestCase):
         # print base_components, leaf_components, int((time.time() - start_time) * 1000000)
 
         for i in range(0, base_components):
-            assert ('epfl.set_component_info(\\"child_node_%s\\", \\"handle\\", [\'set_row\']);' % (i + 1)) in out, \
-                "Missing set component info for child_node_%s" % (i + 1)
+            assert ('epfl.set_component_info(\\"child_node_%s\\", \\"handle\\", [\'reinitialize\', \'set_row\']);' %
+                    (i + 1)) in out, "Missing set component info for child_node_%s" % (i + 1)
             out = out.replace('epfl.set_component_info("child_node_%s", "handle", [\'set_row\']);' % (i + 1), '')
             for x in range(0, leaf_components):
-                assert ('epfl.set_component_info(\\"child_node_%s_%s\\", \\"handle\\", [\'set_row\']);' % (
-                i + 1, x)) in out
+                assert ('epfl.set_component_info(\\"child_node_%s_%s\\", \\"handle\\", [\'reinitialize\', '
+                        '\'set_row\']);' % (i + 1, x)) in out
                 out = out.replace('epfl.set_component_info("child_node_%s_%s", "handle", [\'set_row\']);' % (i + 1, x),
                                   '')
-        assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'set_row\']);' \
-               'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'set_row\']);' in out
+        assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'reinitialize\', \'set_row\']);' \
+               'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'reinitialize\', \'set_row\']);' in out
 
     def test_component_deletion_and_recreation(self):
         page = Page(self.request)
