@@ -1,10 +1,10 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     {% if compo.height %}
-    <div class="{{ compo.list_type|join(' ') }}" style="height: {{ compo.height }}px;{{ " display: none;" if compo.hide_list else "" }}"
+    <div class="epfl-list" style="height: {{ compo.height }}px;{{ " display: none;" if compo.hide_list else "" }}"
          height="{{ compo.height }}">
     {% else %}
-    <div class="{{ compo.list_type|join(' ') }}">
+    <div class="epfl-list">
     {% endif %}
     {{ caller() }}
     </div>
