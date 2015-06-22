@@ -67,10 +67,10 @@ class ContextListLayout(PaginatedListLayout):
 
     theme_path = {'default': ['context_list_layout/theme'],
                   'container': ['pretty_list_layout/theme'],
-                  # context layout embraces paginated layout template  for before and after
-                  # templates
-                  'before': ['pretty_list_layout/theme', '<paginated_list_layout/theme', '<context_list_layout/theme'],
-                  'after': ['pretty_list_layout/theme', '<paginated_list_layout/theme', '<context_list_layout/theme']}
+                  'before': ['pretty_list_layout/theme', '<paginated_list_layout/theme'],
+                  'after': ['pretty_list_layout/theme', '<paginated_list_layout/theme'],
+                  'inner_container': ['pretty_list_layout/theme', '>context_list_layout/theme']
+                  }
 
     js_parts = PaginatedListLayout.js_parts + ['context_list_layout/context_list_layout.js']
     default_child_cls = ContextListEntry
