@@ -40,4 +40,18 @@ class Link(ComponentBase):
         """
         super(Link, self).__init__(page, cid, url=url, name=name, **extra_params)
 
+    def is_first(self):
+        """Returns True if the Link is the first component in this slot.
+        """
+        if not self.container_compo:
+            return True
+        siblings = self.container_compo.components
+        position = siblings.index(self)
+        if position == 0:
+            return True
 
+        for i in range(0, position):
+            if siblings[position - 1 - i].slot == self.slot:
+                return False
+
+        return True

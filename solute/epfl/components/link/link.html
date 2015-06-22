@@ -1,6 +1,6 @@
 <a epflid="{{ compo.cid }}"
    {% if compo.breadcrumb %}
-   class="breadcrumb-link {{ "first" if compo.container_compo and compo.container_compo.components.index(compo) == 0 else "" }}"
+   class="breadcrumb-link {{ "first" if compo.is_first() else "" }}"
    {% elif compo.tile %}
    class="tile-link"
    {% endif %}
