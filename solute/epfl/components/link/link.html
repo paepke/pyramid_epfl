@@ -4,7 +4,10 @@
    {% elif compo.tile %}
    class="tile-link"
    {% endif %}
-   href="{{ compo.url }}">
+   {% if compo.url %}
+   href="{{ compo.url }}"
+   {% endif %}
+   >
     {% if compo.icon %}
         <i class="fa fa-{{ compo.icon }}"></i>
     {% endif %}
