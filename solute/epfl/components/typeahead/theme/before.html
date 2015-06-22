@@ -1,9 +1,9 @@
 {% macro render() %}
     {% set compo = kwargs.compo %}
     <div>
-        <div style="float: right;" class="btn btn-default fa fa-chevron-down"></div>
+        <div class="btn btn-default fa fa-chevron-down typeahead-btn"></div>
 
-        <div style="overflow: hidden;">
+        <div class="typeahead-search">
             {{ caller() }}
         </div>
     </div>

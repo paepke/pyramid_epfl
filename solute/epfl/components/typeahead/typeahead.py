@@ -8,6 +8,7 @@ class TypeAhead(GroupedLinkListLayout):
 
     js_parts = []
     js_name = GroupedLinkListLayout.js_name + [('solute.epfl.components:typeahead/static', 'typeahead.js')]
+    css_name = GroupedLinkListLayout.js_name + [('solute.epfl.components:typeahead/static', 'typeahead.css')]
 
     new_style_compo = True
     compo_js_name = 'TypeAhead'
