@@ -18,6 +18,8 @@ class TypeAhead(GroupedLinkListLayout):
     theme_path = GroupedLinkListLayout.theme_path.copy()
     theme_path['before'] = ['pretty_list_layout/theme', '>paginated_list_layout/theme', '>typeahead/theme']
 
+    list_type = GroupedLinkListLayout.list_type + ['typeahead']
+
     data_interface = {
         'id': None,
         'text': None
