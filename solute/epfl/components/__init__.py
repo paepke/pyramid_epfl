@@ -49,6 +49,7 @@ from text.text import Text
 from placeholder.placeholder import Placeholder
 from popover.popover import Popover
 from link.link import Link
+from breadcrump.breadcrump import Breadcrump
 
 #: Lists
 from tabs_layout.tabs_layout import TabsLayout
