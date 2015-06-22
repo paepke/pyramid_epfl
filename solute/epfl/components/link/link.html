@@ -1,6 +1,12 @@
-<a epflid="{{ compo.cid }}" href="{{ compo.url }}">
+<a epflid="{{ compo.cid }}"
+   {% if compo.breadcrumb %}
+   class="breadcrumb-link {{ "first" if compo.container_compo and compo.container_compo.components.index(compo) == 0 else "" }}"
+   {% elif compo.tile %}
+   class="tile-link"
+   {% endif %}
+   href="{{ compo.url }}">
     {% if compo.icon %}
         <i class="fa fa-{{ compo.icon }}"></i>
     {% endif %}
-    {{ compo.name }}
+    <span>{{ compo.name }}</span>
 </a>
