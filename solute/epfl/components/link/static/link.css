@@ -50,7 +50,11 @@ a.breadcrumb-link.first:before {
 }
 
 a.tile-link > span {
-    vertical-align: middle;
+    margin: auto;
+}
+a.tile-link i {
+    font-size: 2em;
+    display: block;
 }
 
 a.tile-link, a.tile-link:hover, a.tile-link:active, a.tile-link:focus {
@@ -59,8 +63,12 @@ a.tile-link, a.tile-link:hover, a.tile-link:active, a.tile-link:focus {
     color: white;
     width: 100px;
     height: 100px;
-    line-height: 100px;
     background: #393a46;
     border: 1px solid #656673;
     border-radius: 5px;
+    text-decoration: none;
+}
+
+a.tile-link:hover {
+    background: #656673;
 }
