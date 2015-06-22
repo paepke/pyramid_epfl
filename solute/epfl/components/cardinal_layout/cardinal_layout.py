@@ -13,10 +13,10 @@ class CardinalLayout(epflcomponentbase.ComponentContainerBase):
 
     _cardinal_components = None
 
-
     compo_state = ['constrained']
 
     constrained = None
+    plain = []  #: List of slots to be rendered as plain divs.
 
     def cardinal_components(self, direction='center'):
         if self._cardinal_components is None:
