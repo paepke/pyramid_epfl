@@ -10,6 +10,37 @@ from pyramid import path
 from os.path import exists
 from solute.epfl import core
 
+
+class Lifecycle(object):
+    state = []
+
+    def __init__(self, name):
+        self.name = name, hash(self)
+
+    def checkin(self):
+        self.state.append(self.name)
+
+    def checkout(self):
+        assert self.state.pop() == self.name
+
+    def __call__(self, cb):
+        def _cb(*args, **kwargs):
+            self.checkin()
+            result = cb(*args, **kwargs)
+            self.checkout()
+            return result
+
+        return _cb
+
+    @staticmethod
+    def get_current():
+        return Lifecycle.state[-1]
+
+    @staticmethod
+    def depth():
+        return len(Lifecycle.state)
+
+
 class DictTransformer(object):
     def __init__(self, target_keys):
         self.target_keys = target_keys

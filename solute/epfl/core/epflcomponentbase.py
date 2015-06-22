@@ -11,6 +11,7 @@ from pyramid import security
 from pyramid import threadlocal
 
 from solute.epfl.core import epflclient, epflutil, epflacl
+from solute.epfl.core.epflutil import Lifecycle
 
 import ujson as json
 
@@ -308,19 +309,19 @@ class ComponentBase(object):
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
-    base_compo_state = ["visible"]  # these are the compo_state-names for this ComponentBase-Class
+    base_compo_state = ["visible"]  #: These are the compo_state-names for this ComponentBase-Class
 
-    is_template_element = True  # Needed for template-reflection: this makes me a template-element (like a form-field)
+    is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
     redraw_requested = False  #: Set of parts requesting to be redrawn.
 
-    _compo_info = None
-    _handles = None
-    combined_compo_state = frozenset()
-    deleted = False
+    _compo_info = None  #: Compo_info cache.
+    _handles = None  #: Cache for a list of handle_event functions this component provides.
+    combined_compo_state = frozenset()  #: The combined compo_state + base_compo_state
+    deleted = False  #: Flag if this component has been deleted this request.
 
-    post_event_handlers = None
+    post_event_handlers = None  #: Overwrite with a dict of post_event_handlers.
 
     #: True if this component has initialisation routines that prevent it from being correctly updated by
     #: :meth:`ComponentContainerBase.update_children`. It will be deleted and recreated instead.
@@ -328,9 +329,11 @@ class ComponentBase(object):
 
     #: New style components use the new default mechanism to update client side javascript states automatically.
     new_style_compo = False
-    compo_js_params = []
-    compo_js_extras = []
-    compo_js_name = 'ComponentBase'
+    compo_js_params = []  #: Attributes to be provided as JS parameters.
+    compo_js_extras = []  #: New style features to be activated.
+    compo_js_name = 'ComponentBase'  #: Name of the JS Class.
+
+    render_cache = None  #: If the component has been rendered this request the cache is filled.
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -499,6 +502,7 @@ class ComponentBase(object):
 
         self.page.transaction['__initialized_components__'].remove(self.cid)
 
+    @Lifecycle(name=('component', 'finalize'))
     def finalize(self):
         """ Called from the page-object when the page is finalized
         [request-processing-flow]
@@ -582,6 +586,7 @@ class ComponentBase(object):
         """ Shortcut to epflpage """
         self.page.add_js_response(js_string)
 
+    @Lifecycle(name=('component', 'init_transaction'))
     def init_transaction(self):
         """
         This function will be called only once a transaction for this component.
@@ -596,6 +601,7 @@ class ComponentBase(object):
         """
         pass
 
+    @Lifecycle(name=('component', 'setup_component'))
     def setup_component(self):
         """ Called from the system every request when the component-state of all
         components in the page is setup.
@@ -607,6 +613,7 @@ class ComponentBase(object):
         """
         pass
 
+    @Lifecycle(name=('component', 'after_event_handling'))
     def after_event_handling(self):
         """ Called from the system every request after all events
         for all components have been handeled.
@@ -651,6 +658,7 @@ class ComponentBase(object):
         return self.cid
 
     @epflacl.epfl_has_permission('access')
+    @Lifecycle(name=('component', 'handle_event'))
     def handle_event(self, event_name, event_params):
         """
         Called by the system for every ajax-event in the ajax-event-queue from the browser.
@@ -719,8 +727,6 @@ class ComponentBase(object):
         Creates a dictionary containing a reference to the component that is used as render kwargs.
         """
         return {'compo': self}
-
-    render_cache = None
 
     def render(self, target='main'):
         """ Called to render the complete component.
@@ -842,6 +848,7 @@ class ComponentBase(object):
         """ For direct invocation from the jinja-template. the args and kwargs are also provided by the template """
         return self.render(*args, **kwargs)
 
+    @Lifecycle(name=('component', 'compo_destruct'))
     def compo_destruct(self):
         """ Called before destruction of this component by a container component.
 
@@ -909,21 +916,21 @@ class ComponentContainerBase(ComponentBase):
     default_child_cls = None
     data_interface = {'id': None}
 
-    row_offset = 0
-    row_limit = 30
-    row_data = {}
-    row_count = 30
+    row_offset = 0  #: Offset for get_data calls.
+    row_limit = 30  #: Limit for get_data calls.
+    row_data = {}  #: Adaptable data store for get_data calls.
+    row_count = 30  #: Count of currently loaded rows, should be set by get_data.
 
     #: Updates are triggered every request in after_event_handling if True.
     auto_update_children = True
     #: Update is triggered initially in :meth:`init_transaction` if True
     auto_initialize_children = True
 
+    #: True if update children has been called at least once. Will be used for duplicate call prevention.
     __update_children_done__ = False
 
+    #: True if the child components of this component have been initialized.
     components_initialized = False
-
-    _themes = {}
 
     def __new__(cls, *args, **kwargs):
         self = super(ComponentContainerBase, cls).__new__(cls, *args, **kwargs)
@@ -966,6 +973,7 @@ class ComponentContainerBase(ComponentBase):
         """
         return ComponentRenderEnvironment(self, env)
 
+    @Lifecycle(name=('container_component', 'after_event_handling'))
     def after_event_handling(self):
         """
         After all events have been handled :meth:`update_children` is executed once for components that follow
@@ -1087,6 +1095,7 @@ class ComponentContainerBase(ComponentBase):
         """
         pass
 
+    @Lifecycle(name=('container_component', 'init_transaction'))
     def init_transaction(self):
         """
         Components derived from :class:`ComponentContainerBase` will use their :attr:`node_list` to generate their

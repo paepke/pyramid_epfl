@@ -12,6 +12,7 @@ from pyramid import security
 import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
+from solute.epfl.core.epflutil import Lifecycle
 
 
 class LazyProperty(object):
@@ -104,6 +105,7 @@ class Page(object):
         if not hasattr(self, 'transaction'):
             self.transaction = self.__get_transaction_from_request()
 
+    @Lifecycle(name=('page', 'main'))
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,
@@ -129,8 +131,7 @@ class Page(object):
             # Reset the rendered_extra_content list since none actually has been rendered yet!
             self.transaction['rendered_extra_content'] = set()
 
-        for compo in self.get_active_components():
-            compo.after_event_handling()
+        self.after_event_handling()
 
         out = self.render()
 
@@ -142,6 +143,12 @@ class Page(object):
         response.headerlist.extend(self.remember_cookies)
         return response
 
+    @Lifecycle(name=('page', 'after_event_handling'))
+    def after_event_handling(self):
+        for compo in self.get_active_components():
+            compo.after_event_handling()
+
+    @Lifecycle(name=('page', 'prevent_transaction_loss'))
     def prevent_transaction_loss(self):
         """In case the transaction has been lost, we need a full page reload and also a bit of housekeeping on the
         transaction itself.
@@ -166,6 +173,7 @@ class Page(object):
 
         return out
 
+    @Lifecycle(name=('page', 'setup_model'))
     def setup_model(self):
         """
         Used every request to instantiate the model.
@@ -290,6 +298,7 @@ class Page(object):
 
         return transaction
 
+    @Lifecycle(name=('page', 'setup_components'))
     def setup_components(self):
         """
         Overwrite this function!
@@ -321,6 +330,7 @@ class Page(object):
         env.update([(value.cid, value) for value in self.get_active_components() if value.container_compo is None])
         return env
 
+    @Lifecycle(name=('page', 'render'))
     def render(self):
         """ Is called in case of a "full-page-request" to return the complete page """
         out = ''
@@ -347,6 +357,7 @@ class Page(object):
 
         return out
 
+    @Lifecycle(name=('page', 'handle_transaction'))
     def handle_transaction(self):
         """ This method is called just before the event-handling takes place.
         It calles the init_transaction-methods of all components, that the event handlers have
@@ -374,6 +385,7 @@ class Page(object):
         """
         self.transaction.store_as_new()
 
+    @Lifecycle(name=('page', 'handle_ajax_events'))
     def handle_ajax_events(self):
         """ Is called by the view-controller directly after the definition of all components (self.instanciate_components).
         Returns "True" if we are in a ajax-request. self.render_ajax_response must be called in this case.
