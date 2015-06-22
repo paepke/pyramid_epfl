@@ -69,7 +69,7 @@ class ComponentRenderEnvironment(MutableMapping):
         if item in ['compo']:
             return self.data[item]
 
-        if item not in ['container', 'row', 'before', 'after']:
+        if item not in ['container', 'inner_container', 'row', 'before', 'after']:
             raise KeyError()
 
         callables = self.data[item]
@@ -99,6 +99,7 @@ class ComponentRenderEnvironment(MutableMapping):
     def __init__(self, compo, env):
         self.data = {'compo': compo,
                      'container': self.set_order(compo.get_themed_template(env, 'container')),
+                     'inner_container': self.set_order(compo.get_themed_template(env, 'inner_container')),
                      'row': self.set_order(compo.get_themed_template(env, 'row')),
                      'before': self.set_order(compo.get_themed_template(env, 'before')),
                      'after': self.set_order(compo.get_themed_template(env, 'after'))}
