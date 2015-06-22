@@ -1142,7 +1142,7 @@ class ComponentContainerBase(ComponentBase):
         # directly be displayed in this request.
         compo_obj.init_transaction()
         self.page.transaction['__initialized_components__'].add(cid)
-        if init_transaction is False:
+        if init_transaction is False and Lifecycle.get_current()[0] != ('page', 'handle_transaction'):
             self.page.handle_transaction()
 
         return compo_obj
