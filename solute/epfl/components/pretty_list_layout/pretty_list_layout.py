@@ -15,6 +15,7 @@ class PrettyListLayout(ListLayout):
     #: The max height of the list view. If the entries exceed the height, a scrollbar is displayed.
     height = None
     hide_list = False  #: Hides the list container but nothing else.
+    #: Add the specific list type for the pretty list layout. see :attr:`ListLayout.list_type`
     list_type = ListLayout.list_type + ['pretty']
 
     css_name = ListLayout.css_name + \

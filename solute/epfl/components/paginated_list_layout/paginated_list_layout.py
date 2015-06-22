@@ -32,6 +32,8 @@ class PaginatedListLayout(PrettyListLayout):
                                               'solute.epfl.components:paginated_list_layout/static',
                                               'paginated_list_layout.js'
                                           )]
+
+    #: Add the specific list type for the paginated list layout. see :attr:`ListLayout.list_type`
     list_type = PrettyListLayout.list_type + ['paginated']
 
     def __init__(self, page, cid, show_search=None, height=None, **kwargs):

@@ -75,8 +75,8 @@ class ContextListLayout(PaginatedListLayout):
     js_parts = PaginatedListLayout.js_parts + ['context_list_layout/context_list_layout.js']
     default_child_cls = ContextListEntry
 
-    show_pagination = False
-    show_search = True
+    show_pagination = False  #: see :attr:`PaginatedListLayout.show_pagination`
+    show_search = True  #: see :attr:`PaginatedListLayout.show_search`
 
     auto_update_children = True
 
@@ -86,6 +86,7 @@ class ContextListLayout(PaginatedListLayout):
 
     data_interface = {'id': None, 'data': None, 'menu': None}
 
+    #: An exemplary default context menu.
     default_menu = [{'name':u"Delete", 'event':"delete", 'type':"link"},
                     {'name':"Rename", 'event':"rename", 'type':"link"}]
 
