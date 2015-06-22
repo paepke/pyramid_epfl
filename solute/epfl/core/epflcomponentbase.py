@@ -390,9 +390,18 @@ class ComponentBase(object):
         pass
 
     def get_state_attr(self, key, value=None):
+        """Get the attribute as stored in the compo_state or return the original value. If the original value is not
+        hashable - as all mutable builtins are - a copy is generated in the compo state.
+        """
         try:
             return self.compo_info['compo_state'][key]
         except KeyError:
+            try:
+                hash(value)
+            except TypeError:
+                # Only the immutable builtins are hashable, mutable builtins are not and cause a TypeError.
+                setattr(self, key, value)
+                return getattr(self, key, value)
             return value
 
     def set_state_attr(self, key, value):
