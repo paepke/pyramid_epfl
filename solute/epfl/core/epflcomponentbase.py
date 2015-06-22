@@ -988,7 +988,7 @@ class ComponentContainerBase(ComponentBase):
         """Returns true if component uses get_data scheme."""
         return self.default_child_cls is not None
 
-    def update_children(self, force=False, init_transaction=False):
+    def update_children(self, force=False):
         """If a default_child_cls has been set this updates all child components to reflect the current state from
         get_data(). Will raise an exception if called twice without the force parameter present."""
 
@@ -1042,7 +1042,7 @@ class ComponentContainerBase(ComponentBase):
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
             ubc = self.default_child_cls(**data_dict[data_id])
-            bc = self.add_component(ubc, init_transaction=init_transaction)
+            bc = self.add_component(ubc)
             data_cid_dict[data_id] = bc.cid
 
             self.redraw()
@@ -1110,11 +1110,10 @@ class ComponentContainerBase(ComponentBase):
             cid, slot = node.position
             self.add_component(node(self.page, cid, __instantiate__=True),
                                slot=slot,
-                               cid=cid,
-                               init_transaction=True)
+                               cid=cid)
 
         if self.auto_initialize_children:
-            self.update_children(force=True, init_transaction=True)
+            self.update_children(force=True)
 
     def replace_component(self, old_compo_obj, new_compo_obj):
         """Replace a component with a new one. Handles deletion bot keeping position and cid the same."""
@@ -1123,7 +1122,7 @@ class ComponentContainerBase(ComponentBase):
         old_compo_obj.delete_component()
         return self.add_component(new_compo_obj(cid=cid), position=position)
 
-    def add_component(self, compo_obj, slot=None, cid=None, position=None, init_transaction=False):
+    def add_component(self, compo_obj, slot=None, cid=None, position=None):
         """ You can call this function to add a component to its container.
         slot is an optional parameter to allow for more complex components, cid will be used if no cid is set to
         compo_obj, position can be used to insert at a specific location.
@@ -1142,7 +1141,7 @@ class ComponentContainerBase(ComponentBase):
         # directly be displayed in this request.
         compo_obj.init_transaction()
         self.page.transaction['__initialized_components__'].add(cid)
-        if init_transaction is False and Lifecycle.get_current()[0] != ('page', 'handle_transaction'):
+        if ('page', 'handle_transaction') not in Lifecycle.state:
             self.page.handle_transaction()
 
         return compo_obj
