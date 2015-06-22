@@ -10,8 +10,6 @@ class TableLayout(PaginatedListLayout):
                                               'jquery.fixedheadertable.min.js')]
     css_name = PaginatedListLayout.css_name + [("solute.epfl.components:table_layout/static", "css/table_layout.css")]
 
-    theme_path = PaginatedListLayout.theme_path
-
     template_name = 'table_layout/table_layout.html'
 
     map_child_cls = {}
