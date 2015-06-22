@@ -75,3 +75,6 @@ class LinkListLayout(PaginatedListLayout):
             except KeyError:
                 pass
         return links
+
+    def is_current_url(self, url):
+        return self.page.request.matched_route.path == url

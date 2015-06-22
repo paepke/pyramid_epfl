@@ -3,16 +3,12 @@
     {% set compo_obj = kwargs.compo_obj %}
     {% if compo_obj.event_name is defined %}
     	{{ caller() }}
-    {% elif compo.event_name is defined and compo.event_name %}
-        <a class="list-group-item col-sm-12"
-           epflid="{{ compo_obj.cid }}">
-        {% if compo_obj.icon is defined and compo_obj.icon %}
-            <i class="fa fa-{{ compo_obj.icon }}"></i>
-        {% endif %}
-            {{ compo_obj.text }}
-        </a>
     {% else %}
-    <a class="list-group-item col-sm-12" href="{{ compo_obj.url }}" epflid="{{ compo_obj.cid }}">
+    <a class="list-group-item col-sm-12{{ " active" if compo.is_current_url(compo_obj.url) else "" }}"
+        {% if compo.event_name is not defined or not compo.event_name %}
+            href="{{ compo_obj.url }}"
+        {% endif %}
+       epflid="{{ compo_obj.cid }}">
         {% if compo_obj.icon is defined and compo_obj.icon %}
             <i class="fa fa-{{ compo_obj.icon }}"></i>
         {% endif %}
