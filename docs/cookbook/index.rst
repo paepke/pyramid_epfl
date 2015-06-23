@@ -16,3 +16,4 @@ Unless specified otherwise all code examples belong in the epfl_pyramid_barebone
 .. toctree::
 
     routing/index
+    layout/index
