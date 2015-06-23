@@ -4,6 +4,8 @@
          aria-valuenow="{{compo.value}}"
          aria-valuemin="{{compo.min}}" aria-valuemax="{{compo.max}}"
          style="width: {{'0' if (compo.max == 0) else ((compo.value/compo.max)*100)|round|int}}%;">
-     	{{ '0' if (compo.max == 0) else ((compo.value/compo.max)*100)|round|int}}%
-	</div>
+       {% if not compo.hide_value_label == True %}
+         {{ '0' if (compo.max == 0) else ((compo.value/compo.max)*100)|round|int}}%
+       {% endif %}
+  </div>
 </div>
