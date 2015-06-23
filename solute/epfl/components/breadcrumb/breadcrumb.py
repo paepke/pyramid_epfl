@@ -2,10 +2,12 @@
 
 from solute.epfl.components.link.link import Link
 
-class Breadcrump(Link):
+class Breadcrumb(Link):
+
+    breadcrump=True  #: The link is used as a breadcrumb per default.
 
     def __init__(self, page, cid, url=None, name=None, icon=None, **extra_params):
-        """Convenience component that can be used for creating breadcrumps.
+        """Convenience component that can be used for creating breadcrumbs.
 
         Usage:
         .. code-block:: python
@@ -22,5 +24,4 @@ class Breadcrump(Link):
         :param name: The name displayed for this breadcrump.
         :param icon: The icon to be displayed in front of the text.
         """
-        super(Breadcrump, self).__init__(page, cid, url=url, name=name, breadcrump=True, **extra_params)
-
+        super(Breadcrumb, self).__init__(page, cid, url=url, name=name, **extra_params)
