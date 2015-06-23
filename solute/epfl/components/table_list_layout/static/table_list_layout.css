@@ -58,7 +58,7 @@ ul.context-dropdown-menu li.divider {
     padding-top: 3px;
 }
 
-div.epfl-table-list-layout-text-context div{
+div.epfl-table-list-layout-text-context .epfl-table-list-layout-text-context-menu{
     height:20px;
     padding: 0px;
     margin: 0px;
