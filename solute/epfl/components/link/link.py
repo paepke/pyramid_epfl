@@ -39,7 +39,8 @@ class Link(ComponentBase):
         :param breadcrumb: Display the link as a breadcrumb.
         :param tile: Display the link as a rectangular tile.
         """
-        super(Link, self).__init__(page, cid, url=url, name=name, **extra_params)
+        super(Link, self).__init__(page, cid, url=url, route=route, name=name, icon=icon, breadcrumb=breadcrumb,
+                                   tile=tile, **extra_params)
 
     @property
     def url(self):
