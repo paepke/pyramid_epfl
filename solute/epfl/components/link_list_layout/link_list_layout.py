@@ -6,11 +6,11 @@
 
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import PaginatedListLayout
+from solute.epfl.components import Link
 from solute.epfl.core.epflutil import has_permission_for_route
 
 
 class LinkListLayout(PaginatedListLayout):
-    default_child_cls = epflcomponentbase.ComponentBase
     data_interface = {'id': None,
                       'text': None,
                       'url': None}
@@ -59,22 +59,21 @@ class LinkListLayout(PaginatedListLayout):
                 continue
 
             links.append({'id': i,
-                        'text': link['text'],
-                        'url': link['url']})
+                          'text': link['text'],
+                          'url': link['url']})
             if link.get('menu_group'):
                 links[-1]['menu_group'] = link['menu_group']
             if link.get('icon'):
                 links[-1]['icon'] = link['icon']
+            if self.event_name:
+                links[-1]['event_name'] = self.event_name
 
-            try:
-                links[-1]['url'].format()
-            except KeyError:
-                links[-1]['url'] = links[-1]['url'].format(**self.page.request.matchdict)
-            try:
-                links[-1]['url'] = self.page.get_route_path(links[-1]['url']) or links[-1]['url']
-            except KeyError:
-                pass
         return links
+
+    @staticmethod
+    def default_child_cls(*args, **kwargs):
+        kwargs['list_element'] = True
+        return Link(*args, **kwargs)
 
     def is_current_url(self, url):
         return self.page.request.matched_route.path == url

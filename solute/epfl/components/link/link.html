@@ -3,9 +3,11 @@
    class="breadcrumb-link {{ "first" if compo.is_first() else "" }}"
    {% elif compo.tile %}
    class="tile-link"
+   {% elif compo.list_element %}
+   class="list-group-item col-sm-12{{ " active" if compo.is_current_url() else "" }}"
    {% endif %}
-   {% if compo.url %}
-   href="{{ compo.url }}"
+   {% if compo._url %}
+   href="{{ compo._url }}"
    {% endif %}
    >
     {% if compo.icon %}
