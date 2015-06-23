@@ -76,8 +76,15 @@
                       data-placement="top">{{ cell.text }} </a>
             {% elif cell.type == 'text_and_context' %}
                 <div class="epfl-table-list-layout-text-context">
-                    <div class="pull-left">{{ cell.text }}</div>
-                    <div>{{ contextmenu(cell['context_menu'],compo.id,compo.data) }}</div>
+                    <div class="pull-left">
+                      {% if cell.popover_text is not none %}
+                        <a tabindex="0" role="button" class="epfl-popover-link" data-toggle="popover" data-content="{{ cell.popover_text }}" data-trigger="focus"
+                        data-placement="top">{{ cell.text }} </a>
+                        {% else %}
+                        {{ cell.text }}
+                        {% endif %}
+                    </div>
+                    <div class="epfl-table-list-layout-text-context-menu">{{ contextmenu(cell['context_menu'],compo.id,compo.data) }}</div>
                 </div>
             {% endif %}
         </td>

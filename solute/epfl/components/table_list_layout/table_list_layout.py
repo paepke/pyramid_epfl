@@ -19,7 +19,7 @@ class TableLayoutRow(epflcomponentbase.ComponentContainerBase):
         super(TableLayoutRow, self).init_struct()
         node_list = []
         for data in self.data:
-            
+
             if data["type"] == "component":
                 node_list.append(data["data"])
 
@@ -169,7 +169,7 @@ class TableListLayout(PaginatedListLayout):
             row['data'].append(field)
 
         return row
-    
+
     @staticmethod
     def ContextRow(rowid, context_class, fields):
         row = {'id': rowid, 'context_class': context_class, 'data': []}
@@ -240,9 +240,9 @@ class TableListLayout(PaginatedListLayout):
         return button
 
     @staticmethod
-    def Popover(text,popover_text):
-        return {"text":text,"popover_text":popover_text,"type": "popover"}
+    def Popover(text, popover_text):
+        return {"text": text, "popover_text": popover_text, "type": "popover"}
 
     @staticmethod
-    def TextAndContextMenu(text, menu):
-        return {"text": text,"context_menu":menu, "type": "text_and_context"}
+    def TextAndContextMenu(text, menu, popover_text=None):
+        return {"text": text,"context_menu":menu, "popover_text": popover_text, "type": "text_and_context"}
