@@ -4,7 +4,7 @@ from solute.epfl.components.link.link import Link
 
 class Breadcrumb(Link):
 
-    breadcrump=True  #: The link is used as a breadcrumb per default.
+    breadcrumb=True  #: The link is used as a breadcrumb per default.
 
     def __init__(self, page, cid, url=None, name=None, icon=None, **extra_params):
         """Convenience component that can be used for creating breadcrumbs.
@@ -20,8 +20,8 @@ class Breadcrumb(Link):
                 )
             )
 
-        :param url: The url the breadcrump points to. Used as src attribute of the A-Tag.
-        :param name: The name displayed for this breadcrump.
+        :param url: The url the breadcrumb points to. Used as src attribute of the A-Tag.
+        :param name: The name displayed for this breadcrumb.
         :param icon: The icon to be displayed in front of the text.
         """
-        super(Breadcrumb, self).__init__(page, cid, url=url, name=name, **extra_params)
+        super(Breadcrumb, self).__init__(page, cid, url=url, name=name, icon=icon, **extra_params)
