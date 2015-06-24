@@ -67,13 +67,23 @@ epfl.Upload = function (cid, params) {
                 var filename_parts = file.name.split('.');
                 if (filename_parts.length === 1) {
                     //no file type found (no dot in filename) -> return
+                    alert("Unknown File Type");
                     return;
                 }
                 if (allowed_file_types.indexOf(filename_parts[filename_parts.length - 1]) === -1) {
                     //if filetype is not in array -> return
+                    alert("Not allowed File Type");
                     return;
                 }
             }
+        }
+        if(file.size > parseInt(params["maximum_file_size"])){
+            alert("File size to big");
+            return;
+        }else if(file.size > 200 * 1024 * 1024){
+            //200 MB is hard limit of upload compo
+            alert("File size to big");
+            return;
         }
 
         reader.readAsDataURL(file);

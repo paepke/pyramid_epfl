@@ -24,7 +24,7 @@ class Upload(FormInputBase):
 
     template_name = "upload/upload.html"
 
-    compo_state = FormInputBase.compo_state + ["allowed_file_types","show_remove_icon"]
+    compo_state = FormInputBase.compo_state + ["allowed_file_types","show_remove_icon","maximum_file_size"]
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -35,6 +35,7 @@ class Upload(FormInputBase):
     #: The type of validator that will be used for this field.
     validation_type = 'text'
 
+    #: Sends changes immediately
     fire_change_immediately = True
 
     #: Allowed file types if not allowed nothing happens: give a list with file type endings example: ["png","gif","jpg"]
@@ -43,9 +44,12 @@ class Upload(FormInputBase):
     #: show a remove icon which removes the current uploaded file see: handle_remove_icon
     show_remove_icon = False
 
+    #: maximum file size in byte this is checked in javascript, the hard limit is 200 MB
+    maximum_file_size = 5 * 1024 * 1024
+
 
     new_style_compo = True
-    compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon']
+    compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon','maximum_file_size']
     compo_js_name = 'Upload'
 
     def handle_change(self, value):
