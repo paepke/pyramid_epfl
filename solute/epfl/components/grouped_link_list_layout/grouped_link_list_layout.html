@@ -7,9 +7,6 @@
                 {% set compo_obj = group['components'][0] %}
                 {% if compo_obj.is_visible() %}
                     {% call row(compo_obj=compo_obj) %}
-                        {% if compo_obj.icon is defined and compo_obj.icon %}
-                            <i class="pull-left fa fa-{{ compo_obj.icon }}"></i>
-                        {% endif %}
                         {{ compo_obj.render() }}
                     {% endcall %}
                 {% endif %}
@@ -35,9 +32,6 @@
                     {% for compo_obj in group['components'] %}
                         {% if compo_obj.is_visible() %}
                             {% call row(compo_obj=compo_obj) %}
-                                {% if compo_obj.icon is defined and compo_obj.icon %}
-                                    <i class="pull-left fa fa-{{ compo_obj.icon }}"></i>
-                                {% endif %}
                                 {{ compo_obj.render() }}
                             {% endcall %}
                         {% endif %}
