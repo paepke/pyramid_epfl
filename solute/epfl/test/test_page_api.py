@@ -1,37 +1,23 @@
-import unittest
 import time
-from pyramid import testing
 
 from solute.epfl.core.epflpage import Page
 from solute.epfl.core.epflcomponentbase import ComponentBase
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
 from solute.epfl import components
 
-from solute.epfl import get_epfl_jinja2_environment, includeme
-from pyramid_jinja2 import get_jinja2_environment
-
 from collections2.dicts import OrderedDict
 import inspect
 
+from fixtures import pyramid_req
+import pytest
 
-class PageTest(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        testing.DummyRequest.get_jinja2_environment = get_jinja2_environment
-        testing.DummyRequest.get_epfl_jinja2_environment = get_epfl_jinja2_environment
 
-        includeme(self.config)
+class TestPageApi(object):
+    def __init__(self):
+        super(TestPageApi, self).__init__()
 
-        self.request = testing.DummyRequest()
-        self.request.content_type = ''
-        self.request.is_xhr = False
-        self.request.registry.settings['epfl.transaction.store'] = 'memory'
-
-    def tearDown(self):
-        testing.tearDown()
-
-    def test_basic_component_operations(self):
-        page = Page(self.request)
+    def test_basic_component_operations(self, pyramid_req):
+        page = Page(pyramid_req)
         t = page.transaction
 
         page.root_node = ComponentContainerBase
@@ -44,8 +30,8 @@ class PageTest(unittest.TestCase):
 
         assert t.has_component('child_node')
 
-    def test_basic_component_regeneration(self):
-        page = Page(self.request)
+    def test_basic_component_regeneration(self, pyramid_req):
+        page = Page(pyramid_req)
         page.root_node = ComponentContainerBase
         t = page.transaction
         t['components_assigned'] = True
@@ -77,14 +63,14 @@ class PageTest(unittest.TestCase):
 
         assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
 
-        new_page = Page(self.request, transaction=t)
+        new_page = Page(pyramid_req, transaction=t)
         new_page.handle_transaction()
 
         assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
         assert new_page.child_node.test == {'some': 'dict'}
 
-    def test_component_regeneration_performance(self):
-        page = Page(self.request)
+    def test_component_regeneration_performance(self, pyramid_req):
+        page = Page(pyramid_req)
         transaction = page.transaction
         transaction['components_assigned'] = True
         transaction.set_component('root_node',
@@ -132,9 +118,9 @@ class PageTest(unittest.TestCase):
 
         assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000
 
-    def test_component_rendering_ajax(self):
+    def test_component_rendering_ajax(self, pyramid_req):
 
-        page = Page(self.request)
+        page = Page(pyramid_req)
         page.request.is_xhr = True
         page.page_request.params = {"q": []}
         transaction = page.transaction
@@ -186,8 +172,8 @@ class PageTest(unittest.TestCase):
         assert 'epfl.set_component_info(\\"child_node_0\\", \\"handle\\", [\'reinitialize\', \'set_row\']);' \
                'epfl.set_component_info(\\"root_node\\", \\"handle\\", [\'reinitialize\', \'set_row\']);' in out
 
-    def test_component_deletion_and_recreation(self):
-        page = Page(self.request)
+    def test_component_deletion_and_recreation(self, pyramid_req):
+        page = Page(pyramid_req)
         transaction = page.transaction
         transaction['components_assigned'] = True
         transaction.set_component('root_node',
@@ -230,8 +216,8 @@ class PageTest(unittest.TestCase):
         assert len(transaction['compo_lookup']) == 41
         assert page.child_node_4_1
 
-    def test_component_deletion(self):
-        page = Page(self.request)
+    def test_component_deletion(self, pyramid_req):
+        page = Page(pyramid_req)
         transaction = page.transaction
         transaction['components_assigned'] = True
         transaction.set_component('root_node',
@@ -264,8 +250,8 @@ class PageTest(unittest.TestCase):
             for x in range(0, 3):
                 assert transaction.has_component('child_node_%s_%s' % (i + 1, x)) is False
 
-    def test_re_rendering_components(self):
-        page = Page(self.request)
+    def test_re_rendering_components(self, pyramid_req):
+        page = Page(pyramid_req)
         page.request.is_xhr = True
         page.page_request.params = {"q": []}
         transaction = page.transaction
@@ -326,7 +312,7 @@ class PageTest(unittest.TestCase):
                     "epfl.replace_component('child_node_%s_%s'" % (i + 1, x)
                 ) == out.count("epfl.replace_component('child_node_0'")
 
-    def test_container_assign(self):
+    def test_container_assign(self, pyramid_req):
         Page.root_node = ComponentContainerBase(
             cid='root_node',
             node_list=[
@@ -357,14 +343,14 @@ class PageTest(unittest.TestCase):
             ]
         )
 
-        page = Page(self.request)
+        page = Page(pyramid_req)
 
         page.handle_transaction()
 
         for compo in page.root_node.components:
             assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]
 
-    def test_documentation(self):
+    def test_documentation(self, pyramid_req):
         missing_docstring = 0
         missing_param_doc = 0
         missing_param_doc_absolute = 0

@@ -1,3 +1,8 @@
+{% if compo.name is not defined and compo.text is defined %}
+    {% set name = compo.text %}
+{% else %}
+    {% set name = compo.name %}
+{% endif %}
 <a epflid="{{ compo.cid }}"
    {% if compo.breadcrumb %}
        class="breadcrumb-link {{ "first" if compo.is_first() else "" }}"
@@ -14,11 +19,11 @@
         <i class="fa fa-{{ compo.icon }}"></i>
     {% endif %}
     {% if compo.selection is defined %}
-        {% set pre_marked = compo.name[0:compo.selection[0]] %}
-        {% set marked = compo.name[compo.selection[0]:compo.selection[1]] %}
-        {% set post_marked = compo.name[compo.selection[1]:] %}
+        {% set pre_marked = name[0:compo.selection[0]] %}
+        {% set marked = name[compo.selection[0]:compo.selection[1]] %}
+        {% set post_marked = name[compo.selection[1]:] %}
         <span class="marked_link">{{ pre_marked }}<mark>{{ marked }}</mark>{{ post_marked }}</span>
     {% else %}
-        <span>{{ compo.name }}</span>
+        <span>{{ name }}</span>
     {% endif %}
 </a>

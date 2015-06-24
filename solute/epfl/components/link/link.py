@@ -14,6 +14,7 @@ class Link(ComponentBase):
 
     url = None  #: The url this link points to. Used for the src attribute of the A-Tag.
     route = None  #: The route this link points to. Used to look up the url for the src attribute of the A-Tag.
+    name = None  #: The name displayed for this link.
     text = None  #: Alias for name.
     icon = None  #: The icon to be displayed in front of the text.
     breadcrumb = False  #: Display the link as a breadcrumb.
@@ -82,12 +83,6 @@ class Link(ComponentBase):
             return self.route.format(**self.page.request.matchdict)
         except KeyError:
             return None
-
-    @property
-    def name(self):
-        if not self.text and self.route:
-            return self.route  # TODO: Lookup the route_text in EPFLView.
-        return self.text
 
     def is_first(self):
         """Returns True if the Link is the first component in this slot.
