@@ -257,9 +257,6 @@ class ComponentBaseTest(unittest.TestCase):
                 current_line = source[line_number - line_cursor]
                 line_cursor += 1
 
-        # import pdb
-        # pdb.set_trace()
-
 
 class ComponentContainerBaseTest(ComponentBaseTest):
     component = epfl.core.epflcomponentbase.ComponentContainerBase

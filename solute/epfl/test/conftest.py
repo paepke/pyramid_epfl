@@ -26,6 +26,8 @@ def pyramid_req(route):
 
     includeme(config)
 
+    config.add_route('dummy_route', pattern='/')
+
     r = testing.DummyRequest()
     r.matched_route = route
     r.content_type = ''
@@ -47,11 +49,11 @@ def page(pyramid_req):
 
 
 def component_base_type_predicate(cls):
-    return inspect.isclass(cls) and issubclass(cls, ComponentBase)
+    return inspect.isclass(cls) and issubclass(cls, ComponentBase) and not issubclass(cls, ComponentContainerBase)
 
 
 def component_container_type_predicate(cls):
-    return inspect.isclass(cls) and issubclass(cls, ComponentBase)
+    return inspect.isclass(cls) and issubclass(cls, ComponentContainerBase)
 
 
 @pytest.fixture(
