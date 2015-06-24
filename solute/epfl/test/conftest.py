@@ -7,6 +7,15 @@ from solute.epfl import get_epfl_jinja2_environment, includeme, epflpage, compon
 from pyramid_jinja2 import get_jinja2_environment
 
 
+def pytest_addoption(parser):
+    parser.addoption("--target", action="store", default="all", help="Choose a specific class to test.")
+
+
+@pytest.fixture
+def target(request):
+    return request.config.getoption("--target")
+
+
 class DummyRoute(object):
     def __init__(self, name='dummy_route'):
         self.name = name
@@ -58,12 +67,18 @@ def component_container_type_predicate(cls):
 
 @pytest.fixture(
     params=inspect.getmembers(components, predicate=component_base_type_predicate) + [('ComponentBase', ComponentBase)])
-def component_base_type_class(request):
-    return request.param[1]
+def component_base_type_class(request, target):
+    cls = request.param[1]
+    if target != 'all' and target != cls.__name__:
+        pytest.skip("Class name mismatch.")
+    return cls
 
 
 @pytest.fixture(
     params=inspect.getmembers(components, predicate=component_container_type_predicate) + [
         ('ComponentContainerBase', ComponentContainerBase)])
-def component_container_type_class(request):
-    return request.param[1]
+def component_container_type_class(request, target):
+    cls = request.param[1]
+    if target != 'all' and target != cls.__name__:
+        pytest.skip("Class name mismatch.")
+    return cls
