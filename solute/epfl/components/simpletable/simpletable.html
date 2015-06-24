@@ -5,11 +5,12 @@
 	<div class="panel-heading">{{ compo.title }}</div>
 	{% endif %}
 	<table class="table">
-    {% if compo.table_head is defined %}
-	{% for head in compo.table_head %}
-	    <th>{{ head }}</th>
-	{% endfor %}
+    {% if compo.table_head is defined and compo.table_head %}
+        {% for head in compo.table_head %}
+            <th>{{ head }}</th>
+        {% endfor %}
     {% endif %}
+    {% if compo.table_data is defined and compo.table_data %}
 	    {% for row in compo.table_data %}
 	        <tr>
 	        {% for data in row %}
@@ -17,6 +18,7 @@
 	            {% endfor %}
 	        </tr>
 	    {% endfor %}
+    {% endif %}
 	</table>
  </div>
 </div>
