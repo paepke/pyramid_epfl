@@ -26,7 +26,7 @@ Object.defineProperty(epfl.TypeAhead.prototype, 'search_input', {
 
 Object.defineProperty(epfl.TypeAhead.prototype, 'dropdown_toggle', {
     get: function () {
-        return this.elm.children('div').children('div.btn.fa.fa-chevron-down');
+        return this.elm.children('div').children('div.btn.fa.fa-caret-down');
     }
 });
 
