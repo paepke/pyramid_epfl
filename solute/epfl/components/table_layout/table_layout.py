@@ -13,6 +13,7 @@ class TableLayout(PaginatedListLayout):
     template_name = 'table_layout/table_layout.html'
 
     map_child_cls = {}
+    fixed_header = True  #: Set to False if header should not be fixed.
 
     def __init__(self, page, cid, show_search=None, height=None, **kwargs):
         """Table based on a paginated list. Offers searchbar above and pagination below using the EPFL theming

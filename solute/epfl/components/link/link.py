@@ -11,7 +11,7 @@ class Link(ComponentBase):
     css_name = ["link.css"]
 
     compo_state = ["url", "route", "text", "icon", "name"]
-    
+
     url = None  #: The url this link points to. Used for the src attribute of the A-Tag.
     route = None  #: The route this link points to. Used to look up the url for the src attribute of the A-Tag.
     text = None  #: Alias for name.
@@ -48,7 +48,9 @@ class Link(ComponentBase):
         :param list_element: Display the link as a bootstrap style list element.
         :param event_name: Name of an event to be triggered on click, prevents url and route from taking effect.
         """
-        super(Link, self).__init__(page, cid, url=url, name=name, **extra_params)
+        super(Link, self).__init__(page, cid, url=url, route=route, name=name, text=text, icon=icon,
+                                   breadcrumb=breadcrumb, tile=tile, list_element=list_element, event_name=event_name,
+                                   **extra_params)
 
     @property
     def _url(self):
