@@ -207,6 +207,8 @@ class MultiSelectTransfer(epflcomponentbase.ComponentBase):
     #: The cid of the target :class:`solute.epfl.components.multiselect.multiselect.MultiSelect` component
     target_multi_select_cid = None
 
+    value = None  #: Default value of this Transfer.
+
     def handle_transfer(self):
         """
         Called when transfer button is clicked.

@@ -2,9 +2,9 @@
 
 from solute.epfl.components.link.link import Link
 
-class Breadcrumb(Link):
 
-    breadcrumb=True  #: The link is used as a breadcrumb per default.
+class Breadcrumb(Link):
+    breadcrumb = True  #: The link is used as a breadcrumb per default.
 
     def __init__(self, page, cid, url=None, route=None, name=None, icon=None, **extra_params):
         """Convenience component that can be used for creating breadcrumbs.
