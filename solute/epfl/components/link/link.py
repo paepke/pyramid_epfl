@@ -27,7 +27,7 @@ class Link(ComponentBase):
     compo_js_extras = ['handle_click']
 
     def __init__(self, page, cid, url=None, route=None, name=None, text=None, icon=None, breadcrumb=None, tile=None,
-                 list_element=None, event_name=None, **extra_params):
+                 list_element=None, event_name=None, selection=None, **extra_params):
         """Simple Link component.
 
         Usage:
@@ -42,6 +42,7 @@ class Link(ComponentBase):
         :param route: The route this link points to. Used to look up the url for the src attribute of the A-Tag.
         :param name: The name displayed for this link.
         :param text: Alias for name.
+        :param selection: Tuple of integers: (selection_start, selection_end). MARK-Tag will be applied there.
         :param icon: The icon to be displayed in front of the text.
         :param breadcrumb: Display the link as a breadcrumb.
         :param tile: Display the link as a rectangular tile.
