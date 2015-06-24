@@ -31,6 +31,10 @@ div.grouped-entry.col-sm-12 a.list-group-item {
     cursor: pointer;
 }
 
+div.headed-entry.col-sm-12 div.list-group-item mark {
+    padding: 0;
+}
+
 div.headed-entry.col-sm-12 a.list-group-item {
     padding-left: 30px;
     cursor: pointer;

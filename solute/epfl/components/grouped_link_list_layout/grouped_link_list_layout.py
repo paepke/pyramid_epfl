@@ -25,6 +25,10 @@ class GroupedLinkListLayout(LinkListLayout):
         automatically showing or hiding them based on the users permissions. Entries can be grouped in submenus or below
         a common heading given in the menu_group entry.
 
+        The format of menu_group entries can either be string or tuple. The later being used to allow selection of text
+        to be marked with the html MARK-Tag. The tuple should look like this: ("group name", (sel_start, sel_end)) with
+        sel_start and sel_end being integers used to slice the string "group name".
+
         :param links: List of dicts with text and url. May contain an icon and a menu_group entry.
         :param use_headings: Use menu_group strings as headings instead of submenus.
         :param event_name: The name of an event to be triggered instead of rendering normal links.
@@ -45,7 +49,11 @@ class GroupedLinkListLayout(LinkListLayout):
                 groups.setdefault(compo.menu_group, {}).setdefault('components', []).append(compo)
                 groups[compo.menu_group]['icon'] = getattr(compo, 'icon', None)
                 groups[compo.menu_group]['type'] = 'group'
-                groups[compo.menu_group]['name'] = compo.menu_group
+                group_name = compo.menu_group
+                if type(compo.menu_group) is tuple:
+                    group_name, groups[compo.menu_group]['selection'] = group_name
+
+                groups[compo.menu_group]['name'] = group_name
             else:
                 groups.setdefault(compo.cid, {}).setdefault('components', []).append(compo)
                 groups[compo.cid]['type'] = 'entry'

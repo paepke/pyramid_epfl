@@ -17,7 +17,14 @@
                         {% if group['icon'] is defined and group['icon'] %}
                             <i class="fa fa-{{ group['icon'] }}"></i>
                         {% endif %}
-                        {{ group['name'] }}
+                        {% if group['selection'] is defined %}
+                            {% set pre_marked = group['name'][0:group['selection'][0]] %}
+                            {% set marked = group['name'][group['selection'][0]:group['selection'][1]] %}
+                            {% set post_marked = group['name'][group['selection'][1]:] %}
+                            {{ pre_marked }}<mark>{{ marked }}</mark>{{ post_marked }}
+                        {% else %}
+                            {{ group['name'] }}
+                        {% endif %}
                     </div>
                     {% else %}
                     <a class="list-group-item col-sm-12">
