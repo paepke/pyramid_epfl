@@ -11,6 +11,7 @@ from solute.epfl import get_epfl_jinja2_environment, includeme
 from pyramid_jinja2 import get_jinja2_environment
 
 from collections2.dicts import OrderedDict
+import inspect
 
 
 class PageTest(unittest.TestCase):
@@ -362,3 +363,21 @@ class PageTest(unittest.TestCase):
 
         for compo in page.root_node.components:
             assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]
+
+    def test_documentation(self):
+        errors = []
+        methods = inspect.getmembers(Page, inspect.ismethod)
+        for name, method in methods:
+            if not method.__doc__:
+                errors.append('Page method {name} is missing docstring.'.format(
+                    name=name
+                ))
+                continue
+
+            code = method.func_code
+            var_names = code.co_varnames
+
+        assert not errors, '\n'.join(errors) + '\n{0}/{1} methods documented.'.format(
+            len(methods) - len(errors),
+            len(methods)
+        )
