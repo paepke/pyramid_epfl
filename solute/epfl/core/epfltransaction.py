@@ -16,6 +16,11 @@ import types, copy, string, uuid, time
 from collections import MutableMapping, defaultdict
 from solute.epfl.core import epflcomponentbase
 
+
+class TransactionRouteViolation(Exception):
+    pass
+
+
 class Transaction(MutableMapping):
     """ An object that encapsulates the transaction-access.
     The transactions are stored in the session.
@@ -57,6 +62,12 @@ class Transaction(MutableMapping):
         if not self.tid:
             self.tid = uuid.uuid4().hex
             self.created = True
+
+        if self.setdefault('route', request.matched_route.name) != request.matched_route.name:
+            raise TransactionRouteViolation("Transaction loaded on route '{route}' expected '{expected_route}'".format(
+                route=request.matched_route.name,
+                expected_route=self['route']
+            ))
 
     def set_page_obj(self, page_obj):
         self["__page__"] = page_obj.get_name()

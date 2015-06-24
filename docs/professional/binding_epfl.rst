@@ -35,14 +35,20 @@ Let's discuss this in detail:
             self.transaction = transaction
 
         if not hasattr(self, 'transaction'):
-            self.transaction = self.__get_transaction_from_request()
+            try:
+                self.transaction = self.__get_transaction_from_request()
+            except epfltransaction.TransactionRouteViolation:
+                # This ensures that a transaction is only used for the route it was created on. A new transaction is
+                # created in case of a differing route.
+                self.transaction = epfltransaction.Transaction(request)
+                self.transaction.set_page_obj(self)
 
 The class :class:`~solute.epfl.core.epflpage.PageRequest` is a wrapper to provide request data to components in a safe
 manner. :class:`~solute.epfl.core.epflclient.EPFLResponse` is another wrapper providing primarily template parsing,
 including dynamic extra content. odict_ has been changed from the original variant out of collections to a new variant
 from collections2_ that offers better performance and most importantly inserting keys at specific positions. The
 :class:`~solute.epfl.core.epfltransaction.Transaction` is initialized with the transaction id (tid) parameter from the
-request.
+request. If the transaction belongs to another route a new Transaction is created instead.
 
 Default Root Factory
 --------------------

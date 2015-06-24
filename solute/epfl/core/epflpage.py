@@ -103,7 +103,13 @@ class Page(object):
             self.transaction = transaction
 
         if not hasattr(self, 'transaction'):
-            self.transaction = self.__get_transaction_from_request()
+            try:
+                self.transaction = self.__get_transaction_from_request()
+            except epfltransaction.TransactionRouteViolation:
+                # This ensures that a transaction is only used for the route it was created on. A new transaction is
+                # created in case of a differing route.
+                self.transaction = epfltransaction.Transaction(request)
+                self.transaction.set_page_obj(self)
 
     @Lifecycle(name=('page', 'main'))
     def __call__(self):
