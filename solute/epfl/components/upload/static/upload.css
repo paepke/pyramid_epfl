@@ -1,4 +1,4 @@
-div.epfl-upload.epfl-upload-file-over {
+div.epfl-upload-file-over {
     border: 1px dashed #1bb7a0;
 }
 
@@ -9,9 +9,8 @@ div.epfl-dropzone {
     border-radius: 15px;
 }
 
-img.epfl-dropzone-image {
+img.epfl-upload-image {
     width: 100%;
-    display: none;
 }
 
 p.epfl-dropzone-addicon{
@@ -19,10 +18,9 @@ p.epfl-dropzone-addicon{
     top:35%;
 }
 
-i.epfl-dropzone-remove-icon {
+i.epfl-upload-remove-icon {
     position:absolute;
     right:15px;
-    display:none;
 }
 
 div.epfl-dropzone h2{

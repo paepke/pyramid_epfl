@@ -74,19 +74,13 @@ class Upload(FormInputBase):
     #: source of the image is epfl image compo
     TYPE_EPFL_IMAGE = "epfl-img-component-image"
 
-
     new_style_compo = True
     compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon','maximum_file_size','value']
     compo_js_name = 'Upload'
 
-    def handle_change(self, value):
-        self.value = value
-        if self.no_preview is False:
-            self.redraw()
-
-    def handle_drop(self, value, type,dropped_cid):
+    def handle_change(self, value, type = None, dropped_cid = None):
         """
-        When an image gets dropped over the dropzone
+        When an image gets dropped over the dropzone or an image is choosen in file input
         :param url: image url if the image's source is desktop or epfl image compo url is a byte string
         :param type: one of the TYPE constants
         :param dropped_cid: if the dropped image is an epfl compo this is the cid
@@ -94,7 +88,8 @@ class Upload(FormInputBase):
         self.value = value
         self.type = type
         self.dropped_cid = dropped_cid
-
+        if self.no_preview is False:
+            self.redraw()
 
     def handle_remove_image(self):
         """
@@ -109,7 +104,6 @@ class Upload(FormInputBase):
         click on Dropzone
         """
         pass
-
 
     def get_as_binary(self):
         value = self.value

@@ -4,7 +4,7 @@ epfl.Upload = function (cid, params) {
     var selector = "#" + cid + "_input";
     var img_container = $('#' + cid + '_img');
     var compo = this;
-    var enqueue_event = !params["fire_change_immediately"];
+    var fire_change_immediately = params["fire_change_immediately"];
     var allowed_file_types = params["allowed_file_types"];
     var show_remove_icon = params["show_remove_icon"];
 
@@ -17,10 +17,11 @@ epfl.Upload = function (cid, params) {
 
     console.log("dropZone", dropZone);
 
-    var image = $("#" + cid + " img.epfl-dropzone-image");
+    var image = $("#" + cid + " img.epfl-upload-image");
+    console.log("image", image);
+
     var addIcon = $("#" + cid + " p.epfl-dropzone-addicon");
     var addIconTag = $("#" + cid + " p.epfl-dropzone-addicon > i");
-    var removeIcon = $("#" + cid + " i.epfl-dropzone-remove-icon");
     var dropText = $("#" + cid + " h2");
 
     //EVENT Functions
@@ -33,7 +34,6 @@ epfl.Upload = function (cid, params) {
         //show the image and hide the plus icon
         addIcon.hide();
         image.show();
-        removeIcon.show();
         dropText.hide();
         dropZone.css({"border-color": "#D7D7D7"});
 
@@ -72,9 +72,19 @@ epfl.Upload = function (cid, params) {
             }
         }
 
-        console.log("drop ev ", {"value": url, "type": type, "dropped_cid": droppedCid});
-
-        epfl.send(epfl.make_component_event(cid, "drop", {"value": url, "type": type, "dropped_cid": droppedCid}));
+        if (fire_change_immediately) {
+            epfl.send(epfl.make_component_event(cid, "change", {
+                "value": url,
+                "type": type,
+                "dropped_cid": droppedCid
+            }));
+        } else {
+            epfl.dispatch_event(cid, "change", {
+                "value": url,
+                "type": type,
+                "dropped_cid": droppedCid
+            })
+        }
     };
 
     //drag a file over, prevent default for no redirection
@@ -95,23 +105,19 @@ epfl.Upload = function (cid, params) {
     if (params["value"] !== null) {
         addIcon.hide();
         image.show();
-        removeIcon.show();
     } else {
         dropZone.on("dragover", dragOverEvent);
         dropZone.on("dragleave", dragLeaveEvent);
     }
 
-//    dropZone.on("dragover", dragOverEvent);
-//    dropZone.on("dragleave", dragLeaveEvent);
-
-    removeIcon.click(function () {
-        epfl.send(epfl.make_component_event(cid, "remove_image", {}));
-    });
-
     dropZone.on('drop', dropEvent);
 
     dropZone.click(function () {
-        epfl.send(epfl.make_component_event(cid, "click", {}));
+        if (fire_change_immediately) {
+            epfl.send(epfl.make_component_event(cid, "click", {}));
+        } else {
+            epfl.dispatch_event(cid, "click", {});
+        }
     });
 
 
@@ -120,10 +126,10 @@ epfl.Upload = function (cid, params) {
 
     //if a file is dragged from desktop to browser highlight the droppable area
     $(document).on("dragenter", "#" + cid, function (event) {
-        $("#" + cid).addClass("epfl-upload-file-over");
+        $("#" + cid + " div.epfl-upload-input-zone").addClass("epfl-upload-file-over");
     });
     $(document).on("dragleave", "#" + cid, function (event) {
-        $("#" + cid).removeClass("epfl-upload-file-over");
+        $("#" + cid + " div.epfl-upload-input-zone").removeClass("epfl-upload-file-over");
     });
 
 
@@ -132,10 +138,20 @@ epfl.Upload = function (cid, params) {
         var remove_icon = $("#" + cid + " .epfl-upload-remove-icon");
         if (remove_icon.length) {
             var uploadImg = $("#" + cid + " img");
-            //set the icon pos to to right corner of the image
-            remove_icon.css({"position": "absolute", "top": "0"});
             $(remove_icon).click(function () {
-                epfl.send(epfl.make_component_event(cid, "remove_icon"));
+                if (fire_change_immediately) {
+                    epfl.send(epfl.make_component_event(cid, "change", {
+                        "value": null,
+                        "type": null,
+                        "dropped_cid": null
+                    }));
+                } else {
+                    epfl.dispatch_event(cid, "change", {
+                        "value": null,
+                        "type": null,
+                        "dropped_cid": null
+                    });
+                }
             });
         }
     }
@@ -201,7 +217,21 @@ epfl.Upload = function (cid, params) {
             if (img_container.find('img').length !== 0) {
                 img_container.find('img').attr('src', reader.result);
             }
-            epfl.FormInputBase.on_change(compo, reader.result, cid, enqueue_event);
+            epfl.FormInputBase.on_change(compo, reader.result, cid, fire_change_immediately);
+            if (fire_change_immediately) {
+                epfl.send(epfl.make_component_event(cid, "change", {
+                    "value": reader.result,
+                    "type": "extern",
+                    "dropped_cid": null
+                }));
+            } else {
+                epfl.dispatch_event(cid, "change", {
+                    "value": reader.result,
+                    "type": "extern",
+                    "dropped_cid": null
+                });
+            }
+
         }
     };
 
@@ -216,7 +246,7 @@ epfl.Upload = function (cid, params) {
             }
             change(evt, data);
         },
-        dropZone: $("#" + cid)
+        dropZone: $("#" + cid + " div.epfl-upload-input-zone")
     });
 
     $(selector).blur(change).change(change);
