@@ -92,6 +92,9 @@ class Page(object):
         The optional parameter "transaction" is needed when creating page_objects manually. So the transaction is not
         the same as the requests one.
         The lazy_mode is setup here if the request is an ajax request and all events in it are requesting lazy_mode.
+
+        :param request: Pyramid Request object.
+        :param transaction: EPFL Transaction object.
         """
         self.request = request
         self.request.page = self

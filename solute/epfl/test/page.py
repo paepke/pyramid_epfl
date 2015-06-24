@@ -365,19 +365,44 @@ class PageTest(unittest.TestCase):
             assert compo.cid[-2:] == compo.compo_info['compo_struct'].keys()[0][-2:]
 
     def test_documentation(self):
+        missing_docstring = 0
+        missing_param_doc = 0
+        missing_param_doc_absolute = 0
         errors = []
         methods = inspect.getmembers(Page, inspect.ismethod)
         for name, method in methods:
             if not method.__doc__:
-                errors.append('Page method {name} is missing docstring.'.format(
+                errors.append('Page method "{name}" is missing docstring.'.format(
                     name=name
                 ))
+                missing_docstring += 1
                 continue
 
             code = method.func_code
             var_names = code.co_varnames
+            missing_param_doc_count = 0
+            for var_name in var_names:
+                if var_name in ['self', 'cls']:
+                    continue
+                if ":param {var_name}:" not in method.__doc__:
+                    errors.append('Page method "{name}" is missing parameter "{var_name}" in docstring.'.format(
+                        name=name,
+                        var_name=var_name
+                    ))
+                missing_param_doc_count += 1
 
-        assert not errors, '\n'.join(errors) + '\n{0}/{1} methods documented.'.format(
-            len(methods) - len(errors),
-            len(methods)
-        )
+            if missing_param_doc_count > 0:
+                missing_param_doc += 1
+                missing_param_doc_absolute += missing_param_doc_count
+
+        errors = '\n'.join(errors + [
+            '{0}/{1} methods undocumented.'.format(
+                missing_docstring,
+                len(methods)
+            ),
+            '{0} methods with {1} undocumented parameters.'.format(
+                missing_param_doc,
+                missing_param_doc_absolute,
+            )])
+
+        assert len(errors) == 0, "\n" + errors

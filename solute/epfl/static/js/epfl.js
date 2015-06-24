@@ -353,23 +353,23 @@ epfl_module = function() {
         };
     };
 
-    epfl.show_fading_message = function(msg, typ) {
-          toastr.options = {
-          "closeButton": true,
-          "debug": false,
-          "newestOnTop": false,
-          "progressBar": false,
-          "positionClass": "toast-bottom-right",
-          "preventDuplicates": false,
-          "onclick": null,
-          "showDuration": "300",
-          "hideDuration": "1000",
-          "timeOut": "5000",
-          "extendedTimeOut": "1000",
-          "showEasing": "swing",
-          "hideEasing": "linear",
-          "showMethod": "fadeIn",
-          "hideMethod": "fadeOut"
+    epfl.show_fading_message = function (msg, typ) {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
         };
         if (typ == "info") {
             toastr.info(msg);
@@ -377,7 +377,9 @@ epfl_module = function() {
             toastr.success(msg);
         } else if (typ == "error") {
             toastr.error(msg);
-        };
+        } else if (typ == "warning") {
+            toastr.warning(msg);
+        }
     };
 
     epfl.show_message = function(params) {
