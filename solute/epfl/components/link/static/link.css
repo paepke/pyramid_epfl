@@ -72,3 +72,7 @@ a.tile-link, a.tile-link:hover, a.tile-link:active, a.tile-link:focus {
 a.tile-link:hover {
     background: #656673;
 }
+
+a span.marked_link mark {
+    padding: 0;
+}

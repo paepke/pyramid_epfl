@@ -1,10 +1,10 @@
 <a epflid="{{ compo.cid }}"
    {% if compo.breadcrumb %}
-   class="breadcrumb-link {{ "first" if compo.is_first() else "" }}"
+       class="breadcrumb-link {{ "first" if compo.is_first() else "" }}"
    {% elif compo.tile %}
-   class="tile-link"
+       class="tile-link"
    {% elif compo.list_element %}
-   class="list-group-item col-sm-12{{ " active" if compo.is_current_url() else "" }}"
+       class="list-group-item col-sm-12{{ " active" if compo.is_current_url() else "" }}"
    {% endif %}
    {% if compo._url %}
    href="{{ compo._url }}"
@@ -13,5 +13,12 @@
     {% if compo.icon %}
         <i class="fa fa-{{ compo.icon }}"></i>
     {% endif %}
-    <span>{{ compo.name }}</span>
+    {% if compo.selection is defined %}
+        {% set pre_marked = compo.name[0:compo.selection[0]] %}
+        {% set marked = compo.name[compo.selection[0]:compo.selection[1]] %}
+        {% set post_marked = compo.name[compo.selection[1]:] %}
+        <span class="marked_link">{{ pre_marked }}<mark>{{ marked }}</mark>{{ post_marked }}</span>
+    {% else %}
+        <span>{{ compo.name }}</span>
+    {% endif %}
 </a>
