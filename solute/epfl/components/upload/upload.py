@@ -80,7 +80,7 @@ class Upload(FormInputBase):
                        'value']
     compo_js_name = 'Upload'
 
-    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_params):
+    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_args):
         """Download component.
 
         :param label: Optional label describing the input field.
