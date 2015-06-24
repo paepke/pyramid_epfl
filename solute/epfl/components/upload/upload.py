@@ -20,11 +20,12 @@ class Upload(FormInputBase):
                                        ("solute.epfl.components:upload/static", "jquery.iframe-transport.js"),
                                        ("solute.epfl.components:upload/static", "jquery.fileupload.js")]
 
-    css_name = FormInputBase.css_name + [("solute.epfl.components:upload/static", "upload.css"),]
+    css_name = FormInputBase.css_name + [("solute.epfl.components:upload/static", "upload.css"), ]
 
     template_name = "upload/upload.html"
 
-    compo_state = FormInputBase.compo_state + ["allowed_file_types","show_remove_icon","maximum_file_size","type","dropped_cid"]
+    compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size", "type",
+                                               "dropped_cid"]
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -75,29 +76,33 @@ class Upload(FormInputBase):
     TYPE_EPFL_IMAGE = "epfl-img-component-image"
 
     new_style_compo = True
-    compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon','maximum_file_size','value']
+    compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
+                       'value']
     compo_js_name = 'Upload'
 
-    def handle_change(self, value, type = None, dropped_cid = None):
+    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_params):
+        """Download component.
+
+        :param label: Optional label describing the input field.
+        :param name: An element without a name cannot have a value.
+        :param default: Default value that may be pre-set or pre-selected
+        :param validation_type: The type of validator that will be used for this field
+        """
+        super(Upload, self).__init__(page, cid, label, name, default, validation_type)
+
+    def handle_change(self, value, type=None, dropped_cid=None):
         """
         When an image gets dropped over the dropzone or an image is choosen in file input
         :param url: image url if the image's source is desktop or epfl image compo url is a byte string
         :param type: one of the TYPE constants
         :param dropped_cid: if the dropped image is an epfl compo this is the cid
         """
+        print "\nhandle_change", value, type, dropped_cid
         self.value = value
         self.type = type
         self.dropped_cid = dropped_cid
         if self.no_preview is False:
             self.redraw()
-
-    def handle_remove_image(self):
-        """
-        The X icon is clicked
-        """
-        self.value = None
-        self.type = None
-        self.redraw()
 
     def handle_click(self):
         """
@@ -118,13 +123,3 @@ class Upload(FormInputBase):
     def handle_remove_icon(self):
         self.value = None
         self.redraw()
-
-    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_params):
-        """Download component.
-
-        :param label: Optional label describing the input field.
-        :param name: An element without a name cannot have a value.
-        :param default: Default value that may be pre-set or pre-selected
-        :param validation_type: The type of validator that will be used for this field
-        """
-        super(Upload, self).__init__(page, cid, label, name, default, validation_type)
