@@ -56,13 +56,9 @@ class LinkListLayout(PaginatedListLayout):
             if not has_permission_for_route(self.request, link['url']):
                 continue
 
-            links.append({'id': i,
-                          'text': link['text'],
-                          'url': link['url']})
-            if link.get('menu_group'):
-                links[-1]['menu_group'] = link['menu_group']
-            if link.get('icon'):
-                links[-1]['icon'] = link['icon']
+            links.append({'id': i})
+            links[-1].update(link)
+
             if self.event_name:
                 links[-1]['event_name'] = self.event_name
 
