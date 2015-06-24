@@ -24,7 +24,7 @@ class Upload(FormInputBase):
 
     template_name = "upload/upload.html"
 
-    compo_state = FormInputBase.compo_state + ["allowed_file_types","show_remove_icon","maximum_file_size"]
+    compo_state = FormInputBase.compo_state + ["allowed_file_types","show_remove_icon","maximum_file_size","type","dropped_cid"]
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -47,15 +47,69 @@ class Upload(FormInputBase):
     #: maximum file size in byte this is checked in javascript, the hard limit is 200 MB
     maximum_file_size = 5 * 1024 * 1024
 
+    #: Shows the file input
+    show_file_upload_input = True
+
+    #: shows the dropzone
+    show_drop_zone = True
+
+    #: height of dropzone
+    drop_zone_height = 250
+
+    #: image type / source
+    type = None
+
+    #: cid of the dropped image
+    dropped_cid = None
+
+    #: Source of the image is desktop
+    TYPE_DESKTOP = "desktop"
+
+    #: Source of the image is a image that is no epfl compo
+    TYPE_EXTERN = "extern"
+
+    #: source of the image is epfl upload compo
+    TYPE_EPFL_UPLOAD_IMAGE = "epfl-upload-image"
+
+    #: source of the image is epfl image compo
+    TYPE_EPFL_IMAGE = "epfl-img-component-image"
+
 
     new_style_compo = True
-    compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon','maximum_file_size']
+    compo_js_params = ['fire_change_immediately','allowed_file_types','show_remove_icon','maximum_file_size','value']
     compo_js_name = 'Upload'
 
     def handle_change(self, value):
         self.value = value
         if self.no_preview is False:
             self.redraw()
+
+    def handle_drop(self, value, type,dropped_cid):
+        """
+        When an image gets dropped over the dropzone
+        :param url: image url if the image's source is desktop or epfl image compo url is a byte string
+        :param type: one of the TYPE constants
+        :param dropped_cid: if the dropped image is an epfl compo this is the cid
+        """
+        self.value = value
+        self.type = type
+        self.dropped_cid = dropped_cid
+
+
+    def handle_remove_image(self):
+        """
+        The X icon is clicked
+        """
+        self.value = None
+        self.type = None
+        self.redraw()
+
+    def handle_click(self):
+        """
+        click on Dropzone
+        """
+        pass
+
 
     def get_as_binary(self):
         value = self.value

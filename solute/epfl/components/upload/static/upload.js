@@ -8,11 +8,121 @@ epfl.Upload = function (cid, params) {
     var allowed_file_types = params["allowed_file_types"];
     var show_remove_icon = params["show_remove_icon"];
 
+
+    /*****************************************************/
+
+
+    //Selectors
+    var dropZone = $("#" + cid + " div.epfl-dropzone");
+
+    console.log("dropZone", dropZone);
+
+    var image = $("#" + cid + " img.epfl-dropzone-image");
+    var addIcon = $("#" + cid + " p.epfl-dropzone-addicon");
+    var addIconTag = $("#" + cid + " p.epfl-dropzone-addicon > i");
+    var removeIcon = $("#" + cid + " i.epfl-dropzone-remove-icon");
+    var dropText = $("#" + cid + " h2");
+
+    //EVENT Functions
+
+    //file drop event on drop zone, prevent default for no redirection to file
+    var dropEvent = function (ev) {
+        console.log("drop");
+        ev.preventDefault();
+
+        //show the image and hide the plus icon
+        addIcon.hide();
+        image.show();
+        removeIcon.show();
+        dropText.hide();
+        dropZone.css({"border-color": "#D7D7D7"});
+
+        //get the html tag of the dragged image
+        var dataTransfer = $(ev.dataTransfer.getData('text/html'));
+
+        //extract src and check if the image is from a epfl compo
+        var url = dataTransfer.attr("src");
+        var droppedCid = dataTransfer.data("cid") || null;
+        var isEpflUpload = dataTransfer.hasClass("epfl-upload-image");
+        var isEpflImage = dataTransfer.hasClass("epfl-img-component-image");
+
+
+        var type = null;
+        //if the image has a url(src) its source is from the browser else the source is desktop
+        if (url) {
+            type = "extern";
+            if (isEpflUpload) {
+                type = "epfl_upload_image";
+            }
+            if (isEpflImage) {
+                type = "epfl_image";
+            }
+            image.attr('src', url);
+        } else {
+            //load the desktop file to show it in the image tag
+            var files = ev.dataTransfer.files;
+            type = "desktop";
+            if (files.length) {
+                url = files[0].name;
+                var reader = new FileReader();
+                reader.readAsDataURL(files[0]);
+                reader.onload = function () {
+                    image.attr('src', reader.result);
+                }
+            }
+        }
+
+        console.log("drop ev ", {"value": url, "type": type, "dropped_cid": droppedCid});
+
+        epfl.send(epfl.make_component_event(cid, "drop", {"value": url, "type": type, "dropped_cid": droppedCid}));
+    };
+
+    //drag a file over, prevent default for no redirection
+    var dragOverEvent = function (ev) {
+        ev.preventDefault();
+        addIcon.hide();
+        dropText.show();
+        dropZone.css({"border-color": "#1BB7A0"});
+    };
+    //drag file out event
+    var dragLeaveEvent = function (ev) {
+        ev.preventDefault();
+        addIcon.show();
+        dropText.hide();
+        dropZone.css({"border-color": "#D7D7D7"});
+    };
+    //EVENTS
+    if (params["value"] !== null) {
+        addIcon.hide();
+        image.show();
+        removeIcon.show();
+    } else {
+        dropZone.on("dragover", dragOverEvent);
+        dropZone.on("dragleave", dragLeaveEvent);
+    }
+
+//    dropZone.on("dragover", dragOverEvent);
+//    dropZone.on("dragleave", dragLeaveEvent);
+
+    removeIcon.click(function () {
+        epfl.send(epfl.make_component_event(cid, "remove_image", {}));
+    });
+
+    dropZone.on('drop', dropEvent);
+
+    dropZone.click(function () {
+        epfl.send(epfl.make_component_event(cid, "click", {}));
+    });
+
+
+    /*****************************************************/
+
+
     //if a file is dragged from desktop to browser highlight the droppable area
-    $(document).on("dragenter","#" + cid,function(event) {
+    $(document).on("dragenter", "#" + cid, function (event) {
         $("#" + cid).addClass("epfl-upload-file-over");
     });
-    $(document).on("dragleave","#" + cid,function(event) {
+    $(document).on("dragleave", "#" + cid, function (event) {
         $("#" + cid).removeClass("epfl-upload-file-over");
     });
 
@@ -77,10 +187,10 @@ epfl.Upload = function (cid, params) {
                 }
             }
         }
-        if(file.size > parseInt(params["maximum_file_size"])){
+        if (file.size > parseInt(params["maximum_file_size"])) {
             alert("File size to big");
             return;
-        }else if(file.size > 200 * 1024 * 1024){
+        } else if (file.size > 200 * 1024 * 1024) {
             //200 MB is hard limit of upload compo
             alert("File size to big");
             return;
