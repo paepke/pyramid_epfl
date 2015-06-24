@@ -1,5 +1,5 @@
 {% set compo_col = compo.compo_col %}
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input">
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-text-input epfl-upload">
     {% if compo.label %}
         {% if compo.layout_vertical == True %}
             <div class="row">
@@ -23,7 +23,10 @@
     	{% else %}
             <div id="{{ compo.cid }}_img">
             {% if compo.value and not compo.no_preview%}
-                <img src="{{ compo.value }}" width="{{ compo.preview_width }}" />
+                <img src="{{ compo.value }}" width="{{ compo.preview_width }}" class="epfl-upload-image" data-cid="{{ compo.cid }}" />
+                {% if compo.show_remove_icon %}
+                    <i class="fa fa-times fa-lg color-danger epfl-upload-remove-icon"></i>
+                {% endif %}
             {% endif %}
             </div>
         	<input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"
