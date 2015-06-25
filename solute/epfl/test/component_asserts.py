@@ -118,7 +118,7 @@ def assert_style_init(component, compo_name, init_func, init_code, init_docs):
         ))
 
     for var in init_code.co_varnames:
-        if var in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
+        if var in ['self', 'page', 'args', 'kwargs', 'extra_args', 'cid']:
             continue
         if ":param {var}:".format(var=var) not in init_docs:
             errors.append(
