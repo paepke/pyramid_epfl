@@ -19,19 +19,25 @@ epfl.Upload = function (cid, params) {
     /**************************************************************************
      Helper Functions
      *************************************************************************/
+    var endsWith = function (str, suffix) {
+        // Check if the given string ends with the given suffix.
+        // As endsWith will (should) be implemented with ES6 this might get obsolete
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    };
+
     var validateFile = function (file) {
+        var type_is_allowed = false;
+        var i = 0;
         //check if file type is allowed
         if (allowed_file_types) {
             if (file) {
-                var filename_parts = file.name.split('.');
-                if (filename_parts.length === 1) {
-                    //no file type found (no dot in filename) -> return
-                    alert("Unknown File Type");
-                    return false;
+                for (; i < allowed_file_types.length; i++){
+                    if(endsWith(file.name, allowed_file_types[i])){
+                        type_is_allowed = true;
+                    }
                 }
-                if (allowed_file_types.indexOf(filename_parts[filename_parts.length - 1]) === -1) {
-                    //if filetype is not in array -> return
-                    alert("Not allowed File Type");
+                if (!type_is_allowed){
+                    alert("Unknown File Type");
                     return false;
                 }
             }
