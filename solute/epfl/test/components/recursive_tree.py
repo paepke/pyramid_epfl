@@ -19,5 +19,5 @@ class RecursiveTreeTest(ComponentContainerBaseTest):
             ))
 
         page.root_node.add_component(RecursiveTree(
-            get_data=['some_loader']
+            get_data=['some_lader']
         ))
