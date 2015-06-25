@@ -96,7 +96,7 @@ class Link(ComponentBase):
             return True
 
         for i in range(0, position):
-            if siblings[position - 1 - i].slot == self.slot:
+            if siblings[i].slot == self.slot:
                 return False
 
         return True

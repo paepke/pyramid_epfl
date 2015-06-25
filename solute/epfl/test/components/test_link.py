@@ -1,5 +1,6 @@
 import pytest
 from solute.epfl import components
+from solute.epfl.core.epflcomponentbase import ComponentContainerBase
 
 from link_asserts import assert_href_is, assert_with_a_twist
 
@@ -123,3 +124,76 @@ def test_url_generation_with_dynamic_url(page):
     assert_href_is('url', {'url': url}, page.root_node, None)
     twisted_url = assert_with_a_twist('url', page, url)
     assert_href_is('url', {'url': twisted_url}, page.root_node, twisted_url)
+
+
+def test_icon(page):
+    page.root_node = components.Link(
+        text='foobar',
+        icon='home'
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+
+    assert '<i class="fa fa-{icon}"></i>'.format(icon='home') in compo.render(), \
+        'icon set to "home" but i tag is missing or malformed in html.'
+
+
+def test_breadcrumb(page):
+    page.root_node = ComponentContainerBase(
+        node_list=[
+            components.Link(
+                cid='first_link',
+                text='foobar',
+                breadcrumb=True
+            )])
+    page.handle_transaction()
+
+    root = page.root_node
+    compo = page.first_link
+
+    assert compo.is_first(), 'Link is first in container but is_first() is False.'
+    assert_breadcrumb(compo)
+
+    root.add_component(components.Link(
+        cid='second_link',
+        text='foobar',
+        breadcrumb=True
+    ))
+    assert compo.is_first(), 'Link is first in container but is_first() is False.'
+    assert_breadcrumb(compo)
+
+    root.add_component(
+        components.Link(
+            cid='third_link',
+            slot='foobar',
+            text='foobar',
+            breadcrumb=True
+        ),
+        position=0)
+
+    assert compo.is_first(), 'Link is first in container but is_first() is False.'
+    assert_breadcrumb(compo)
+
+    root.add_component(components.Link(
+        text='foobar',
+        breadcrumb=True
+    ), position=0)
+    assert not compo.is_first(), 'Link is not first in container but is_first() is True.'
+    assert_breadcrumb(compo)
+
+
+def assert_breadcrumb(compo):
+    __tracebackhide__ = True
+
+    assert 'class="breadcrumb-link' in compo.render(), \
+        'breadcrumb set to True but class is missing or malformed in html.'
+
+    if compo.is_first():
+        assert 'class="breadcrumb-link first"' in compo.render(), \
+            'breadcrumb is first in container but class is missing or malformed in html.'
+    else:
+        assert 'class="breadcrumb-link "' in compo.render(), \
+            'breadcrumb is not first in container but class is missing or malformed in html.'
+
+    compo.render_cache = None
