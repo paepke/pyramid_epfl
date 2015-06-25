@@ -52,7 +52,7 @@ class Upload(FormInputBase):
     show_file_upload_input = True
 
     #: shows the dropzone
-    show_drop_zone = True
+    show_drop_zone = False
 
     #: height of dropzone
     drop_zone_height = 250
