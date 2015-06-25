@@ -30,9 +30,6 @@ class Upload(FormInputBase):
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
 
-    #: The width of the preview image (if any).
-    preview_width = 200
-
     #: The type of validator that will be used for this field.
     validation_type = 'text'
 
@@ -97,7 +94,6 @@ class Upload(FormInputBase):
         :param type: one of the TYPE constants
         :param dropped_cid: if the dropped image is an epfl compo this is the cid
         """
-        print "\nhandle_change", value, type, dropped_cid
         self.value = value
         self.type = type
         self.dropped_cid = dropped_cid
