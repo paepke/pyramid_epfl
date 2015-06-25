@@ -1,6 +1,8 @@
 import pytest
 from solute.epfl import components
 
+from link_asserts import assert_href_is, assert_with_a_twist
+
 
 @pytest.fixture(params=[
     # event_name, route, url
@@ -14,6 +16,50 @@ from solute.epfl import components
 ])
 def link_param_url(request):
     return request.param + ('some text', None)
+
+
+def test_name_generation(page):
+    test_name = '[[{{test_name}}]]'
+    test_text = '[[{{test_text}}]]'
+
+    page.root_node = components.Link(
+        url='/foobar'
+    )
+    page.handle_transaction()
+    compo = page.root_node
+
+    assert 'None' in compo.render(), 'text and name are not set, but "None" is missing in the rendered html.'
+    compo.render_cache = None
+
+    compo.text = test_text
+    assert test_text in compo.render(), 'text set to "{text}" but is missing in the rendered html.'.format(
+        text=test_text
+    )
+    compo.render_cache = None
+
+    compo.text = test_text
+    compo.name = test_name
+    assert test_name in compo.render(), 'name set to "{name}" but is missing in the rendered html.'.format(
+        text=test_text,
+        name=test_name,
+    )
+    assert test_text not in compo.render(), 'name set to "{name}" but text "{text}" is in the rendered html.'.format(
+        text=test_text,
+        name=test_name,
+    )
+    compo.render_cache = None
+
+    compo.text = None
+    compo.name = test_name
+    assert test_name in compo.render(), 'name set to "{name}" but is missing in the rendered html.'.format(
+        text=test_text,
+        name=test_name,
+    )
+    assert 'None' not in compo.render(), 'name set to "{name}" but "None" is in the rendered html.'.format(
+        text=test_text,
+        name=test_name,
+    )
+    compo.render_cache = None
 
 
 def test_url_generation(link_param_url, page, config):
@@ -77,41 +123,3 @@ def test_url_generation_with_dynamic_url(page):
     assert_href_is('url', {'url': url}, page.root_node, None)
     twisted_url = assert_with_a_twist('url', page, url)
     assert_href_is('url', {'url': twisted_url}, page.root_node, twisted_url)
-
-
-def assert_with_a_twist(name, page, target_value):
-    __tracebackhide__ = True
-
-    with_a_twist = '1234'
-    assert page.root_node._url is None, '{name} contains unset parameter "with_a_twist" but _url is {_url}'.format(
-        _url=page.root_node._url,
-        name=name,
-    )
-
-    page.request.matchdict['with_a_twist'] = with_a_twist
-    assert page.root_node._url == target_value.format(with_a_twist=with_a_twist), \
-        '{name} parameter "with_a_twist" set to {with_a_twist} but _url is {_url}'.format(
-            with_a_twist=with_a_twist,
-            _url=page.root_node._url,
-            name=name,
-        )
-
-    return target_value.format(with_a_twist=with_a_twist)
-
-
-def assert_href_is(name, params, compo, target_value):
-    __tracebackhide__ = True
-
-    errors = (
-        '%s is set to {%s} but rendered html contains href.' % (name, name),
-        '%s is set to {%s} but rendered html contains no href.' % (name, name),
-        '%s is set to {%s} but rendered html contains wrong href.' % (name, name),
-    )
-
-    compo.render_cache = None
-
-    if target_value is None:
-        assert 'href=' not in compo.render(), errors[0].format(**params)
-    else:
-        assert 'href=' in compo.render(), errors[1].format(**params)
-        assert 'href="{0}"'.format(target_value) in compo.render(), errors[2].format(**params)
