@@ -50,7 +50,6 @@ class GroupedLinkListLayout(LinkListLayout):
                 groups[compo.menu_group]['icon'] = getattr(compo, 'icon', None)
                 groups[compo.menu_group]['type'] = 'group'
                 group_name = compo.menu_group
-                print "group_name",group_name
                 if type(compo.menu_group) is tuple:
                     group_name, groups[compo.menu_group]['selection'] = group_name
 
