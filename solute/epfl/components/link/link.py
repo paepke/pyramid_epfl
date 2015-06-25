@@ -59,9 +59,7 @@ class Link(ComponentBase):
         if self.event_name:
             return
 
-        if self.route is None:
-            self.route = self.url
-        if self.route is None:
+        if self.route is None and self.url is None:
             return
 
         try:
@@ -74,13 +72,16 @@ class Link(ComponentBase):
         except KeyError:
             pass
 
+        if self.url is None:
+            return
+
         try:
-            return self.route.format()
+            return self.url.format()
         except KeyError:
             pass
 
         try:
-            return self.route.format(**self.page.request.matchdict)
+            return self.url.format(**self.page.request.matchdict)
         except KeyError:
             return None
 

@@ -88,6 +88,7 @@ def assert_style_structure(component, compo_name):
 
 
 def assert_style_init(component, compo_name, init_func, init_code, init_docs):
+    __tracebackhide__ = True
     errors = []
     if component in [epfl.core.epflcomponentbase.ComponentBase,
                      epfl.core.epflcomponentbase.ComponentContainerBase]:
@@ -129,6 +130,7 @@ def assert_style_init(component, compo_name, init_func, init_code, init_docs):
 
 
 def assert_style_docs(component):
+    __tracebackhide__ = True
     errors = []
 
     source, starting_line = inspect.getsourcelines(component)

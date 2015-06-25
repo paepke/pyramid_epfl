@@ -26,9 +26,13 @@ def route():
     return DummyRoute()
 
 
+@pytest.fixture(scope='function')
+def config():
+    return testing.setUp()
+
+
 @pytest.fixture
-def pyramid_req(route):
-    config = testing.setUp()
+def pyramid_req(route, config):
 
     testing.DummyRequest.get_jinja2_environment = get_jinja2_environment
     testing.DummyRequest.get_epfl_jinja2_environment = get_epfl_jinja2_environment
