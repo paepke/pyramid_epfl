@@ -1,4 +1,4 @@
-{% if compo.name is not defined and compo.text is defined %}
+{% if not compo.name and compo.text %}
     {% set name = compo.text %}
 {% else %}
     {% set name = compo.name %}
