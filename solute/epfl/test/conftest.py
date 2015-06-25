@@ -21,7 +21,7 @@ class DummyRoute(object):
         self.name = name
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def route():
     return DummyRoute()
 

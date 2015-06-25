@@ -36,3 +36,33 @@ def assert_href_is(name, params, compo, target_value):
     else:
         assert 'href=' in compo.render(), errors[1].format(**params)
         assert 'href="{0}"'.format(target_value) in compo.render(), errors[2].format(**params)
+
+
+def assert_breadcrumb(compo):
+    __tracebackhide__ = True
+
+    assert 'class="breadcrumb-link' in compo.render(), \
+        'breadcrumb set to True but class is missing or malformed in html.'
+
+    if compo.is_first():
+        assert 'class="breadcrumb-link first"' in compo.render(), \
+            'breadcrumb is first in container but class is missing or malformed in html.'
+    else:
+        assert 'class="breadcrumb-link "' in compo.render(), \
+            'breadcrumb is not first in container but class is missing or malformed in html.'
+
+    compo.render_cache = None
+
+
+def assert_list_element(compo):
+    assert 'class="list-group-item col-sm-12' in compo.render(), \
+        'list_element set to True but class is missing or malformed in html.'
+
+    if compo.is_current_url():
+        assert 'class="list-group-item col-sm-12 active"' in compo.render(), \
+            'Link is the current link but active class is missing or malformed in html.'
+    else:
+        assert 'class="list-group-item col-sm-12"' in compo.render(), \
+            'Link is not the current link but active class is present or malformed in html.'
+
+    compo.render_cache = None

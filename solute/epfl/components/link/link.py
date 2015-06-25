@@ -20,6 +20,7 @@ class Link(ComponentBase):
     breadcrumb = False  #: Display the link as a breadcrumb.
     tile = False  #: Display the link as a rectangular tile.
     list_element = False  #: Display the link as a bootstrap style list element.
+    selection = None  #: Tuple of integers: (selection_start, selection_end). MARK-Tag will be applied there.
     event_name = None  #: Name of an event to be triggered on click, prevents url and route from taking effect.
 
     new_style_compo = True

@@ -18,7 +18,7 @@
     {% if compo.icon %}
         <i class="fa fa-{{ compo.icon }}"></i>
     {% endif %}
-    {% if compo.selection is defined %}
+    {% if compo.selection %}
         {% set pre_marked = name[0:compo.selection[0]] %}
         {% set marked = name[compo.selection[0]:compo.selection[1]] %}
         {% set post_marked = name[compo.selection[1]:] %}

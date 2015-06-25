@@ -2,7 +2,7 @@ import pytest
 from solute.epfl import components
 from solute.epfl.core.epflcomponentbase import ComponentContainerBase
 
-from link_asserts import assert_href_is, assert_with_a_twist
+from link_asserts import assert_href_is, assert_with_a_twist, assert_breadcrumb, assert_list_element
 
 
 @pytest.fixture(params=[
@@ -183,17 +183,53 @@ def test_breadcrumb(page):
     assert_breadcrumb(compo)
 
 
-def assert_breadcrumb(compo):
-    __tracebackhide__ = True
+def test_tile(page):
+    page.root_node = components.Link(
+        text='foobar',
+        tile=True
+    )
+    page.handle_transaction()
 
-    assert 'class="breadcrumb-link' in compo.render(), \
-        'breadcrumb set to True but class is missing or malformed in html.'
+    compo = page.root_node
 
-    if compo.is_first():
-        assert 'class="breadcrumb-link first"' in compo.render(), \
-            'breadcrumb is first in container but class is missing or malformed in html.'
-    else:
-        assert 'class="breadcrumb-link "' in compo.render(), \
-            'breadcrumb is not first in container but class is missing or malformed in html.'
+    assert 'class="tile-link"' in compo.render(), 'tile set to True but class is missing or malformed in html.'
 
-    compo.render_cache = None
+
+def test_list_element(page, route):
+    page.root_node = components.Link(
+        url='/foobar',
+        text='foobar',
+        list_element=True
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+
+    route.path = None
+    assert not compo.is_current_url(), 'route.path is not equal to _url but is_current_url returns True.'
+    assert_list_element(compo)
+
+    route.path = compo._url
+    assert compo.is_current_url(), 'route.path is equal to _url but is_current_url returns False.'
+    assert_list_element(compo)
+
+
+def test_selection(page):
+    page.root_node = components.Link(
+        url='/foobar',
+        text='foobar',
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+
+    for selection, result in [
+        ((0, 10), '<mark>foobar</mark>'),
+        ((0, 3), '<mark>foo</mark>bar'),
+        ((2, 4), 'fo<mark>ob</mark>ar'),
+        ((2, 10), 'fo<mark>obar</mark>'), ]:
+
+        compo.selection = selection
+        assert result in compo.render(), \
+            'selection set around foobar, but mark tag is missing or malformed in html.'
+        compo.render_cache = None
