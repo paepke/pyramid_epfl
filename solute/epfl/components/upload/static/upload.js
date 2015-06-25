@@ -19,11 +19,14 @@ epfl.Upload = function (cid, params) {
     /**************************************************************************
      Helper Functions
      *************************************************************************/
-    var endsWith = function (str, suffix) {
+
+    if (typeof String.prototype.endsWith !== 'function') {
         // Check if the given string ends with the given suffix.
         // As endsWith will (should) be implemented with ES6 this might get obsolete
-        return str.indexOf(suffix, str.length - suffix.length) !== -1;
-    };
+        String.prototype.endsWith = function(suffix){
+            return this.indexOf(suffix, this.length - suffix.length) !== -1;
+        }
+    }
 
     var validateFile = function (file) {
         var type_is_allowed = false;
@@ -32,7 +35,7 @@ epfl.Upload = function (cid, params) {
         if (allowed_file_types) {
             if (file) {
                 for (; i < allowed_file_types.length; i++){
-                    if(endsWith(file.name, allowed_file_types[i])){
+                    if(file.name.endsWith(allowed_file_types[i])){
                         type_is_allowed = true;
                     }
                 }
