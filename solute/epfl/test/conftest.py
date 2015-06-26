@@ -11,6 +11,17 @@ def pytest_addoption(parser):
     parser.addoption("--target", action="store", default="all", help="Choose a specific class to test.")
 
 
+@pytest.fixture(scope='session')
+def result(request):
+    d = {'item_count': 0, 'objects_with_items': 0}
+
+    def fin():
+        print d
+
+    request.addfinalizer(fin)
+    return d
+
+
 @pytest.fixture
 def target(request):
     return request.config.getoption("--target")
@@ -33,7 +44,6 @@ def config():
 
 @pytest.fixture
 def pyramid_req(route, config):
-
     testing.DummyRequest.get_jinja2_environment = get_jinja2_environment
     testing.DummyRequest.get_epfl_jinja2_environment = get_epfl_jinja2_environment
 
@@ -69,8 +79,10 @@ def component_container_type_predicate(cls):
     return inspect.isclass(cls) and issubclass(cls, ComponentContainerBase)
 
 
-@pytest.fixture(
-    params=inspect.getmembers(components, predicate=component_base_type_predicate) + [('ComponentBase', ComponentBase)])
+component_cls = inspect.getmembers(components, predicate=component_base_type_predicate) + [
+    ('ComponentBase', ComponentBase)]
+
+@pytest.fixture(params=component_cls, ids=[name for name, cls in component_cls])
 def component_base_type_class(request, target):
     cls = request.param[1]
     if target != 'all' and target != cls.__name__:
@@ -78,9 +90,10 @@ def component_base_type_class(request, target):
     return cls
 
 
-@pytest.fixture(
-    params=inspect.getmembers(components, predicate=component_container_type_predicate) + [
-        ('ComponentContainerBase', ComponentContainerBase)])
+component_container_cls = inspect.getmembers(components, predicate=component_container_type_predicate) + [
+    ('ComponentContainerBase', ComponentContainerBase)]
+
+@pytest.fixture(params=component_container_cls, ids=[name for name, cls in component_container_cls])
 def component_container_type_class(request, target):
     cls = request.param[1]
     if target != 'all' and target != cls.__name__:

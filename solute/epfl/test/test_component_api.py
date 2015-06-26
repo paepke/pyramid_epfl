@@ -70,33 +70,33 @@ def container_type(request, page, component_container_type_class):
         return page, page.root_node, page.transaction.get_component('root_node')
 
 
-def test_base_type(base_type):
+def test_base_type(base_type, result):
     page, tested_node, compo_info = base_type
 
-    assert_coherence(tested_node, compo_info)
+    assert_coherence(tested_node, compo_info, result)
 
     rendered_html = page.root_node.render()
     rendered_js = page.root_node.render(target='js')
 
-    assert_rendering(compo_info, rendered_html, rendered_js)
+    assert_rendering(compo_info, rendered_html, rendered_js, result)
 
 
-def test_base_type_style(component_base_type_class):
-    assert_style(component_base_type_class)
+def test_base_type_style(component_base_type_class, result):
+    assert_style(component_base_type_class, result)
 
 
-def test_container_type(container_type):
+def test_container_type(container_type, result):
     page, tested_node, compo_info = container_type
 
-    assert_coherence(tested_node, compo_info)
+    assert_coherence(tested_node, compo_info, result)
 
     rendered_html = page.root_node.render()
     rendered_js = page.root_node.render(target='js')
 
-    assert_rendering(compo_info, rendered_html, rendered_js)
+    assert_rendering(compo_info, rendered_html, rendered_js, result)
 
 
-def test_container_type_style(component_container_type_class):
-    assert_style(component_container_type_class)
+def test_container_type_style(component_container_type_class, result):
+    assert_style(component_container_type_class, result)
 
 

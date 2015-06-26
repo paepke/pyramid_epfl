@@ -4,7 +4,7 @@ import inspect
 import re
 
 
-def assert_style(component):
+def assert_style(component, result):
     __tracebackhide__ = True
 
     compo_name = component.__name__
@@ -21,7 +21,14 @@ def assert_style(component):
 
     errors += assert_style_docs(component)
 
-    assert len(errors) == 0, "\n" + "\n".join(errors)
+    result['item_count'] += len(errors)
+    if len(errors) > 0:
+        result['objects_with_items'] += 1
+    errors.append(
+        'New item total: {0} items on {1} objects.'.format(result['item_count'], result['objects_with_items'])
+    )
+
+    assert len(errors) == 1, "\n" + "\n".join(errors)
 
 
 def assert_style_structure(component, compo_name):
@@ -193,7 +200,7 @@ def assert_style_docs(component):
     return errors
 
 
-def assert_rendering(compo_info, html, js):
+def assert_rendering(compo_info, html, js, result):
     """Contains the following checks:
      * An element with the appropriate epflid exists in the generated html.
     """
@@ -205,7 +212,7 @@ def assert_rendering(compo_info, html, js):
         'The element with the cid "{cid}" is missing in the generated HTML:\n{html}'.format(cid=cid, html=html)
 
 
-def assert_coherence(component, compo_info):
+def assert_coherence(component, compo_info, result):
     """Contains the following checks:
      * Coherence of object instance attributes to transaction compo_info.
      * Coherence of object instance compo_info to transaction compo_info.
