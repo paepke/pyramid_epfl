@@ -12,18 +12,17 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope='session')
-def result(request):
-    d = {'item_count': 0, 'objects_with_items': 0}
+def result():
+    """Fixture for controlling the overall state of tests in the current session.
+    """
 
-    def fin():
-        print d
-
-    request.addfinalizer(fin)
-    return d
+    return {'item_count': 0, 'objects_with_items': 0}
 
 
 @pytest.fixture
 def target(request):
+    """Fixture to access the target commandline option.
+    """
     return request.config.getoption("--target")
 
 
@@ -34,16 +33,25 @@ class DummyRoute(object):
 
 @pytest.fixture(scope='function')
 def route():
+    """Fixture to access a mocked (pyramid) route object.
+    """
     return DummyRoute()
 
 
 @pytest.fixture(scope='function')
 def config():
+    """Fixture to access a pyramid mock config.
+    """
     return testing.setUp()
 
 
 @pytest.fixture
 def pyramid_req(route, config):
+    """Fixture to access a pyramid mock request.
+
+    :param route: Mocked route object.
+    :param config: Mocked pyramid config.
+    """
     testing.DummyRequest.get_jinja2_environment = get_jinja2_environment
     testing.DummyRequest.get_epfl_jinja2_environment = get_epfl_jinja2_environment
 
@@ -62,20 +70,36 @@ def pyramid_req(route, config):
 
 @pytest.fixture
 def pyramid_xhr_req(pyramid_req):
+    """Fixture to access a pyramid mock request setup like an AJAX request.
+
+    :param pyramid_req: Mocked pyramid request.
+    """
     pyramid_req.is_xhr = True
     return pyramid_req
 
 
 @pytest.fixture
 def page(pyramid_req):
+    """Fixture to access a mocked EPFL Page setup with a pyramid mock request.
+
+    :param pyramid_req: Mocked pyramid request.
+    """
     return epflpage.Page(pyramid_req)
 
 
 def component_base_type_predicate(cls):
+    """Inspect predicate to select classes inheriting from ComponentBase but not from ComponentContainerBase.
+
+    :param cls: Object to be inspected, must not necessarily be a class.
+    """
     return inspect.isclass(cls) and issubclass(cls, ComponentBase) and not issubclass(cls, ComponentContainerBase)
 
 
 def component_container_type_predicate(cls):
+    """Inspect predicate to select classes inheriting from ComponentContainerBase.
+
+    :param cls: Object to be inspected, must not necessarily be a class.
+    """
     return inspect.isclass(cls) and issubclass(cls, ComponentContainerBase)
 
 
@@ -84,6 +108,12 @@ component_cls = inspect.getmembers(components, predicate=component_base_type_pre
 
 @pytest.fixture(params=component_cls, ids=[name for name, cls in component_cls])
 def component_base_type_class(request, target):
+    """Fixture to access all EPFL classes as defined by the component_base_type_predicate and not excluded by the target
+       commandline option.
+
+    :param request: py.test request object.
+    :param target: Fixture for the target commandline option.
+    """
     cls = request.param[1]
     if target != 'all' and target != cls.__name__:
         pytest.skip("Class name mismatch.")
@@ -95,6 +125,12 @@ component_container_cls = inspect.getmembers(components, predicate=component_con
 
 @pytest.fixture(params=component_container_cls, ids=[name for name, cls in component_container_cls])
 def component_container_type_class(request, target):
+    """Fixture to access all EPFL classes as defined by the component_container_type_predicate and not excluded by the
+       target commandline option.
+
+    :param request: py.test request object.
+    :param target: Fixture for the target commandline option.
+    """
     cls = request.param[1]
     if target != 'all' and target != cls.__name__:
         pytest.skip("Class name mismatch.")
