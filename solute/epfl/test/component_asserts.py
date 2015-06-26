@@ -105,7 +105,7 @@ def assert_style_init(component, compo_name, init_func, init_code, init_docs):
             .format(compo_name=compo_name)
         )
 
-    for position, name in [(0, 'self'), (1, 'page'), (2, 'cid'), (-1, ('extra_args', 'kwargs'))]:
+    for position, name in [(0, 'self'), (1, 'page'), (2, 'cid'), (-1, ('extra_params', 'kwargs'))]:
         if init_code.co_varnames[position] == name:
             continue
         if type(name) is tuple:
@@ -119,7 +119,7 @@ def assert_style_init(component, compo_name, init_func, init_code, init_docs):
         ))
 
     for var in init_code.co_varnames:
-        if var in ['self', 'page', 'args', 'kwargs', 'extra_args', 'cid']:
+        if var in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
             continue
         if ":param {var}:".format(var=var) not in init_docs:
             errors.append(
