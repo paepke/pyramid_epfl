@@ -454,7 +454,7 @@ class Page(object):
 
     def show_fading_message(self, msg, typ="info"):
         """ Shows a message to the user. The message is non evasive - it will show up and fade away nicely.
-        typ = "info" | "ok" | "error"
+        typ = "info" | "ok" | "error" | "success" | "warning"
         """
 
         js = "epfl.show_fading_message(%s,%s)" % (json.encode(msg), json.encode(typ))
@@ -464,7 +464,7 @@ class Page(object):
     def show_message(self, msg, typ=None, fading=False):
         """
         Displays a simple alert box to the user.
-        typ = "info" | "ok" | "error" | "alert" | "warning"
+        typ = "info" | "ok" | "error" | "alert" | "warning" | "success"
         """
         js = "epfl.show_message(%s)" % (json.encode({'msg': msg, 'typ': typ, 'fading': fading}))
         self.add_js_response(js)
