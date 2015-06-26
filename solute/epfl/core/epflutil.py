@@ -1,44 +1,62 @@
 
 # coding: utf-8
 
-import os, urllib, urlparse
+import urllib
+import urlparse
+from os.path import exists
+import logging
 
 from pyramid import security
+from pyramid import path
 
 import solute.epfl
-from pyramid import path
-from os.path import exists
 from solute.epfl import core
+import threading
 
 
 class Lifecycle(object):
-    state = []
+    _state = {}
 
     def __init__(self, name):
         self.name = name
+
+    @property
+    def state(self):
+        return self.get_state()
 
     def checkin(self):
         self.state.append(self.name)
 
     def checkout(self):
-        assert self.state.pop() == self.name
+        state = self.state.pop()
+        assert state == self.name, Exception("Checkout failed, potential threading problem! %r %r %r" % (state,
+                                                                                                         self.name,
+                                                                                                         self.state))
 
     def __call__(self, cb):
         def _cb(*args, **kwargs):
-            self.checkin()
-            result = cb(*args, **kwargs)
-            self.checkout()
+            try:
+                self.checkin()
+                result = cb(*args, **kwargs)
+            except Exception as e:
+                raise
+            finally:
+                self.checkout()
             return result
 
         return _cb
 
     @staticmethod
+    def get_state():
+        return Lifecycle._state.setdefault(threading.current_thread().getName(), [])
+
+    @staticmethod
     def get_current():
-        return Lifecycle.state[-1]
+        return Lifecycle.get_state()[-1]
 
     @staticmethod
     def depth():
-        return len(Lifecycle.state)
+        return len(Lifecycle.get_state())
 
 
 class DictTransformer(object):
@@ -262,7 +280,7 @@ class URL(object):
         return new_url.geturl()
 
 
-import types, inspect
+import inspect
 
 
 class Discover(object):
