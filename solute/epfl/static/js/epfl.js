@@ -375,6 +375,8 @@ epfl_module = function() {
             toastr.info(msg);
         } else if (typ == "ok") {
             toastr.success(msg);
+        } else if (typ == "success") {
+            toastr.success(msg);
         } else if (typ == "error") {
             toastr.error(msg);
         } else if (typ == "warning") {
