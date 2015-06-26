@@ -115,7 +115,7 @@ class EPFLView(object):
             return
         self.counter['id'] += 1
         self.register.append({'id': self.counter['id'],
-                              'url': self.route_url,
+                              'route': self.route_url,
                               'text': self.route_text,
                               'menu_group': self.menu_group,
                               'slot': self.slot,
@@ -159,7 +159,7 @@ class EPFLView(object):
             data_interface={
                 'id': None,
                 'text': None,
-                'url': None,
+                'route': None,
                 'menu_group': None,
                 'icon': None
             }

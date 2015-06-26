@@ -53,7 +53,7 @@ class LinkListLayout(PaginatedListLayout):
         if self.links is None:
             self.links = []
         for i, link in enumerate(self.links):
-            if not has_permission_for_route(self.request, link['url']):
+            if not has_permission_for_route(self.request, link.get('route', link.get('url'))):
                 continue
 
             links.append({'id': i})
