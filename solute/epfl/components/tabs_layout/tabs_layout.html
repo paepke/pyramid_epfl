@@ -1,15 +1,31 @@
 <div class="epfl_tab" id="{{ compo.cid }}" epflid="{{compo.cid}}" role="tabpanel">
     <ul id="{{compo.cid}}_tabmenu" class="nav nav-tabs" role="tablist">
         {% for compo_obj in compo.components %}
-        <li role="presentation"
-        class="{% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %} active{% endif %}{% if compo_obj.disabled is defined and compo_obj.disabled == True %} disabled{% endif %}">
-        	<a id="{{ compo_obj.cid }}_tabmenuentry" data-tab-compo-cid="{{ compo_obj.cid }}" role="tab" {% if compo_obj.disabled is defined and compo_obj.disabled == True %}class="disabled"{% else %}href="#{{ compo_obj.cid }}_tab"{% endif %} aria-controls="{{ compo_obj.cid }}_tab" aria-expanded="true">{{ compo_obj.title }}</a>
-        	</li>
+            <li role="presentation"
+                class="{{ "active" if compo.is_active_tab(loop, compo_obj) else "" }}
+                       {{ "disabled" if compo_obj.disabled is defined and compo_obj.disabled else "" }}">
+                <a
+                   id="{{ compo_obj.cid }}_tabmenuentry"
+                   data-tab-compo-cid="{{ compo_obj.cid }}"
+                   role="tab"
+                {% if compo_obj.disabled is defined and compo_obj.disabled == True %}
+                   class="disabled"
+                {% else %}
+                   href="#{{ compo_obj.cid }}_tab"
+                {% endif %}
+                   aria-controls="{{ compo_obj.cid }}_tab"
+                   aria-expanded="true">
+                    {{ compo_obj.title if compo_obj.title is defined else "" }}
+                </a>
+                </li>
         {% endfor %}
     </ul>
     <div id="{{compo.cid}}_tabcontent" class="tab-content">
         {% for compo_obj in compo.components %}
-            <div role="tabpanel" class="fade in{% if (compo.active_tab_cid == "" and loop.index == 1) or (compo.active_tab_cid == compo_obj.cid) %} active{% endif%}" id="{{ compo_obj.cid }}_tab" aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
+            <div role="tabpanel"
+                 class="fade in {{ "active" if compo.is_active_tab(loop, compo_obj) else "" }}"
+                 id="{{ compo_obj.cid }}_tab"
+                 aria-labelledBy="{{ compo_obj.cid }}_tabmenuentry">
                 {{ compo_obj.render() }}
             </div>
         {% endfor %}
