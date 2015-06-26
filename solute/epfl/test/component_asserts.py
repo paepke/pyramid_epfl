@@ -5,7 +5,7 @@ import re
 from textwrap import wrap
 
 
-class AssertObject(object):
+class AssertBase(object):
     def __init__(self, parent):
         self.parent = parent
 
@@ -25,7 +25,7 @@ class AssertObject(object):
         return "\n".join(self.errors)
 
 
-class AssertStyle(AssertObject):
+class AssertStyle(AssertBase):
     def __init__(self, component, result):
         """Contains the following checks:
             * Structure of the general component.
@@ -63,7 +63,7 @@ class AssertStyle(AssertObject):
         assert len(self.errors) == 1, "\n" + self.combine_errors()
 
 
-class AssertStyleStructure(AssertObject):
+class AssertStyleStructure(AssertBase):
     def __init__(self, parent):
         """Asserts for the structure of the general component. Contains the following checks:
             * Filename adheres to styleguide.
@@ -183,7 +183,7 @@ class AssertStyleStructure(AssertObject):
                     '"{compo_name}"\''.format(compo_name=self.compo_name, check_type=check_type))
 
 
-class AssertStyleInit(AssertObject):
+class AssertStyleInit(AssertBase):
     def __init__(self, parent):
         """Asserts for the init method documentation of the component. Contains the following checks:
             * Docstring present.
@@ -231,7 +231,7 @@ class AssertStyleInit(AssertObject):
                 )
 
 
-class AssertStyleDocs(AssertObject):
+class AssertStyleDocs(AssertBase):
     def __init__(self, parent):
         """Asserts for the general documentation of the component. Contains the following checks:
             * Only valid attributes are present.
@@ -309,7 +309,7 @@ class AssertStyleDocs(AssertObject):
                 line_cursor += 1
 
 
-class AssertRendering(AssertObject):
+class AssertRendering(AssertBase):
     def __init__(self, compo_info, html, js, result):
         """Contains the following checks:
          * An element with the appropriate epflid exists in the generated html.
@@ -331,7 +331,7 @@ class AssertRendering(AssertObject):
             .format(cid=cid, html=html, check_type=check_type)
 
 
-class AssertCoherence(AssertObject):
+class AssertCoherence(AssertBase):
     def __init__(self, component, compo_info, result):
         """Contains the following checks:
          * Coherence of object instance attributes to transaction compo_info.
