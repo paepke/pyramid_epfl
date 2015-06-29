@@ -10,7 +10,7 @@
                   placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
                 >{{ compo.value if compo.value is not none else '' }}</textarea>
 	    {% if compo.validation_error %}
-	        <small class="help-block has-error">{{ compo.validation_error }}</small>
+	        <small class="help-block">{{ compo.validation_error }}</small>
 	    {% endif %}
     </div>
 </div>
