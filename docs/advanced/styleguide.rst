@@ -198,3 +198,41 @@ All components **should not** provide post event handling methods. These methods
 such method **should** contain a doc string in the style of the __init__ method. If provided by a component in the
 inheritance chain any such implementation **should** call its respective super method at the appropriate time. Post
 event handling **should** be left to the application developer.
+
+
+Testing
+-------
+Generic Tests
+^^^^^^^^^^^^^
+All components **must** pass the generic py.test suite:
+
+.. code-block:: bash
+
+    py.test --target=ComponentContainerBase
+    ============================================================================================================ test session starts ============================================================================================================
+    platform linux2 -- Python 2.7.6 -- py-1.4.29 -- pytest-2.7.2
+    rootdir: /home/juw/Projects/mcp3/pyramid_epfl, inifile:
+    collected 1914 items
+
+    solute/epfl/test/test_component_api.py ......
+
+    ========================================================================================================= 6 passed in 0.51 seconds ==========================================================================================================
+
+Custom Tests
+^^^^^^^^^^^^
+All components **must** have tests for:
+
+ 1. Every custom function involved in the rendering of the Component,
+ 2. Custom attributes controlling HTML output,
+ 3. HTML output critical to the function of the component.
+
+These mandatory tests **should** have complete path coverage.
+
+All components **should** have tests for:
+
+ 1. HTML output central to the components behaviour as UI element but non critical to the function of the component.
+
+All components **may** have tests for:
+
+ 1. HTML output not central to the components behaviour as UI element or non critical to the function of the component,
+ 2. Any other function or behaviour not directly related to the rendering of the component.
