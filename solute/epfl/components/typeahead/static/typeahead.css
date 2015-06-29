@@ -1,3 +1,7 @@
+.typeahead .epfl-list {
+    background: white;
+}
+
 .btn.btn-default.fa.fa-caret-down.typeahead-btn {
     float: right;
     border-top-left-radius: 0;
