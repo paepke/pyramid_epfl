@@ -25,3 +25,6 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         if position > 0:
             self.handle_toggle_tab(self.components[position-1].cid)
             self.redraw()
+
+    def is_active_tab(self, loop, compo_obj):
+        return (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid)
