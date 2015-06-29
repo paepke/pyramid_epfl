@@ -9,6 +9,8 @@ class SelectableEntry(epflcomponentbase.ComponentBase):
     """
     compo_state = PaginatedListLayout.compo_state + ['selected']
     selected = False
+    text = None
+
 
 class SelectableList(PaginatedListLayout):
     """
@@ -28,9 +30,9 @@ class SelectableList(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ["search_text","scroll_pos"]
 
-    search_text = None #: search text for custom search text handling
+    search_text = None  #: search text for custom search text handling
 
-    scroll_pos = None #: Scrollbar position this is used to jump back to the last scroll pos after redraw
+    scroll_pos = None  #: Scrollbar position this is used to jump back to the last scroll pos after redraw
 
     def __init__(self,page,cid, data_interface=None, *args, **extra_params):
         """
