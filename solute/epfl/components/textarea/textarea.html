@@ -13,7 +13,7 @@
         {% endif %}
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
-    <div class="col-sm-{{ compo_col }}">
+    <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
         <textarea class="form-control"
                   id="{{compo.cid}}_input"
                   name="{{ compo.name }}"
