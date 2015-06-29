@@ -440,12 +440,30 @@ epfl_module = function() {
     epfl.new_tid = function (tid, initial) {
         epfl.tid = tid;
 
-        if (false) {
-            return;
-        } else if (initial) {
-            History.replaceState({tid: tid}, window.document.title, window.location.pathname + "?tid=" + tid);
+        // Get existing GET parameters
+        var prmstr = window.location.search.substr(1);
+        var params = {};
+        if (prmstr != null && prmstr != "") {
+            var prmarr = prmstr.split("&");
+            for ( var i = 0; i < prmarr.length; i++) {
+                var tmparr = prmarr[i].split("=");
+                if (tmparr[0] != "tid") {
+                    params[tmparr[0]] = tmparr[1];
+                }
+            }
+        }
+        var target_url = window.location.pathname + "?tid=" + tid;
+        if (Object.keys(params).length > 0) {
+            for (var p in params) {
+                if (params.hasOwnProperty(p)) {
+                    target_url += "&" + p + "=" + params[p];
+                }
+            }
+        }
+        if (initial) {
+            History.replaceState({tid: tid}, window.document.title, target_url);
         } else {
-            History.pushState({tid: tid}, window.document.title, window.location.pathname + "?tid=" + tid);
+            History.pushState({tid: tid}, window.document.title, target_url);
         }
     };
 
@@ -490,23 +508,23 @@ $(window).bind("beforeunload", epfl.unload_page);
 
 (function($) {
     jQuery.fn.extend({
-    	highlight_hover_border: function() {
-	    	this.removeClass("epfl_hover_image");
-	        this.addClass("epfl_hover_image_selected");
-	        this.unbind_hover_border_events();
-	        this.css("border-color", "blue");
-    	},
-    	unhighlight_hover_border: function() {
-	    	this.addClass("epfl_hover_image");
-	        this.removeClass("epfl_hover_image_selected");
-	        this.bind_hover_border_events();
-	        this.css("border-color", "transparent");
-    	},
-    	unbind_hover_border_events: function() {
-    		this.unbind("mouseenter mouseleave");
-    	},
-		bind_hover_border_events: function() {
-			this.hover(
+      highlight_hover_border: function() {
+        this.removeClass("epfl_hover_image");
+          this.addClass("epfl_hover_image_selected");
+          this.unbind_hover_border_events();
+          this.css("border-color", "blue");
+      },
+      unhighlight_hover_border: function() {
+        this.addClass("epfl_hover_image");
+          this.removeClass("epfl_hover_image_selected");
+          this.bind_hover_border_events();
+          this.css("border-color", "transparent");
+      },
+      unbind_hover_border_events: function() {
+        this.unbind("mouseenter mouseleave");
+      },
+    bind_hover_border_events: function() {
+      this.hover(
                 function() {
                     $(this).css("border-color", "#8080ff");
                 },
@@ -515,16 +533,16 @@ $(window).bind("beforeunload", epfl.unload_page);
                 });
         },
         center: function(parent) {
-	        if (parent) {
-	            parent = this.parent();
-	        } else {
-	            parent = window;
-	        }
-	        this.css({
-	            "position": "absolute",
-	            "top": ((($(parent).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
-	            "left": ((($(parent).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
-	        });
-	   }
+          if (parent) {
+              parent = this.parent();
+          } else {
+              parent = window;
+          }
+          this.css({
+              "position": "absolute",
+              "top": ((($(parent).height() - this.outerHeight()) / 2) + $(parent).scrollTop() + "px"),
+              "left": ((($(parent).width() - this.outerWidth()) / 2) + $(parent).scrollLeft() + "px")
+          });
+     }
     });
 })(jQuery);
