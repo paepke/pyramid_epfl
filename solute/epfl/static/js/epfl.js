@@ -441,7 +441,13 @@ epfl_module = function() {
         epfl.tid = tid;
 
         // Get existing GET parameters
-        var prmstr = window.location.search.substr(1);
+        var number_sign_pos = window.location.search.indexOf('#');
+        var prmstr;
+        if (number_sign_pos > 0) {
+            prmstr = window.location.search.substr(1, number_sign_pos);
+        } else {
+            prmstr = window.location.search.substr(1);
+        }
         var params = {};
         if (prmstr != null && prmstr != "") {
             var prmarr = prmstr.split("&");
