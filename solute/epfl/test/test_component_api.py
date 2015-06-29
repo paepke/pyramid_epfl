@@ -37,12 +37,14 @@ def base_type(request, page, component_base_type_class):
 
 @pytest.fixture(params=['static', 'static_with_child', 'static_as_child', 'dynamic', 'dynamic_with_child'])
 def container_type(request, page, component_container_type_class):
+    child_cls = getattr(component_container_type_class, 'default_child_cls', ComponentBase)
+
     root_node = ComponentContainerBase
     if request.param == 'static':
         root_node = component_container_type_class()
     elif request.param == 'static_with_child':
         root_node = component_container_type_class(
-            node_list=[ComponentBase(cid='child_compo')]
+            node_list=[child_cls(cid='child_compo')]
         )
     elif request.param == 'static_as_child':
         root_node = ComponentContainerBase(
@@ -61,7 +63,7 @@ def container_type(request, page, component_container_type_class):
         page.root_node.add_component(
             component_container_type_class(
                 cid='tested_component',
-                node_list=[ComponentBase()]
+                node_list=[child_cls()]
             ))
 
     try:
