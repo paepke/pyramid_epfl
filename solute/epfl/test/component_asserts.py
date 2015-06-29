@@ -4,7 +4,7 @@ import inspect
 import re
 from textwrap import wrap
 
-test_dir = os.path.dirname(inspect.getsourcefile(epfl.test))
+test_dir = os.path.dirname(inspect.getsourcefile(epfl.test))  #: The directory where all EPFL tests reside.
 
 
 class AssertBase(object):
@@ -15,9 +15,13 @@ class AssertBase(object):
         return getattr(self.parent, item)
 
     def check_type(self, *args):
+        """Generates the identification string for the different test types.
+        """
         return "{0:<23}{1:<32}".format('%s' % self.compo_name, '[%s]' % "][".join(args))
 
     def combine_errors(self):
+        """Creates a combined string for all entries in the errors list. Handles multi line wrapping and indentation.
+        """
         for i, e in enumerate(self.errors):
             if len(e) <= 220:
                 continue
