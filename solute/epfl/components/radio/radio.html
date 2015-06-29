@@ -13,7 +13,7 @@
         {% endif %}
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
-    <div class="col-sm-{{ compo_col }}">
+    <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
         <div name="{{ compo.name }}" epfl-type="radiobuttongroup">
         {% if compo.options != None %}
             {% for option in compo.options %}
@@ -42,7 +42,7 @@
                        {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}>{{ visual }}{% endfor %}{% endif %}
         </div>
         {% if compo.validation_error %}
-            <small class="help-block has-error">{{ compo.validation_error }}</small>
+            <small class="help-block">{{ compo.validation_error }}</small>
         {% endif %}
     </div>
 {% if compo.layout_vertical == True %}</div>{% endif %}

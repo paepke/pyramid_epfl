@@ -20,7 +20,7 @@
             {% endif %}
         {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
-        <div class="col-sm-{{ compo_col }}">
+        <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
         <div class="input-group">
             <input type="text"
                    class="form-control epfl-selectize-input"
@@ -32,7 +32,7 @@
             </div>
         </div>
         {% if compo.validation_error %}
-            <small class="help-block has-error">{{ compo.validation_error }}</small>
+            <small class="help-block">{{ compo.validation_error }}</small>
         {% endif %}
 
         <ul class="epfl-selectize{{ "" if compo.entries else " empty" }}" id="selectize-{{ compo.cid }}" {% if compo.drop_down_height is defined and compo.drop_down_height != None %}style="max-height:{{ compo.drop_down_height }}px;overflow-y: scroll"{% endif %}>
