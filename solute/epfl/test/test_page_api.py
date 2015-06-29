@@ -13,21 +13,28 @@ import inspect
 
 
 def test_basic_component_operations(pyramid_req):
+    """Test the basic component operations of the page api.
+    """
     page = Page(pyramid_req)
     t = page.transaction
 
+    # A component set as root_node must appear in the transaction after handle_transaction.
     page.root_node = ComponentContainerBase
     page.handle_transaction()
     assert t.has_component('root_node')
 
+    # After handle_transaction it must be possible to add child components dynamically to the root_node.
     page.root_node.add_component(ComponentBase(cid='child_node',
                                                compo_state=['test'],
                                                test=None))
-
     assert t.has_component('child_node')
 
 
 def test_basic_component_regeneration(pyramid_req):
+    """Test the component regeneration operations of the page api.
+    """
+
+    # Create a Transaction with assigned components.
     page = Page(pyramid_req)
     page.root_node = ComponentContainerBase
     t = page.transaction
@@ -51,23 +58,34 @@ def test_basic_component_regeneration(pyramid_req):
                                    'cid': 'child_node',
                                    'compo_state': {'test': 'foobar'}})
 
+    # handle_transaction now has to restore the components from the transaction into their loaded state.
     page.handle_transaction()
 
-    assert page.root_node is not None and page.child_node is not None
-    assert page.child_node.test == 'foobar'
+    assert page.root_node is not None and page.child_node is not None, \
+        "Components inserted into transaction were not loaded in epfl."
+    assert page.child_node.test == 'foobar', \
+        "Component attributes inserted into transaction were not loaded in epfl."
 
+    # Set a value into a child node attribute that should be in the compo_state.
     page.child_node.test = {'some': 'dict'}
 
-    assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
+    assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}, \
+        "Stored attribute wasn't stored properly in the transaction compo_state."
 
+    # Generate a new Page instance and regenerate everything from the transaction again.
     new_page = Page(pyramid_req, transaction=t)
     new_page.handle_transaction()
 
+    # If this seems familiar you have payed attention. Congratulations. For everyone else: Read two comments up.
     assert t.get_component('child_node')['compo_state']['test'] == {'some': 'dict'}
     assert new_page.child_node.test == {'some': 'dict'}
 
 
 def test_component_regeneration_performance(pyramid_req):
+    """Test the speed of the component regeneration operations of the page api.
+    """
+
+    # Create a page, then create a transaction with a ton of components.
     page = Page(pyramid_req)
     transaction = page.transaction
     transaction['components_assigned'] = True
@@ -87,9 +105,12 @@ def test_component_regeneration_performance(pyramid_req):
                                          {},
                                          ('child_node_0', None))})
 
+    # There still is a non linear scaling factor in EPFLs rendering process.The non linear part is strongly depth
+    # dependent so this test reflects what happens in 2 layers with 5050 child components total.
     compo_depth = 50
     compo_width = 100
 
+    # Store time for beginning, then start adding the components into the transaction.
     steps = [time.time()]
     for i in range(0, compo_depth):
         transaction.set_component('child_node_%s' % (i + 1),
@@ -111,13 +132,19 @@ def test_component_regeneration_performance(pyramid_req):
                                                  ('child_node_%s_%s' % (i + 1, x), None))})
     steps.append(time.time())
 
+    # Calling this will generate everything. Or rather, will setup everything so it can be generated just in time. This
+    # tends to be quite speedy nowadays, but it used to be a major bottleneck.
     page.handle_transaction()
     steps.append(time.time())
 
-    assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000
+    assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000  # 0.0002s per component are OK.
 
 
 def test_component_rendering_ajax(pyramid_req):
+    """Check if the rendering process generates all required AJAX scripts.
+    """
+
+    # Create a Transaction with an assigned root_node.
     page = Page(pyramid_req)
     page.request.is_xhr = True
     page.page_request.params = {"q": []}
@@ -133,12 +160,10 @@ def test_component_rendering_ajax(pyramid_req):
 
     page.handle_transaction()
 
-    # import sys
-    # base_components = int(sys.original_args[1])
-    # leaf_components = int(sys.original_args[2])
     base_components = 10
     leaf_components = 200
 
+    # Generate a nice round 210 child components.
     page.root_node.add_component(ComponentContainerBase(cid='child_node_0'))
     for i in range(0, base_components):
         getattr(page, 'child_node_%s' % i) \
@@ -147,6 +172,7 @@ def test_component_rendering_ajax(pyramid_req):
             getattr(page,
                     'child_node_%s' % (i + 1)) \
                 .add_component(ComponentContainerBase(cid='child_node_%s_%s' % (i + 1, x)))
+
 
     page.root_node.redraw()
 
