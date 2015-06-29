@@ -26,9 +26,11 @@ class SelectableList(PaginatedListLayout):
     js_parts = PaginatedListLayout.js_parts + ["selectable_list/selectable_list.js"]
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:selectable_list/static', 'selectable_list.js')]
 
-    compo_state = PaginatedListLayout.compo_state + ["search_text"]
+    compo_state = PaginatedListLayout.compo_state + ["search_text","scroll_pos"]
 
-    search_text = None
+    search_text = None #: search text for custom search text handling
+
+    scroll_pos = None #: Scrollbar position this is used to jump back to the last scroll pos after redraw
 
     def __init__(self,page,cid, data_interface=None, *args, **extra_params):
         """
@@ -57,3 +59,6 @@ class SelectableList(PaginatedListLayout):
             self.search_text = row_data.get("search")
         self.update_children()
         self.redraw()
+
+    def handle_scroll(self,scroll_pos):
+        self.scroll_pos = scroll_pos
