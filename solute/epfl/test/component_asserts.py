@@ -78,8 +78,8 @@ class AssertStyleStructure(AssertBase):
 
         check_type = self.check_type('style', 'structure')
 
-        # TODO: This potentially excludes all those components that define a static folder but do not change the asset_spec
-        # TODO: for better compatibility.
+        # TODO: This potentially excludes all those components that define a static folder but do not change the
+        # TODO: asset_spec for better compatibility.
         if getattr(self.component, 'asset_spec', None) is None \
                 or ':{compo_name}/'.format(compo_name=self.compo_name.lower()) not in self.component.asset_spec:
             return
@@ -87,15 +87,15 @@ class AssertStyleStructure(AssertBase):
         self.file_path = inspect.getsourcefile(self.component)
         self.file_path = os.path.abspath(self.file_path)
 
-        self.static_path = self.file_path + '/static'
+        self.static_path = os.path.dirname(self.file_path) + '/static'
 
         self.assert_style_structure_package()
 
         self.assert_style_structure_dynamic_js()
 
         if not os.path.exists(self.static_path):
-            self.errors.append("{check_type}{compo_name} is missing static folder."
-                               .format(compo_name=self.compo_name, check_type=check_type))
+            self.errors.append("{check_type}{compo_name} is missing static folder. ({static_path})"
+                               .format(compo_name=self.compo_name, check_type=check_type, static_path=self.static_path))
             return
 
         self.assert_style_structure_static_js()

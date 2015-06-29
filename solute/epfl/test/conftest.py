@@ -7,8 +7,39 @@ from solute.epfl import get_epfl_jinja2_environment, includeme, epflpage, compon
 from pyramid_jinja2 import get_jinja2_environment
 
 
-def pytest_addoption(parser):
-    parser.addoption("--target", action="store", default="all", help="Choose a specific class to test.")
+def is_container_compo(compo_name):
+    if compo_name == 'ComponentBase':
+        return False
+    if compo_name == 'ComponentContainerBase':
+        return True
+    return issubclass(getattr(components, compo_name, None), ComponentContainerBase)
+
+
+def pytest_cmdline_preparse(args):
+    new_args = []
+    for arg in args:
+        if arg.startswith('--target='):
+            target = arg[9:]
+
+            if is_container_compo(target):
+                new_args.extend([
+                    "solute/epfl/test/test_component_api.py::test_container_type[%s-%s]" % (sub_target, target)
+                    for sub_target in ['static', 'static_with_child', 'static_as_child', 'dynamic',
+                                       'dynamic_with_child']
+                ])
+                new_args.append("solute/epfl/test/test_component_api.py::test_container_type_style[%s]" % target)
+            else:
+                new_args.extend([
+                    "solute/epfl/test/test_component_api.py::test_base_type[%s-%s]" % (sub_target, target)
+                    for sub_target in ['static', 'dynamic']
+                ])
+                new_args.append("solute/epfl/test/test_component_api.py::test_base_type_style[%s]" % target)
+
+            continue
+
+        new_args.append(arg)
+
+    args[:] = new_args
 
 
 @pytest.fixture(scope='session')
@@ -17,13 +48,6 @@ def result():
     """
 
     return {'item_count': 0, 'objects_with_items': 0}
-
-
-@pytest.fixture
-def target(request):
-    """Fixture to access the target commandline option.
-    """
-    return request.config.getoption("--target")
 
 
 class DummyRoute(object):
@@ -106,32 +130,26 @@ def component_container_type_predicate(cls):
 component_cls = inspect.getmembers(components, predicate=component_base_type_predicate) + [
     ('ComponentBase', ComponentBase)]
 
+
 @pytest.fixture(params=component_cls, ids=[name for name, cls in component_cls])
-def component_base_type_class(request, target):
-    """Fixture to access all EPFL classes as defined by the component_base_type_predicate and not excluded by the target
-       commandline option.
+def component_base_type_class(request):
+    """Fixture to access all EPFL classes as defined by the component_base_type_predicate.
 
     :param request: py.test request object.
-    :param target: Fixture for the target commandline option.
     """
     cls = request.param[1]
-    if target != 'all' and target != cls.__name__:
-        pytest.skip("Class name mismatch.")
     return cls
 
 
 component_container_cls = inspect.getmembers(components, predicate=component_container_type_predicate) + [
     ('ComponentContainerBase', ComponentContainerBase)]
 
+
 @pytest.fixture(params=component_container_cls, ids=[name for name, cls in component_container_cls])
-def component_container_type_class(request, target):
-    """Fixture to access all EPFL classes as defined by the component_container_type_predicate and not excluded by the
-       target commandline option.
+def component_container_type_class(request):
+    """Fixture to access all EPFL classes as defined by the component_container_type_predicate.
 
     :param request: py.test request object.
-    :param target: Fixture for the target commandline option.
     """
     cls = request.param[1]
-    if target != 'all' and target != cls.__name__:
-        pytest.skip("Class name mismatch.")
     return cls
