@@ -1,6 +1,7 @@
 from pyramid import testing
 import pytest
 import inspect
+import os
 
 from solute.epfl.core.epflcomponentbase import ComponentBase, ComponentContainerBase
 from solute.epfl import get_epfl_jinja2_environment, includeme, epflpage, components
@@ -16,28 +17,38 @@ def is_container_compo(compo_name):
 
 
 def pytest_cmdline_preparse(args):
+    """Selects a set of component specific tests if the parameter --target is present. Selects both the generic
+    Component tests and the custom tests if available.
+    """
     new_args = []
     for arg in args:
-        if arg.startswith('--target='):
-            target = arg[9:]
-
-            if is_container_compo(target):
-                new_args.extend([
-                    "solute/epfl/test/test_component_api.py::test_container_type[%s-%s]" % (sub_target, target)
-                    for sub_target in ['static', 'static_with_child', 'static_as_child', 'dynamic',
-                                       'dynamic_with_child']
-                ])
-                new_args.append("solute/epfl/test/test_component_api.py::test_container_type_style[%s]" % target)
-            else:
-                new_args.extend([
-                    "solute/epfl/test/test_component_api.py::test_base_type[%s-%s]" % (sub_target, target)
-                    for sub_target in ['static', 'dynamic']
-                ])
-                new_args.append("solute/epfl/test/test_component_api.py::test_base_type_style[%s]" % target)
-
+        if not arg.startswith('--target=') and not arg.startswith('--target '):
+            new_args.append(arg)
             continue
 
-        new_args.append(arg)
+        target = arg[9:]
+
+        if is_container_compo(target):
+            new_args.extend([
+                "solute/epfl/test/test_component_api.py::test_container_type[%s-%s]" % (sub_target, target)
+                for sub_target in ['static', 'static_with_child', 'static_as_child', 'dynamic',
+                                   'dynamic_with_child']
+            ])
+            new_args.append("solute/epfl/test/test_component_api.py::test_container_type_style[%s]" % target)
+        else:
+            new_args.extend([
+                "solute/epfl/test/test_component_api.py::test_base_type[%s-%s]" % (sub_target, target)
+                for sub_target in ['static', 'dynamic']
+            ])
+            new_args.append("solute/epfl/test/test_component_api.py::test_base_type_style[%s]" % target)
+
+        if target in ['ComponentBase', 'ComponentContainerBase']:
+            continue
+
+        test_path = 'solute/epfl/test/components/test_' + os.path.basename(
+            inspect.getsourcefile(getattr(components, target)))
+        if os.path.exists(test_path):
+            new_args.append(test_path)
 
     args[:] = new_args
 

@@ -4,6 +4,8 @@ import inspect
 import re
 from textwrap import wrap
 
+test_dir = os.path.dirname(inspect.getsourcefile(epfl.test))
+
 
 class AssertBase(object):
     def __init__(self, parent):
@@ -78,14 +80,16 @@ class AssertStyleStructure(AssertBase):
 
         check_type = self.check_type('style', 'structure')
 
+        self.file_path = inspect.getsourcefile(self.component)
+        self.file_path = os.path.abspath(self.file_path)
+
+        self.assert_style_structure_tests()
+
         # TODO: This potentially excludes all those components that define a static folder but do not change the
         # TODO: asset_spec for better compatibility.
         if getattr(self.component, 'asset_spec', None) is None \
                 or ':{compo_name}/'.format(compo_name=self.compo_name.lower()) not in self.component.asset_spec:
             return
-
-        self.file_path = inspect.getsourcefile(self.component)
-        self.file_path = os.path.abspath(self.file_path)
 
         self.static_path = os.path.dirname(self.file_path) + '/static'
 
@@ -158,6 +162,24 @@ class AssertStyleStructure(AssertBase):
             if not js_file.count("epfl.{compo_name}.inherits_from(epfl.".format(compo_name=self.compo_name)) == 1:
                 self.errors.append("{check_type}{compo_name} is not correctly inheriting in static js.".format(
                     compo_name=self.compo_name, base_compo=result[0], check_type=check_type))
+
+    def assert_style_structure_tests(self):
+        """Contains the following checks for the tests:
+            * testfile is present in the components subdirectory of the tests folder
+        """
+        __tracebackhide__ = True
+
+        check_type = self.check_type('style', 'structure', 'tests')
+
+        if self.compo_name in ['ComponentBase', 'ComponentContainerBase']:
+            return
+
+        file_name = 'test_' + os.path.basename(self.file_path)
+
+        if not os.path.exists('/'.join([test_dir, 'components', file_name])):
+            self.errors.append(
+                "{check_type}{compo_name} is missing custom py.test file. ".format(
+                    compo_name=self.compo_name, check_type=check_type))
 
     def assert_style_structure_dynamic_js(self):
         """Contains the following checks for the dynamic js:
@@ -328,7 +350,7 @@ class AssertRendering(AssertBase):
         # TODO: Create appropriate checks for the generated javascript.
         assert html.count(' epflid="{cid}"'.format(cid=cid)) == 1, \
             '{check_type}The element with the cid "{cid}" is missing in the generated HTML:\n{html}' \
-            .format(cid=cid, html=html, check_type=check_type)
+                .format(cid=cid, html=html, check_type=check_type)
 
 
 class AssertCoherence(AssertBase):
@@ -354,7 +376,7 @@ class AssertCoherence(AssertBase):
         assert self.component.__unbound_component__.__getstate__() == compo_info['class'], \
             "{check_type}class attribute differs in transaction and instance".format(check_type=check_type)
 
-        assert self.component._ComponentBase__config == compo_info['config'],\
+        assert self.component._ComponentBase__config == compo_info['config'], \
             "{check_type}config not stored correctly in transaction".format(check_type=check_type)
 
         for name in self.component.combined_compo_state:
