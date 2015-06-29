@@ -14,7 +14,6 @@ epfl.Upload = function (cid, params) {
     var dropZone = $(selector + " div.epfl-dropzone");
     var image = $(selector + " img.epfl-upload-image");
     var addIcon = $(selector + " p.epfl-dropzone-addicon");
-    var dropText = $(selector + " h2");
 
     /**************************************************************************
      Helper Functions
@@ -91,7 +90,6 @@ epfl.Upload = function (cid, params) {
         //show the image and hide the plus icon
         addIcon.hide();
         image.show();
-        dropText.hide();
         dropZone.css({"border-color": "#D7D7D7"});
 
         //get the html tag of the dragged image
@@ -135,7 +133,6 @@ epfl.Upload = function (cid, params) {
     var dragOverEvent = function (ev) {
         ev.preventDefault();
         addIcon.hide();
-        dropText.show();
         dropZone.css({"border-color": "#1BB7A0"});
     };
 
@@ -143,7 +140,6 @@ epfl.Upload = function (cid, params) {
     var dragLeaveEvent = function (ev) {
         ev.preventDefault();
         addIcon.show();
-        dropText.hide();
         dropZone.css({"border-color": "#D7D7D7"});
     };
 
