@@ -9,6 +9,9 @@ test_dir = os.path.dirname(inspect.getsourcefile(epfl.test))  #: The directory w
 
 class AssertBase(object):
     def __init__(self, parent):
+        """Registers parent for lookup of attributes not defined on the current object. Used to reflect the error list
+            from parent to child.
+        """
         self.parent = parent
 
     def __getattr__(self, item):
@@ -71,12 +74,11 @@ class AssertStyle(AssertBase):
 
 class AssertStyleStructure(AssertBase):
     def __init__(self, parent):
-        """Asserts for the structure of the general component. Contains the following checks:
-            * Filename adheres to styleguide.
-            * Package directory adheres to styleguide.
-            * Static folder exists if required.
-            * Dynamic JS adheres to styleguide.
-           Detected issues will be returned as a list of strings.
+        """Asserts for the structure of the general component. Triggers sub checks:
+            * Tests present,
+            * Package Structure,
+            * Dynamic JS format,
+            * Static JS format.
         """
         super(AssertStyleStructure, self).__init__(parent)
 
@@ -117,10 +119,13 @@ class AssertStyleStructure(AssertBase):
 
         check_type = self.check_type('style', 'structure', 'package')
 
+        # Package files are named correctly.
         package_path = os.path.dirname(self.file_path)
         if not self.file_path.endswith(self.compo_name.lower() + '.py'):
             self.errors.append("{check_type}{compo_name} is missing primary python file."
                                .format(compo_name=self.compo_name, check_type=check_type))
+
+        # Package path is named correctly.
         if not package_path.endswith(self.compo_name.lower()):
             self.errors.append(
                 "{check_type}{compo_name} has a malformed package path. Should end with {compo_name_lower} actually is "
@@ -146,6 +151,7 @@ class AssertStyleStructure(AssertBase):
         if os.path.exists(static_js_file_path):
             js_file = file(static_js_file_path).read()
 
+            # Inheritance calls are present.
             r = re.compile("epfl\.{compo_name}\.inherits_from\(epfl\.([A-Za-z]*)\);".format(
                 compo_name=self.compo_name))
             result = r.findall(js_file)
@@ -154,15 +160,20 @@ class AssertStyleStructure(AssertBase):
                     "{check_type}{compo_name} is missing inheritance calls in static js."
                     .format(compo_name=self.compo_name, check_type=check_type))
                 return
+
+            # Inherited initiation calls are present.
             if not js_file.count("epfl.{base_compo}.call(this, cid, params);".format(base_compo=result[0])) == 1:
                 self.errors.append(
                     "{check_type}{compo_name} is missing inherited initiation call in static js. "
                     "'epfl.{base_compo}.call(this, cid, params);' not found".format(
                         compo_name=self.compo_name, base_compo=result[0], check_type=check_type))
 
+            # Registration as epfl component is done properly.
             if js_file.startswith("epfl.{compo_name} = function(cid, params) ".format(compo_name=self.compo_name)):
                 self.errors.append("{check_type}{compo_name} is not correctly created in static js.".format(
                     compo_name=self.compo_name, base_compo=result[0], check_type=check_type))
+
+            # Component is inheriting from another epfl component.
             if not js_file.count("epfl.{compo_name}.inherits_from(epfl.".format(compo_name=self.compo_name)) == 1:
                 self.errors.append("{check_type}{compo_name} is not correctly inheriting in static js.".format(
                     compo_name=self.compo_name, base_compo=result[0], check_type=check_type))
@@ -187,10 +198,7 @@ class AssertStyleStructure(AssertBase):
 
     def assert_style_structure_dynamic_js(self):
         """Contains the following checks for the dynamic js:
-            * Inheritance calls are present.
-            * Inherited initiation calls are present.
-            * Registration as epfl component is done properly.
-            * Component is inheriting from another epfl component.
+            * Component init call is present and well formed.
         """
         __tracebackhide__ = True
 
@@ -226,16 +234,18 @@ class AssertStyleInit(AssertBase):
         init_docs = init_func.__doc__
         init_code = init_func.func_code
 
+        # Both bases are exempt from these requirements, since they do not have an API to be exposed in this fashion.
         if self.component in [epfl.core.epflcomponentbase.ComponentBase,
                               epfl.core.epflcomponentbase.ComponentContainerBase]:
-            # Both bases are exempt from these requirements, since they do not have an API to be exposed in this fashion.
             return
 
+        # Docstring present.
         if not init_docs:
             self.errors.append("{check_type}{compo_name} __init__ method has no doc string."
                                .format(compo_name=self.compo_name, check_type=check_type))
             return
 
+        # Required parameters present and in the correct position.
         for position, name in [(0, 'self'), (1, 'page'), (2, 'cid'), (-1, ('extra_params', 'kwargs'))]:
             if init_code.co_varnames[position] == name:
                 continue
@@ -247,6 +257,7 @@ class AssertStyleInit(AssertBase):
             self.errors.append("{check_type}{compo_name} __init__ method is missing or misplacing parameter '{name}'."
                                .format(compo_name=self.compo_name, name=name, check_type=check_type))
 
+        # Function parameters have docstrings as required.
         for var in init_code.co_varnames:
             if var in ['self', 'page', 'args', 'kwargs', 'extra_params', 'cid']:
                 continue
@@ -261,7 +272,6 @@ class AssertStyleDocs(AssertBase):
     def __init__(self, parent):
         """Asserts for the general documentation of the component. Contains the following checks:
             * Only valid attributes are present.
-            * All documentation is formatted correctly.
             * All custom attributes have a docstring.
             * All custom attribute docstrings are formatted correctly.
         """
@@ -282,18 +292,22 @@ class AssertStyleDocs(AssertBase):
                 continue
             attr_name = search_result[0].strip().split(' ', 1)[0]
 
+            # Watchdog if for "All custom attributes have a docstring.", attributes listed here are exempt from this
+            # check due to them being core attributes.
             if attr_name in ['asset_spec', 'compo_state', 'theme_path', 'css_name', 'js_name', 'js_parts',
                              'new_style_compo', 'compo_js_params', 'compo_js_extras', 'compo_js_name', 'template_name',
                              'compo_config', 'data_interface', 'default_child_cls', 'auto_update_children',
                              'theme_path_default']:
                 continue
 
+            # Only valid attributes are present.
             if attr_name in ['cid', 'slot']:
                 self.errors.append(
                     "{check_type}Invalid attribute set: 'slot' and 'cid' are reserved names. (Line: {line_number})"
                     .format(line_number=abs_line_number, check_type=check_type))
                 continue
 
+            # All custom attribute docstrings are formatted correctly. First look behind the attribute.
             attr_tail = search_result[0].strip().split(' ', 2)[2]
             if '#' in attr_tail:
                 if '  #: ' not in attr_tail:
@@ -373,6 +387,7 @@ class AssertCoherence(AssertBase):
 
         check_type = self.check_type('coherence')
 
+        # Coherence of object instance attributes to transaction compo_info.
         assert self.component.slot == compo_info['slot'], \
             "{check_type}slot attribute differs in transaction and instance".format(check_type=check_type)
         assert self.component.cid == compo_info['cid'], \
@@ -380,9 +395,11 @@ class AssertCoherence(AssertBase):
         assert self.component.__unbound_component__.__getstate__() == compo_info['class'], \
             "{check_type}class attribute differs in transaction and instance".format(check_type=check_type)
 
+        # Coherence of object instance compo_info to transaction compo_info.
         assert self.component._ComponentBase__config == compo_info['config'], \
             "{check_type}config not stored correctly in transaction".format(check_type=check_type)
 
+        # Coherence and writeability of object instance compo_state attributes into/to transaction compo_info.
         for name in self.component.combined_compo_state:
             attr_value = getattr(self.component, name)
             try:
