@@ -62,15 +62,17 @@ epfl.TypeAhead.prototype.after_response = function (data) {
         .focusout(function () {
             update_visibility();
         });
-    obj.elm
-        .mouseenter(function () {
-            update_visibility();
-        })
-        .mouseout(function () {
-            update_visibility();
-        });
+    if (obj.params.open_on_hover) {
+        obj.elm
+            .mouseenter(function () {
+                update_visibility();
+            })
+            .mouseout(function () {
+                update_visibility();
+            });
+    }
 
-    this.elm.keydown(function (event) {
+    obj.elm.keydown(function (event) {
         var available_entries = obj.elm.find('[data-parent-epflid=' + obj.cid + ']');
         var active_entry = obj.elm.find('[data-parent-epflid=' + obj.cid + '].active');
         var position = -1;

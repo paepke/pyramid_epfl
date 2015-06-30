@@ -5,6 +5,7 @@ class TypeAhead(GroupedLinkListLayout):
     search_focus = True  #: Focus on the search input field on load.
     show_search = True  #: Show the search input field.
     use_headings = True  #: Sets GroupedLinkListLayout to show headings instead of submenus.
+    open_on_hover = True  #: Open the result list if the mouse is hovered over the component.
 
     js_parts = []
     js_name = GroupedLinkListLayout.js_name + [('solute.epfl.components:typeahead/static', 'typeahead.js')]
@@ -13,7 +14,8 @@ class TypeAhead(GroupedLinkListLayout):
     new_style_compo = True
     compo_js_name = 'TypeAhead'
     compo_js_params = GroupedLinkListLayout.compo_js_params + ['row_offset', 'row_limit', 'row_count', 'row_data',
-                                                               'show_pagination', 'show_search', 'search_focus']
+                                                               'show_pagination', 'show_search', 'search_focus',
+                                                               'open_on_hover']
     compo_js_extras = ['handle_click']
 
     theme_path = GroupedLinkListLayout.theme_path.copy()
@@ -33,7 +35,7 @@ class TypeAhead(GroupedLinkListLayout):
         return len(self.components) == 0
 
     def __init__(self, page, cid, links=None, use_headings=None, event_name=None, show_search=None, height=None,
-                 **kwargs):
+                 open_on_hover=None, **kwargs):
         """TypeAhead component that offers grouping of entries under a common heading. Offers search bar above and
         pagination below using the EPFL theming mechanism. Links given as parameters are checked against the existing
         routes automatically showing or hiding them based on the users permissions. Entries can be grouped below a
@@ -61,6 +63,8 @@ class TypeAhead(GroupedLinkListLayout):
         :param show_search: Toggle weather the search field is shown or not.
         :param show_pagination: Toggle weather the pagination is shown or not.
         :param search_focus: Toggle weather the search field receives focus on load or not.
+        :param open_on_hover: Open the result list if the mouse is hovered over the component.
         """
         super(GroupedLinkListLayout, self).__init__(page, cid, links=None, use_headings=None, event_name=None,
-                                                    show_search=None, height=None, **kwargs)
+                                                    show_search=None, height=None, open_on_hover=open_on_hover,
+                                                    **kwargs)
