@@ -1,0 +1,11 @@
+div.epfl-colorpicker-colorfield{
+    border: 1px solid black;
+    height:25px;
+    width: 25px;
+}
+
+div.epfl-colorpicker-specialfield{
+    border: 1px solid black;
+    height:25px;
+    width: 25px;
+}
