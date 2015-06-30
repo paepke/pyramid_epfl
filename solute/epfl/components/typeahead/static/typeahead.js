@@ -93,6 +93,8 @@ epfl.TypeAhead.prototype.after_response = function (data) {
             case 40: // arrow down
                 position += 1;
                 break;
+            default:
+                return;
         }
         if (position == -2) {position = -1;} // Only happens on key up with no selected entry.
 
