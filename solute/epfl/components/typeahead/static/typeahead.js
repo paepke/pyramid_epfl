@@ -70,7 +70,7 @@ epfl.TypeAhead.prototype.after_response = function (data) {
             update_visibility();
         });
 
-    this.elm.keypress(function (event) {
+    this.elm.keydown(function (event) {
         var available_entries = obj.elm.find('[data-parent-epflid=' + obj.cid + ']');
         var active_entry = obj.elm.find('[data-parent-epflid=' + obj.cid + '].active');
         var position = -1;
@@ -79,9 +79,7 @@ epfl.TypeAhead.prototype.after_response = function (data) {
             if (active_entry.is(elm)) {
                 position = i;
             }
-            $(elm).removeClass('active');
         });
-
         switch (event.keyCode) {
             case 13: // enter
                 var active_compo = epfl.components[active_entry.attr('epflid')];
@@ -97,6 +95,8 @@ epfl.TypeAhead.prototype.after_response = function (data) {
                 return;
         }
         if (position == -2) {position = -1;} // Only happens on key up with no selected entry.
+
+        available_entries.removeClass('active');
 
         position %= available_entries.length;
         available_entries.eq(position).addClass('active');
