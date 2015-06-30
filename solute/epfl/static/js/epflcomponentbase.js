@@ -1,3 +1,18 @@
+if (typeof String.prototype.endsWith !== 'function') {
+    // Check if the given string ends with the given suffix.
+    // As endsWith will (should) be implemented with ES6 this might get obsolete
+    String.prototype.endsWith = function(suffix){
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    }
+}
+if (typeof String.prototype.beginsWith !== 'function') {
+    // Check if the given string ends with the given suffix.
+    // As endsWith will (should) be implemented with ES6 this might get obsolete
+    String.prototype.beginsWith = function(suffix){
+        return this.indexOf(suffix) == 0;
+    }
+}
+
 $.event.props.push('dataTransfer');
 
 epfl.ComponentBase = function (cid, params) {
@@ -144,12 +159,36 @@ epfl.ComponentBase.prototype.handle_drop_leave = function (event) {
     delete this.drop_target;
 };
 
+epfl.ComponentBase.prototype.handle_drop_url = function (url, event) {
+    console.log('handle_drop_url', url, event);
+};
+
+epfl.ComponentBase.prototype.handle_drop_file = function (files, event) {
+    console.log('handle_drop_file', files, event);
+};
+
 epfl.ComponentBase.prototype.handle_drop = function (event) {
     /* Executed on EPFL drag events if extras_handle_drag is set to true. */
-    epfl.components[event.dataTransfer.getData('text')].send_event('drag_stop', {
-        cid: this.cid,
-        over_cid: this.drop_target
-    });
+    if (!event.dataTransfer) {
+        return;
+    }
+    var text = event.dataTransfer.getData('text');
+    // Text may be a cid if this is an EPFL drag event.
+    if (text && epfl.components[text]) {
+        epfl.components[text].send_event('drag_stop', {
+            cid: this.cid,
+            over_cid: this.drop_target
+        });
+    // If the dataTransfer contains one or more files it's treated as a file upload.
+    } else if (event.dataTransfer.files.length > 0 ) {
+        var files = event.dataTransfer.files;
+        this.handle_drop_file(files, event);
+    // If it is a url it is treated as such.
+    } else if (text.beginsWith('http://') || text.beginsWith('https://') ) {
+        this.handle_drop_url(text, event);
+    }
+    // TODO: No default behaviour is given, maybe a good place for some error handling later?
+
     this.handle_drop_leave();
 };
 
