@@ -1,5 +1,5 @@
 epfl.ColorPicker = function (cid, params) {
-    epfl.ComponentBase.call(this, cid, params);
+    epfl.FormInputBase.call(this, cid, params);
     $('#' + cid + ' [data-toggle="tooltip"]').tooltip();
      console.log("RELOAD");
 };
