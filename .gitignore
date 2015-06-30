@@ -33,9 +33,7 @@ nosetests.xml
 # Mr Developer
 .mr.developer.cfg
 .project
-/docs/_autodoc/*
 /docs/_build/*
-/docs/_autodoc/*
 .pydevproject
 /.settings/
 .idea
