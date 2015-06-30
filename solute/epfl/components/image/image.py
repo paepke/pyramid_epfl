@@ -20,7 +20,7 @@ class Image(epflcomponentbase.ComponentBase):
     __acl__ = [(security.Allow, security.Everyone, 'access')]
 
     template_name = "image/image.html"
-    js_parts = epflcomponentbase.ComponentBase.js_parts + ["image/image.js"]
+    js_parts = []  # epflcomponentbase.ComponentBase.js_parts + ["image/image.js"]
     asset_spec = "solute.epfl.components:image/static"
 
     css_name = ["image.css"]
@@ -33,6 +33,11 @@ class Image(epflcomponentbase.ComponentBase):
     show_dominant_color = False
     show_additional_colors = False
     height = None
+
+    new_style_compo = True
+    compo_js_name = 'Image'
+    compo_js_params = ['show_dominant_color', 'show_additional_colors']
+    compo_js_extras = ['handle_drag']
 
     def get_image_path(self):
         if self.image_path is None:
