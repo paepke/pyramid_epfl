@@ -34,6 +34,10 @@ epfl.ComponentBase.prototype.send_event = function (event_name, params, callback
     epfl.send(epfl.make_component_event(this.cid, event_name, params), callback);
 };
 
+epfl.ComponentBase.prototype.repeat_enqueue = function (event_name, params, equiv) {
+    epfl.repeat_enqueue(epfl.make_component_event(this.cid, event_name, params), equiv);
+};
+
 epfl.ComponentBase.prototype.closest_cid = function (element) {
     /* Calculates the cid of the closest epfl component containing the given element. */
 
