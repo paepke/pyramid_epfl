@@ -8,6 +8,7 @@ Subpackages
 
     solute.epfl.components.badge
     solute.epfl.components.box
+    solute.epfl.components.breadcrumb
     solute.epfl.components.button
     solute.epfl.components.buttonradio
     solute.epfl.components.cardinal_layout
@@ -20,7 +21,6 @@ Subpackages
     solute.epfl.components.dragable
     solute.epfl.components.dropdown
     solute.epfl.components.droppable
-    solute.epfl.components.droppable_box
     solute.epfl.components.flexible_text_list
     solute.epfl.components.form
     solute.epfl.components.grouped_link_list_layout
@@ -39,7 +39,6 @@ Subpackages
     solute.epfl.components.nav_layout
     solute.epfl.components.number_input
     solute.epfl.components.paginated_list_layout
-    solute.epfl.components.panel
     solute.epfl.components.placeholder
     solute.epfl.components.plain_html
     solute.epfl.components.popover

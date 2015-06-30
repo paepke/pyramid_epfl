@@ -18,6 +18,7 @@ class ModalBox(Box):
     For the first, recommended way, create the modal box as follows:
 
     .. code:: python
+
         self.add_component(
             ModalBox(
                 cid = "my_modal_box",
@@ -32,6 +33,7 @@ class ModalBox(Box):
     If you want to create a box that is not deleted on dismissal, but hidden only, create it as follows:
 
     .. code:: python
+
         self.add_component(
             ModalBox(
                 cid = "my_modal_box",

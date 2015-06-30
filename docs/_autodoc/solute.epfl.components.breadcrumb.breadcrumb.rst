@@ -1,7 +1,9 @@
-solute.epfl.components.breadcrumb.breadcrumb module
-===================================================
+Breadcrumb
+==========
 
-.. automodule:: solute.epfl.components.breadcrumb.breadcrumb
+.. autoclass:: solute.epfl.components.breadcrumb.breadcrumb.Breadcrumb
     :members:
-    :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+
