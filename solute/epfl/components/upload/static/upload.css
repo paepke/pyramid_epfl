@@ -8,6 +8,9 @@ div.epfl-dropzone {
     border-style: dashed;
     border-radius: 15px;
 }
+.active_drop div.epfl-dropzone {
+    border-color: #b9b9b9;
+}
 
 img.epfl-upload-image {
     width: 100%;
