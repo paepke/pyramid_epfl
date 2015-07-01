@@ -119,5 +119,6 @@ class Upload(FormInputBase):
         self.value = None
         self.redraw()
 
-    def handle_drop_accepts(self, cid):
+    def handle_drop_accepts(self, cid, moved_cid):
+        print cid, moved_cid
         self.add_ajax_response('true')
