@@ -456,10 +456,7 @@ class Page(object):
         """ Shows a message to the user. The message is non evasive - it will show up and fade away nicely.
         typ = "info" | "ok" | "error" | "success" | "warning"
         """
-
-        js = "epfl.show_fading_message(%s,%s)" % (json.encode(msg), json.encode(typ))
-
-        self.add_js_response(js)
+        self.show_Message(msg, typ, fading=True)
 
     def show_message(self, msg, typ=None, fading=False):
         """
@@ -576,30 +573,7 @@ class Page(object):
         self.remember_cookies = security.forget(self.request)
 
     def toast(self, message, message_type):
-        """
-        :param message_type
-        """
-        toastr_options = u"""
-        toastr.options = {
-          "closeButton": true,
-          "debug": false,
-          "newestOnTop": false,
-          "progressBar": false,
-          "positionClass": "toast-bottom-right",
-          "preventDuplicates": false,
-          "onclick": null,
-          "showDuration": "300",
-          "hideDuration": "1000",
-          "timeOut": "5000",
-          "extendedTimeOut": "1000",
-          "showEasing": "swing",
-          "hideEasing": "linear",
-          "showMethod": "fadeIn",
-          "hideMethod": "fadeOut"
-        };
-        """
-
-        self.add_js_response(u"%s toastr.%s('%s');" % (toastr_options, message_type, message))
+        raise Exception('This function is deprecated.')
 
     def get_route_path(self, route, abs_path=False, **kwargs):
         """

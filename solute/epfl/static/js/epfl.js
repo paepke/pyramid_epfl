@@ -353,10 +353,6 @@ epfl_module = function() {
         };
     };
 
-    epfl.show_fading_message = function (msg, typ) {
-        epfl.show_message({'msg': msg, 'typ': typ, 'fading': true});
-    };
-
     epfl.show_message = function(params) {
         var msg = params['msg'];
         var typ = params['typ'];
