@@ -94,7 +94,13 @@ class ComponentRenderEnvironment(MutableMapping):
 
             return _cb
 
-        return wrap(callables)
+        def wrap_markup(cb):
+            def _cb(*args, **kwargs):
+                return self.tagged_markup(cb(*args, **kwargs), item, *args, **kwargs)
+
+            return _cb
+
+        return wrap_markup(wrap(callables))
 
     def __init__(self, compo, env):
         self.data = {'compo': compo,
@@ -103,6 +109,19 @@ class ComponentRenderEnvironment(MutableMapping):
                      'row': self.set_order(compo.get_themed_template(env, 'row')),
                      'before': self.set_order(compo.get_themed_template(env, 'before')),
                      'after': self.set_order(compo.get_themed_template(env, 'after'))}
+
+    def tagged_markup(self, markup, part, *args, **kwargs):
+        marker = '<!-- {0}:{1}:{cid}%s !-->'
+        if kwargs.get('compo_obj'):
+            marker %= ':{0}'.format(kwargs['compo_obj'].cid)
+        else:
+            marker %= ''
+
+        return jinja2.Markup(''.join([
+            marker.format('open', part, cid=self['compo'].cid),
+            markup.strip(),
+            marker.format('close', part, cid=self['compo'].cid)
+        ]))
 
     @staticmethod
     def set_order(template):
