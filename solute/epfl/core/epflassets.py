@@ -70,7 +70,7 @@ class EPFLView(object):
 
     def __init__(
             self, route_name=None, route_pattern=None, menu_group=None,
-            permission=None, route_text=None, rank=0, forbidden_view=False,
+            permission=None, route_text=None, rank=None, forbidden_view=False,
             slot=None, icon=None, route_url=None
     ):
         """
@@ -117,6 +117,7 @@ class EPFLView(object):
         self.register.append({'id': self.counter['id'],
                               'route': self.route_url,
                               'text': self.route_text,
+                              'rank': self.rank,
                               'menu_group': self.menu_group,
                               'slot': self.slot,
                               'icon': self.icon})

@@ -52,6 +52,7 @@ class LinkListLayout(PaginatedListLayout):
         links = []
         if self.links is None:
             self.links = []
+        highest_rank = 0
         for i, link in enumerate(self.links):
             if not has_permission_for_route(self.request, link.get('route', link.get('url'))):
                 continue
@@ -61,6 +62,9 @@ class LinkListLayout(PaginatedListLayout):
 
             if self.event_name:
                 links[-1]['event_name'] = self.event_name
+            highest_rank = max(highest_rank, links[-1].get('rank') or 0)
+
+        links.sort(key=lambda x: highest_rank + 1 if x.get('rank') is None else x.get('rank'))
 
         return links
 
