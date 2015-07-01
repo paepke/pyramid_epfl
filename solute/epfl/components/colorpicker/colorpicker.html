@@ -1,4 +1,4 @@
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorpicker">
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorpicker clearfix">
     {% for val in compo.value_options %}
         {% if val["type"] == 0 %}
             <div class="epfl-colorpicker-colorfield pull-left"
@@ -14,7 +14,8 @@
                  data-toggle="tooltip"
                  data-placement="top"
                  title="{{ val["data"]  }} {% if val["text"]  is defined %}{{ val["text"]  }}{% endif %}"
-                 data-value="{{ val["data"] }}">
+                 data-value="{{ val["data"] }}"
+                 {% if compo.value != None and val in compo.value %}style="background-color:#00FF00" {% endif %}>
                 <i class="fa fa-code fa-lg"></i>
             </div>
         {% endif %}

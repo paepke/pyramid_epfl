@@ -21,7 +21,7 @@ class ColorPicker(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["value_options"]
 
-    # value = []
+    js_parts = []
 
     value_options = [
         {"data": "#FF0000", "type": TYPE_RGB, "text": "Rot"},
@@ -46,5 +46,4 @@ class ColorPicker(FormInputBase):
             self.value.remove(full_value)
         else:
             self.value.append(full_value)
-
         self.redraw()

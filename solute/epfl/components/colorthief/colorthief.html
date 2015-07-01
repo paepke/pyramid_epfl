@@ -1,4 +1,16 @@
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief">
-<h1>COLORTHIEF</h1>
-
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief clearfix">
+    <img class="epfl-colorthief-image" data-cid="{{ compo.cid }}" {% if compo.image_src != None %}src="{{ compo.image_src }}"{% endif %}/>
+    {% if compo.image_src == None %}
+    <div class="epfl-colorthief-dropzone" style="height:{{ compo.drop_zone_height }}px">
+        <p class="text-center epfl-dropzone-colorthief-addicon">
+            <i class="fa fa-image fa-5x"></i>
+        </p>
+    </div>
+{% endif %}
+    {%if compo.value != None %}
+        {% for val in compo.value %}
+            <div class="epfl-colorthief-color pull-left" style="background-color: {{ val }}">
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
