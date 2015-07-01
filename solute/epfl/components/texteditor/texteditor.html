@@ -1,4 +1,5 @@
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-textarea">
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}"
+     class="row epfl-textarea {{ 'mandatory' if compo.mandatory else '' }}">
 	{% if compo.label %}
 	<label for="{{ compo.cid }}" class="col-sm-2 control-label">{{ compo.label }}</label>
 	{% endif %}

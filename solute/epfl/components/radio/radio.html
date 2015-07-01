@@ -1,5 +1,6 @@
 {% set compo_col = compo.compo_col %}
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="row epfl-radio-input">
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}"
+     class="row epfl-radio-input {{ 'mandatory' if compo.mandatory else '' }}">
     {% if compo.label %}
         {% if compo.layout_vertical == True %}
             <div class="row">
