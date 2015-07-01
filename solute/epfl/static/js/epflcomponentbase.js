@@ -34,6 +34,10 @@ epfl.ComponentBase.prototype.send_event = function (event_name, params, callback
     epfl.send(epfl.make_component_event(this.cid, event_name, params), callback);
 };
 
+epfl.ComponentBase.prototype.send_async_event = function (event_name, params, callback) {
+    epfl.send_async(epfl.make_component_event(this.cid, event_name, params), callback);
+};
+
 epfl.ComponentBase.prototype.repeat_enqueue = function (event_name, params, equiv) {
     epfl.repeat_enqueue(epfl.make_component_event(this.cid, event_name, params), equiv);
 };

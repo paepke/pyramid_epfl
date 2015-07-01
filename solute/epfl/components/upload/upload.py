@@ -1,5 +1,6 @@
 import base64
 import requests
+import ujson as json
 
 from solute.epfl.components.form.form import FormInputBase
 
@@ -24,7 +25,7 @@ class Upload(FormInputBase):
     template_name = "upload/upload.html"
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size", "type",
-                                               "dropped_cid", "handle_click"]
+                                               "dropped_cid", "handle_click", "store_async"]
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -74,14 +75,17 @@ class Upload(FormInputBase):
     #: Generate a handle_click event if the component is clicked on by the user.
     handle_click = False
 
+    #: Upload the image immediately via handle_store, store has to return a URI that will be used as value.
+    store_async = False
+
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
-                       'value', 'handle_click']
+                       'value', 'handle_click', 'store_async']
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 
     def __init__(self, page, cid, label=None, name=None, default="", validation_type="", handle_click=None,
-                 **extra_params):
+                 store_async=None, **extra_params):
         """Download component.
 
         :param label: Optional label describing the input field.
@@ -89,6 +93,8 @@ class Upload(FormInputBase):
         :param default: Default value that may be pre-set or pre-selected
         :param validation_type: The type of validator that will be used for this field
         :param handle_click: Generate a handle_click event if the component is clicked on by the user.
+        :param store_async: Upload the image immediately via handle_store, store has to return a URI that will be used
+                            as value.
         """
         super(Upload, self).__init__(page, cid, label, name, default, validation_type)
 
@@ -105,6 +111,12 @@ class Upload(FormInputBase):
         if self.no_preview is False:
             self.redraw()
 
+    def handle_store(self, data, file_name):
+        self.add_ajax_response(json.encode(self.store(data, file_name)))
+
+    def store(self, data, file_name):
+        return data
+
     def get_as_binary(self):
         value = self.value
         if str(value).startswith('http') is True:
@@ -120,5 +132,4 @@ class Upload(FormInputBase):
         self.redraw()
 
     def handle_drop_accepts(self, cid, moved_cid):
-        print cid, moved_cid
         self.add_ajax_response('true')

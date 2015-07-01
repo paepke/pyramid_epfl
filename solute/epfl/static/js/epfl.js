@@ -198,7 +198,6 @@ epfl_module = function() {
             window.epfl_flush_again = true;
             return;
         }
-        var ajax_target_url = location.href;
 
         if (epfl.show_please_wait_counter > 0) {
             sync = true;
@@ -206,13 +205,18 @@ epfl_module = function() {
 
         epfl.show_please_wait(true);
 
+        return epfl.post_event(queue, sync, callback_func);
+    };
+
+    epfl.post_event = function (queue, sync, callback_func, unqueued) {
+
         return $.ajax({
-            url: ajax_target_url,
+            url: location.href,
             global: false,
             async: !sync,
             type: "POST",
             cache: false,
-            data: JSON.stringify({"tid": epfl.tid, "q": queue}),
+            data: JSON.stringify({"tid": epfl.tid, "q": queue, unqueued: unqueued}),
             contentType: "application/json",
             dataType: "text",
             success: function (data) {
@@ -234,14 +238,23 @@ epfl_module = function() {
                     callback_func(data);
                 }
                 epfl.after_response();
+                if (unqueued) {
+                    return;
+                }
                 epfl.hide_please_wait(true);
             },
             error: function (httpRequest, message, errorThrown) {
                 epfl.show_fading_message("Server Error: " + errorThrown, "error");
                 console.log(httpRequest);
+                if (unqueued) {
+                    return;
+                }
                 epfl.hide_please_wait(true);
             },
             complete: function (jqXHR, status) {
+                if (unqueued) {
+                    return;
+                }
                 epfl.flush_queue_active = false;
                 epfl.flush_queued();
             }
@@ -251,6 +264,10 @@ epfl_module = function() {
     epfl.send = function(epflevent, callback_func) {
         epfl.enqueue(epflevent);
         epfl.flush(callback_func);
+    };
+
+    epfl.send_async = function(epflevent, callback_func) {
+        epfl.post_event([epflevent], false, callback_func, true);
     };
 
     epfl.enqueue = function(epflevent) {

@@ -54,12 +54,21 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
 
     // Currently only single files supported, although that's really only a question of implementing a backend.
     this.read_file(files[0], function () {
-        if (obj.params.fire_change_immediately) {
-            obj.send_event('change', {value: this.result});
-        } else {
-            obj.repeat_enqueue('change', {value: this.result});
-        }
+        obj.upload_file(this, files[0])
     });
+};
+
+epfl.Upload.prototype.upload_file = function (reader, file) {
+    var obj = this;
+    if (obj.params.store_async) {
+        obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
+            obj.handle_drop_url(data);
+        });
+    } else if (obj.params.fire_change_immediately) {
+        obj.send_event('change', {value: reader.result});
+    } else {
+        obj.repeat_enqueue('change', {value: reader.result});
+    }
 };
 
 epfl.Upload.prototype.handle_drop_url = function (url, event) {

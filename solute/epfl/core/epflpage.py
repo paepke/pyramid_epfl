@@ -174,13 +174,15 @@ class Page(object):
         Sub-method of :meth:`__call__` used to cleanup after a request has been handled.
         """
         self.done_request()
+
+        if self.request.params.get('unqueued'):
+            return ''
+
         self.transaction.store()
 
-        out = ''
         if check_tid and self.transaction.tid_new:
-            out = 'epfl.new_tid("%s");' % self.transaction.tid_new
-
-        return out
+            return 'epfl.new_tid("%s");' % self.transaction.tid_new
+        return ''
 
     @Lifecycle(name=('page', 'setup_model'))
     def setup_model(self):
