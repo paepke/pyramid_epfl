@@ -1,5 +1,6 @@
 import base64
 import requests
+import ujson as json
 
 from solute.epfl.components.form.form import FormInputBase
 
@@ -19,13 +20,14 @@ class Upload(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js"),
                                        ("solute.epfl.components:upload/static", "jquery.iframe-transport.js"),
                                        ("solute.epfl.components:upload/static", "jquery.fileupload.js")]
+    js_parts = []
 
     css_name = FormInputBase.css_name + [("solute.epfl.components:upload/static", "upload.css"), ]
 
     template_name = "upload/upload.html"
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size", "type",
-                                               "dropped_cid"]
+                                               "dropped_cid", "handle_click", "store_async"]
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -72,18 +74,29 @@ class Upload(FormInputBase):
     #: source of the image is epfl image compo
     TYPE_EPFL_IMAGE = "epfl-img-component-image"
 
+    #: Generate a handle_click event if the component is clicked on by the user.
+    handle_click = False
+
+    #: Upload the image immediately via handle_store, store has to return a URI that will be used as value.
+    store_async = False
+
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
-                       'value']
+                       'value', 'handle_click', 'store_async','show_file_upload_input','show_drop_zone']
+    compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 
-    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", **extra_params):
+    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", handle_click=None,
+                 store_async=None, **extra_params):
         """Download component.
 
         :param label: Optional label describing the input field.
         :param name: An element without a name cannot have a value.
         :param default: Default value that may be pre-set or pre-selected
         :param validation_type: The type of validator that will be used for this field
+        :param handle_click: Generate a handle_click event if the component is clicked on by the user.
+        :param store_async: Upload the image immediately via handle_store, store has to return a URI that will be used
+                            as value.
         """
         super(Upload, self).__init__(page, cid, label, name, default, validation_type)
 
@@ -100,11 +113,11 @@ class Upload(FormInputBase):
         if self.no_preview is False:
             self.redraw()
 
-    def handle_click(self):
-        """
-        click on Dropzone
-        """
-        pass
+    def handle_store(self, data, file_name):
+        self.add_ajax_response(json.encode(self.store(data, file_name)))
+
+    def store(self, data, file_name):
+        return data
 
     def get_as_binary(self):
         value = self.value
@@ -119,3 +132,6 @@ class Upload(FormInputBase):
     def handle_remove_icon(self):
         self.value = None
         self.redraw()
+
+    def handle_drop_accepts(self, cid, moved_cid):
+        self.add_ajax_response('true')
