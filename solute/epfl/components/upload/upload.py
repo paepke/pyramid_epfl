@@ -17,7 +17,9 @@ class Upload(FormInputBase):
     
     """
 
-    js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js")]
+    js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js"),
+                                       ("solute.epfl.components:upload/static", "jquery.iframe-transport.js"),
+                                       ("solute.epfl.components:upload/static", "jquery.fileupload.js")]
     js_parts = []
 
     css_name = FormInputBase.css_name + [("solute.epfl.components:upload/static", "upload.css"), ]
@@ -80,7 +82,7 @@ class Upload(FormInputBase):
 
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
-                       'value', 'handle_click', 'store_async']
+                       'value', 'handle_click', 'store_async','show_file_upload_input','show_drop_zone']
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 

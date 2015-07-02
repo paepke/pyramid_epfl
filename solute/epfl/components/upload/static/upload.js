@@ -1,5 +1,15 @@
 epfl.Upload = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
+    var obj = this;
+
+    if (obj.params['show_file_upload_input']) {
+        console.log(obj.elm.find("input"));
+
+        obj.elm.find("input").fileupload({
+            add: obj.fileInputAdd.bind(obj),
+            dropZone: obj.elm.find("div.epfl-upload-input-zone")
+        });
+    }
 };
 
 epfl.Upload.inherits_from(epfl.ComponentBase);
@@ -9,6 +19,54 @@ Object.defineProperty(epfl.Upload.prototype, 'remove_icon', {
         return this.elm.find('.epfl-upload-remove-icon');
     }
 });
+
+epfl.Upload.prototype.fileInputAdd = function (evt, data) {
+    var obj = this;
+    try {
+        evt = evt.delegatedEvent.originalEvent;
+    }
+    catch (e) {
+        //ignore errors and just return
+        return;
+    }
+
+    var files;
+    //try get first file from data
+    if (data && data.files && data.files.length) {
+        files = data.files;
+    }
+
+    if (!files) {
+        files = [];
+        try {
+            // Check if file was added with paste (only Chrome)
+            items = event.clipboardData.items;
+            var i = 0;
+            for (; i < items.length; i++) {
+                var file = items[i].getAsFile();
+                if (file) {
+                    // It's a file that was pasted
+                    files.push(file);
+                    break;
+                }
+            }
+        }
+        catch (e) {
+            // Change was triggered but there is no file, not selected by dialog, nor pasted via keyboard-commands,
+            // but it is possible that items contains a single text string which would result in an error when
+            // items[i].getAsFile() is executed on that string.
+            return;
+        }
+    }
+    if (files) {
+        // Currently only single files supported, although that's really only a question of implementing a backend.
+        this.read_file(files[0], function () {
+            obj.upload_file(this, files[0])
+        });
+    }
+};
+
+
 
 epfl.Upload.prototype.validate_file = function (file) {
     var type_is_allowed = false;
@@ -81,9 +139,10 @@ epfl.Upload.prototype.handle_drop_url = function (url, event) {
 
 
 epfl.Upload.prototype.handle_click = function (event) {
+    console.log("handle_click", this.elm);
     epfl.ComponentBase.prototype.handle_click.call(this, event);
 
-    if (this.remove_icon.is(event.target) ) {
+    if (this.remove_icon.is(event.target)) {
         this.send_event('remove_icon', {});
     } else if (this.params.handle_click) {
         this.send_event('click', {});
