@@ -9,7 +9,7 @@
    {% elif compo.tile %}
        class="tile-link"
    {% elif compo.list_element %}
-       class="list-group-item col-sm-12{{ " active" if compo.is_current_url() else "" }}"
+       class="list-group-item col-sm-12{{ " active" if compo.is_current_url() or compo.active else "" }}"
    {% endif %}
    {% if compo._url %}
    href="{{ compo._url }}"

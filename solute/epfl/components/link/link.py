@@ -10,7 +10,7 @@ class Link(ComponentBase):
     js_name = ["link.js"]
     css_name = ["link.css"]
 
-    compo_state = ["url", "route", "text", "icon", "name"]
+    compo_state = ["url", "route", "text", "icon", "name", "active"]
 
     url = None  #: The url this link points to. Used for the src attribute of the A-Tag.
     route = None  #: The route this link points to. Used to look up the url for the src attribute of the A-Tag.
@@ -22,6 +22,7 @@ class Link(ComponentBase):
     list_element = False  #: Display the link as a bootstrap style list element.
     selection = None  #: Tuple of integers: (selection_start, selection_end). MARK-Tag will be applied there.
     event_name = None  #: Name of an event to be triggered on click, prevents url and route from taking effect.
+    active = False #: Sets the active class in html
 
     new_style_compo = True
     compo_js_params = ['event_name']
