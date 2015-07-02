@@ -88,8 +88,8 @@ def get_epfl_jinja2_environment(request):
                                                  comment_end_string = oenv.comment_end_string,
                                                  line_statement_prefix = oenv.line_statement_prefix,
                                                  line_comment_prefix = oenv.line_comment_prefix,
-                                                 trim_blocks = oenv.trim_blocks,
-                                                 lstrip_blocks = oenv.lstrip_blocks,
+                                                 trim_blocks = oenv.trim_blocks or True,
+                                                 lstrip_blocks = oenv.lstrip_blocks or True,
                                                  newline_sequence = oenv.newline_sequence,
                                                  keep_trailing_newline = oenv.keep_trailing_newline,
                                                  optimized = oenv.optimized,
@@ -97,6 +97,8 @@ def get_epfl_jinja2_environment(request):
                                                  autoescape = oenv.autoescape,
                                                  cache_size = cache_size,
                                                  bytecode_cache = oenv.bytecode_cache)
+
+    print oenv.trim_blocks, oenv.lstrip_blocks
 
     # really shared!
     env.filters = oenv.filters

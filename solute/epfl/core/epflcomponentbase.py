@@ -87,10 +87,10 @@ class ComponentRenderEnvironment(MutableMapping):
             def _cb(*args, **kwargs):
                 extra_kwargs = dict(self)
                 extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs)
+                out = cb(*args, **extra_kwargs).strip()
                 if parent is not None:
                     extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs)
+                    out = parent(*args, **extra_kwargs).strip()
                 return out
 
             return _cb
@@ -129,7 +129,7 @@ class ComponentRenderEnvironment(MutableMapping):
             for node in body.iterchildren():
                 node.attrib['data-row-for'] = kwargs['compo_obj'].cid
                 node.attrib['data-row-in'] = self['compo'].cid
-                node.attrib['data-row-pos'] = str(self['compo'].components.index(kwargs['compo_obj']))
+                node.attrib['data-row-pos'] = str(kwargs.get('compo_obj').position)
             out = etree.tostring(body, method='html')[6:-7].strip()
             return jinja2.Markup(out).strip()
 
@@ -448,6 +448,10 @@ class ComponentBase(object):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
         return self._compo_info or {}
+
+    @property
+    def position(self):
+        return self.container_compo.compo_info['compo_struct'].key_index(self.cid)
 
     @property
     def slot(self):
@@ -801,7 +805,7 @@ class ComponentBase(object):
             # Render context can be supplied as a dict.
             js_raw.append(env.get_template(js_part).render(context))
 
-        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context))
+        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
 
         handles = self.get_handles()
         if handles:
