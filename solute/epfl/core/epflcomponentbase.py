@@ -122,14 +122,21 @@ class ComponentRenderEnvironment(MutableMapping):
             return ''
 
         if markup.strip() and part == 'row' and kwargs.get('compo_obj'):
+            compo_obj = kwargs.get('compo_obj')
             html = etree.HTML(markup)
             body = html.find('body')
-            compo_elm = body.xpath('//*[@epflid = "%s"]' % kwargs.get('compo_obj').cid)[0]
+            compo_elm = body.xpath('//*[@epflid = "%s"]' % compo_obj.cid)[0]
             compo_elm.attrib['data-parent-epflid'] = self['compo'].cid
             for node in body.iterchildren():
-                node.attrib['data-row-for'] = kwargs['compo_obj'].cid
+                node.attrib['data-row-for'] = compo_obj.cid
                 node.attrib['data-row-in'] = self['compo'].cid
-                node.attrib['data-row-pos'] = str(kwargs.get('compo_obj').position)
+                try:
+                    if compo_obj.position == 0:
+                            node.attrib['data-row-before'] = self['compo'].components[1].cid
+                    else:
+                        node.attrib['data-row-after'] = self['compo'].components[compo_obj.position - 1].cid
+                except IndexError:
+                    pass
             out = etree.tostring(body, method='html')[6:-7].strip()
             return jinja2.Markup(out).strip()
 
@@ -914,6 +921,7 @@ class ComponentBase(object):
         After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
         """
 
+        self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
         self.page.transaction.switch_component(cid, target, position=position)
 
     def get_compo_init_js(self):

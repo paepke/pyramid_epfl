@@ -130,11 +130,21 @@ epfl_module = function() {
         var parent_rows = $('[data-row-in=' + cid + ']');
         new_rows.each(function (i, node) {
             node = $(node);
-            var pos = node.attr('data-row-pos')
-            if (pos == 0) {
-                node.insertBefore(parent_rows.filter('[data-row-pos=1]'))
-            } else {
-                node.insertAfter(parent_rows.filter('[data-row-pos=' + (pos - 1).toString() + ']'))
+            var before = node.attr('data-row-before');
+            var after = node.attr('data-row-after');
+
+            var node_cid = node.attr('cid');
+
+            if (before) { // Index 0
+                var target = parent_rows.filter('[data-row-for=' + before + ']');
+                node.insertBefore(target);
+                target.attr('data-row-before', '');
+                target.attr('data-row-after', node_cid);
+            } else { // Index > 0
+                var target = parent_rows.filter('[data-row-for=' + after + ']');
+                node.insertAfter(target);
+                parent_rows.filter('[data-row-for=' + after + '][data-row-before]').attr('data-row-before', node_cid)
+                parent_rows.filter('[data-row-after=' + after + ']').attr('data-row-after', node_cid);
             }
         });
     };
@@ -169,6 +179,11 @@ epfl_module = function() {
 
     epfl.hide_component = function(cid) {
           $("[epflid='" + cid + "']").replaceWith("<div epflid='" + cid + "'></div>");
+    };
+
+    epfl.switch_component = function(cid) {
+        $('[epflid=' + cid + ']').remove();
+        $('[data-row-for=' + cid + ']').remove();
     };
 
     epfl.destroy_component = function(cid) {
