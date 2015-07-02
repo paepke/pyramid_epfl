@@ -13,7 +13,15 @@
                 <thead>
                     <tr>
                         {% for header in compo.headings %}
-                            <th {% if header.width is defined %}style="width: {{ header.width }}px;"{% endif %}>{{ header.title }}</th>
+                            {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
+                            <th style="width: 10px;">
+                            <i class="show-column-icon fa fa-angle-double-right"></i>
+                            </th>
+                            {% else %}
+                            <th {% if header.width is defined %}style="width: {{ header.width }}px;"{% endif %}><span>{{ header.title }}</span>
+                            {% if header.toggle_visibility_supported is defined and header.toggle_visibility_supported %}<i class="hide-column-icon fa fa-angle-double-left"></i>{% endif %}
+                            </th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
@@ -22,7 +30,11 @@
             {% for slot_name, slot_content in compo.slotted_components.items() %}
                 <tr>
                 {% for compo_obj in slot_content %}
+                    {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
+                    <td style="visibility: hidden">
+                    {% else %}
                     <td>
+                    {% endif %}
                         {{ compo_obj.render() }}
                     </td>
                 {% endfor %}

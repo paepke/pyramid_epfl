@@ -16,3 +16,27 @@ epfl.TableLayout = function(cid, params) {
     }
 };
 epfl.TableLayout.inherits_from(epfl.ComponentBase);
+Object.defineProperty(epfl.TableLayout.prototype, 'hide_column_icon', {
+    get: function () {
+        res = this.elm.find('.hide-column-icon');
+        return res;
+    }
+});
+Object.defineProperty(epfl.TableLayout.prototype, 'show_column_icon', {
+    get: function () {
+        res = this.elm.find('.show-column-icon');
+        return res;
+    }
+});
+
+epfl.TableLayout.prototype.handle_click = function (event) {
+    epfl.ComponentBase.prototype.handle_click.call(this, event);
+    if (this.hide_column_icon.is(event.target) ) {
+        var parent_col = event.target.closest("th");
+        this.send_event("hide_column", {column_index: $(parent_col).index()});
+    } else if (this.show_column_icon.is(event.target) ) {
+        var parent_col = event.target.closest("th");
+        this.send_event("show_column", {column_index: $(parent_col).index()});
+    }
+
+};
