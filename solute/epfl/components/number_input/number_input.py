@@ -36,7 +36,7 @@ class NumberInput(FormInputBase):
                 value = None
         self.value = value
 
-    def __init__(self, page, cid, label=None, name=None, min_value=None, max_value=None, input_pattern=None, default="", validation_type="number", **extra_params):
+    def __init__(self, page, cid, label=None, name=None, min_value=None, max_value=None, input_pattern=None, default=None, validation_type=None, **extra_params):
         '''
         NumberInput Component
 
