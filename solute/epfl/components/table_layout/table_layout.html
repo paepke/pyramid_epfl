@@ -14,7 +14,7 @@
                     <tr>
                         {% for header in compo.headings %}
                             {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
-                            <th style="width: 10px;">
+                            <th style="width: 20px;">
                             <i class="show-column-icon fa fa-angle-double-right"></i>
                             </th>
                             {% else %}
@@ -31,12 +31,16 @@
                 <tr>
                 {% for compo_obj in slot_content %}
                     {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
-                    <td style="visibility: hidden">
-                    {% else %}
-                    <td>
-                    {% endif %}
+                    <td style="width:20px;">
+                    </td><td style="display:none;">
                         {{ compo_obj.render() }}
                     </td>
+                    {% else %}
+                    <td>
+                        {{ compo_obj.render() }}
+                    </td>
+                    {% endif %}
+
                 {% endfor %}
                 </tr>
             {% endfor %}
