@@ -354,10 +354,13 @@ class Page(object):
             # Get render entry points.
             for compo in self.get_active_components(sorted_by_depth=True)[:]:
                 if compo.redraw_requested and not compo.is_rendered:
+                    target = 'main'
+                    if compo.sub_redraw_requested:
+                        target = 'sub'
                     self.add_js_response("epfl.replace_component('{cid}', {parts})".format(
                         cid=compo.cid,
                         parts=json.encode({'js': compo.render('js_raw'),
-                                           'main': compo.render()})))
+                                           target: compo.render()})))
 
             extra_content = self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True)
             if len(extra_content) > 0:

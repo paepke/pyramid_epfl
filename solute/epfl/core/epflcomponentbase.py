@@ -111,7 +111,7 @@ class ComponentRenderEnvironment(MutableMapping):
                      'after': self.set_order(compo.get_themed_template(env, 'after'))}
 
     def tagged_markup(self, markup, part, *args, **kwargs):
-        marker = '<!-- {0}:{1}:{cid}%s !-->'
+        marker = '<!--{0}:{1}:{cid}%s-->'
         if kwargs.get('compo_obj'):
             marker %= ':{0}'.format(kwargs['compo_obj'].cid)
         else:
@@ -334,7 +334,8 @@ class ComponentBase(object):
     is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
-    redraw_requested = False  #: Set of parts requesting to be redrawn.
+    redraw_requested = False  #: Flag if this component wants to be redrawn.
+    sub_redraw_requested = None  #: Flag if the redraw is to target only fresh components.
 
     _compo_info = None  #: Compo_info cache.
     _handles = None  #: Cache for a list of handle_event functions this component provides.
@@ -759,6 +760,10 @@ class ComponentBase(object):
 
         self.render_cache = {'main': '', 'js': '', 'js_raw': ''}
 
+        if self.container_compo and self.container_compo.sub_redraw_requested \
+                and self.cid not in self.container_compo.sub_redraw_requested:
+            return self.render_cache[target]
+
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
             self.render_cache['main'] = jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
@@ -851,16 +856,21 @@ class ComponentBase(object):
         self.set_handles(False)
         return self._handles
 
-    def redraw(self, parts=None):
+    def redraw(self, parts=None, sub_redraw=None):
         """ This requests a redraw. All components that are requested to be redrawn are redrawn when
         the ajax-response is generated (namely page.handle_ajax_request()).
         You can specify the parts that need to be redrawn (as string, as list or None for the complete component).
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
-        this one will not reqeust it's redrawing.
+        this one will not request it's redrawing.
         """
 
         if parts is not None:
             raise Exception('Deprecated: Partial redraws are no longer possible.')
+
+        if sub_redraw:
+            if not self.sub_redraw_requested:
+                self.sub_redraw_requested = []
+            self.sub_redraw_requested.append(sub_redraw)
 
         self.redraw_requested = True
 
@@ -1041,7 +1051,6 @@ class ComponentContainerBase(ComponentBase):
         # IDs of components no longer present in data. Their matching components are deleted.
         for data_id in set(current_order).difference(new_order):
             self.del_component(data_cid_dict.pop(data_id))
-            self.redraw()
 
         # IDs of data represented by a component. Matching components are updated.
         for data_id in set(new_order).intersection(current_order):
@@ -1051,20 +1060,25 @@ class ComponentContainerBase(ComponentBase):
             if compo.disable_auto_update:
                 self.del_component(data_cid_dict.pop(data_id))
                 current_order.remove(data_id)
-                self.redraw()
                 continue
             for k, v in data_dict[data_id].items():
                 if getattr(compo, k) != v:
                     setattr(compo, k, v)
-                    self.redraw()
+                    compo.redraw()
 
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
+            position = new_order.index(data_id)
+            if position > len(self.components):
+                position = None
             ubc = self.default_child_cls(**data_dict[data_id])
-            bc = self.add_component(ubc)
+            bc = self.add_component(ubc, position=position)
             data_cid_dict[data_id] = bc.cid
 
-            self.redraw()
+            if self.page.request.is_xhr:
+                self.redraw(sub_redraw=bc.cid)
+            else:
+                self.redraw()
 
         # Rebuild order.
         compo_struct = self.compo_info['compo_struct']
@@ -1156,8 +1170,7 @@ class ComponentContainerBase(ComponentBase):
                 cid = str(uuid.uuid4())
             compo_obj.register_in_transaction(self, slot, position=position)
 
-        # the transaction-setup has to be redone because the component can
-        # directly be displayed in this request.
+        # the transaction-setup has to be redone because the component can be displayed directly in this request.
         compo_obj.init_transaction()
         self.page.transaction['__initialized_components__'].add(cid)
         if ('page', 'handle_transaction') not in Lifecycle.get_state():

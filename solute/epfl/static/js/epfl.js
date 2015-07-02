@@ -125,11 +125,66 @@ epfl_module = function() {
         epfl.components[cid] = compo_obj;
     };
 
+    epfl.replace_sub_component = function(cid, html) {
+        var tmp_elm = $('<div>' + html + '</div>');
+        var root_elm = $('[epflid=' + cid + ']');
+
+        var nodes = [];
+        var markers = epfl.get_compo_markers(tmp_elm[0]);
+        var original_markers = epfl.get_compo_markers(root_elm[0]);
+
+        function original_marker(data) {
+            for (var m in original_markers) {
+                var marker = original_markers[m];
+                if (marker.data == data) {
+                    return marker;
+                }
+            }
+        }
+
+        markers.forEach(function (node, i) {
+            if (node.nextSibling != node.nextElementSibling
+                || !node.data.beginsWith('open:row:')
+                || $(node.nextSibling).find('[epflid]').length == 0 ) {
+                return;
+            }
+            var after, before, marker;
+            if (i - 1 > -1) {
+                after = markers[i - 1];
+            }
+            var open = node;
+            var elm = node.nextSibling;
+            var close = elm.nextSibling;
+            if (i + 1 < markers.length) {
+                before = markers[i + 1];
+            }
+            try {
+                if (after && after.data.beginsWith('close:row')) {
+                    marker = original_marker(after.data);
+                    $(close).insertAfter(marker);
+                    $(elm).insertAfter(marker);
+                    $(open).insertAfter(marker);
+                } else if (before && before.data.beginsWith('open:row')) {
+                    marker = original_marker(before.data);
+                    $(open).insertBefore(marker);
+                    $(elm).insertBefore(marker);
+                    $(close).insertBefore(marker);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    };
+
     epfl.replace_component = function(cid, parts) {
         for (var part_name in parts) {
             if (part_name == "js") continue;
             if (part_name == "prefetch") continue;
             var part_html = parts[part_name];
+            if (part_name == "sub") {
+                epfl.replace_sub_component(cid, part_html);
+                continue;
+            }
             var epflid = cid;
             if (part_name != "main") {
                 epflid = cid + "$" + part_name;
@@ -153,12 +208,55 @@ epfl_module = function() {
           $("[epflid='" + cid + "']").replaceWith("<div epflid='" + cid + "'></div>");
     };
 
+    epfl.get_compo_markers = function (container, filter) {
+        if (!filter) {
+            filter = function (node) {
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }
+        var tree_walker = document.createTreeWalker(
+            container,
+            NodeFilter.SHOW_COMMENT,
+            filter,
+            false
+        );
+        var nodes = [];
+
+        while (tree_walker.nextNode()) {
+            nodes.push(tree_walker.currentNode);
+        }
+        return nodes;
+    };
+
+    epfl.get_compo_part = function(container, cid, name) {
+        var markers = epfl.get_compo_markers(container, function (node) {
+            if (node.data.beginsWith('open:' + name + ':') && node.data.endsWith(':' + cid)) {
+                return NodeFilter.FILTER_ACCEPT;
+            }
+            return NodeFilter.FILTER_SKIP;
+        });
+
+        var nodes = [];
+        markers.forEach(function (node) {
+            var current_node = node;
+            do {
+                nodes.push(current_node);
+                current_node = current_node.nextSibling;
+            } while (!current_node.COMMENT_NODE || !current_node.data || !current_node.data.beginsWith('close:row:'));
+        });
+
+        return $(nodes);
+    };
+
     epfl.destroy_component = function(cid) {
-        if (epfl.components[cid]) {
-            epfl.components[cid].destroy();
+        var compo = epfl.components[cid];
+        var parent_cid = compo.elm.attr('data-parent-epflid');
+        if (compo) {
+            compo.destroy();
             delete epfl.components[cid];
         }
-        $("[epflid='" + cid + "']").remove();
+        epfl.get_compo_part($('[epflid=' + parent_cid + ']')[0], cid, 'row').remove();
+        compo.elm.remove();
     };
 
     epfl.unload_page = function() {
@@ -227,7 +325,7 @@ epfl_module = function() {
                         epfl.before_response();
                         $.globalEval(data);
                     } catch(e) {
-                        epfl.show_fading_message("Error (" + e.name + ") when running Server response: " + e.message);
+                    epfl.show_message("Error (" + e.name + ") when running Server response: " + e.message);
                     }
                 }
                 if (callback_func) {
@@ -237,7 +335,7 @@ epfl_module = function() {
                 epfl.hide_please_wait(true);
             },
             error: function (httpRequest, message, errorThrown) {
-                epfl.show_fading_message("Server Error: " + errorThrown, "error");
+                epfl.show_message("Server Error: " + errorThrown, "error");
                 console.log(httpRequest);
                 epfl.hide_please_wait(true);
             },
@@ -319,7 +417,7 @@ epfl_module = function() {
                     dataType: "json",
                     success: function(data) { callback_func(data) },
                     error: function(httpRequest, message, errorThrown) {
-                        epfl.show_fading_message("txt_system_error: " + errorThrown, "error");
+                        epfl.show_message("txt_system_error: " + errorThrown, "error");
                     }
                    });
         });
