@@ -1,15 +1,5 @@
 epfl.Upload = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    var obj = this;
-
-    if (obj.params['show_file_upload_input']) {
-        console.log(obj.elm.find("input"));
-
-        obj.elm.find("input").fileupload({
-            add: obj.fileInputAdd.bind(obj),
-            dropZone: obj.elm.find("div.epfl-upload-input-zone")
-        });
-    }
 };
 
 epfl.Upload.inherits_from(epfl.ComponentBase);
@@ -20,7 +10,18 @@ Object.defineProperty(epfl.Upload.prototype, 'remove_icon', {
     }
 });
 
-epfl.Upload.prototype.fileInputAdd = function (evt, data) {
+epfl.Upload.prototype.after_response = function (data) {
+    epfl.ComponentBase.prototype.after_response.call(this, data);
+    var obj = this;
+    if (obj.params['show_file_upload_input']) {
+        obj.elm.find("input").fileupload({
+            add: obj.file_input_add.bind(obj),
+            dropZone: obj.elm.find("div.epfl-upload-input-zone")
+        });
+    }
+};
+
+epfl.Upload.prototype.file_input_add = function (evt, data) {
     var obj = this;
     try {
         evt = evt.delegatedEvent.originalEvent;
@@ -58,15 +59,11 @@ epfl.Upload.prototype.fileInputAdd = function (evt, data) {
             return;
         }
     }
+
     if (files) {
-        // Currently only single files supported, although that's really only a question of implementing a backend.
-        this.read_file(files[0], function () {
-            obj.upload_file(this, files[0])
-        });
+        obj.handle_drop_file(files, evt);
     }
 };
-
-
 
 epfl.Upload.prototype.validate_file = function (file) {
     var type_is_allowed = false;
@@ -119,6 +116,9 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
 epfl.Upload.prototype.upload_file = function (reader, file) {
     var obj = this;
     if (obj.params.store_async) {
+        if(!file.name){
+            file.name = "external"
+        }
         obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
             obj.handle_drop_url(data);
         });
@@ -137,9 +137,7 @@ epfl.Upload.prototype.handle_drop_url = function (url, event) {
     }
 };
 
-
 epfl.Upload.prototype.handle_click = function (event) {
-    console.log("handle_click", this.elm);
     epfl.ComponentBase.prototype.handle_click.call(this, event);
 
     if (this.remove_icon.is(event.target)) {
