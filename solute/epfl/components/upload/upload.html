@@ -1,6 +1,7 @@
 {% set compo_col = compo.compo_col %}
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}"
-     class="row epfl-text-input epfl-upload {{ 'mandatory' if compo.mandatory else '' }}">
+     class="row epfl-text-input epfl-upload {{ 'mandatory' if compo.mandatory else '' }}"
+        style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
     {% if compo.label %}
         {% if compo.layout_vertical == True %}
             <div class="row">
@@ -39,10 +40,8 @@
 
             {# Dropzone #}
             {% if compo.show_drop_zone and not compo.value%}
-                <div class="epfl-dropzone" style="height:{{ compo.drop_zone_height }}px">
-                    <p class="text-center epfl-dropzone-addicon">
-                        <i class="fa fa-plus fa-5x"></i>
-                    </p>
+                <div class="epfl-dropzone text-center">
+                    <i class="fa fa-plus fa-{{ compo.plus_icon_size }} epfl-dropzone-addicon"></i>
                 </div>
             {% endif %}
             {# File Input #}

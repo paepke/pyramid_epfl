@@ -27,7 +27,13 @@ class Upload(FormInputBase):
     template_name = "upload/upload.html"
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size", "type",
-                                               "dropped_cid", "handle_click", "store_async"]
+                                               "dropped_cid", "handle_click", "store_async","height","width"]
+
+    height = None #: Compo height in px if none nothing is set
+
+    width = None #: Compo width in px if none nothing is set
+
+    plus_icon_size = "5x" #: The plus icon in dropzone, use the font awesome sizes 1x - 5x or lg
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False

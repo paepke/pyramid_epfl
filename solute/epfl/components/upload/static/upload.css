@@ -7,21 +7,32 @@ div.epfl-dropzone {
     border-color: #D7D7D7;
     border-style: dashed;
     border-radius: 15px;
+    cursor: pointer;
 }
-.active_drop div.epfl-dropzone {
-    border-color: #b9b9b9;
+
+div.epfl-upload.active_drop {
+    border-color: #1BB7A0;
+}
+
+div.epfl-upload.active_drop div.epfl-dropzone {
+    border-color: #1BB7A0;
 }
 
 img.epfl-upload-image {
     width: 100%;
 }
 
-p.epfl-dropzone-addicon{
+i.epfl-dropzone-addicon{
     position:relative;
     top:35%;
 }
 
 i.epfl-upload-remove-icon {
     position:absolute;
-    right:15px;
+    right:0;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 4px;
 }
+
