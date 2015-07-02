@@ -1,1 +1,0 @@
-epfl.init_component("{{ compo.cid }}", "SelectableList", {"scroll_pos":{{ compo.scroll_pos|tojson }}});
