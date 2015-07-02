@@ -3,19 +3,30 @@ from collections2.dicts import OrderedDict
 
 
 class TableLayout(PaginatedListLayout):
-    js_parts = PaginatedListLayout.js_parts + ['table_layout/table_layout.js']
+    js_parts = []
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:table_layout/static',
                                               'table_layout.js'),
                                              ('solute.epfl.components:table_layout/static',
                                               'jquery.fixedheadertable.min.js')]
-    css_name = PaginatedListLayout.css_name + [("solute.epfl.components:table_layout/static", "css/table_layout.css")]
+    css_name = PaginatedListLayout.css_name + \
+        [("solute.epfl.components:table_layout/static", "css/table_layout.css")]
 
     template_name = 'table_layout/table_layout.html'
 
+    compo_state = PaginatedListLayout.compo_state + ['column_visibility']
+
     map_child_cls = {}
     fixed_header = True  #: Set to False if header should not be fixed.
+    #: Can be set to a tuple where each entry contains True/False denoting the visibility of the corresponding column
+    column_visibility = None
 
-    def __init__(self, page, cid, show_search=None, height=None, **kwargs):
+    new_style_compo = True
+    compo_js_name = 'TableLayout'
+    compo_js_params = ['row_offset', 'row_limit', 'row_count', 'row_data',
+                       'show_pagination', 'show_search', 'search_focus', 'fixed_header']
+    compo_js_extras = ['handle_click']
+
+    def __init__(self, page, cid, show_search=None, height=None, column_visibility=None, **kwargs):
         """Table based on a paginated list. Offers searchbar above and pagination below using the EPFL theming
         mechanism.
 
@@ -25,7 +36,7 @@ class TableLayout(PaginatedListLayout):
             headings=[
                 {'title': 'Name'},
                 {'title': 'Wert'},
-                {'title': 'Einheit'},
+                {'title': 'Einheit', 'toggle_visibility_supported': True },
             ],
             map_child_cls=[
                 ('name', components.Text, {'value': 'name'}),
@@ -44,8 +55,16 @@ class TableLayout(PaginatedListLayout):
         :param show_search: Toggle weather the search field is shown or not.
         :param show_pagination: Toggle weather the pagination is shown or not.
         :param search_focus: Toggle weather the search field receives focus on load or not.
+        :param column_visibility: An optional tuple denoting which columns should be initially displayed or not.
+         If set, its length has to match the length of table columns.
         """
-        super(PaginatedListLayout, self).__init__(page, cid, show_search=None, height=height, **kwargs)
+        super(PaginatedListLayout, self).__init__(
+            page, cid, show_search=None, height=height, column_visibility=column_visibility, **kwargs)
+
+    def setup_component(self):
+        PaginatedListLayout.setup_component(self)
+        if (self.column_visibility is not None) and (type(self.column_visibility) is not tuple):
+            raise Exception("TableLayout column_visibility attribute has to be of type tuple!")
 
     def default_child_cls(self, **compo_info):
         return self.map_child_cls[compo_info['compo_type']][1](**compo_info)
@@ -80,3 +99,24 @@ class TableLayout(PaginatedListLayout):
         for compo in self.components:
             slotted_components.setdefault(compo.row['id'], []).append(compo)
         return slotted_components
+
+    def handle_show_column(self, column_index):
+        col_visibility = self.column_visibility
+        if col_visibility is None and not hasattr(self, 'headings'):
+            return
+        if col_visibility is None:
+            col_visibility = tuple([True for x in range(0, len(self.headings))])
+        col_visibility = col_visibility[:column_index] + (True,) + col_visibility[column_index + 1:]
+        self.column_visibility = col_visibility
+        self.redraw()
+
+    def handle_hide_column(self, column_index):
+        col_visibility = self.column_visibility
+        if col_visibility is None and not hasattr(self, 'headings'):
+            return
+        if col_visibility is None:
+            col_visibility = tuple([True for x in range(0, len(self.headings))])
+        col_visibility = col_visibility[:column_index] + \
+            (False,) + col_visibility[column_index + 1:]
+        self.column_visibility = col_visibility
+        self.redraw()
