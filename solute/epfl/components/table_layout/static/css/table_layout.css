@@ -10,3 +10,7 @@ table.fht-table, .fht-table {
 .fht-table>tbody>tr>td {
     overflow: hidden;
 }
+
+.epfl-table-layout .show-column-icon, .epfl-table-layout .hide-column-icon {
+    cursor: pointer;
+}

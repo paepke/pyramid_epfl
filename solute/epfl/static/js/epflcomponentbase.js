@@ -46,6 +46,10 @@ epfl.ComponentBase.prototype.send_event = function (event_name, params, callback
     epfl.send(epfl.make_component_event(this.cid, event_name, params), callback);
 };
 
+epfl.ComponentBase.prototype.send_async_event = function (event_name, params, callback) {
+    epfl.send_async(epfl.make_component_event(this.cid, event_name, params), callback);
+};
+
 epfl.ComponentBase.prototype.repeat_enqueue = function (event_name, params, equiv) {
     epfl.repeat_enqueue(epfl.make_component_event(this.cid, event_name, params), equiv);
 };
@@ -83,6 +87,11 @@ epfl.ComponentBase.prototype.after_response = function (data) {
             .on('dragover', function (event) {
                 event.preventDefault();
                 clearTimeout(obj.leave_timeout);
+                // TODO: Turns out the dataTransfer is locked by CORS. Suggestions welcome.
+                var moved_cid = '';
+                try {
+                    moved_cid = event.dataTransfer.getData('text');
+                } catch (e) {}
                 var current_target = obj.closest_cid(event.originalEvent.target);
                 if (obj.drop_target == current_target) {
                     return;
@@ -90,7 +99,8 @@ epfl.ComponentBase.prototype.after_response = function (data) {
                 obj.handle_drop_leave(event);
                 obj.drop_target = current_target;
                 obj.send_event('drop_accepts', {
-                    cid: obj.drop_target
+                    cid: obj.drop_target,
+                    moved_cid: moved_cid
                 }, function (data) {
                     if (data === true) {
                         obj.handle_drop_accepts(event);
