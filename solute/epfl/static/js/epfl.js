@@ -108,7 +108,7 @@ epfl_module = function() {
             clearTimeout(epfl.init_struct_timeout);
         }
         epfl.init_struct_timeout = setTimeout(function () {
-            $('[epflid]').each(function (i, elm) {
+            $('[epflid]:not([data-parent-epflid])').each(function (i, elm) {
                 elm = $(elm);
                 elm.attr('data-parent-epflid', elm.parent().closest('[epflid]').attr('epflid'));
             });
@@ -126,52 +126,15 @@ epfl_module = function() {
     };
 
     epfl.replace_sub_component = function(cid, html) {
-        var tmp_elm = $('<div>' + html + '</div>');
-        var root_elm = $('[epflid=' + cid + ']');
-
-        var nodes = [];
-        var markers = epfl.get_compo_markers(tmp_elm[0]);
-        var original_markers = epfl.get_compo_markers(root_elm[0]);
-
-        function original_marker(data) {
-            for (var m in original_markers) {
-                var marker = original_markers[m];
-                if (marker.data == data) {
-                    return marker;
-                }
-            }
-        }
-
-        markers.forEach(function (node, i) {
-            if (node.nextSibling != node.nextElementSibling
-                || !node.data.beginsWith('open:row:')
-                || $(node.nextSibling).find('[epflid]').length == 0 ) {
-                return;
-            }
-            var after, before, marker;
-            if (i - 1 > -1) {
-                after = markers[i - 1];
-            }
-            var open = node;
-            var elm = node.nextSibling;
-            var close = elm.nextSibling;
-            if (i + 1 < markers.length) {
-                before = markers[i + 1];
-            }
-            try {
-                if (after && after.data.beginsWith('close:row')) {
-                    marker = original_marker(after.data);
-                    $(close).insertAfter(marker);
-                    $(elm).insertAfter(marker);
-                    $(open).insertAfter(marker);
-                } else if (before && before.data.beginsWith('open:row')) {
-                    marker = original_marker(before.data);
-                    $(open).insertBefore(marker);
-                    $(elm).insertBefore(marker);
-                    $(close).insertBefore(marker);
-                }
-            } catch (e) {
-                console.log(e);
+        var new_rows = $(html).find('[data-row-in=' + cid + ']');
+        var parent_rows = $('[data-row-in=' + cid + ']');
+        new_rows.each(function (i, node) {
+            node = $(node);
+            var pos = node.attr('data-row-pos')
+            if (pos == 0) {
+                node.insertBefore(parent_rows.filter('[data-row-pos=1]'))
+            } else {
+                node.insertAfter(parent_rows.filter('[data-row-pos=' + (pos - 1).toString() + ']'))
             }
         });
     };
@@ -208,46 +171,6 @@ epfl_module = function() {
           $("[epflid='" + cid + "']").replaceWith("<div epflid='" + cid + "'></div>");
     };
 
-    epfl.get_compo_markers = function (container, filter) {
-        if (!filter) {
-            filter = function (node) {
-                return NodeFilter.FILTER_ACCEPT;
-            }
-        }
-        var tree_walker = document.createTreeWalker(
-            container,
-            NodeFilter.SHOW_COMMENT,
-            filter,
-            false
-        );
-        var nodes = [];
-
-        while (tree_walker.nextNode()) {
-            nodes.push(tree_walker.currentNode);
-        }
-        return nodes;
-    };
-
-    epfl.get_compo_part = function(container, cid, name) {
-        var markers = epfl.get_compo_markers(container, function (node) {
-            if (node.data.beginsWith('open:' + name + ':') && node.data.endsWith(':' + cid)) {
-                return NodeFilter.FILTER_ACCEPT;
-            }
-            return NodeFilter.FILTER_SKIP;
-        });
-
-        var nodes = [];
-        markers.forEach(function (node) {
-            var current_node = node;
-            do {
-                nodes.push(current_node);
-                current_node = current_node.nextSibling;
-            } while (!current_node.COMMENT_NODE || !current_node.data || !current_node.data.beginsWith('close:row:'));
-        });
-
-        return $(nodes);
-    };
-
     epfl.destroy_component = function(cid) {
         var compo = epfl.components[cid];
         var parent_cid = compo.elm.attr('data-parent-epflid');
@@ -255,7 +178,8 @@ epfl_module = function() {
             compo.destroy();
             delete epfl.components[cid];
         }
-        epfl.get_compo_part($('[epflid=' + parent_cid + ']')[0], cid, 'row').remove();
+
+        compo.elm_scaffold.remove();
         compo.elm.remove();
     };
 

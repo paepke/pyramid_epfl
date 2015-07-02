@@ -18,6 +18,7 @@ import ujson as json
 import jinja2
 import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
+from lxml import etree
 
 
 class MissingContainerComponentException(Exception):
@@ -110,18 +111,29 @@ class ComponentRenderEnvironment(MutableMapping):
                      'before': self.set_order(compo.get_themed_template(env, 'before')),
                      'after': self.set_order(compo.get_themed_template(env, 'after'))}
 
-    def tagged_markup(self, markup, part, *args, **kwargs):
-        marker = '<!--{0}:{1}:{cid}%s-->'
-        if kwargs.get('compo_obj'):
-            marker %= ':{0}'.format(kwargs['compo_obj'].cid)
-        else:
-            marker %= ''
+    def is_sub_rendering(self, compo_obj=None):
+        request_set = self['compo'].sub_redraw_requested
+        if compo_obj:
+            return request_set and not compo_obj.render()
+        return False
 
-        return jinja2.Markup(''.join([
-            marker.format('open', part, cid=self['compo'].cid),
-            markup.strip(),
-            marker.format('close', part, cid=self['compo'].cid)
-        ]))
+    def tagged_markup(self, markup, part, *args, **kwargs):
+        if self.is_sub_rendering(kwargs.get('compo_obj')):
+            return ''
+
+        if markup.strip() and part == 'row' and kwargs.get('compo_obj'):
+            html = etree.HTML(markup)
+            body = html.find('body')
+            compo_elm = body.xpath('//*[@epflid = "%s"]' % kwargs.get('compo_obj').cid)[0]
+            compo_elm.attrib['data-parent-epflid'] = self['compo'].cid
+            for node in body.iterchildren():
+                node.attrib['data-row-for'] = kwargs['compo_obj'].cid
+                node.attrib['data-row-in'] = self['compo'].cid
+                node.attrib['data-row-pos'] = str(self['compo'].components.index(kwargs['compo_obj']))
+            out = etree.tostring(body, method='html')[6:-7].strip()
+            return jinja2.Markup(out).strip()
+
+        return jinja2.Markup(markup.strip()).strip()
 
     @staticmethod
     def set_order(template):
@@ -871,6 +883,11 @@ class ComponentBase(object):
             if not self.sub_redraw_requested:
                 self.sub_redraw_requested = []
             self.sub_redraw_requested.append(sub_redraw)
+
+            if len(self.sub_redraw_requested) * 1. / len(self.components) > 0.9:
+                self.sub_redraw_requested = None
+        elif self.sub_redraw_requested:
+            self.sub_redraw_requested = None
 
         self.redraw_requested = True
 
