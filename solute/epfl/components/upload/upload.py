@@ -8,13 +8,13 @@ from solute.epfl.components.form.form import FormInputBase
 class Upload(FormInputBase):
     """
     A form upload field.
-    
+
     Typically, this component is used in a form:
-    
+
     .. code:: python
-        
+
         form = Form(node_list=[Upload(label="Image:", name="image")])
-    
+
     """
 
     js_name = FormInputBase.js_name + [("solute.epfl.components:upload/static", "upload.js"),
@@ -59,8 +59,12 @@ class Upload(FormInputBase):
     #: shows the dropzone
     show_drop_zone = False
 
-    #: height of dropzone
-    drop_zone_height = 250
+    #: Margin of drop zone icon and label in percentage from the upper drop zone border.
+    #: Can be adapted in order to yield reasonable layout based on different drop zone icon sizes
+    drop_zone_add_position_top = 35
+
+    #: Additional label text shown in the drop zone, if set
+    drop_zone_add_text = None
 
     #: image type / source
     type = None
@@ -92,7 +96,7 @@ class Upload(FormInputBase):
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 
-    def __init__(self, page, cid, label=None, name=None, default="", validation_type="", handle_click=None,
+    def __init__(self, page, cid, label=None, name=None, default=None, validation_type=None, handle_click=None,
                  store_async=None, **extra_params):
         """Download component.
 

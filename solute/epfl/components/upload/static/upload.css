@@ -22,11 +22,6 @@ img.epfl-upload-image {
     width: 100%;
 }
 
-i.epfl-dropzone-addicon{
-    position:relative;
-    top:35%;
-}
-
 i.epfl-upload-remove-icon {
     position:absolute;
     right:0;

@@ -41,7 +41,12 @@
             {# Dropzone #}
             {% if compo.show_drop_zone and not compo.value%}
                 <div class="epfl-dropzone text-center">
-                    <i class="fa fa-plus fa-{{ compo.plus_icon_size }} epfl-dropzone-addicon"></i>
+                    <div style="position:relative; top: {{ "35" if compo.drop_zone_add_position_top is none else compo.drop_zone_add_position_top }}%">
+                    <i class="fa fa-plus fa-{{ compo.plus_icon_size }}"></i>
+                    {% if compo.drop_zone_add_text %}
+                    <div class="small">{{ compo.drop_zone_add_text }}</div>
+                    {% endif %}
+                    </div>
                 </div>
             {% endif %}
             {# File Input #}
