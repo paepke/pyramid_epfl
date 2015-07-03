@@ -921,9 +921,20 @@ class ComponentBase(object):
     def switch_component(self, target, cid, slot=None, position=None):
         """
         Switches a component from its current location (whatever component it may reside in at that time) and move it to
-        slot and position in the component determined by the cid in target.
-        After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
+        slot and position in the component determined by the cid in target. Largely handled by the identically named
+        :meth:`epfltransaction.Transaction.switch_component` method. Calls the js function epfl.switch_component in AJAX
+        requests.
+
+        :param target: The cid of the target the element with cid is to be moved to.
+        :param cid: The cid of the element to be moved.
+        :param slot: Deprecated.
+        :param position: Position the moved element is to hold in the target container.
         """
+
+        if slot is not None:
+            raise DeprecationWarning('The slot parameter is no longer supported on this method. You can change the slot'
+                                     ' attribute on the component directly.')
+
         if self.page.request.is_xhr:
             self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
         self.page.transaction.switch_component(cid, target, position=position)
