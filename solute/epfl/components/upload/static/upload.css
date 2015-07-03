@@ -19,7 +19,11 @@ div.epfl-upload.active_drop div.epfl-dropzone {
 }
 
 img.epfl-upload-image {
-    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 i.epfl-upload-remove-icon {
@@ -29,5 +33,10 @@ i.epfl-upload-remove-icon {
     background-color: #fff;
     border-radius: 15px;
     padding: 4px;
+}
+
+.epfl-upload-input-zone > input {
+   padding-top: 0px;
+   padding-bottom: 0px;
 }
 
