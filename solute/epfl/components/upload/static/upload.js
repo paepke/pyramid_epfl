@@ -122,18 +122,36 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
         obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
             obj.handle_drop_url(data);
         });
-    } else if (obj.params.fire_change_immediately) {
-        obj.send_event('change', {value: reader.result});
     } else {
-        obj.repeat_enqueue('change', {value: reader.result});
+        obj.change(reader.result);
     }
 };
 
 epfl.Upload.prototype.handle_drop_url = function (url, event) {
+    this.change(url);
+};
+
+epfl.Upload.prototype.change = function (value) {
+    var enqueue_event = true;
     if (this.params.fire_change_immediately) {
-        this.send_event('change', {value: url});
+        enqueue_event = false;
+    }
+    var parent_form = this.elm.closest('.epfl-form');
+    if (parent_form.length == 1) {
+        var is_dirty = parent_form.data('dirty');
+        if (is_dirty == '0') {
+            parent_form.data('dirty', '1');
+            // first change to the form. always send event immediately so that
+            // the serve can handle is_dirty change
+            enqueue_event = false;
+
+            this.repeat_enqueue('set_dirty', {}, this.cid + "_set_dirty");
+        }
+    }
+    if (enqueue_event) {
+        this.repeat_enqueue('change', {value: value}, this.cid + "_change");
     } else {
-        this.repeat_enqueue('change', {value: url});
+        this.send_event('change', {value: value});
     }
 };
 
