@@ -30,16 +30,32 @@ class MissingEventHandlerException(Exception):
 
 
 class CallWrap(object):
+    """Special helper class to convert a list of callables into a single callable object.
+    """
     caller = None
 
-    def __init__(self, direction, callables, env):
-        self.callables = callables
+    def __init__(self, cb_chain, env, part):
+        """Extract the required parameters from input.
+
+        :param cb_chain: Tuple of direction String ('<', '>', '') and callable list.
+        :param env: ComponentRenderEnvironment instance.
+        :param part: The name of the part this CallWrap is made up for.
+        """
+        direction, self.callables = cb_chain
         if direction == '<':
             self.callables.reverse()
         self.env = env
+        self.part = part
 
     def __call__(self, *args, **kwargs):
-        self.caller = kwargs.get('caller')
+        """On call the original caller is executed, and its output chained into the callable chain. The output is then
+           passed through :meth:`ComponentRenderEnvironment.tagged_markup` for the component tagging - required for the
+           sub rendering process flow - and returned.
+
+           :param args: Original arguments to the jinja2 template call.
+           :param kwargs: Original keyworded arguments to the jinja2 template call, the caller attribute is required.
+        """
+        self.caller = kwargs.get('caller', lambda *args, **kwargs: None)
 
         extra_kwargs = dict(self.env)
         extra_kwargs.update(kwargs)
@@ -50,60 +66,46 @@ class CallWrap(object):
             extra_kwargs['caller'] = lambda *a, **k: out
             out = cb(*args, **extra_kwargs)
 
-        return out
+        return self.env.tagged_markup(out, self.part)
 
 
 class ComponentRenderEnvironment(MutableMapping):
+    """Convenience class to manage the different themes and the theme wrapping mechanism. Also handles tagging of
+       components for the sub rendering mechanism. Implements MutableMapping Interface.
+    """
+
     def __iter__(self):
+        """Expose data attribute."""
         return self.data.__iter__()
 
     def __delitem__(self, key):
+        """Expose data attribute."""
         return self.data.__delitem__(key)
 
     def __len__(self):
+        """Expose data attribute."""
         return self.data.__len__()
 
     def __setitem__(self, key, value):
+        """Expose data attribute."""
         return self.data.__setitem__(key, value)
 
     def __getitem__(self, item):
+        """Exposes the wrapped theme template jinja2 callables just in time. Every parameter besides the bypass is
+        treated as a list of callables. Wrapping relies on :class:`CallWrap` to allow for n-deep template chains.
+
+        :param item: The key of the environment that is to be accessed.
+        """
+
+        # Parameter Bypass, currently only the compo key.
         if item in ['compo']:
             return self.data[item]
 
+        # Ensure that only items that should be callables are used here.
         if item not in ['container', 'inner_container', 'row', 'before', 'after']:
-            raise KeyError()
+            raise KeyError('Unknown ')
 
-        callables = self.data[item]
-
-        def wrap(cb, parent=None):
-            if type(cb) is tuple:
-                direction, cb = cb
-                if len(cb) == 1:
-                    return wrap(cb[0])
-                if direction == '<':
-                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
-                return wrap(cb[0], parent=wrap((direction, cb[1:])))
-
-            def _cb(*args, **kwargs):
-                extra_kwargs = dict(self)
-                extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs).strip()
-                if parent is not None:
-                    extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs).strip()
-                return out
-
-            return _cb
-
-        def wrap_markup(cb):
-            """Wraps a callable to be passed through the :meth:`ComponentRenderEnvironment.tagged_markup`.
-            """
-            def _cb(*args, **kwargs):
-                return self.tagged_markup(cb(*args, **kwargs), item, *args, **kwargs)
-
-            return _cb
-
-        return wrap_markup(wrap(callables))
+        return CallWrap(self.data[item], self, item)
 
     def __init__(self, compo, env):
         """Exposes the data attribute via the python MutableMapping Interface.

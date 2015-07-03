@@ -100,8 +100,6 @@ def get_epfl_jinja2_environment(request):
                                                  cache_size = cache_size,
                                                  bytecode_cache = oenv.bytecode_cache)
 
-    print oenv.trim_blocks, oenv.lstrip_blocks
-
     # really shared!
     env.filters = oenv.filters
     env.globals = oenv.globals
