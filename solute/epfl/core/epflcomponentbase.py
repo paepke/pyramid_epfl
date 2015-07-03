@@ -96,6 +96,8 @@ class ComponentRenderEnvironment(MutableMapping):
             return _cb
 
         def wrap_markup(cb):
+            """Wraps a callable to be passed through the :meth:`ComponentRenderEnvironment.tagged_markup`.
+            """
             def _cb(*args, **kwargs):
                 return self.tagged_markup(cb(*args, **kwargs), item, *args, **kwargs)
 
@@ -104,6 +106,8 @@ class ComponentRenderEnvironment(MutableMapping):
         return wrap_markup(wrap(callables))
 
     def __init__(self, compo, env):
+        """Exposes the data attribute via the python MutableMapping Interface.
+        """
         self.data = {'compo': compo,
                      'container': self.set_order(compo.get_themed_template(env, 'container')),
                      'inner_container': self.set_order(compo.get_themed_template(env, 'inner_container')),
@@ -920,8 +924,8 @@ class ComponentBase(object):
         slot and position in the component determined by the cid in target.
         After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
         """
-
-        self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
+        if self.page.request.is_xhr:
+            self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
         self.page.transaction.switch_component(cid, target, position=position)
 
     def get_compo_init_js(self):
