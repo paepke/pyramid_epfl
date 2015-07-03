@@ -22,6 +22,7 @@ class SelectableList(LinkListLayout):
     @staticmethod
     def default_child_cls(*args, **kwargs):
         kwargs["event_name"] = "select"
+        kwargs["url"] = None
         return LinkListLayout.default_child_cls(*args,**kwargs)
 
     def handle_select(self):

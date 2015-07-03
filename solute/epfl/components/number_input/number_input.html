@@ -15,28 +15,28 @@
     {% endif %}
 {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
-	        <input class="form-control"
-	               {% if compo.validation_type == "number"%}
-	               type="number"
-	               pattern="\d*"
-	               {% elif compo.validation_type == "float" %}
-                   type="text"
-	               pattern="[0-9]+([\.|,][0-9]{1,2})?" step="any"
-                   {% else %}
-	               pattern="[0-9]+([\.|,][0-9]+)?" step="any"
-	               {% endif %}
-	               id="{{ compo.cid }}_input"
-	               name="{{ compo.name }}"
-	               value="{{ compo.value if compo.value is not none else '' }}"
-	               placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
-	        {% if compo.min_value is defined and compo.min_value is not none %}
-	        min="{{ compo.min_value }}"
-	        {% endif %}
-	        {% if compo.max_value is defined and compo.max_value is not none %}
-	        max="{{ compo.max_value }}"
-	        {% endif %}
-	        data-validation-type='{{ compo.validation_type }}'
-	        {% if compo.readonly is defined and compo.readonly %}disabled{% endif %} />
+        <input class="form-control"
+            {% if compo.validation_type == "number"%}
+                type="number"
+                pattern="{{ compo.input_pattern if compo.input_pattern is not none else '\d*' }}"
+            {% elif compo.validation_type == "float" %}
+                type="text"
+                pattern="{{ compo.input_pattern if compo.input_pattern is not none else '[0-9]+([\.|,][0-9]{1,2})?' }}" step="any"
+            {% else %}
+               pattern="{{ compo.input_pattern if compo.input_pattern is not none else '[0-9]+([\.|,][0-9]+)?' }}" step="any"
+            {% endif %}
+            id="{{ compo.cid }}_input"
+            name="{{ compo.name }}"
+            value="{{ compo.value if compo.value is not none else '' }}"
+            placeholder="{{compo.placeholder if compo.placeholder is not none else ''  }}"
+            {% if compo.min_value is defined and compo.min_value is not none %}
+                min="{{ compo.min_value }}"
+            {% endif %}
+            {% if compo.max_value is defined and compo.max_value is not none %}
+                max="{{ compo.max_value }}"
+            {% endif %}
+            data-validation-type='{{ compo.validation_type }}'
+        {% if compo.readonly is defined and compo.readonly %}disabled{% endif %} />
         {% if compo.validation_error %}
             <small class="help-block">{{ compo.validation_error }}</small>
         {% endif %}

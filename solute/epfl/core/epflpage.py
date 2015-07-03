@@ -461,7 +461,7 @@ class Page(object):
         """ Shows a message to the user. The message is non evasive - it will show up and fade away nicely.
         typ = "info" | "ok" | "error" | "success" | "warning"
         """
-        self.show_Message(msg, typ, fading=True)
+        self.show_message(msg, typ, fading=True)
 
     def show_message(self, msg, typ=None, fading=False):
         """

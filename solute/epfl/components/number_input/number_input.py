@@ -24,8 +24,9 @@ class NumberInput(FormInputBase):
     validation_type = 'number'
 
     layout_vertical = False
-    min_value = None #: If set, the minimum value to be supported by the control.
-    max_value = None #: If set, the maximum value to be supported by the control.
+    min_value = None  #: If set, the minimum value to be supported by the control.
+    max_value = None  #: If set, the maximum value to be supported by the control.
+    input_pattern = None  #: If set, used as HTML 5 pattern for immediate validation of the input field
 
     def handle_change(self, value):
         if self.validation_type == 'float' and value is not None:
@@ -35,7 +36,7 @@ class NumberInput(FormInputBase):
                 value = None
         self.value = value
 
-    def __init__(self, page, cid, label=None, name=None, min_value=None, max_value=None, default="", validation_type="", **extra_params):
+    def __init__(self, page, cid, label=None, name=None, min_value=None, max_value=None, input_pattern=None, default=None, validation_type=None, **extra_params):
         '''
         NumberInput Component
 
@@ -45,5 +46,14 @@ class NumberInput(FormInputBase):
         :param validation_type: The type of validator that will be used for this field
         :param min_value: The minimum value that can be set to this field
         :param max_value: The maximum value that can be set to this field
+        :param input_pattern: HTML 5 pattern to be used for the input field for immediate field validation
         '''
-        super(NumberInput, self).__init__(page, cid, label, name, default, validation_type)
+        super(NumberInput, self).__init__(page, cid,
+                                          label=label,
+                                          name=name,
+                                          min_value=min_value,
+                                          max_value=max_value,
+                                          input_pattern=input_pattern,
+                                          default=default,
+                                          validation_type=validation_type,
+                                          **extra_params)
