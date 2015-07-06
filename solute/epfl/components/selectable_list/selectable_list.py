@@ -2,28 +2,30 @@
 from solute.epfl.core import epflcomponentbase
 from solute.epfl.components import LinkListLayout
 
+
 class SelectableList(LinkListLayout):
     """
     Selectable List is a MultiSelect Component, multiple values can be selected
     """
+    data_interface = {'id': None, 'text': None}
+
     compo_state = LinkListLayout.compo_state + ["search_text"]
 
     search_text = None  #: search text for custom search text handling
 
     scroll_pos = None  #: Scrollbar position this is used to jump back to the last scroll pos after redraw
 
-    def __init__(self,page,cid, data_interface=None, *args, **extra_params):
+    def __init__(self, page, cid, data_interface=None, *args, **extra_params):
         """
         Selectable List is a MultiSelect Component, multiple values can be selected
         :param data_interface: data interface for child class needs id and text
         """
-        super(SelectableList, self).__init__(page,cid,data_interface=data_interface, *args, **extra_params)
+        super(SelectableList, self).__init__(page, cid, data_interface=data_interface, *args, **extra_params)
 
     @staticmethod
     def default_child_cls(*args, **kwargs):
         kwargs["event_name"] = "select"
-        kwargs["url"] = None
-        return LinkListLayout.default_child_cls(*args,**kwargs)
+        return LinkListLayout.default_child_cls(*args, **kwargs)
 
     def handle_select(self):
         cid = getattr(self.page, self.epfl_event_trace[0]).cid
