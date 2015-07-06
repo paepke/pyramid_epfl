@@ -84,8 +84,7 @@ class ComponentRenderEnvironment(MutableMapping):
             "ComponentRenderEnvironment" -> "data dict" [label="provides"];
             "__call__" -> "jinja2.Markup" [label="returns"];
 
-            "ComponentBase.get_themed_template" -> "ComponentRenderEnvironment.set_order";
-            "ComponentRenderEnvironment.set_order" -> "callable chain";
+            "ComponentBase.get_themed_template" -> "callable chain";
             "callable chain" -> "data dict" [label=""];
 
             "__getitem__" -> "data dict" [label="accesses"];
@@ -132,31 +131,46 @@ class ComponentRenderEnvironment(MutableMapping):
         """Exposes the data attribute via the python MutableMapping Interface.
         """
         self.data = {'compo': compo,
-                     'container': self.set_order(compo.get_themed_template(env, 'container')),
-                     'inner_container': self.set_order(compo.get_themed_template(env, 'inner_container')),
-                     'row': self.set_order(compo.get_themed_template(env, 'row')),
-                     'before': self.set_order(compo.get_themed_template(env, 'before')),
-                     'after': self.set_order(compo.get_themed_template(env, 'after'))}
+                     'container': compo.get_themed_template(env, 'container'),
+                     'inner_container': compo.get_themed_template(env, 'inner_container'),
+                     'row': compo.get_themed_template(env, 'row'),
+                     'before': compo.get_themed_template(env, 'before'),
+                     'after': compo.get_themed_template(env, 'after')}
 
     def is_sub_rendering(self, compo_obj=None):
+        """Determine if the component is part of a currently running sub_redraw_request. Returns false if either no
+           sub_redraw_request is active or the component is part of that request.
+
+        :param compo_obj: The component to be checked.
+        """
         request_set = self['compo'].sub_redraw_requested
         if compo_obj:
             return request_set and not compo_obj.render()
         return False
 
     def tagged_markup(self, markup, part, *args, **kwargs):
+        """Tags the outer parts of the passed markup in row parts with html data attributes to allow EPFL Javascript
+           proper targetting of sub components including their scaffolding as determined by a container component.
+        """
+
         if self.is_sub_rendering(kwargs.get('compo_obj')):
             return ''
 
         if markup.strip() and part == 'row' and kwargs.get('compo_obj'):
             compo_obj = kwargs.get('compo_obj')
+            # Using etree.HTML provides for resilient handling of potentially malformed html.
             html = etree.HTML(markup)
             body = html.find('body')
+
+            # Tag the component with a data-parent-epflid attribute.
+            # TODO: Check if this actually hits only what it's supposed to hit.
             compo_elm = body.xpath('//*[@epflid = "%s"]' % compo_obj.cid)[0]
             compo_elm.attrib['data-parent-epflid'] = self['compo'].cid
+
+            # Tag all nodes at the outside of the row with the appropriate html attributes.
             for node in body.iterchildren():
-                node.attrib['data-row-for'] = compo_obj.cid
-                node.attrib['data-row-in'] = self['compo'].cid
+                node.attrib['data-row-for'] = compo_obj.cid  # The contained elements cid.
+                node.attrib['data-row-in'] = self['compo'].cid  # The containing elements cid.
                 try:
                     if compo_obj.position == 0:
                             node.attrib['data-row-before'] = self['compo'].components[1].cid
@@ -164,19 +178,13 @@ class ComponentRenderEnvironment(MutableMapping):
                         node.attrib['data-row-after'] = self['compo'].components[compo_obj.position - 1].cid
                 except IndexError:
                     pass
+
+            # Strip the unnecessary body tag and return proper stripped jinja2.Markup.
             out = etree.tostring(body, method='html')[6:-7].strip()
             return jinja2.Markup(out).strip()
 
+        # Default fallback. No watchdog structure, since other special handling might be required later on.
         return jinja2.Markup(markup.strip()).strip()
-
-    @staticmethod
-    def set_order(template):
-        # if type(template) is not tuple:
-        #     return template
-        # direction, template = template
-        # if direction == '<':
-        #     template.reverse()
-        return template
 
 
 class UnboundComponent(object):
