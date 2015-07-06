@@ -9,32 +9,18 @@ class ColorPicker(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:colorpicker/static", "colorpicker.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:colorpicker/static", "colorpicker.css")]
     template_name = "colorpicker/colorpicker.html"
-
     new_style_compo = True
-
     compo_js_params = ['fire_change_immediately']
     compo_js_name = 'ColorPicker'
     compo_js_extras = ['handle_click']
-
-    TYPE_RGB = 0
-    TYPE_SPECIAL = 1
-
     compo_state = FormInputBase.compo_state + ["value_options"]
-
     js_parts = []
 
-    value_options = [
-        {"data": "#FF0000", "type": TYPE_RGB, "text": "Rot"},
-        {"data": "Silber", "type": TYPE_SPECIAL, },
-        {"data": "Bronze", "type": TYPE_SPECIAL, },
-        {"data": "Gold", "type": TYPE_SPECIAL, },
-        {"data": "#00FF00", "type": TYPE_RGB, },
-        {"data": "#0000FF", "type": TYPE_RGB, },
-        {"data": "#00FFFF", "type": TYPE_RGB, },
-        {"data": "#FFFFFF", "type": TYPE_RGB, },
-        {"data": "#000000", "type": TYPE_RGB, },
-        {"data": "#FF00FF", "type": TYPE_RGB, "text": "Pink"},
-    ]
+    TYPE_RGB = 0  #: Constant for value options list, show data as rgb
+
+    TYPE_SPECIAL = 1  #: Constant for value options list, show data as special
+
+    value_options = []  #: list of available colors in the format {data: #hex,type:TYPE_RGB|TYPE_SPECIAL,optional: text}
 
     def handle_change(self, value):
         if self.value is None:
@@ -47,3 +33,10 @@ class ColorPicker(FormInputBase):
         else:
             self.value.append(full_value)
         self.redraw()
+
+    def __init__(self, page, cid, value_options=None, **extra_params):
+        """
+        ColorPicker compo displays a selectable list of colors, or special values such as transparent
+        :param value_options: list of available colors in the format {data: #hex,type:TYPE_RGB|TYPE_SPECIAL,optional: text}
+        """
+        super(ColorPicker, self).__init__(page=page,cid=cid,value_options=value_options,**extra_params)

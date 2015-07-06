@@ -25,3 +25,12 @@ div.epfl-colorthief-color i {
     border-radius: 15px;
     padding: 2px;
 }
+
+i.epfl-colorthief-remove-icon {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 4px;
+}

@@ -1,7 +1,12 @@
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief clearfix">
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief"
+     style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
+    <div class="clearfix"></div>
+    {% if compo.image_src != None %}
+        <i class="fa fa-times fa-lg color-danger epfl-colorthief-remove-icon"></i>
+    {% endif %}
     <img class="epfl-colorthief-image" data-cid="{{ compo.cid }}" {% if compo.image_src != None %}src="{{ compo.image_src }}"{% endif %}/>
     {% if compo.image_src == None %}
-    <div class="epfl-colorthief-dropzone text-center" style="height:{{ compo.drop_zone_height }}px">
+    <div class="epfl-colorthief-dropzone text-center" style="height:100%;width:100%;">
             <i class="fa fa-image fa-5x epfl-dropzone-colorthief-addicon"></i>
     </div>
 {% endif %}
@@ -12,4 +17,5 @@
             </div>
         {% endfor %}
     {% endif %}
+    <div class="clearfix"></div>
 </div>
