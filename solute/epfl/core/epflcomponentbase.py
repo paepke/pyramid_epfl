@@ -72,6 +72,27 @@ class CallWrap(object):
 class ComponentRenderEnvironment(MutableMapping):
     """Convenience class to manage the different themes and the theme wrapping mechanism. Also handles tagging of
        components for the sub rendering mechanism. Implements MutableMapping Interface.
+
+    .. graphviz::
+
+        digraph foo {
+            "Component" -> "ComponentRenderEnvironment";
+            "jinja2 environment" -> "ComponentRenderEnvironment";
+            "ComponentRenderEnvironment" -> "__call__" [label="provides"];
+            "ComponentRenderEnvironment" -> "__getitem__" [label="provides"];
+            "ComponentRenderEnvironment" -> "__init__" [label=""];
+            "ComponentRenderEnvironment" -> "data dict" [label="provides"];
+            "__call__" -> "jinja2.Markup" [label="returns"];
+
+            "ComponentBase.get_themed_template" -> "ComponentRenderEnvironment.set_order";
+            "ComponentRenderEnvironment.set_order" -> "callable chain";
+            "callable chain" -> "data dict" [label=""];
+
+            "__getitem__" -> "data dict" [label="accesses"];
+            "__getitem__" -> "callable generator" [label="provides"];
+            "callable generator" -> "CallWrap" [label="returns"];
+            "callable chain" -> "CallWrap" [label="wrapped by"];
+        }
     """
 
     def __iter__(self):
@@ -779,9 +800,19 @@ class ComponentBase(object):
         return {'compo': self}
 
     def render(self, target='main'):
-        """ Called to render the complete component.
-        Used by a full-page render request.
-        It returns HTML.
+        """Called to render this component including all potential sub components.
+
+        .. graphviz::
+
+            digraph foo {
+                "ComponentBase.render" -> "not ComponentBase.is_visible" -> "jinja2.Markup";
+                "ComponentBase.render" -> "ComponentBase.is_visible" -> "render sub component js";
+                "render sub component js" -> "Request.get_epfl_jinja2_environment" ->
+                "ComponentBase.get_compo_init_js" ->
+                "ComponentBase.get_render_environment" -> "ComponentRenderEnvironment" ->
+                "ComponentBase.js_parts" -> "jinja2.Markup";
+                "ComponentRenderEnvironment" -> "ComponentBase.main" -> "jinja2.Markup";
+            }
         """
 
         if self.render_cache is not None:
