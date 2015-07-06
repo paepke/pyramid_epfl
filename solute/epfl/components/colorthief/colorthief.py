@@ -16,6 +16,7 @@ class ColorThief(FormInputBase):
     compo_js_params = ['fire_change_immediately', 'colors_count']
     compo_js_name = 'ColorThief'
     compo_js_extras = ['handle_click', 'handle_drop']
+    js_parts = []
 
     compo_state = FormInputBase.compo_state + ["drop_zone_height", "image_src", "dominat_colors_count"]
 
@@ -28,9 +29,15 @@ class ColorThief(FormInputBase):
     def handle_change(self, value, image_src=None):
         self.value = [{"rgb": "rgb(%d,%d,%d)" % (val[0], val[1], val[2]), "selected": False} for val in value]
         self.image_src = image_src
-
-        print value, image_src
         self.redraw()
 
     def handle_drop_accepts(self, cid, moved_cid):
         self.add_ajax_response('true')
+
+    def handle_click_color(self, color):
+        for val in self.value:
+            if val["rgb"] == color:
+                val["selected"] = True
+                break
+
+        self.redraw()

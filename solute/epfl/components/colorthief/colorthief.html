@@ -7,8 +7,8 @@
 {% endif %}
     {%if compo.value != None %}
         {% for val in compo.value %}
-            <div class="epfl-colorthief-color pull-left" style="background-color: {{ val["rgb"] }}">
-            {% if val["selected"] %}<i class="fa fa-check fa-lg text-primary"></i>{% endif %}
+            <div class="epfl-colorthief-color pull-left text-center" style="background-color: {{ val["rgb"] }}" data-color="{{ val["rgb"] }}">
+            {% if val["selected"] == True %}<i class="fa fa-check fa-lg text-primary"></i>{% endif %}
             </div>
         {% endfor %}
     {% endif %}
