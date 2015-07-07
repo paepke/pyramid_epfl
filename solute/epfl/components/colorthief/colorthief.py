@@ -9,7 +9,7 @@ class ColorThief(FormInputBase):
     css_name = FormInputBase.css_name + [("solute.epfl.components:colorthief/static", "colorthief.css")]
     template_name = "colorthief/colorthief.html"
     js_parts = []
-    compo_state = FormInputBase.compo_state + ["drop_zone_height", "image_src", "dominat_colors_count"]
+    compo_state = FormInputBase.compo_state + ["image_src", "dominat_colors_count"]
 
     height = None  #: Compo height in px if none nothing is set
 
