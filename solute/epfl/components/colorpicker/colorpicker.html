@@ -1,5 +1,4 @@
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorpicker">
-    <div class="clearfix"></div>
     {% for val in compo.value_options %}
         {% if val["type"] == 0 %}
             <div class="epfl-colorpicker-colorfield pull-left"
@@ -25,5 +24,4 @@
             </div>
         {% endif %}
     {% endfor %}
-    <div class="clearfix"></div>
 </div>
