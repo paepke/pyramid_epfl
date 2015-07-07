@@ -64,7 +64,6 @@ def test_change(page):
     assert '<i class="fa fa-check fa-lg text-primary"></i>' not in compo.render(), "check icon found before handle change"
 
     compo.handle_change("#FFFFFF")  # Click the white color field
-    page.handle_transaction()
     compo.render_cache = None
 
     assert compo.get_value() == [
@@ -72,7 +71,6 @@ def test_change(page):
     assert '<i class="fa fa-check fa-lg text-primary"></i>' in compo.render(), "check icon not found after handle change"
 
     compo.handle_change("transparent")  # click the transparent special color field
-    page.handle_transaction()
     compo.render_cache = None
 
     assert compo.get_value() == [{u'type': 0, u'data': u'#FFFFFF', u'text': u'white'},
@@ -81,7 +79,6 @@ def test_change(page):
     assert 'style="background-color:#00FF00"' in compo.render(), "check color not found after handle change"
 
     compo.handle_change("#FFFFFF")  # click the white color field again to remove it from selection
-    page.handle_transaction()
     compo.render_cache = None
 
     assert compo.get_value() == [
@@ -89,7 +86,6 @@ def test_change(page):
     assert '<i class="fa fa-check fa-lg text-primary"></i>' not in compo.render(), "check icon not found after handle change"
 
     compo.handle_change("transparent")  # click the transparent special color field again to remove it from selection
-    page.handle_transaction()
     compo.render_cache = None
 
     assert compo.get_value() == [], "value incorrect after handle change"

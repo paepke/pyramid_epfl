@@ -58,7 +58,6 @@ def test_change(page):
 
     compo.handle_change(value=[(255, 255, 255), (0, 0, 0)], image_src="test.png")
 
-    page.handle_transaction()
     compo.render_cache = None
     compo_html = etree.fromstring(compo.render())
 
@@ -74,7 +73,6 @@ def test_change(page):
     assert color_divs[1].attrib.get("data-color", None) == "#000", "black color div has no data-color"
 
     compo.handle_click_color("#000")
-    page.handle_transaction()
     compo.render_cache = None
     compo_html = etree.fromstring(compo.render())
 
@@ -85,7 +83,6 @@ def test_change(page):
     assert len(color_divs[1]) == 1, "Selected color div has no icon"
 
     compo.handle_click_color("#000")
-    page.handle_transaction()
     compo.render_cache = None
     compo_html = etree.fromstring(compo.render())
 
