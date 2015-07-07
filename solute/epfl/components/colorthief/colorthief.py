@@ -1,7 +1,5 @@
 # * encoding: utf-8
 
-from __future__ import unicode_literals
-
 from solute.epfl.components.form.form import FormInputBase
 
 
@@ -44,8 +42,8 @@ class ColorThief(FormInputBase):
         self.redraw()
 
     def __init__(self, page, cid, height=None, width=None, image_src=None, color_count=None, **extra_params):
-        """
-        ColorThief Compo: A Drop Area where images can be dropped and their colors get extracted
+        """ColorThief Compo: A Drop Area where images can be dropped and their colors get extracted
+
         :param height: Compo height in px if none nothing is set
         :param width: Compo width in px if none nothing is set
         :param image_src: image src if set the drop zone is hidden
