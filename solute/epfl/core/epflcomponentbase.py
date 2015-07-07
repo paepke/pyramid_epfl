@@ -869,6 +869,10 @@ class ComponentBase(object):
     def get_compo_init_js(self):
         if not self.new_style_compo:
             return ''
+        #if self.js_parts:
+        #    raise Exception('CompatibilityError: You have set a non empty js_parts attribute on a new style component %s. '
+        #                    'Check the inheritance chain of your component or set new_style_compo to False.' % type(self))
+
         params = {}
         for param_name in self.compo_js_params:
             params[param_name] = getattr(self, param_name)

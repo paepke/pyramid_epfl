@@ -108,6 +108,8 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
     var obj = this;
 
     // Currently only single files supported, although that's really only a question of implementing a backend.
+    $(this.elm).find(".epfl-dropzone").hide();
+    $(this.elm).append("<div class='text-center text-primary'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
     this.read_file(files[0], function () {
         obj.upload_file(this, files[0])
     });
@@ -116,9 +118,10 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
 epfl.Upload.prototype.upload_file = function (reader, file) {
     var obj = this;
     if (obj.params.store_async) {
-        if(!file.name){
+        if (!file.name) {
             file.name = "external"
         }
+
         obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
             obj.handle_drop_url(data);
         });

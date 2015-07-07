@@ -80,6 +80,7 @@ from modal.modal import Modal
 from dropdown.dropdown import Dropdown
 
 from loading.loading import Loading
+from embedded_video.embedded_video import EmbeddedVideo
 
 # Convenience Components
 from login_box.login_box import LoginBox
@@ -160,3 +161,4 @@ def add_routes(config):
     Dropdown.add_pyramid_routes(config)
 
     Loading.add_pyramid_routes(config)
+    EmbeddedVideo.add_pyramid_routes(config)
