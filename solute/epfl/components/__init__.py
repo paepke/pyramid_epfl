@@ -32,6 +32,9 @@ from input_label.input_label import InputLabel
 from upload.upload import Upload
 from download.download import Download
 from plain_html.plain_html import PlainHtml
+from password_input.password_input import PasswordInput
+from datetime_input.datetime_input import DatetimeInput
+from autocomplete_input.autocomplete_input import AutoCompleteInput
 
 #: Special
 from sidebar.sidebar import Sidebar
