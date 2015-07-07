@@ -1,6 +1,5 @@
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief"
      style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
-    <div class="clearfix"></div>
     {% if compo.image_src != None %}
         <i class="fa fa-times fa-lg color-danger epfl-colorthief-remove-icon"></i>
     {% endif %}
@@ -17,5 +16,4 @@
             </div>
         {% endfor %}
     {% endif %}
-    <div class="clearfix"></div>
 </div>

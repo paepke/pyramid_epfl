@@ -1,7 +1,5 @@
 # * encoding: utf-8
 
-from __future__ import unicode_literals
-
 from solute.epfl.components.form.form import FormInputBase
 
 
@@ -10,12 +8,7 @@ class ColorThief(FormInputBase):
                                        ("solute.epfl.components:colorthief/static", "color-thief.min.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:colorthief/static", "colorthief.css")]
     template_name = "colorthief/colorthief.html"
-    new_style_compo = True
-    compo_js_params = ['fire_change_immediately', 'color_count']
-    compo_js_name = 'ColorThief'
-    compo_js_extras = ['handle_click', 'handle_drop']
     js_parts = []
-
     compo_state = FormInputBase.compo_state + ["drop_zone_height", "image_src", "dominat_colors_count"]
 
     height = None  #: Compo height in px if none nothing is set
@@ -25,6 +18,23 @@ class ColorThief(FormInputBase):
     image_src = None  #: image src if set the drop zone is hidden
 
     color_count = 8  #: Count of colors which got extracted from the image
+
+    new_style_compo = True
+    compo_js_params = ['fire_change_immediately', 'color_count']
+    compo_js_name = 'ColorThief'
+    compo_js_extras = ['handle_click', 'handle_drop']
+
+    def __init__(self, page, cid, height=None, width=None, image_src=None, color_count=None, **extra_params):
+        """ColorThief Compo: A Drop Area where images can be dropped and their colors get extracted
+
+        :param height: Compo height in px if none nothing is set
+        :param width: Compo width in px if none nothing is set
+        :param image_src: image src if set the drop zone is hidden
+        :param color_count: Count of colors which got extracted from the image
+        :return:
+        """
+        super(ColorThief, self).__init__(page=page, cid=cid, height=height, width=width, image_src=image_src,
+                                         color_count=color_count, **extra_params)
 
     def handle_change(self, value, image_src=None):
         self.value = [{"rgb": "#%x%x%x" % (val[0], val[1], val[2]), "selected": False} for val in
@@ -42,15 +52,3 @@ class ColorThief(FormInputBase):
                 break
 
         self.redraw()
-
-    def __init__(self, page, cid, height=None, width=None, image_src=None, color_count=None, **extra_params):
-        """
-        ColorThief Compo: A Drop Area where images can be dropped and their colors get extracted
-        :param height: Compo height in px if none nothing is set
-        :param width: Compo width in px if none nothing is set
-        :param image_src: image src if set the drop zone is hidden
-        :param color_count: Count of colors which got extracted from the image
-        :return:
-        """
-        super(ColorThief, self).__init__(page=page, cid=cid, height=height, width=width, image_src=image_src,
-                                         color_count=color_count, **extra_params)
