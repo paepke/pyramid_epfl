@@ -268,7 +268,7 @@ epfl_module = function() {
                         epfl.before_response();
                         $.globalEval(data);
                     } catch(e) {
-                    epfl.show_message("Error (" + e.name + ") when running Server response: " + e.message);
+                        epfl.show_message({"msg": "Error (" + e.name + ") when running Server response: " + e.message, "typ": "error", "fading": true});
                     }
                 }
                 if (callback_func) {
@@ -281,7 +281,7 @@ epfl_module = function() {
                 epfl.hide_please_wait(true);
             },
             error: function (httpRequest, message, errorThrown) {
-                epfl.show_message("Server Error: " + errorThrown, "error");
+                epfl.show_message({"msg": "Server Error: " + errorThrown, "typ": "error", "fading": true});
                 console.log(httpRequest);
                 if (unqueued) {
                     return;
@@ -373,7 +373,7 @@ epfl_module = function() {
                     dataType: "json",
                     success: function(data) { callback_func(data) },
                     error: function(httpRequest, message, errorThrown) {
-                        epfl.show_message("txt_system_error: " + errorThrown, "error");
+                        epfl.show_message({"msg": "txt_system_error: " + errorThrown, "typ": "error", "fading": true});
                     }
                    });
         });

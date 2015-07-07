@@ -47,6 +47,7 @@ class TextInput(FormInputBase):
     #: Optional font-awesome icon to be rendered as a layover icon above the input field (aligned to the right)
     layover_icon = None
 
+    #: Set to true if input field should be a datetime picker (using jquery-datetimepicker plugin)
     date = False
 
     def __init__(self, page, cid,
@@ -71,6 +72,7 @@ class TextInput(FormInputBase):
                  show_count=False,
                  password=False,
                  layover_icon=None,
+                 date=False,
                  **extra_params):
         """
         Form text input Component
@@ -96,6 +98,7 @@ class TextInput(FormInputBase):
         :param show_count: Set to true to show a input counter right to the field. Requires a max_length to be set
         :param password: Set to true if input field should be used as a password field
         :param layover_icon: Optional font-awesome icon to be rendered as a layover icon above the input field (aligned to the right)
+        :param date: Set to true if input field should be a datetime picker (using jquery-datetimepicker plugin)
         """
         super(TextInput, self).__init__(page, cid,
                                         label=label,
