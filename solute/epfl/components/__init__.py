@@ -31,10 +31,8 @@ from toggle.toggle import Toggle
 from input_label.input_label import InputLabel
 from upload.upload import Upload
 from download.download import Download
-from plain_html.plain_html import PlainHtml
-from password_input.password_input import PasswordInput
-from datetime_input.datetime_input import DatetimeInput
-from autocomplete_input.autocomplete_input import AutoCompleteInput
+from colorpicker.colorpicker import ColorPicker
+from colorthief.colorthief import ColorThief
 
 #: Special
 from sidebar.sidebar import Sidebar
@@ -51,6 +49,7 @@ from placeholder.placeholder import Placeholder
 from popover.popover import Popover
 from link.link import Link
 from breadcrumb.breadcrumb import Breadcrumb
+from plain_html.plain_html import PlainHtml
 
 #: Lists
 from tabs_layout.tabs_layout import TabsLayout
@@ -144,7 +143,8 @@ def add_routes(config):
     InputLabel.add_pyramid_routes(config)
     Upload.add_pyramid_routes(config)
     Download.add_pyramid_routes(config)
-    PlainHtml.add_pyramid_routes(config)
+    ColorPicker.add_pyramid_routes(config)
+    ColorThief.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
@@ -155,6 +155,7 @@ def add_routes(config):
     Headbar.add_pyramid_routes(config)
     Placeholder.add_pyramid_routes(config)
     Popover.add_pyramid_routes(config)
+    PlainHtml.add_pyramid_routes(config)
 
     Modal.add_pyramid_routes(config)
     Dropdown.add_pyramid_routes(config)
