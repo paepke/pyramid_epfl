@@ -57,3 +57,4 @@ def test_render_width_height(page):
     assert 'src="https://www.youtube.com/embed/this_id_dont_exits"' in compo.render(), "iframe src wrong or not found"
     assert 'width="250px"' in compo.render(), "iframe wrong size"
     assert 'height="150px"' in compo.render(), "iframe wrong size"
+
