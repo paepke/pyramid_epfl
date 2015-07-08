@@ -48,6 +48,5 @@ class ColorPicker(FormInputBase):
         self.redraw()
 
     def handle_toggle(self):
-        print "toggle"
         self.colors_visible = not self.colors_visible
         self.redraw()
