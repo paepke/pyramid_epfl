@@ -4,6 +4,8 @@ from solute.epfl.core.epflcomponentbase import ComponentBase
 
 
 class EmbeddedVideo(ComponentBase):
+    compo_state = ComponentBase.compo_state + ["video_id", "video_type", "width", "height"]
+
     template_name = "embedded_video/embedded_video.html"
 
     video_id = None  #: The id of the video, could easy be found at the end of the youtube or vimeo url
