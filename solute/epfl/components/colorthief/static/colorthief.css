@@ -18,12 +18,15 @@ div.epfl-colorthief-color {
     width: 40px;
     height: 25px;
     margin: 3px;
+    border: 1px solid #DDD;
 }
 
 div.epfl-colorthief-color i {
     background-color: #fff;
     border-radius: 15px;
     padding: 2px;
+    position:relative;
+    top:3px;
 }
 
 i.epfl-colorthief-remove-icon {

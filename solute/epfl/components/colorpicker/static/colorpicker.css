@@ -1,5 +1,22 @@
-div.epfl-colorpicker-colorfield, div.epfl-colorpicker-specialfield{
-    border: 1px solid black;
-    height:25px;
-    width: 25px;
+div.epfl-colorpicker-colorfield{
+    width: 40px;
+    height: 25px;
+    margin: 3px;
+    border: 1px solid #DDD;
+}
+
+div.epfl-colorpicker-specialfield{
+    height: 25px;
+    margin: 3px;
+    border: 1px solid #DDD;
+    padding: 5px;
+}
+
+
+div.epfl-colorpicker-colorfield i, div.epfl-colorpicker-specialfield i{
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 2px;
+    position:relative;
+    top:3px;
 }

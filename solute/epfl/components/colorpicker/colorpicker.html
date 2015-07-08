@@ -1,29 +1,55 @@
-<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorpicker">
-    {% if compo.value_options is not none %}
-        {% for val in compo.value_options %}
-            {% if val["type"] == 0 %}
-                <div class="epfl-colorpicker-colorfield pull-left"
-                     style="background-color: {{ val["data"] }}"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
-                     data-value="{{ val["data"] }}">
+{% macro color_list(value_options) %}
+    {% for val in value_options %}
+        {% if val["type"] == 0 %}
+            <div class="epfl-colorpicker-colorfield pull-left text-center"
+                 style="background-color: {{ val["data"] }}"
+                 data-toggle="tooltip"
+                 data-placement="top"
+                 title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
+                 data-value="{{ val["data"] }}">
+                {% if compo.value and val in compo.value %}
+                    <i class="fa fa-check fa-lg text-primary"></i>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div class="clearfix"></div>
+    <hr>
+    <p><strong>Spezial Werte:</strong></p>
+    {% for val in value_options %}
+        {% if val["type"] == 1 %}
+             <div class="epfl-colorpicker-specialfield pull-left text-center"
+                 data-toggle="tooltip"
+                 data-placement="top"
+                 title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
+                 data-value="{{ val["data"] }}"
                     {% if compo.value and val in compo.value %}
-                        <i class="fa fa-check fa-lg text-primary"></i>
-                    {% endif %}
-                </div>
-            {% else %}
-                <div class="epfl-colorpicker-specialfield pull-left text-center"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
-                     data-value="{{ val["data"] }}"
-                        {% if compo.value and val in compo.value %}
-                     style="background-color:#00FF00"
-                        {% endif %}>
-                    <i class="fa fa-code fa-lg"></i>
+                 style="background-color:#00FF00"
+                    {% endif %}>
+                {{ val["text"] }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+
+{% endmacro %}
+
+<div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorpicker">
+    {% if compo.toggle_button %}
+        {############ Toggle Mode ############}
+        <button class="btn btn-default"><i class="fa fa-edit"></i></button>
+        {% if compo.colors_visible %}
+            <hr>
+            {% if compo.value_options is not none %}
+                <div class="epfl-colorpicker-colors">
+                    {{ color_list(compo.value_options) }}
                 </div>
             {% endif %}
-        {% endfor %}
+        {% endif %}
+    {% else %}
+        {############ Normal Mode ############}
+        {% if compo.value_options is not none %}
+            {{ color_list(compo.value_options) }}
+        {% endif %}
     {% endif %}
 </div>

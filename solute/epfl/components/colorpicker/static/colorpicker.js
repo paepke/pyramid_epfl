@@ -6,21 +6,34 @@ epfl.ColorPicker.inherits_from(epfl.FormInputBase);
 
 Object.defineProperty(epfl.ColorPicker.prototype, 'specialfield', {
     get: function () {
-        return this.elm.children('div.epfl-colorpicker-specialfield');
+        return this.elm.find('div.epfl-colorpicker-specialfield');
     }
 });
 
 Object.defineProperty(epfl.ColorPicker.prototype, 'colorfield', {
     get: function () {
-        return this.elm.children('div.epfl-colorpicker-colorfield');
+        return this.elm.find('div.epfl-colorpicker-colorfield');
     }
 });
 
 Object.defineProperty(epfl.ColorPicker.prototype, 'colorfield_icon', {
     get: function () {
-        return this.elm.children('div').children('i.fa');
+        return this.elm.children('div').find('i.fa');
     }
 });
+
+Object.defineProperty(epfl.ColorPicker.prototype, 'toggle_button', {
+    get: function () {
+        return this.elm.find('button');
+    }
+});
+
+Object.defineProperty(epfl.ColorPicker.prototype, 'toggle_button_icon', {
+    get: function () {
+        return this.elm.find('button').children("i");
+    }
+});
+
 
 epfl.ColorPicker.prototype.after_response = function (data) {
     epfl.FormInputBase.prototype.after_response.call(this, data);
@@ -35,6 +48,8 @@ epfl.ColorPicker.prototype.handle_local_click = function (event) {
         value = target.data("value");
     } else if (this.colorfield_icon.is(event.target)) {
         value = target.parent().data("value");
+    } else if(this.toggle_button.is(event.target) || this.toggle_button_icon.is(event.target)){
+        this.send_event("toggle",{});
     }
 
     if (value !== null) {
