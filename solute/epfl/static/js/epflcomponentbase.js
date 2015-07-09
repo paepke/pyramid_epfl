@@ -26,18 +26,6 @@ Object.defineProperty(epfl.ComponentBase.prototype, 'elm', {
     }
 });
 
-Object.defineProperty(epfl.ComponentBase.prototype, 'elm_scaffold', {
-    get: function () {
-        return $("[data-row-for='" + this.cid + "']");
-    }
-});
-
-Object.defineProperty(epfl.ComponentBase.prototype, 'elm_rows', {
-    get: function () {
-        return $("[data-row-in='" + this.cid + "']");
-    }
-});
-
 epfl.ComponentBase.prototype.make_event = function (event_name, params) {
     return epfl.make_component_event(this.cid, event_name, params);
 };

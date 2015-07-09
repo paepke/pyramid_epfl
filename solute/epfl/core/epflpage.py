@@ -13,6 +13,7 @@ import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 from solute.epfl.core.epflutil import Lifecycle
+from lxml import etree
 
 
 class LazyProperty(object):
@@ -56,6 +57,7 @@ class Page(object):
     js_name = [
         "js/jquery-1.11.3.js",
         "js/jquery-ui.js",
+        "js/jquery.xpath.min.js",
         "js/history.js",
         "js/epfl.js",
         "js/epflcomponentbase.js",
@@ -373,10 +375,13 @@ class Page(object):
                     target = 'main'
                     if compo.sub_redraw_requested:
                         target = 'sub'
+                        html = epflutil.NodeTagger(compo.render())()
+                    else:
+                        html = compo.render()
                     self.add_js_response("epfl.replace_component('{cid}', {parts})".format(
                         cid=compo.cid,
                         parts=json.encode({'js': compo.render('js_raw'),
-                                           target: compo.render()})))
+                                           target: html})))
 
             extra_content = self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True)
             if len(extra_content) > 0:

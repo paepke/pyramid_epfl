@@ -18,7 +18,6 @@ import ujson as json
 import jinja2
 import jinja2.runtime
 from jinja2.exceptions import TemplateNotFound
-from lxml import etree
 
 
 class MissingContainerComponentException(Exception):
@@ -48,9 +47,7 @@ class CallWrap(object):
         self.part = part
 
     def __call__(self, *args, **kwargs):
-        """On call the original caller is executed, and its output chained into the callable chain. The output is then
-           passed through :meth:`ComponentRenderEnvironment.tagged_markup` for the component tagging - required for the
-           sub rendering process flow - and returned.
+        """On call the original caller is executed, and its output chained into the callable chain.
 
            :param args: Original arguments to the jinja2 template call.
            :param kwargs: Original keyworded arguments to the jinja2 template call, the caller attribute is required.
@@ -66,7 +63,7 @@ class CallWrap(object):
             extra_kwargs['caller'] = lambda *a, **k: out
             out = cb(*args, **extra_kwargs)
 
-        return self.env.tagged_markup(out, self.part)
+        return out
 
 
 class ComponentRenderEnvironment(MutableMapping):
@@ -147,44 +144,6 @@ class ComponentRenderEnvironment(MutableMapping):
         if compo_obj:
             return request_set and not compo_obj.render()
         return False
-
-    def tagged_markup(self, markup, part, *args, **kwargs):
-        """Tags the outer parts of the passed markup in row parts with html data attributes to allow EPFL Javascript
-           proper targetting of sub components including their scaffolding as determined by a container component.
-        """
-
-        if self.is_sub_rendering(kwargs.get('compo_obj')):
-            return ''
-
-        if markup.strip() and part == 'row' and kwargs.get('compo_obj'):
-            compo_obj = kwargs.get('compo_obj')
-            # Using etree.HTML provides for resilient handling of potentially malformed html.
-            html = etree.HTML(markup)
-            body = html.find('body')
-
-            # Tag the component with a data-parent-epflid attribute.
-            # TODO: Check if this actually hits only what it's supposed to hit.
-            compo_elm = body.xpath('//*[@epflid = "%s"]' % compo_obj.cid)[0]
-            compo_elm.attrib['data-parent-epflid'] = self['compo'].cid
-
-            # Tag all nodes at the outside of the row with the appropriate html attributes.
-            for node in body.iterchildren():
-                node.attrib['data-row-for'] = compo_obj.cid  # The contained elements cid.
-                node.attrib['data-row-in'] = self['compo'].cid  # The containing elements cid.
-                try:
-                    if compo_obj.position == 0:
-                            node.attrib['data-row-before'] = self['compo'].components[1].cid
-                    else:
-                        node.attrib['data-row-after'] = self['compo'].components[compo_obj.position - 1].cid
-                except IndexError:
-                    pass
-
-            # Strip the unnecessary body tag and return proper stripped jinja2.Markup.
-            out = etree.tostring(body, method='html')[6:-7].strip()
-            return jinja2.Markup(out).strip()
-
-        # Default fallback. No watchdog structure, since other special handling might be required later on.
-        return jinja2.Markup(markup.strip()).strip()
 
 
 class UnboundComponent(object):
@@ -830,6 +789,8 @@ class ComponentBase(object):
 
         if self.container_compo and self.container_compo.sub_redraw_requested \
                 and self.cid not in self.container_compo.sub_redraw_requested:
+            self.render_cache['main'] = jinja2.Markup(
+                '<div data-sub-component-placeholder epflid="{cid}"></div>'.format(cid=self.cid))
             return self.render_cache[target]
 
         if not self.is_visible():

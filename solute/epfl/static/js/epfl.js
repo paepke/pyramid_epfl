@@ -126,26 +126,12 @@ epfl_module = function() {
     };
 
     epfl.replace_sub_component = function(cid, html) {
-        var new_rows = $(html).find('[data-row-in=' + cid + ']');
-        var parent_rows = $('[data-row-in=' + cid + ']');
+        var new_rows = $(html).find('[data-xpath]');
+        var elm = $('[epflid=' + cid + ']');
         new_rows.each(function (i, node) {
             node = $(node);
-            var before = node.attr('data-row-before');
-            var after = node.attr('data-row-after');
-
-            var node_cid = node.attr('cid');
-
-            if (before) { // Index 0
-                var target = parent_rows.filter('[data-row-for=' + before + ']');
-                node.insertBefore(target);
-                target.attr('data-row-before', '');
-                target.attr('data-row-after', node_cid);
-            } else { // Index > 0
-                var target = parent_rows.filter('[data-row-for=' + after + ']');
-                node.insertAfter(target);
-                parent_rows.filter('[data-row-for=' + after + '][data-row-before]').attr('data-row-before', node_cid)
-                parent_rows.filter('[data-row-after=' + after + ']').attr('data-row-after', node_cid);
-            }
+            var xpath = node.attr('data-xpath');
+            node.insertBefore(elm.xpath(xpath));
         });
     };
 
@@ -193,9 +179,14 @@ epfl_module = function() {
             compo.destroy();
             delete epfl.components[cid];
         }
-
-        compo.elm_scaffold.remove();
+        var parent = compo.elm.parent();
         compo.elm.remove();
+
+        while (parent.children().length == 0) {
+            var old_parent = parent;
+            parent = parent.parent();
+            old_parent.remove();
+        }
     };
 
     epfl.unload_page = function() {

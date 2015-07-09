@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 import urllib
@@ -13,6 +12,70 @@ import solute.epfl
 from solute.epfl import core
 import threading
 import functools
+
+from lxml import etree
+
+
+class NodeTagger(object):
+    _basepaths = None
+
+    def __init__(self, html):
+        self.root = etree.HTML(html)
+        self.tree = self.root.getroottree()
+        self.elm = self.root.xpath('/html/body/*[@epflid]')[0]
+
+    def __call__(self):
+        for index, xpath in self.basepaths:
+            mutable_xpath = list(xpath[:index + 1])
+            all_nodes = self.sub_components(xpath, filtered=False)
+            for node in self.sub_components(xpath):
+                mutable_xpath[index] = '*[{index}]'.format(index=all_nodes.index(node) + 1)
+                try:
+                    row_node = self.elm.xpath('/'.join(mutable_xpath))[0]
+                except IndexError:
+                    print mutable_xpath
+                    raise
+                row_node.set('data-xpath', '/'.join(mutable_xpath))
+            mutable_xpath[index] = '*'
+            for node in self.elm.xpath('/'.join(mutable_xpath)):
+                if not node.get('data-xpath'):
+                    node.getparent().remove(node)
+
+        return etree.tostring(self.elm, method='html')
+
+    def sub_components(self, xpath, filtered=True):
+        if filtered:
+            return self.elm.xpath('/'.join(xpath) + '[not(@data-sub-component-placeholder)]')
+        return self.elm.xpath('/'.join(xpath))
+
+    @property
+    def placeholders(self):
+        return self.tree.xpath('//div[@data-sub-component-placeholder]')
+
+    def get_path(self, node):
+        split_path = self.tree.getpath(node).split('/')
+        split_path[-1] = '*[@epflid]'
+        return split_path
+
+    @property
+    def basepaths(self):
+        if not self._basepaths:
+
+            self._basepaths = set()
+            for node in self.placeholders:
+                xpath = self.get_path(node)
+                for i in range(2, len(xpath)):
+                    xpath[-i] = '*'
+                    found_nodes = self.tree.xpath('/'.join(xpath))
+                    if len(found_nodes) <= 1:
+                        continue
+
+                    del xpath[1:4]
+                    xpath[0] = '.'
+                    self._basepaths.add((len(xpath) - i, tuple(xpath)))
+                    break
+
+        return self._basepaths
 
 
 class Lifecycle(object):
