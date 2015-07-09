@@ -23,59 +23,77 @@ class NodeTagger(object):
         self.root = etree.HTML(html)
         self.tree = self.root.getroottree()
         self.elm = self.root.xpath('/html/body/*[@epflid]')[0]
+        self.cid = self.elm.get('epflid')
 
-    def __call__(self):
-        for index, xpath in self.basepaths:
-            mutable_xpath = list(xpath[:index + 1])
-            all_nodes = self.sub_components(xpath, filtered=False)
-            for node in self.sub_components(xpath):
-                mutable_xpath[index] = '*[{index}]'.format(index=all_nodes.index(node) + 1)
-                try:
-                    row_node = self.elm.xpath('/'.join(mutable_xpath))[0]
-                except IndexError:
-                    print mutable_xpath
-                    raise
-                row_node.set('data-xpath', '/'.join(mutable_xpath))
-            mutable_xpath[index] = '*'
-            for node in self.elm.xpath('/'.join(mutable_xpath)):
-                if not node.get('data-xpath'):
-                    node.getparent().remove(node)
+        ComponentTag(self.root.xpath('//*[@epflid="root_node"] | /html/body/*[@epflid]')[0])
 
+    def __call__(self, raw=False):
+        if raw:
+            return etree.tostring(self.root, method='html')
         return etree.tostring(self.elm, method='html')
 
-    def sub_components(self, xpath, filtered=True):
-        if filtered:
-            return self.elm.xpath('/'.join(xpath) + '[not(@data-sub-component-placeholder)]')
-        return self.elm.xpath('/'.join(xpath))
 
-    @property
-    def placeholders(self):
-        return self.tree.xpath('//div[@data-sub-component-placeholder]')
+class ComponentTag(object):
+    parent = None
+    row_path = None
 
-    def get_path(self, node):
-        split_path = self.tree.getpath(node).split('/')
+    def __init__(self, node, parent=None):
+        self.elm = node
+        self.tree = node.getroottree()
+        self.cid = node.get('epflid')
+
+        self.children = []
+        self.find_children()
+
+        if parent is not None:
+            self.parent = parent
+            self.elm.set('data-parent-epflid', parent.cid)
+            self.tag_row()
+        else:
+            for node in self.elm.xpath('//*[@data-sub-component-placeholder]'):
+                target = self.elm.xpath('//*[@data-xpath-for="{cid}"]'.format(cid=node.get('epflid')))[0]
+                target.getparent().remove(target)
+
+    def find_children(self, node=None):
+        if node is None:
+            node = self.elm
+        for child in node.iterchildren():
+            if child.get('epflid'):
+                self.children.append(ComponentTag(child, self))
+            elif len(child) > 0:
+                self.find_children(child)
+
+    def tag_row(self):
+        xpath = self.getpath(self.elm)
+        for i in range(1, len(xpath)):
+            if i > 1:
+                xpath[-i] = '*'
+            found_nodes = self.parent.elm.xpath('/'.join(xpath))
+            if len(found_nodes) <= 1:
+                continue
+
+            xpath.insert(0, '.')
+            xpath[-i] += '[{index}]'.format(index=found_nodes.index(self.elm) + 1)
+
+            if i == 1:
+                row_path = '/'.join(xpath)
+            else:
+                row_path = '/'.join(xpath[:-i + 1])
+            row = self.parent.elm.xpath(row_path)[0]
+            row.set('data-xpath', row_path)
+            row.set('data-xpath-for', self.cid)
+            self.row_path = row_path
+            break
+
+    def getpath(self, node=None):
+        if node is None:
+            node = self.elm
+        xpath = self.tree.getpath(node)
+        split_path = xpath.split('/')
+        if self.parent:
+            split_path = split_path[len(self.parent.getpath()):]
         split_path[-1] = '*[@epflid]'
         return split_path
-
-    @property
-    def basepaths(self):
-        if not self._basepaths:
-
-            self._basepaths = set()
-            for node in self.placeholders:
-                xpath = self.get_path(node)
-                for i in range(2, len(xpath)):
-                    xpath[-i] = '*'
-                    found_nodes = self.tree.xpath('/'.join(xpath))
-                    if len(found_nodes) <= 1:
-                        continue
-
-                    del xpath[1:4]
-                    xpath[0] = '.'
-                    self._basepaths.add((len(xpath) - i, tuple(xpath)))
-                    break
-
-        return self._basepaths
 
 
 class Lifecycle(object):

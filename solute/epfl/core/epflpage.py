@@ -367,17 +367,16 @@ class Page(object):
             self.add_js_response(self.root_node.render('js_raw'))
 
             render_env = self.get_render_environment()
-            out = self.response.render_jinja(self.template, **render_env)
+            out = epflutil.NodeTagger(self.response.render_jinja(self.template, **render_env))(raw=True)
         else:
             # Get render entry points.
             for compo in self.get_active_components(sorted_by_depth=True)[:]:
                 if compo.redraw_requested and not compo.is_rendered:
+                    html = epflutil.NodeTagger(compo.render())()
+
                     target = 'main'
                     if compo.sub_redraw_requested:
                         target = 'sub'
-                        html = epflutil.NodeTagger(compo.render())()
-                    else:
-                        html = compo.render()
                     self.add_js_response("epfl.replace_component('{cid}', {parts})".format(
                         cid=compo.cid,
                         parts=json.encode({'js': compo.render('js_raw'),
