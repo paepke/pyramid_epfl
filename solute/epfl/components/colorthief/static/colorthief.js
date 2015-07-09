@@ -17,10 +17,22 @@ Object.defineProperty(epfl.ColorThief.prototype, 'check_icon', {
 
 Object.defineProperty(epfl.ColorThief.prototype, 'remove_icon', {
     get: function () {
-        console.log(this.elm.children('i.epfl-colorthief-remove-icon'));
         return this.elm.children('i.epfl-colorthief-remove-icon');
     }
 });
+
+Object.defineProperty(epfl.ColorThief.prototype, 'drop_zone', {
+    get: function () {
+        return this.elm.find('div.epfl-colorthief-dropzone');
+    }
+});
+
+Object.defineProperty(epfl.ColorThief.prototype, 'image', {
+    get: function () {
+        return this.elm.find('img');
+    }
+});
+
 
 epfl.ColorThief.prototype.handle_click = function (event) {
     epfl.ComponentBase.prototype.handle_click.call(this, event);
@@ -32,17 +44,14 @@ epfl.ColorThief.prototype.handle_click = function (event) {
     } else if (this.remove_icon.is(event.target)) {
         this.send_event("change", {value: null})
     }
-
 };
 
 epfl.ColorThief.prototype.handle_drop = function (event) {
     epfl.ComponentBase.prototype.handle_drop.call(this, event);
     var imageSrc = $(event.dataTransfer.getData('text/html')).attr("src");
-    var image = this.elm.find("img");
     if (imageSrc) {
-        image.attr("src", imageSrc);
-        var colorThief = new ColorThief();
-        var dominantColors = colorThief.getPalette(image[0], parseInt(this.params["color_count"]));
-        this.send_event("change", {"value": dominantColors, "image_src": imageSrc})
+        this.drop_zone.hide();
+        this.image.attr("src", imageSrc);
+        this.send_event("change", {"value": null, "image_src": imageSrc})
     }
 };
