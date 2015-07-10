@@ -39,11 +39,13 @@ class ColorThief(FormInputBase):
                                          color_count=color_count, **extra_params)
 
     def __new__(cls, *args, **config):
-        super(ColorThief, cls).__new__(cls,*args,**config)
         try:
             import PIL
         except ImportError:
-            raise ImportError("Colorthief needs pillow, check: http://pillow.readthedocs.org/installation.html#basic-installation ")
+            raise ImportError("Colorthief needs pillow, "
+                              "check: http://pillow.readthedocs.org/installation.html#basic-installation ")
+        
+        return super(ColorThief, cls).__new__(cls,*args,**config)
 
     def handle_change(self, value, image_src=None):
         if image_src is not None:
