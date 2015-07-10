@@ -126,12 +126,14 @@ epfl_module = function() {
     };
 
     epfl.replace_sub_component = function(cid, html) {
+        var nodes = $(html).find('[data-parent-epflid=' + cid + ']');
         var new_rows = $(html).find('[data-xpath]');
         var elm = $('[epflid=' + cid + ']');
-        new_rows.each(function (i, node) {
+        nodes.each(function (i, node) {
             node = $(node);
-            var xpath = node.attr('data-xpath');
-            node.insertBefore(elm.xpath(xpath));
+            var row = new_rows.filter('[data-xpath-for=' + node.attr('epflid') + ']');
+            var xpath = row.attr('data-xpath');
+            row.insertBefore(elm.xpath(xpath));
         });
     };
 
@@ -181,12 +183,7 @@ epfl_module = function() {
         }
         var parent = compo.elm.parent();
         compo.elm.remove();
-
-        while (parent.children().length == 0) {
-            var old_parent = parent;
-            parent = parent.parent();
-            old_parent.remove();
-        }
+        $('[data-xpath-for=' + cid + ']').remove();
     };
 
     epfl.unload_page = function() {
