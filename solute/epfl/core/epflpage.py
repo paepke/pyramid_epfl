@@ -372,7 +372,7 @@ class Page(object):
             # Get render entry points.
             for compo in self.get_active_components(sorted_by_depth=True)[:]:
                 if compo.redraw_requested and not compo.is_rendered:
-                    html = epflutil.NodeTagger(compo.render())()
+                    html = epflutil.NodeTagger(compo.render(entry_point=True))()
 
                     target = 'main'
                     if compo.sub_redraw_requested:

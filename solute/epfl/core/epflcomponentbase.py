@@ -766,7 +766,7 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
-    def render(self, target='main'):
+    def render(self, target='main', entry_point=False):
         """Called to render this component including all potential sub components.
 
         .. graphviz::
@@ -786,6 +786,9 @@ class ComponentBase(object):
             return self.render_cache[target]
 
         self.render_cache = {'main': '', 'js': '', 'js_raw': ''}
+
+        if not entry_point and self.sub_redraw_requested:
+            self.sub_redraw_requested = None
 
         if self.container_compo and self.container_compo.sub_redraw_requested \
                 and self.cid not in self.container_compo.sub_redraw_requested:
