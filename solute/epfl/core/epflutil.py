@@ -20,8 +20,10 @@ class NodeTagger(object):
     def __init__(self, html):
         self.root = etree.HTML(html)
         self.tree = self.root.getroottree()
-        self.elm = self.root.xpath('/html/body/*[@epflid]')[0]
-        self.cid = self.elm.get('epflid')
+        try:
+            self.elm = self.root.xpath('/html/body/*[@epflid]')[0]
+        except IndexError:
+            self.elm = None
 
         ComponentTag(self.root.xpath('//*[@epflid="root_node"] | /html/body/*[@epflid]')[0])
 
