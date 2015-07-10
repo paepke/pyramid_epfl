@@ -19,6 +19,17 @@ epfl.Upload.prototype.after_response = function (data) {
             dropZone: obj.elm.find("div.epfl-upload-input-zone")
         });
     }
+
+    //if the value is not null the dragover dragleave and drop event should do nothing except prevent default
+    if(obj.params["value"] != null) {
+        obj.elm.off("dragover").off("dragleave").off("drop");
+        obj.elm.on('dragover', function (event) {
+            event.preventDefault();
+            return true;
+        }).on('drop', function (event) {
+            event.preventDefault();
+        });
+    }
 };
 
 epfl.Upload.prototype.file_input_add = function (evt, data) {
