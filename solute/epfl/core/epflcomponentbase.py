@@ -899,7 +899,8 @@ class ComponentBase(object):
         if parts is not None:
             raise Exception('Deprecated: Partial redraws are no longer possible.')
 
-        if sub_redraw:
+        # If sub_redraw was requested check whether a redraw has been requested before and if it was a sub_redraw.
+        if sub_redraw and (not self.redraw_requested or self.sub_redraw_requested):
             if not self.sub_redraw_requested:
                 self.sub_redraw_requested = []
             self.sub_redraw_requested.append(sub_redraw)
