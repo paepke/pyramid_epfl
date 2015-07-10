@@ -1140,7 +1140,7 @@ class ComponentContainerBase(ComponentBase):
                 key = compo_struct.keys()[i + tipping_point]
                 if compo_struct[key].get('config', {}).get('id', None) != data_id:
                     self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
-                    self.redraw()
+                    self.redraw(sub_redraw=data_cid_dict[data_id])
             except AttributeError:
                 pass
 

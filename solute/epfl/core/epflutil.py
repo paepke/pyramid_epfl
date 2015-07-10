@@ -17,8 +17,6 @@ from lxml import etree
 
 
 class NodeTagger(object):
-    _basepaths = None
-
     def __init__(self, html):
         self.root = etree.HTML(html)
         self.tree = self.root.getroottree()
