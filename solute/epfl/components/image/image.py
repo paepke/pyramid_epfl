@@ -33,6 +33,8 @@ class Image(epflcomponentbase.ComponentBase):
     show_dominant_color = False
     show_additional_colors = False
     height = None
+    width = None
+    padding = False
 
     new_style_compo = True
     compo_js_name = 'Image'

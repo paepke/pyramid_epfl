@@ -28,7 +28,7 @@ def test_render_with_rgb_values(page):
     page.handle_transaction()
 
     compo = page.root_node
-    assert 'class="epfl-colorpicker-colorfield pull-left"' in compo.render(), "no rgb color field found"
+    assert 'class="epfl-colorpicker-colorfield pull-left text-center"' in compo.render(), "no rgb color field found"
     assert 'title="#FFFFFF white"' in compo.render(), "white color field not found"
     assert 'title="#000000 black"' in compo.render(), "black color field not found"
     assert 'style="background-color: #FFFFFF"' in compo.render(), "white color field not found by style"

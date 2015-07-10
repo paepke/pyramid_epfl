@@ -56,38 +56,14 @@ def test_change(page):
     assert compo.get_value() is None, "Wrong default value"
     assert compo.image_src is None, "Wrong default image_src"
 
-    compo.handle_change(value=[(255, 255, 255), (0, 0, 0)], image_src="test.png")
+    image_url = "http://img.billiger.de/dynimg/fDOSgmniU-I6cJkqJkaG0p-Y2ZWCCa7D3DrU21LmKOZAF4c0q9hDHVZIsylZxw-LKyiGUplXAslyh82QGAHE-6ijM_eUuPnKi8t5Uc1ly_S/Apple-MacBook-Pro-Retina-15-4-i7-2-2GHz-16GB-RAM-256GB-SSD-MJLQ2D-A.jpg"
+    compo.handle_change(value=None, image_src=image_url)
 
     compo.render_cache = None
     compo_html = etree.fromstring(compo.render())
 
-    assert compo.get_value() == [{u'rgb': u'#ffffff', u'selected': False},
-                                 {u'rgb': u'#000', u'selected': False}], "Wrong value after handle change"
-    assert compo.image_src == "test.png", "wrong image_src after handle_change"
+    assert compo.get_value() is not None, "Wrong value after handle change"
+    assert compo.image_src == image_url, "wrong image_src after handle_change"
 
     color_divs = compo_html.findall("div[@class='epfl-colorthief-color pull-left text-center']")
-    assert len(color_divs) == 2, "No or not all color divs got renderd"
-    assert color_divs[0].attrib.get("style", None) == "background-color: #ffffff", "white color div has no color"
-    assert color_divs[1].attrib.get("style", None) == "background-color: #000", "black color div has no color"
-    assert color_divs[0].attrib.get("data-color", None) == "#ffffff", "white color div has no data-color"
-    assert color_divs[1].attrib.get("data-color", None) == "#000", "black color div has no data-color"
-
-    compo.handle_click_color("#000")
-    compo.render_cache = None
-    compo_html = etree.fromstring(compo.render())
-
-    assert compo.get_value() == [{u'rgb': u'#ffffff', u'selected': False},
-                                 {u'rgb': u'#000', u'selected': True}], "Wrong value after handle_click_color"
-
-    color_divs = compo_html.findall("div[@class='epfl-colorthief-color pull-left text-center']")
-    assert len(color_divs[1]) == 1, "Selected color div has no icon"
-
-    compo.handle_click_color("#000")
-    compo.render_cache = None
-    compo_html = etree.fromstring(compo.render())
-
-    assert compo.get_value() == [{u'rgb': u'#ffffff', u'selected': False},
-                                 {u'rgb': u'#000', u'selected': False}], "Wrong value after handle_click_color"
-
-    color_divs = compo_html.findall("div[@class='epfl-colorthief-color pull-left text-center']")
-    assert len(color_divs[1]) == 0, "Selected color div has a icon after deselect"
+    assert len(color_divs), "No or not all color divs got renderd"
