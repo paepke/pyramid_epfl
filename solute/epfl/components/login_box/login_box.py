@@ -1,7 +1,7 @@
 # * encoding: utf-8
 
 from solute.epfl.core import epflacl
-from solute.epfl.components import Box, Form, TextInput, Text, Link
+from solute.epfl.components import Box, Form, TextInput, Text, Link, Image, Button
 
 
 class LoginBox(Box):
@@ -13,6 +13,10 @@ class LoginBox(Box):
 
     return_path = '/'  #: Path for the return link on the forbidden page.
     return_text = 'Return to Home'  #: Text for the return link on the forbidden page.
+
+    img_path = None  #: Path to an image to be displayed above the login form.
+    img_width = None  #: Width a potential image will be displayed with.
+    img_height = None  #: Height a potential image will be displayed with.
 
     def __init__(self, page, cid, **kwargs):
         """Convenience component handling user login by forwarding it to a custom page function.
@@ -34,6 +38,11 @@ class LoginBox(Box):
                         label='Password',
                         placeholder='Password',
                         password=True
+                    ),
+                    Button(
+                        event_name='submit',
+                        color='primary',
+                        value='Login'
                     )
                 ]
             )
@@ -50,6 +59,14 @@ class LoginBox(Box):
                     name=self.return_text
                 )
             ]
+
+        if self.img_path:
+            self.node_list.insert(0, Image(
+                image_path=self.img_path,
+                width=self.img_width,
+                height=self.img_height,
+                padding=True
+            ))
 
     def handle_submit(self):
         values = self.page.login_form.get_values()
