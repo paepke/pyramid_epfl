@@ -3,8 +3,11 @@
 from solute.epfl.components.form.form import FormInputBase
 from urllib2 import urlopen
 import io
-from solute.epfl.components.colorthief.mmcq import get_palette
 
+try:
+    from solute.epfl.components.colorthief.mmcq import get_palette
+except ImportError:
+    pass
 
 class ColorThief(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:colorthief/static", "colorthief.js")]
@@ -41,6 +44,7 @@ class ColorThief(FormInputBase):
     def __new__(cls, *args, **config):
         try:
             import PIL
+            from solute.epfl.components.colorthief.mmcq import get_palette
         except ImportError:
             raise ImportError("Colorthief needs pillow, "
                               "check: http://pillow.readthedocs.org/installation.html#basic-installation ")
