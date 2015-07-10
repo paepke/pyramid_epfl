@@ -133,7 +133,14 @@ epfl_module = function() {
             node = $(node);
             var row = new_rows.filter('[data-xpath-for=' + node.attr('epflid') + ']');
             var xpath = row.attr('data-xpath');
-            row.insertBefore(elm.xpath(xpath));
+            var target = elm.xpath(xpath);
+            if (target.length == 0) {
+                target = elm.xpath(xpath.replace(/\[\d+]$/, ''));
+                target = target[target.length - 1];
+                row.insertAfter(target);
+            } else {
+                row.insertBefore(target);
+            }
         });
     };
 
