@@ -5,7 +5,7 @@ epfl.Button = function(cid, params) {
     var event_name=params["event_name"];
     var event_target=params["event_target"];
     var disable_on_click=params["disable_on_click"];
-    $('#' + cid + ' div button').click(function(event) {
+    $('#' + cid).click(function(event) {
         if (confirm_first && (!confirm(confirm_message))) {
             return;
         }
