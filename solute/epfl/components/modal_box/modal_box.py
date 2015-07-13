@@ -54,7 +54,7 @@ class ModalBox(Box):
     auto_visibility = False  #: see :attr:`Box.hover_box`
     is_removable = True  #: see :attr:`Box.hover_box`
     hover_box_remove_on_close = True  #: see :attr:`Box.hover_box`
-    hover_box_close_on_outside_click = False #: see :attr:`Box.hover_box`
+    hover_box_close_on_outside_click = True #: see :attr:`Box.hover_box`
     #: Used to specify the width of the modal. The width is given in percentage of the full page width.
     hover_box_width = 50
 
