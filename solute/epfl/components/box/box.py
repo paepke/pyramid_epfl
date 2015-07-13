@@ -34,7 +34,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     #: Indicates whether a hover box component should be deleted upon close or just be hidden.
     hover_box_remove_on_close = True
     #: Indicates whether a hover box component should be closed when the user clicks outside of the box.
-    hover_box_close_on_outside_click = False
+    hover_box_close_on_outside_click = True
     box_shown = True  #: Indicates of a border should be drawn around the box.
     #: Indicates if the title of the box should be shown. Sometimes, you want to specify a title but not show it inside the box.
     #: For example, a box inside a :class:`solute.epfl.components.tabs_layout.tabs_layout.TabsLayout` component.
@@ -43,7 +43,7 @@ class Box(epflcomponentbase.ComponentContainerBase):
     is_removable = False
 
     new_style_compo = True
-    compo_js_params = ['hover_box', 'hover_box_remove_on_close', 'hover_box_close_on_outside_click', 'visible']
+    compo_js_params = ['hover_box', 'hover_box_remove_on_close', 'hover_box_close_on_outside_click']
     compo_js_extras = ['handle_click']
     compo_js_name = 'Box'
 
