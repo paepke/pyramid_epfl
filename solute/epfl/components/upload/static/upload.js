@@ -20,8 +20,9 @@ epfl.Upload.prototype.after_response = function (data) {
         });
     }
 
-    //if the value is not null the dragover dragleave and drop event should do nothing except prevent default
-    if(obj.params["value"] != null) {
+    //if not remove icon is shown and the value is not null the dragover dragleave and drop event
+    //should do nothing except prevent default
+    if(obj.params["show_remove_icon"] === true && obj.params["value"] != null) {
         obj.elm.off("dragover").off("dragleave").off("drop");
         obj.elm.on('dragover', function (event) {
             event.preventDefault();
@@ -178,3 +179,4 @@ epfl.Upload.prototype.handle_click = function (event) {
         this.send_event('click', {});
     }
 };
+
