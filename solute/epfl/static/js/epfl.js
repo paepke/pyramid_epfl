@@ -183,13 +183,10 @@ epfl_module = function() {
 
     epfl.destroy_component = function(cid) {
         var compo = epfl.components[cid];
-        var parent_cid = compo.elm.attr('data-parent-epflid');
         if (compo) {
             compo.destroy();
             delete epfl.components[cid];
         }
-        var parent = compo.elm.parent();
-        compo.elm.remove();
         $('[data-xpath-for=' + cid + ']').remove();
     };
 
