@@ -815,20 +815,21 @@ class ComponentBase(object):
 
         context = self.get_render_environment(env)
 
-        js_raw.append(self.get_compo_init_js())
+        if not self.sub_redraw_requested:
+            js_raw.append(self.get_compo_init_js())
 
-        for js_part in self.js_parts:
-            # Render context can be supplied as a dict.
-            js_raw.append(env.get_template(js_part).render(context))
+            for js_part in self.js_parts:
+                # Render context can be supplied as a dict.
+                js_raw.append(env.get_template(js_part).render(context))
 
-        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
+            self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
 
-        handles = self.get_handles()
-        if handles:
-            set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
-            set_component_info %= {'cid': self.cid,
-                                   'handles': handles}
-            js_raw.append(set_component_info)
+            handles = self.get_handles()
+            if handles:
+                set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
+                set_component_info %= {'cid': self.cid,
+                                       'handles': handles}
+                js_raw.append(set_component_info)
 
         self.render_cache['js_raw'] = ''.join(js_raw)
         self.render_cache['js'] = jinja2.Markup('<script type="text/javascript">%s</script>'
