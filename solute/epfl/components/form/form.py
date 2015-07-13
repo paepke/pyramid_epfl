@@ -1,5 +1,84 @@
 from solute.epfl.core import epflcomponentbase
 
+from abc import abstractmethod
+
+
+class ValidatorBase(dict):
+    errors = None
+
+    def __init__(self, *args, **kwargs):
+        super(ValidatorBase, self).__init__(*args, **kwargs)
+
+    def __call__(self, caller, *args, **kwargs):
+        self.caller = caller
+        self.errors = []
+        for k, v in self.iteritems():
+            if type(v) is not str:
+                continue
+            kwargs[k] = self.get_param(v)
+
+        return self.validate(**kwargs)
+
+    @abstractmethod
+    def validate(self, **kwargs):
+        raise Exception("No validation implemented.")
+
+    @property
+    def form(self):
+        return self.caller.get_parent_form()
+
+    @property
+    def error_message(self):
+        print self.errors
+        return '\n'.join(self.errors)
+
+    @error_message.setter
+    def error_message(self, value):
+        self.errors.append(value)
+
+    def get_param(self, param_name, target=None):
+        original_name = param_name
+        if '.' in param_name:
+            target, param_name = self.get_dotted(param_name)
+
+        if param_name == '':
+            return target
+
+        if target is None:
+            target = self.caller
+        if hasattr(target, param_name):
+            return getattr(target, param_name)
+
+        try:
+            return target.get(param_name, original_name)
+        except AttributeError:
+            return original_name
+
+    def get_dotted(self, param_name):
+        field_name, param_name = param_name.split('.')
+
+        for sibling in self.form.registered_fields:
+            if sibling.name == field_name:
+                return sibling, param_name
+
+    def __getstate__(self):
+        return dict(self)
+
+    def __setstate__(self, data):
+        self.update(data)
+
+
+class TextValidator(ValidatorBase):
+    __name = 'text'
+
+    def __init__(self, value='value', error_message='Value is required', *args, **kwargs):
+        super(TextValidator, self).__init__(value=value, error_message=error_message, *args, **kwargs)
+
+    def validate(self, value=None, error_message=None, **kwargs):
+        if self.caller.mandatory and (value is None or value == ""):
+            self.error_message = error_message
+            return False
+
 
 class FormInputBase(epflcomponentbase.ComponentBase):
     asset_spec = "solute.epfl.components:form/static"
@@ -21,6 +100,8 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     validation_type = None  #: Form validation selector.
     #: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
     validation_helper = []
+    #: Subclasses can add their own ValidatorBase extensions.
+    validators = []
     #: Set to true if value has to be provided for this element in order to yield a valid form.
     mandatory = False
     #: If true, underlying form is submitted upon enter key in this input
@@ -42,7 +123,9 @@ class FormInputBase(epflcomponentbase.ComponentBase):
     def is_numeric(self):
         return type(self.value) in [int, float]
 
-    def get_parent_form(self, compo):
+    def get_parent_form(self, compo=None):
+        if compo is None:
+            compo = self.container_compo
         if isinstance(compo, Form):
             return compo
         if not hasattr(compo, 'container_compo'):
@@ -97,8 +180,7 @@ class FormInputBase(epflcomponentbase.ComponentBase):
         """
         result, text = True, ''
         if self.validation_type == 'text':
-            if self.mandatory and ((self.value is None) or (self.value == "")):
-                result, text = False, 'Value is required'
+            self.validators.insert(0, TextValidator())
         elif self.validation_type == 'number':
             if self.mandatory and ((self.value is None) or (self.value == "")):
                 result, text = False, 'Value is required'
@@ -130,6 +212,10 @@ class FormInputBase(epflcomponentbase.ComponentBase):
             if not result:
                 break
             result, text = helper[0](self), helper[1]
+
+        for validator in self.validators:
+            if not validator(self):
+                result, text = False, validator.error_message
 
         if not result:
             self.redraw()
@@ -172,6 +258,9 @@ class FormInputBase(epflcomponentbase.ComponentBase):
 
     def handle_change(self, value):
         self.value = value
+
+    def __repr__(self):
+        return super(FormInputBase, self).__repr__() + str(self.validators)
 
 
 class Form(epflcomponentbase.ComponentContainerBase):
