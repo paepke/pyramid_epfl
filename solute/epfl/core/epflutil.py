@@ -12,6 +12,7 @@ import solute.epfl
 from solute.epfl import core
 import threading
 import functools
+import re
 
 from lxml import etree
 
@@ -36,6 +37,7 @@ class NodeTagger(object):
 class ComponentTag(object):
     parent = None
     row_path = None
+    index_pattern = re.compile("\[(\d)]")
 
     def __init__(self, node, parent=None):
         self.elm = node
@@ -51,8 +53,12 @@ class ComponentTag(object):
             self.tag_row()
         else:
             for node in self.elm.xpath('//*[@data-sub-component-placeholder]'):
-                target = self.elm.xpath('//*[@data-xpath-for="{cid}"]'.format(cid=node.get('epflid')))[0]
-                target.getparent().remove(target)
+                try:
+                    target = self.elm.xpath('//*[@data-xpath-for="{cid}"]'.format(cid=node.get('epflid')))[0]
+                    target.getparent().remove(target)
+                except IndexError:
+                    # The xpath might not have been generated successfully for single elements.
+                    node.getparent().remove(node)
 
     def find_children(self, node=None):
         if node is None:
@@ -66,19 +72,30 @@ class ComponentTag(object):
     def tag_row(self):
         xpath = self.getpath(self.elm)
         for i in range(1, len(xpath)):
+            # If the current entry in the xpath already contains an index selector we cannot determine the correct path.
+            original_position = None
+            if i > 1 and self.index_pattern.search(xpath[-i]) is not None:
+                original_position = self.index_pattern.findall(xpath[-i])
+                original_position = int(original_position[0])
+
             if i > 1:
                 xpath[-i] = '*'
             found_nodes = self.parent.elm.xpath('/'.join(xpath))
             if len(found_nodes) <= 1:
                 continue
 
+            current_position = found_nodes.index(self.elm) + 1
+            if original_position is not None and original_position != current_position:
+                break
+
             xpath.insert(0, '.')
-            xpath[-i] += '[{index}]'.format(index=found_nodes.index(self.elm) + 1)
+            xpath[-i] += '[{index}]'.format(index=current_position)
 
             if i == 1:
                 row_path = '/'.join(xpath)
             else:
                 row_path = '/'.join(xpath[:-i + 1])
+            
             row = self.parent.elm.xpath(row_path)[0]
             row.set('data-xpath', row_path)
             row.set('data-xpath-for', self.cid)
