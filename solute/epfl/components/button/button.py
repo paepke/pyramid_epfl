@@ -18,11 +18,9 @@ class Button(ComponentBase):
 
     """
 
-    asset_spec = "solute.epfl.components:button/static"
     template_name = "button/button.html"
-    js_parts = ["button/button.js"]
-    js_name = ["button.js"]
-    css_name = ["button.css"]
+    js_name = [("solute.epfl.components:button/static", "button.js")]
+    css_name = [("solute.epfl.components:button/static", "button.css")]
     compo_state = ComponentBase.compo_state + \
         ['disabled', 'icon', 'value', 'color', 'icon_size', 'icon_color']
 
@@ -50,6 +48,11 @@ class Button(ComponentBase):
     #: in order to avoid multiple clicks on the button. to set the component attribute to disabled as well, this has
     #: to be done in the event handling method.
     disable_on_click = False
+
+    new_style_compo = True
+    compo_js_params = ['event_target', 'event_name', 'confirm_first', 'confirm_message']
+    compo_js_name = 'Button'
+    compo_js_extras = ['handle_click']
 
     def __init__(self, page, cid,
                  label=None,
