@@ -766,6 +766,12 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    def reset_render_cache(self, recursive=False):
+        self.render_cache = None
+        if recursive and hasattr(self, 'components'):
+            for compo in self.components:
+                compo.reset_render_cache(recursive=recursive)
+
     def render(self, target='main', entry_point=False):
         """Called to render this component including all potential sub components.
 
@@ -806,7 +812,7 @@ class ComponentBase(object):
         if hasattr(self, 'components'):
             for compo in self.components:
                 compo.render()
-                js_raw.append(compo.render_cache['js_raw'])
+                js_raw.append(compo.render(target='js_raw'))
 
         self.is_rendered = True
 
@@ -822,14 +828,14 @@ class ComponentBase(object):
                 # Render context can be supplied as a dict.
                 js_raw.append(env.get_template(js_part).render(context))
 
-            self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
-
             handles = self.get_handles()
             if handles:
                 set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
                 set_component_info %= {'cid': self.cid,
                                        'handles': handles}
                 js_raw.append(set_component_info)
+
+        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
 
         self.render_cache['js_raw'] = ''.join(js_raw)
         self.render_cache['js'] = jinja2.Markup('<script type="text/javascript">%s</script>'
