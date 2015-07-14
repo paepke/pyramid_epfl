@@ -21,6 +21,7 @@ class LoginBox(Box):
     def __init__(self, page, cid, **kwargs):
         """Convenience component handling user login by forwarding it to a custom page function.
         """
+        super(LoginBox, self).__init__(page, cid, **kwargs)
 
     def init_struct(self):
         self.node_list = [
