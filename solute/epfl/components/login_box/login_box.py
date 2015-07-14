@@ -32,12 +32,14 @@ class LoginBox(Box):
                         name='username',
                         label='Username',
                         placeholder='Username',
+                        mandatory=True
                     ),
                     TextInput(
                         name='password',
                         label='Password',
                         placeholder='Password',
-                        password=True
+                        password=True,
+                        mandatory=True
                     ),
                     Button(
                         event_name='submit',
@@ -69,7 +71,11 @@ class LoginBox(Box):
             ))
 
     def handle_submit(self):
-        values = self.page.login_form.get_values()
+        form = self.page.login_form
+        if not form.validate():
+            return
+
+        values = form.get_values()
 
         if self.page.login(username=values['username'], password=values['password']):
             self.page.jump(self.page.request.matched_route.name)
