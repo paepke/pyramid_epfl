@@ -2,6 +2,7 @@
 
 from solute.epfl.core import epflacl
 from solute.epfl.components import Box, Form, TextInput, Text, Link, Image, Button
+from solute.epfl.components.form.util.validators import TextValidator
 
 
 class LoginBox(Box):
@@ -33,7 +34,7 @@ class LoginBox(Box):
                         name='username',
                         label='Username',
                         placeholder='Username',
-                        mandatory=True
+                        mandatory=True,
                     ),
                     TextInput(
                         name='password',

@@ -2,39 +2,61 @@ from abc import abstractmethod
 
 
 class ValidatorBase(dict):
+    """Utility class providing error handling, parameter lookup and validation hooks.
+    """
+
     errors = None
 
-    def __init__(self, *args, **kwargs):
-        super(ValidatorBase, self).__init__(*args, **kwargs)
-
     def __call__(self, caller, *args, **kwargs):
+        """Lookup parameters, run validation, return result.
+        """
         self.caller = caller
         self.errors = []
-        for k, v in self.iteritems():
-            if type(v) is not str:
+        for key, value in self.iteritems():
+            if type(value) is not str:
                 continue
-            kwargs[k] = self.get_param(v)
+            kwargs[key] = self.get_param(value)
 
         return self.validate(**kwargs)
 
     @abstractmethod
     def validate(self, **kwargs):
+        """Abstract validate method to be called by __call__. Has to be overwritten with custom validation logic.
+        """
         raise Exception("No validation implemented.")
 
     @property
-    def form(self):
-        return self.caller.get_parent_form()
-
-    @property
     def error_message(self):
+        """Error message handling allowing for multiple messages to be present to describe the current error state.
+        """
         return '\n'.join(self.errors)
 
     @error_message.setter
     def error_message(self, value):
+        """Appends value to the list of errors.
+        """
         self.errors.append(value)
 
-    def get_param(self, param_name, target=None):
-        original_name = param_name
+    @error_message.deleter
+    def error_message(self):
+        """Resets the list of errors.
+        """
+        self.errors = []
+
+    def get_param(self, param_name):
+        """Get a specific param as determined by its name from either the calling component or the appropriate target.
+        Returns in this order: attribute param_name of target component, item param_name of target component, param_name
+        on miss. Target component is the calling component if param_name is not dotted. Else the target component is
+        looked up in the parent form by the name defined by the string preceding the dot.
+
+        password.value: Lookup the field with the name password and return its attribute or item value.
+        password.: Return the field with the name password.
+        value: Return the attribute or item value of the calling component.
+
+        :param param_name: The (dotted) name to lookup.
+        """
+        # Split param_name and lookup actual target if required.
+        target, original_name = None, param_name
         if '.' in param_name:
             target, param_name = self.get_dotted(param_name)
 
@@ -53,8 +75,10 @@ class ValidatorBase(dict):
 
     def get_dotted(self, param_name):
         field_name, param_name = param_name.split('.')
-
-        for sibling in self.form.registered_fields:
+        form = self.caller.get_parent_form()
+        if form is None:
+            raise Exception('No parent form found. Did you try using a dotted name on a Validator with no Form?')
+        for sibling in form.registered_fields:
             if sibling.name == field_name:
                 return sibling, param_name
 
@@ -71,47 +95,70 @@ class ValidatorBase(dict):
 
 class TextValidator(ValidatorBase):
     def __init__(self, value='value', error_message='Value is required', *args, **kwargs):
+        """Validate a related Input field as a text.
+
+        :param value: Where to get the value to be evaluated.
+        :param error_message: Error message to be displayed upon failed validation.
+        """
         super(TextValidator, self).__init__(value=value, error_message=error_message, *args, **kwargs)
 
     def validate(self, value=None, error_message=None, **kwargs):
+        # Check if mandatory and present.
         if self.caller.mandatory and (value is None or value == ""):
             self.error_message = error_message
             return False
 
 
 class NumberValidator(ValidatorBase):
-    float = False
+    float = False  #: Treat value as a float.
 
     def __init__(self, value='value', min_value=None, max_value=None, error_message='Value is required', *args,
                  **kwargs):
+        """Validate a related Input field as a number.
+
+        :param value: Where to get the value to be evaluated.
+        :param min_value: Lower boundary for value.
+        :param max_value: Upper boundary for value.
+        :param error_message: Error message to be displayed upon failed validation. If left to default with either
+                              min_value or max_value present this will default to 'Value is outside of limit' instead.
+        """
         if (min_value or max_value) and error_message == 'Value is required':
             error_message = 'Value is outside of limit'
         super(NumberValidator, self).__init__(value=value, error_message=error_message, *args, **kwargs)
 
     def validate(self, value=None, min_value=None, max_value=None, error_message=None, **kwargs):
+        # Check if mandatory and present.
         if self.caller.mandatory and (value is None or value == ""):
             self.error_message = error_message
             return False
-        if value is not None and value != "":
-            try:
-                if self.float:
-                    float(value)
-                else:
-                    int(value)
-            except ValueError:
-                self.error_message = error_message
-                return False
-            if min_value is not None and int(value) < min_value:
-                self.error_message = error_message
-                return False
-            elif max_value is not None and int(value) > max_value:
-                self.error_message = error_message
-                return False
+
+        # Not mandatory and not set passes muster.
+        if value is None or value != "":
+            return True
+
+        # Can value be cast to float or int respectively.
+        try:
+            if self.float:
+                float(value)
+            else:
+                int(value)
+        except ValueError:
+            self.error_message = error_message
+            return False
+
+        # Ensure value is within boundaries of min_value and max_value respectively.
+        if min_value is not None and int(value) < min_value:
+            self.error_message = error_message
+            return False
+        elif max_value is not None and int(value) > max_value:
+            self.error_message = error_message
+            return False
+
         return True
 
 
 class FloatValidator(NumberValidator):
-    float = True
+    float = True  #: Just set this to True and NumberValidator will do the rest.
 
 
 VALIDATOR_MAP = {
