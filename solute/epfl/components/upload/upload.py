@@ -2,7 +2,7 @@ import base64
 import requests
 import ujson as json
 
-from solute.epfl.components.form.form import FormInputBase
+from solute.epfl.components.form.util import FormInputBase
 
 
 class Upload(FormInputBase):

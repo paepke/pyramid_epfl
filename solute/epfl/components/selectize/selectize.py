@@ -1,5 +1,5 @@
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.components.form.form import FormInputBase
+from solute.epfl.components.form.util import FormInputBase
 
 
 class Selectize(FormInputBase):
