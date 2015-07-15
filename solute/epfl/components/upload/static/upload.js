@@ -130,8 +130,9 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
     var obj = this;
 
     var file_size = file.size;
+    var file_name = file.name;
     var file_type = file.name.split('.').pop();
-    this.send_event('file_info', {file_size: file_size, file_type: file_type});
+    this.send_event('file_info', {file_size: file_size, file_type: file_type, file_name: file_name});
 
     if (obj.params.store_async) {
         if (!file.name) {
