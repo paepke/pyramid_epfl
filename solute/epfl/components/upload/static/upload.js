@@ -128,6 +128,11 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
 
 epfl.Upload.prototype.upload_file = function (reader, file) {
     var obj = this;
+
+    var file_size = file.size;
+    var file_type = file.name.split('.').pop();
+    this.send_event('file_info', {file_size: file_size, file_type: file_type});
+
     if (obj.params.store_async) {
         if (!file.name) {
             file.name = "external"
