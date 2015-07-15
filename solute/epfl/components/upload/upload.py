@@ -131,5 +131,4 @@ class Upload(FormInputBase):
     def handle_file_info(self, file_size, file_type):
         self.file_size = file_size
         self.file_type = file_type
-        print self.file_size,self.file_type
 
