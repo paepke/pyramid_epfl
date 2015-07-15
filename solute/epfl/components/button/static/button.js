@@ -5,23 +5,21 @@ epfl.Button = function(cid, params) {
 epfl.Button.inherits_from(epfl.ComponentBase);
 
 epfl.Button.prototype.handle_click = function(event) {
-    var obj = this;
-    var confirm_first = obj.params["confirm_first"];
-    var confirm_message = obj.params["confirm_message"];
-    var event_name = obj.params["event_name"];
-    var event_target = obj.params["event_target"];
-    var disable_on_click = obj.params["disable_on_click"];
+    // No super since handle_local_click is not required here
+    var button_elm = $('#' + this.cid);
+    if (button_elm.hasClass("disabled")) {
+        return;
+    }
 
-    if (confirm_first && (!confirm(confirm_message))) {
+    if (this.params["confirm_first"] && (!confirm(this.params["confirm_message"]))) {
         return;
     }
-    if (disable_on_click) {
-        $(this).addClass("disabled");
+    if (this.params["disable_on_click"]) {
+        button_elm.addClass("disabled");
     }
-    if(event_target){
-        var request = epfl.make_component_event(event_target, event_name);
-        epfl.send(request);
+    if(this.params["event_target"]) {
+        epfl.send(epfl.make_component_event(this.params["event_target"], this.params["event_name"]));
         return;
     }
-    this.send_event(event_name, {});
+    this.send_event(this.params["event_name"], {});
 };

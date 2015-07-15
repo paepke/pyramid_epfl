@@ -20,6 +20,7 @@ class Button(ComponentBase):
 
     template_name = "button/button.html"
     js_name = [("solute.epfl.components:button/static", "button.js")]
+    js_parts = []
     css_name = [("solute.epfl.components:button/static", "button.css")]
     compo_state = ComponentBase.compo_state + \
         ['disabled', 'icon', 'value', 'color', 'icon_size', 'icon_color']

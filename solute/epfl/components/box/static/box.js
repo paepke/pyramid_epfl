@@ -3,19 +3,27 @@ epfl.Box = function(cid, params) {
 };
 epfl.Box.inherits_from(epfl.ComponentBase);
 
+Object.defineProperty(epfl.Box.prototype, 'close_icon', {
+    get: function () {
+        return this.elm.find('#close_' + this.cid);
+    }
+});
 
 epfl.Box.prototype.handle_local_click = function (event) {
     epfl.ComponentBase.prototype.handle_local_click.call(this, event);
 
-    if (!$(event.target).parent().hasClass('epfl_box_remove_button')) {
+    if (!this.params.hover_box) {
         return;
     }
-    event.stopImmediatePropagation();
-    event.preventDefault();
-
-    if (this.elm.hasClass('epfl_hover_box') && !this.params.hover_box_remove_on_close) {
-        this.send_event("hide", {});
-    } else {
-        this.send_event("removed", {});
+    if ((this.elm.is(event.target)) || (this.close_icon.is(event.target))) {
+        // click on close button or outside of box
+        if (this.params.hover_box_remove_on_close) {
+            this.send_event("removed", {});
+        } else {
+            this.send_event("hide", {});
+        }
+        event.stopImmediatePropagation();
+        event.preventDefault();
     }
+
 };

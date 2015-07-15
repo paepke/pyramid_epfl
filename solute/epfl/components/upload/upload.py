@@ -26,8 +26,9 @@ class Upload(FormInputBase):
 
     template_name = "upload/upload.html"
 
-    compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size", "type",
-                                               "dropped_cid", "handle_click", "store_async","height","width"]
+    compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
+                                               "handle_click", "store_async", "height", "width", "file_size",
+                                               "file_type"]
 
     height = None #: Compo height in px if none nothing is set
 
@@ -66,29 +67,14 @@ class Upload(FormInputBase):
     #: Additional label text shown in the drop zone, if set
     drop_zone_add_text = None
 
-    #: image type / source
-    type = None
-
-    #: cid of the dropped image
-    dropped_cid = None
-
-    #: Source of the image is desktop
-    TYPE_DESKTOP = "desktop"
-
-    #: Source of the image is a image that is no epfl compo
-    TYPE_EXTERN = "extern"
-
-    #: source of the image is epfl upload compo
-    TYPE_EPFL_UPLOAD_IMAGE = "epfl-upload-image"
-
-    #: source of the image is epfl image compo
-    TYPE_EPFL_IMAGE = "epfl-img-component-image"
-
     #: Generate a handle_click event if the component is clicked on by the user.
     handle_click = False
 
     #: Upload the image immediately via handle_store, store has to return a URI that will be used as value.
     store_async = False
+
+    file_size = None  #: File Size of the current uploaded filed
+    file_type = None  #: File Type of the current uploaded filed
 
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
@@ -110,16 +96,12 @@ class Upload(FormInputBase):
         """
         super(Upload, self).__init__(page, cid, label, name, default, validation_type)
 
-    def handle_change(self, value, type=None, dropped_cid=None):
+    def handle_change(self, value):
         """
         When an image gets dropped over the dropzone or an image is choosen in file input
         :param url: image url if the image's source is desktop or epfl image compo url is a byte string
-        :param type: one of the TYPE constants
-        :param dropped_cid: if the dropped image is an epfl compo this is the cid
         """
         self.value = value
-        self.type = type
-        self.dropped_cid = dropped_cid
         if self.no_preview is False:
             self.redraw()
 
@@ -145,3 +127,8 @@ class Upload(FormInputBase):
 
     def handle_drop_accepts(self, cid, moved_cid):
         self.add_ajax_response('true')
+
+    def handle_file_info(self, file_size, file_type):
+        self.file_size = file_size
+        self.file_type = file_type
+

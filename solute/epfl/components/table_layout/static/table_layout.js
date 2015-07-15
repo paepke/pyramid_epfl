@@ -20,21 +20,19 @@ epfl.TableLayout.inherits_from(epfl.PaginatedListLayout);
 
 Object.defineProperty(epfl.TableLayout.prototype, 'hide_column_icon', {
     get: function () {
-        var res = this.elm.find('.hide-column-icon');
-        return res;
+        return this.elm.find('.hide-column-icon');
     }
 });
 
 Object.defineProperty(epfl.TableLayout.prototype, 'show_column_icon', {
     get: function () {
-        var res = this.elm.find('.show-column-icon');
-        return res;
+        return this.elm.find('.show-column-icon');
     }
 });
 
 epfl.TableLayout.prototype.handle_click = function (event) {
     epfl.PaginatedListLayout.prototype.handle_click.call(this, event);
-    if (this.hide_column_icon.is(event.target)) {
+    if (this.hide_column_icon.is(event.target) ) {
         var parent_col = event.target.closest("th");
         this.send_event("hide_column", {column_index: $(parent_col).index()});
     } else if (this.show_column_icon.is(event.target)) {
