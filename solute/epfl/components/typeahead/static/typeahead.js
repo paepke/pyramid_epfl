@@ -104,9 +104,11 @@ epfl.TypeAhead.prototype.after_response = function (data) {
         available_entries.eq(position).addClass('active');
         setTimeout(function () {
             var current_entry = available_entries.eq(position);
-            obj.list.scrollTop(
-                current_entry.offset().top - obj.list.offset().top + obj.list.scrollTop() - current_entry.outerHeight()
-            );
+            if(current_entry.length !== 0) {
+                obj.list.scrollTop(
+                    current_entry.offset().top - obj.list.offset().top + obj.list.scrollTop() - current_entry.outerHeight()
+                );
+            }
         }, 0);
     });
 
