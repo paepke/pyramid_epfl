@@ -5,8 +5,7 @@ epfl.Box.inherits_from(epfl.ComponentBase);
 
 Object.defineProperty(epfl.Box.prototype, 'close_icon', {
     get: function () {
-        return this.elm.find('> .panel > .panel-heading > .epfl_box_remove_button > i').add(
-            this.elm.find('> .panel > .epfl_box_remove_button > i'));
+        return this.elm.find('#close_' + this.cid);
     }
 });
 
