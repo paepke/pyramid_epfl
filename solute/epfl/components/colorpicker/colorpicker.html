@@ -14,7 +14,6 @@
         {% endif %}
     {% endfor %}
     <div class="clearfix"></div>
-    <hr>
     <p><strong>Spezial Werte:</strong></p>
     {% for val in value_options %}
         {% if val["type"] == 1 %}
@@ -22,10 +21,10 @@
                  data-toggle="tooltip"
                  data-placement="top"
                  title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
-                 data-value="{{ val["data"] }}"
-                    {% if compo.value and val in compo.value %}
-                 style="background-color:#00FF00"
-                    {% endif %}>
+                 data-value="{{ val["data"] }}">
+                {% if compo.value and val in compo.value %}
+                    <i class="fa fa-check fa-lg text-primary"></i>
+                {% endif %}
                 {{ val["text"] }}
             </div>
         {% endif %}
@@ -39,7 +38,6 @@
         {############ Toggle Mode ############}
         <button class="btn btn-default"><i class="fa fa-edit"></i></button>
         {% if compo.colors_visible %}
-            <hr>
             {% if compo.value_options is not none %}
                 <div class="epfl-colorpicker-colors">
                     {{ color_list(compo.value_options) }}
