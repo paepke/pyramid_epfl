@@ -67,8 +67,8 @@ class CallWrap(object):
 
 
 class ComponentRenderEnvironment(MutableMapping):
-    """Convenience class to manage the different themes and the theme wrapping mechanism. Also handles tagging of
-       components for the sub rendering mechanism. Implements MutableMapping Interface.
+    """Convenience class to manage the different themes and the theme wrapping mechanism. Implements MutableMapping
+    Interface.
 
     .. graphviz::
 
@@ -133,17 +133,6 @@ class ComponentRenderEnvironment(MutableMapping):
                      'row': compo.get_themed_template(env, 'row'),
                      'before': compo.get_themed_template(env, 'before'),
                      'after': compo.get_themed_template(env, 'after')}
-
-    def is_sub_rendering(self, compo_obj=None):
-        """Determine if the component is part of a currently running sub_redraw_request. Returns false if either no
-           sub_redraw_request is active or the component is part of that request.
-
-        :param compo_obj: The component to be checked.
-        """
-        request_set = self['compo'].sub_redraw_requested
-        if compo_obj:
-            return request_set and not compo_obj.render()
-        return False
 
 
 class UnboundComponent(object):
@@ -348,7 +337,6 @@ class ComponentBase(object):
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
     redraw_requested = False  #: Flag if this component wants to be redrawn.
-    sub_redraw_requested = None  #: Flag if the redraw is to target only fresh components.
 
     _compo_info = None  #: Compo_info cache.
     _handles = None  #: Cache for a list of handle_event functions this component provides.
@@ -772,7 +760,7 @@ class ComponentBase(object):
             for compo in self.components:
                 compo.reset_render_cache(recursive=recursive)
 
-    def render(self, target='main', entry_point=False):
+    def render(self, target='main'):
         """Called to render this component including all potential sub components.
 
         .. graphviz::
@@ -793,15 +781,6 @@ class ComponentBase(object):
 
         self.render_cache = {'main': '', 'js': '', 'js_raw': ''}
 
-        if not entry_point and self.sub_redraw_requested:
-            self.sub_redraw_requested = None
-
-        if self.container_compo and self.container_compo.sub_redraw_requested \
-                and self.cid not in self.container_compo.sub_redraw_requested:
-            self.render_cache['main'] = jinja2.Markup(
-                '<div data-sub-component-placeholder epflid="{cid}"></div>'.format(cid=self.cid))
-            return self.render_cache[target]
-
         if not self.is_visible():
             # this is the container where the component can be placed if visible afterwards
             self.render_cache['main'] = jinja2.Markup("<div epflid='{cid}'></div>".format(cid=self.cid))
@@ -821,21 +800,19 @@ class ComponentBase(object):
 
         context = self.get_render_environment(env)
 
-        if not self.sub_redraw_requested:
-            js_raw.append(self.get_compo_init_js())
+        js_raw.append(self.get_compo_init_js())
 
-            for js_part in self.js_parts:
-                # Render context can be supplied as a dict.
-                js_raw.append(env.get_template(js_part).render(context))
-
-            handles = self.get_handles()
-            if handles:
-                set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
-                set_component_info %= {'cid': self.cid,
-                                       'handles': handles}
-                js_raw.append(set_component_info)
+        for js_part in self.js_parts:
+            # Render context can be supplied as a dict.
+            js_raw.append(env.get_template(js_part).render(context))
 
         self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
+        handles = self.get_handles()
+        if handles:
+            set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'
+            set_component_info %= {'cid': self.cid,
+                                   'handles': handles}
+            js_raw.append(set_component_info)
 
         self.render_cache['js_raw'] = ''.join(js_raw)
         self.render_cache['js'] = jinja2.Markup('<script type="text/javascript">%s</script>'
@@ -895,7 +872,7 @@ class ComponentBase(object):
         self.set_handles(False)
         return self._handles
 
-    def redraw(self, parts=None, sub_redraw=None):
+    def redraw(self, parts=None):
         """ This requests a redraw. All components that are requested to be redrawn are redrawn when
         the ajax-response is generated (namely page.handle_ajax_request()).
         You can specify the parts that need to be redrawn (as string, as list or None for the complete component).
@@ -905,17 +882,6 @@ class ComponentBase(object):
 
         if parts is not None:
             raise Exception('Deprecated: Partial redraws are no longer possible.')
-
-        # If sub_redraw was requested check whether a redraw has been requested before and if it was a sub_redraw.
-        if sub_redraw and (not self.redraw_requested or self.sub_redraw_requested):
-            if not self.sub_redraw_requested:
-                self.sub_redraw_requested = []
-            self.sub_redraw_requested.append(sub_redraw)
-
-            if len(self.sub_redraw_requested) * 1. / len(self.components) > 0.9:
-                self.sub_redraw_requested = None
-        elif self.sub_redraw_requested:
-            self.sub_redraw_requested = None
 
         self.redraw_requested = True
 
@@ -1112,6 +1078,7 @@ class ComponentContainerBase(ComponentBase):
         # IDs of components no longer present in data. Their matching components are deleted.
         for data_id in set(current_order).difference(new_order):
             self.del_component(data_cid_dict.pop(data_id))
+            self.redraw()
 
         # IDs of data represented by a component. Matching components are updated.
         for data_id in set(new_order).intersection(current_order):
@@ -1121,6 +1088,7 @@ class ComponentContainerBase(ComponentBase):
             if compo.disable_auto_update:
                 self.del_component(data_cid_dict.pop(data_id))
                 current_order.remove(data_id)
+                self.redraw()
                 continue
             for k, v in data_dict[data_id].items():
                 if getattr(compo, k) != v:
@@ -1136,10 +1104,7 @@ class ComponentContainerBase(ComponentBase):
             bc = self.add_component(ubc, position=position)
             data_cid_dict[data_id] = bc.cid
 
-            if self.page.request.is_xhr:
-                self.redraw(sub_redraw=bc.cid)
-            else:
-                self.redraw()
+            self.redraw()
 
         # Rebuild order.
         compo_struct = self.compo_info['compo_struct']
@@ -1148,7 +1113,7 @@ class ComponentContainerBase(ComponentBase):
                 key = compo_struct.keys()[i + tipping_point]
                 if compo_struct[key].get('config', {}).get('id', None) != data_id:
                     self.switch_component(self.cid, data_cid_dict[data_id], position=i + tipping_point)
-                    self.redraw(sub_redraw=data_cid_dict[data_id])
+                    self.redraw()
             except AttributeError:
                 pass
 

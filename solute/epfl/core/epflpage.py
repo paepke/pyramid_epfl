@@ -13,8 +13,6 @@ import ujson as json
 
 from solute.epfl.core import epflclient, epflutil, epflacl
 from solute.epfl.core.epflutil import Lifecycle
-from lxml import etree
-from lxml.html.diff import htmldiff
 
 
 class LazyProperty(object):
@@ -58,7 +56,6 @@ class Page(object):
     js_name = [
         "js/jquery-1.11.3.js",
         "js/jquery-ui.js",
-        "js/jquery.xpath.min.js",
         "js/history.js",
         "js/epfl.js",
         "js/epflcomponentbase.js",
@@ -389,27 +386,14 @@ class Page(object):
 
             render_env = self.get_render_environment()
             out = self.response.render_jinja(self.template, **render_env)
-            self.previous_tree = out
         else:
             # Get render entry points.
             for compo in self.get_active_components(sorted_by_depth=True)[:]:
                 if compo.redraw_requested and not compo.is_rendered:
-                    out = compo.render(entry_point=True)
-                    sub_html = etree.HTML(out)
-                    sub_tree = sub_html.getroottree()
-                    sub_root = sub_html.xpath('/html/body/*')[0]
-
-                    prev_root = self.previous_tree.xpath('//*[@epflid="{0}"]'.format(compo.cid))[0]
-
-                    prev_html = etree.tostring(prev_root, method='html')
-                    current_html = etree.tostring(sub_root, method='html')
-                    diff = htmldiff(prev_html, current_html)
-                    import pdb
-                    pdb.set_trace()
                     self.add_js_response("epfl.replace_component('{cid}', {parts})".format(
                         cid=compo.cid,
                         parts=json.encode({'js': compo.render('js_raw'),
-                                           'main': out})))
+                                           'main': compo.render()})))
 
             extra_content = self.get_css_imports(only_fresh_imports=True) + self.get_js_imports(only_fresh_imports=True)
             if len(extra_content) > 0:
