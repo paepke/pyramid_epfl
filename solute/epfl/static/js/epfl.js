@@ -155,7 +155,6 @@ epfl_module = function() {
 
     epfl.switch_component = function(cid) {
         $('[epflid=' + cid + ']').remove();
-        $('[data-xpath-for=' + cid + ']').remove();
     };
 
     epfl.destroy_component = function(cid) {
