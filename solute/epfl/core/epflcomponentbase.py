@@ -807,6 +807,7 @@ class ComponentBase(object):
             js_raw.append(env.get_template(js_part).render(context))
 
         self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
+
         handles = self.get_handles()
         if handles:
             set_component_info = 'epfl.set_component_info("%(cid)s", "handle", %(handles)s);'

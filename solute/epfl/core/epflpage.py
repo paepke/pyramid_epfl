@@ -82,7 +82,6 @@ class Page(object):
 
     _active_initiations = 0  #: Static count of currently active init cycles.
     remember_cookies = []  #: Cookies used by the authentication mechanism.
-    _previous_tree = None  #: The etree of the HTML output parsed in an earlier request in this transaction.
 
     #: Put a class here, it will be instantiated each request by epfl and provided as model. May be a list or a dict.
     model = None
@@ -152,25 +151,6 @@ class Page(object):
                             content_type=content_type)
         response.headerlist.extend(self.remember_cookies)
         return response
-
-    @property
-    def previous_tree(self):
-        if self._previous_tree is None:
-            self._previous_tree = etree.HTML(self.transaction.get('__previous_tree'))
-        return self._previous_tree
-
-    @previous_tree.setter
-    def previous_tree(self, value):
-        if type(value) is not str:
-            self.transaction['__previous_tree'] = value
-        else:
-            self.transaction['__previous_tree'] = etree.tostring(value, method='html')
-            self._previous_tree = value
-
-    @previous_tree.deleter
-    def previous_tree(self):
-        del self.transaction['__previous_tree']
-        self._previous_tree = None
 
     @Lifecycle(name=('page', 'after_event_handling'))
     def after_event_handling(self):
