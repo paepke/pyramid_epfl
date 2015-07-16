@@ -125,34 +125,11 @@ epfl_module = function() {
         epfl.components[cid] = compo_obj;
     };
 
-    epfl.replace_sub_component = function(cid, html) {
-        var nodes = $(html).find('[data-parent-epflid=' + cid + ']');
-        var new_rows = $(html).find('[data-xpath]');
-        var elm = $('[epflid=' + cid + ']');
-        nodes.each(function (i, node) {
-            node = $(node);
-            var row = new_rows.filter('[data-xpath-for=' + node.attr('epflid') + ']');
-            var xpath = row.attr('data-xpath');
-            var target = elm.xpath(xpath);
-            if (target.length == 0) {
-                target = elm.xpath(xpath.replace(/\[\d+]$/, ''));
-                target = target[target.length - 1];
-                row.insertAfter(target);
-            } else {
-                row.insertBefore(target);
-            }
-        });
-    };
-
     epfl.replace_component = function(cid, parts) {
         for (var part_name in parts) {
             if (part_name == "js") continue;
             if (part_name == "prefetch") continue;
             var part_html = parts[part_name];
-            if (part_name == "sub") {
-                epfl.replace_sub_component(cid, part_html);
-                continue;
-            }
             var epflid = cid;
             if (part_name != "main") {
                 epflid = cid + "$" + part_name;
@@ -187,7 +164,7 @@ epfl_module = function() {
             compo.destroy();
             delete epfl.components[cid];
         }
-        $('[data-xpath-for=' + cid + ']').remove();
+        $('[epflid=' + cid + ']').remove();
     };
 
     epfl.unload_page = function() {
