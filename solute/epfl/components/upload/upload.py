@@ -27,7 +27,8 @@ class Upload(FormInputBase):
     template_name = "upload/upload.html"
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
-                                               "handle_click", "store_async", "height", "width"]
+                                               "handle_click", "store_async", "height", "width", "file_info_size",
+                                               "file_info_type","file_info_name"]
 
     height = None #: Compo height in px if none nothing is set
 
@@ -71,6 +72,10 @@ class Upload(FormInputBase):
 
     #: Upload the image immediately via handle_store, store has to return a URI that will be used as value.
     store_async = False
+
+    file_info_size = None  #: File Size of the current uploaded file
+    file_info_type = None  #: File Type of the current uploaded file
+    file_info_name = None  #: File Name of the current uploaded file
 
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
@@ -123,3 +128,9 @@ class Upload(FormInputBase):
 
     def handle_drop_accepts(self, cid, moved_cid):
         self.add_ajax_response('true')
+
+    def handle_file_info(self, file_size, file_type, file_name):
+        self.file_info_size = file_size
+        self.file_info_type = file_type
+        self.file_info_name = file_name
+

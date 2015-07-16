@@ -33,6 +33,8 @@ class Box(epflcomponentbase.ComponentContainerBase):
     hover_box = False
     #: Indicates whether a hover box component should be deleted upon close or just be hidden.
     hover_box_remove_on_close = True
+    #: Indicates whether a hover box component should be closed when the user clicks outside of the box.
+    hover_box_close_on_outside_click = True
     box_shown = True  #: Indicates of a border should be drawn around the box.
     #: Indicates if the title of the box should be shown. Sometimes, you want to specify a title but not show it inside the box.
     #: For example, a box inside a :class:`solute.epfl.components.tabs_layout.tabs_layout.TabsLayout` component.
@@ -41,12 +43,12 @@ class Box(epflcomponentbase.ComponentContainerBase):
     is_removable = False
 
     new_style_compo = True
-    compo_js_params = ['hover_box_remove_on_close']
+    compo_js_params = ['hover_box', 'hover_box_remove_on_close', 'hover_box_close_on_outside_click']
     compo_js_extras = ['handle_click']
     compo_js_name = 'Box'
 
     def __init__(self, page, cid, title=None, auto_visibility=None, hover_box=None, hover_box_remove_on_close=None,
-                 box_shown=None, show_title=None, is_removable=None, **extra_params):
+                 hover_box_close_on_outside_click=None, box_shown=None, show_title=None, is_removable=None, **extra_params):
         """A simple box with a heading that can contain other components. It can be set to hover and/or be closable with
         a cross on the top right.
 
@@ -57,6 +59,8 @@ class Box(epflcomponentbase.ComponentContainerBase):
          forced into the background by a transparent gray overlay.
         :param hover_box_remove_on_close: Defaulting to true any hover box will be removed when clicking the X, else it
          will be set hidden.
+        :param hover_box_close_on_outside_click: Defaulting to true any hover box will be closed when clicking outside
+         of the box.
         :param box_shown: Defaulting to true the border around the box will only be visible if this is true.
         :param show_title: Defaulting to true the title will only be shown if this is true.
         :param is_removable: Defaulting to false the box will only show its removal button if this is true.

@@ -12,7 +12,8 @@ class TextList(PaginatedListLayout):
                       'text': None}
 
     theme_path = {'default': PaginatedListLayout.theme_path,
-                  'row': ['text_list/theme']}
+                  'row': ['text_list/theme'],
+                  'container': ['text_list/theme']}
 
     compo_state = PaginatedListLayout.compo_state + ["search_text"]
 

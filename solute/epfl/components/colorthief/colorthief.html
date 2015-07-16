@@ -1,7 +1,7 @@
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}" class="epfl-colorthief"
      style="{% if compo.height is not none %}height:{{ compo.height }}px;{% endif %} {% if compo.width is not none %}width:{{ compo.width }}px;{% endif %}">
     {% if compo.image_src is not none %}
-        <i class="fa fa-times fa-lg color-danger epfl-colorthief-remove-icon"></i>
+        <i class="fa fa-times fa-lg text-danger epfl-colorthief-remove-icon"></i>
     {% endif %}
     <img class="epfl-colorthief-image" data-cid="{{ compo.cid }}" {% if compo.image_src is not none %}src="{{ compo.image_src }}"{% endif %}/>
     {% if compo.image_src == none %}

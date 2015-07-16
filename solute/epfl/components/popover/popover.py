@@ -39,6 +39,7 @@ class Popover(epflcomponentbase.ComponentBase):
     #: The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
     color = "default"
     small_button = False  #: Set to true if a small button should be rendered.
+    trigger = None  #: Set how the popover is triggerd. possible values: click (default), hover, focus
 
     def __init__(self, page, cid,
                  label=None,
@@ -49,6 +50,7 @@ class Popover(epflcomponentbase.ComponentBase):
                  color="default",
                  disabled=False,
                  small_button=False,
+                 trigger=None,
                  **extra_params):
         """
         Popover Component
@@ -61,6 +63,8 @@ class Popover(epflcomponentbase.ComponentBase):
         :param color: The color class to be used for the button
         :param disabled: Set to true if button should be disabled
         :param small_button: Set to true if a small button should be rendered
+        :param trigger: Set how the popover is triggerd. possible values: click (default), hover, focus
+
         """
         super(Popover, self).__init__(page, cid,
                                       label=label,
@@ -70,4 +74,6 @@ class Popover(epflcomponentbase.ComponentBase):
                                       position=position,
                                       color=color,
                                       disabled=disabled,
-                                      small_button=small_button)
+                                      small_button=small_button,
+                                      trigger=trigger)
+
