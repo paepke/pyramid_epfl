@@ -108,7 +108,7 @@ epfl_module = function() {
             clearTimeout(epfl.init_struct_timeout);
         }
         epfl.init_struct_timeout = setTimeout(function () {
-            $('[epflid]:not([data-parent-epflid])').each(function (i, elm) {
+            $('[epflid]').each(function (i, elm) {
                 elm = $(elm);
                 elm.attr('data-parent-epflid', elm.parent().closest('[epflid]').attr('epflid'));
             });
