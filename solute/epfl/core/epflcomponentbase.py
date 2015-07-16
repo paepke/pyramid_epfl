@@ -8,9 +8,8 @@ from collections import MutableSequence, MutableMapping
 import types, copy, string, inspect, uuid
 
 from pyramid import security
-from pyramid import threadlocal
 
-from solute.epfl.core import epflclient, epflutil, epflacl
+from solute.epfl.core import epflclient, epflutil, epflacl, epflvalidators
 from solute.epfl.core.epflutil import Lifecycle
 
 import ujson as json
@@ -310,7 +309,8 @@ class ComponentBase(object):
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
-    base_compo_state = ["visible"]  #: These are the compo_state-names for this ComponentBase-Class
+    #: These are the compo_state-names for this ComponentBase-Class
+    base_compo_state = ['visible', 'name', 'value', 'mandatory', 'validation_error']
 
     is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
@@ -335,6 +335,21 @@ class ComponentBase(object):
     compo_js_name = 'ComponentBase'  #: Name of the JS Class.
 
     render_cache = None  #: If the component has been rendered this request the cache is filled.
+
+    # Input Helper:
+    value = None  #: The actual value of the input element that is posted upon form submission.
+
+    validation_error = ''  #: Set during call of :func:`validate` with an error message if validation fails.
+    validation_type = None  #: Form validation selector.
+    validation_helper = []  #: Deprecated! Use proper Validators via :attr:`validators`.
+    validators = []  #: List of :class:`~solute.epfl.core.epflvalidators.ValidatorBase` instances.
+
+    #: Set to true if value has to be provided for this element in order to yield a valid form.
+    mandatory = False
+
+    name = None  #: An element without a name cannot have a value.
+    default = None  #: The default value to be applied to the component upon initialisation or reset.
+
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -895,6 +910,85 @@ class ComponentBase(object):
         self.container_compo.add_component(self.__unbound_component__())
         self.container_compo.redraw()
         self.delete_component()
+
+    # Stop here
+
+    def handle_change(self, value):
+        self.value = value
+
+    @staticmethod
+    def reset():
+        raise DeprecationWarning("Reset function is deprecated use reset_value instead.")
+
+    def reset_value(self):
+        """
+        Initialize the field with its default value and clear all validation messages.
+        """
+        if self.default is not None:
+            self.value = self.default
+        else:
+            self.value = None
+        self.validation_error = ""
+
+    def validate(self):
+        validation_result = True
+        if hasattr(self, 'components'):
+            for compo in self.components:
+                validation_result &= compo.validate()
+        if self.name is not None and self.value is not None:
+            validation_result &= self._validate()
+
+        return validation_result
+
+    def _validate(self):
+        """
+        Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
+        """
+        result, text = True, ''
+        if self.validation_type in ['text', 'number', 'float']:
+            self.validators.insert(0, epflvalidators.ValidatorBase.by_name(self.validation_type)())
+
+        # Deprecated!
+        for helper in self.validation_helper:
+            if not result:
+                break
+            result, text = helper[0](self), helper[1]
+        # /Deprecated!
+
+        for validator in self.validators:
+            if not validator(self):
+                result, text = False, validator.error_message
+
+        if not result and self.validation_error:
+            self.redraw()
+            self.validation_error = text
+            return False
+
+        # If a previous validation failed the existing validation error needs to be erased from both the rendered html
+        # and the compo_state.
+        if self.validation_error:
+            self.redraw()
+        self.validation_error = ''
+
+        return True
+
+    def get_values(self):
+        out = {}
+        if hasattr(self, 'components'):
+            for compo in self.components:
+                out.update(compo.get_values())
+
+        if self.name is not None:
+            out[self.name] = self.get_value()
+
+        return out
+
+    def get_value(self):
+        """
+        Return the field value without conversions.
+        """
+        return self.value
+
 
 
 class ComponentContainerBase(ComponentBase):

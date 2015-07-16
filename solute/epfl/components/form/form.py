@@ -58,15 +58,6 @@ class Form(epflcomponentbase.ComponentContainerBase):
                      for cid in self._registered_fields
                      if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
 
-    def get_values(self):
-        values = {}
-
-        for field in self.registered_fields:
-            if field.name is None:
-                continue
-            values[field.name] = field.converted_value
-        return values
-
     def set_value(self, key, value):
         for field in self.registered_fields:
             if field.name == key:
