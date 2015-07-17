@@ -343,7 +343,21 @@ class Page(object):
 
     @Lifecycle(name=('page', 'render'))
     def render(self):
-        """ Is called in case of a "full-page-request" to return the complete page """
+        """Central entry point for all rendering processes including partial rendering during AJAX requests.
+
+        .. graphviz::
+
+            digraph foo {
+                "Page.render" -> "request.is_xhr";
+                "Page.render" -> "not request.is_xhr";
+                "request.is_xhr" -> "Page.get_active_components" -> "compo.render()" -> "ComponentBase.render";
+                "not request.is_xhr" -> "root_node.render()";
+                "root_node.render()" -> "ComponentBase.render";
+                "ComponentBase.render" -> "EPFLResponse.render_jinja";
+                "ComponentBase.render" -> "EPFLResponse.render_ajax_response";
+            }
+
+        """
         out = ''
 
         if not self.request.is_xhr:

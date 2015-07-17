@@ -166,6 +166,8 @@ class Transaction(MutableMapping):
         """
         compo_info = self.pop_component(cid)
         compo_info['ccid'] = ccid
+        if position is None:
+            position = len(self.get_component(ccid)['compo_struct'])
         self.set_component(cid, compo_info, position=position)
 
     def pop_component(self, cid):

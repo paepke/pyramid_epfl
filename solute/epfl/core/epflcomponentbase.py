@@ -29,16 +29,30 @@ class MissingEventHandlerException(Exception):
 
 
 class CallWrap(object):
+    """Special helper class to convert a list of callables into a single callable object.
+    """
     caller = None
 
-    def __init__(self, direction, callables, env):
-        self.callables = callables
+    def __init__(self, cb_chain, env, part):
+        """Extract the required parameters from input.
+
+        :param cb_chain: Tuple of direction String ('<', '>', '') and callable list.
+        :param env: ComponentRenderEnvironment instance.
+        :param part: The name of the part this CallWrap is made up for.
+        """
+        direction, self.callables = cb_chain
         if direction == '<':
             self.callables.reverse()
         self.env = env
+        self.part = part
 
     def __call__(self, *args, **kwargs):
-        self.caller = kwargs.get('caller')
+        """On call the original caller is executed, and its output chained into the callable chain.
+
+           :param args: Original arguments to the jinja2 template call.
+           :param kwargs: Original keyworded arguments to the jinja2 template call, the caller attribute is required.
+        """
+        self.caller = kwargs.get('caller', lambda *args, **kwargs: None)
 
         extra_kwargs = dict(self.env)
         extra_kwargs.update(kwargs)
@@ -53,65 +67,72 @@ class CallWrap(object):
 
 
 class ComponentRenderEnvironment(MutableMapping):
+    """Convenience class to manage the different themes and the theme wrapping mechanism. Implements MutableMapping
+    Interface.
+
+    .. graphviz::
+
+        digraph foo {
+            "Component" -> "ComponentRenderEnvironment";
+            "jinja2 environment" -> "ComponentRenderEnvironment";
+            "ComponentRenderEnvironment" -> "__call__" [label="provides"];
+            "ComponentRenderEnvironment" -> "__getitem__" [label="provides"];
+            "ComponentRenderEnvironment" -> "__init__" [label=""];
+            "ComponentRenderEnvironment" -> "data dict" [label="provides"];
+            "__call__" -> "jinja2.Markup" [label="returns"];
+
+            "ComponentBase.get_themed_template" -> "callable chain";
+            "callable chain" -> "data dict" [label=""];
+
+            "__getitem__" -> "data dict" [label="accesses"];
+            "__getitem__" -> "callable generator" [label="provides"];
+            "callable generator" -> "CallWrap" [label="returns"];
+            "callable chain" -> "CallWrap" [label="wrapped by"];
+        }
+    """
+
     def __iter__(self):
+        """Expose data attribute."""
         return self.data.__iter__()
 
     def __delitem__(self, key):
+        """Expose data attribute."""
         return self.data.__delitem__(key)
 
     def __len__(self):
+        """Expose data attribute."""
         return self.data.__len__()
 
     def __setitem__(self, key, value):
+        """Expose data attribute."""
         return self.data.__setitem__(key, value)
 
     def __getitem__(self, item):
+        """Exposes the wrapped theme template jinja2 callables just in time. Every parameter besides the bypass is
+        treated as a list of callables. Wrapping relies on :class:`CallWrap` to allow for n-deep template chains.
+
+        :param item: The key of the environment that is to be accessed.
+        """
+
+        # Parameter Bypass, currently only the compo key.
         if item in ['compo']:
             return self.data[item]
 
+        # Ensure that only items that should be callables are used here.
         if item not in ['container', 'inner_container', 'row', 'before', 'after']:
-            raise KeyError()
+            raise KeyError('Unknown ')
 
-        callables = self.data[item]
-
-        def wrap(cb, parent=None):
-            if type(cb) is tuple:
-                direction, cb = cb
-                if len(cb) == 1:
-                    return wrap(cb[0])
-                if direction == '<':
-                    return wrap(cb[-1], parent=wrap((direction, cb[:-1])))
-                return wrap(cb[0], parent=wrap((direction, cb[1:])))
-
-            def _cb(*args, **kwargs):
-                extra_kwargs = dict(self)
-                extra_kwargs.update(kwargs)
-                out = cb(*args, **extra_kwargs)
-                if parent is not None:
-                    extra_kwargs['caller'] = lambda: out
-                    out = parent(*args, **extra_kwargs)
-                return out
-
-            return _cb
-
-        return wrap(callables)
+        return CallWrap(self.data[item], self, item)
 
     def __init__(self, compo, env):
+        """Exposes the data attribute via the python MutableMapping Interface.
+        """
         self.data = {'compo': compo,
-                     'container': self.set_order(compo.get_themed_template(env, 'container')),
-                     'inner_container': self.set_order(compo.get_themed_template(env, 'inner_container')),
-                     'row': self.set_order(compo.get_themed_template(env, 'row')),
-                     'before': self.set_order(compo.get_themed_template(env, 'before')),
-                     'after': self.set_order(compo.get_themed_template(env, 'after'))}
-
-    @staticmethod
-    def set_order(template):
-        # if type(template) is not tuple:
-        #     return template
-        # direction, template = template
-        # if direction == '<':
-        #     template.reverse()
-        return template
+                     'container': compo.get_themed_template(env, 'container'),
+                     'inner_container': compo.get_themed_template(env, 'inner_container'),
+                     'row': compo.get_themed_template(env, 'row'),
+                     'before': compo.get_themed_template(env, 'before'),
+                     'after': compo.get_themed_template(env, 'after')}
 
 
 class UnboundComponent(object):
@@ -315,7 +336,7 @@ class ComponentBase(object):
     is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
     is_rendered = False  #: True if this component was rendered calling :meth:`render`
-    redraw_requested = False  #: Set of parts requesting to be redrawn.
+    redraw_requested = False  #: Flag if this component wants to be redrawn.
 
     _compo_info = None  #: Compo_info cache.
     _handles = None  #: Cache for a list of handle_event functions this component provides.
@@ -416,6 +437,10 @@ class ComponentBase(object):
         if self._compo_info is None:
             self._compo_info = self.page.transaction.get_component(self.cid)
         return self._compo_info or {}
+
+    @property
+    def position(self):
+        return self.container_compo.compo_info['compo_struct'].key_index(self.cid)
 
     @property
     def slot(self):
@@ -729,10 +754,26 @@ class ComponentBase(object):
         """
         return {'compo': self}
 
+    def reset_render_cache(self, recursive=False):
+        self.render_cache = None
+        if recursive and hasattr(self, 'components'):
+            for compo in self.components:
+                compo.reset_render_cache(recursive=recursive)
+
     def render(self, target='main'):
-        """ Called to render the complete component.
-        Used by a full-page render request.
-        It returns HTML.
+        """Called to render this component including all potential sub components.
+
+        .. graphviz::
+
+            digraph foo {
+                "ComponentBase.render" -> "not ComponentBase.is_visible" -> "jinja2.Markup";
+                "ComponentBase.render" -> "ComponentBase.is_visible" -> "render sub component js";
+                "render sub component js" -> "Request.get_epfl_jinja2_environment" ->
+                "ComponentBase.get_compo_init_js" ->
+                "ComponentBase.get_render_environment" -> "ComponentRenderEnvironment" ->
+                "ComponentBase.js_parts" -> "jinja2.Markup";
+                "ComponentRenderEnvironment" -> "ComponentBase.main" -> "jinja2.Markup";
+            }
         """
 
         if self.render_cache is not None:
@@ -750,7 +791,7 @@ class ComponentBase(object):
         if hasattr(self, 'components'):
             for compo in self.components:
                 compo.render()
-                js_raw.append(compo.render_cache['js_raw'])
+                js_raw.append(compo.render(target='js_raw'))
 
         self.is_rendered = True
 
@@ -765,7 +806,7 @@ class ComponentBase(object):
             # Render context can be supplied as a dict.
             js_raw.append(env.get_template(js_part).render(context))
 
-        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context))
+        self.render_cache['main'] = jinja2.Markup(env.get_template(self.template_name).render(context).strip())
 
         handles = self.get_handles()
         if handles:
@@ -837,7 +878,7 @@ class ComponentBase(object):
         the ajax-response is generated (namely page.handle_ajax_request()).
         You can specify the parts that need to be redrawn (as string, as list or None for the complete component).
         If a super-element (speaking of template-elements) of this component wants to be redrawn -
-        this one will not reqeust it's redrawing.
+        this one will not request it's redrawing.
         """
 
         if parts is not None:
@@ -860,10 +901,22 @@ class ComponentBase(object):
     def switch_component(self, target, cid, slot=None, position=None):
         """
         Switches a component from its current location (whatever component it may reside in at that time) and move it to
-        slot and position in the component determined by the cid in target.
-        After that assure_hierarchical_order is called to avoid components being initialized in the wrong order.
+        slot and position in the component determined by the cid in target. Largely handled by the identically named
+        :meth:`epfltransaction.Transaction.switch_component` method. Calls the js function epfl.switch_component in AJAX
+        requests.
+
+        :param target: The cid of the target the element with cid is to be moved to.
+        :param cid: The cid of the element to be moved.
+        :param slot: Deprecated.
+        :param position: Position the moved element is to hold in the target container.
         """
 
+        if slot is not None:
+            raise DeprecationWarning('The slot parameter is no longer supported on this method. You can change the slot'
+                                     ' attribute on the component directly.')
+
+        if self.page.request.is_xhr:
+            self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
         self.page.transaction.switch_component(cid, target, position=position)
 
     def get_compo_init_js(self):
@@ -1041,12 +1094,15 @@ class ComponentContainerBase(ComponentBase):
             for k, v in data_dict[data_id].items():
                 if getattr(compo, k) != v:
                     setattr(compo, k, v)
-                    self.redraw()
+                    compo.redraw()
 
         # IDs of data not yet represented by a component. Matching components are created.
         for data_id in set(new_order).difference(current_order):
+            position = new_order.index(data_id)
+            if position > len(self.components):
+                position = None
             ubc = self.default_child_cls(**data_dict[data_id])
-            bc = self.add_component(ubc)
+            bc = self.add_component(ubc, position=position)
             data_cid_dict[data_id] = bc.cid
 
             self.redraw()
@@ -1141,8 +1197,7 @@ class ComponentContainerBase(ComponentBase):
                 cid = str(uuid.uuid4())
             compo_obj.register_in_transaction(self, slot, position=position)
 
-        # the transaction-setup has to be redone because the component can
-        # directly be displayed in this request.
+        # the transaction-setup has to be redone because the component can be displayed directly in this request.
         compo_obj.init_transaction()
         self.page.transaction['__initialized_components__'].add(cid)
         if ('page', 'handle_transaction') not in Lifecycle.get_state():

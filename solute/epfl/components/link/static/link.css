@@ -36,6 +36,12 @@ a.breadcrumb-link:after {
     border-left: 10px solid #393a46;
 }
 
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    a.breadcrumb-link:after {
+        margin: -35px -25px 0 0;
+    }
+}
+
 a.breadcrumb-link:before {
     float: left;
     margin: -15px 0 0 -25px;
