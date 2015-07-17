@@ -618,7 +618,9 @@ class ComponentBase(object):
 
         [request-processing-flow]
         """
-        pass
+        if self.name:
+            self.reset_value()
+            self.register_field(self)
 
     @Lifecycle(name=('component', 'setup_component'))
     def setup_component(self):
@@ -628,9 +630,7 @@ class ComponentBase(object):
 
         [request-processing-flow]
         """
-        if self.name:
-            self.reset_value()
-            self.register_field(self)
+        pass
 
     @Lifecycle(name=('component', 'after_event_handling'))
     def after_event_handling(self):
