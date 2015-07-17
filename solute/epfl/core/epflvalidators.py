@@ -68,10 +68,7 @@ class ValidatorBase(dict):
         if hasattr(target, param_name):
             return getattr(target, param_name)
 
-        try:
-            return target.get(param_name, original_name)
-        except AttributeError:
-            return original_name
+        return original_name
 
     def get_dotted(self, param_name):
         field_name, param_name = param_name.split('.')

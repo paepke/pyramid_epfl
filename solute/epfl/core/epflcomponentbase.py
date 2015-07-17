@@ -510,6 +510,9 @@ class ComponentBase(object):
         if not self.container_compo:
             raise ValueError("Only dynamically created components can be deleted")
 
+        if self.name:
+            self.unregister_field(self)
+
         for compo in list(getattr(self, 'components', [])):
             compo.delete_component()
 
@@ -619,15 +622,15 @@ class ComponentBase(object):
 
     @Lifecycle(name=('component', 'setup_component'))
     def setup_component(self):
-        """ Called from the system every request when the component-state of all
-        components in the page is setup.
-        Here component-individual additional setup can be made.
-        This is called after a potential call to "init_transaction".
-        So no events have been handled so far.
+        """ Called from the system every request when the component-state of all components in the page is setup. Here
+        component-individual additional setup can be made. This is called after a potential call to "init_transaction".
+        So no events have been handled so far. Input initialisation is handled here.
 
         [request-processing-flow]
         """
-        pass
+        if self.name:
+            self.reset_value()
+            self.register_field(self)
 
     @Lifecycle(name=('component', 'after_event_handling'))
     def after_event_handling(self):
@@ -916,6 +919,18 @@ class ComponentBase(object):
     def handle_change(self, value):
         self.value = value
 
+    def register_field(self, field):
+        if self.container_compo:
+            self.container_compo.register_field(field)
+
+    def unregister_field(self, field):
+        if self.container_compo:
+            self.container_compo.unregister_field(field)
+
+    def get_parent_form(self):
+        if self.container_compo:
+            return self.container_compo.get_parent_form()
+
     @staticmethod
     def reset():
         raise DeprecationWarning("Reset function is deprecated use reset_value instead.")
@@ -988,7 +1003,6 @@ class ComponentBase(object):
         Return the field value without conversions.
         """
         return self.value
-
 
 
 class ComponentContainerBase(ComponentBase):

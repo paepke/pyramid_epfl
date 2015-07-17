@@ -1,4 +1,5 @@
 from solute.epfl.core.epflcomponentbase import ComponentBase
+from form import Form
 
 
 class FormInputBase(ComponentBase):

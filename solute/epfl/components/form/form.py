@@ -27,6 +27,9 @@ class Form(epflcomponentbase.ComponentContainerBase):
     def handle_set_dirty(self):
         self.is_dirty = True
 
+    def get_parent_form(self):
+        return self
+
     def register_field(self, field):
         """
         Make a field known to the parent form. Since any component can reside in a form, the child components
@@ -37,12 +40,11 @@ class Form(epflcomponentbase.ComponentContainerBase):
             self._registered_fields = set()
         self._registered_fields.add(field.cid)
 
-    def unregister_field(self,field):
+    def unregister_field(self, field):
         try:
             self._registered_fields.remove(field.cid)
         except (AttributeError, KeyError):
             pass
-
 
     @property
     def registered_fields(self):
@@ -71,22 +73,3 @@ class Form(epflcomponentbase.ComponentContainerBase):
         for field in self.registered_fields:
             field.reset()
         self.redraw()
-
-    def validate(self):
-        result = []
-        for field in self.registered_fields[:]:
-            # Do not validate fields without a name, cause they can not contain
-            # a value.
-            if field.name is None:
-                continue
-            if not self.validate_hidden_fields and not field.is_visible():
-                continue
-            validation_result = field.validate()
-            result.append(validation_result)
-
-        if False in result:
-            self.validation_errors = result
-        return not False in result
-
-    def get_errors(self):
-        return self.validation_errors
