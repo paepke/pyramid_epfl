@@ -1,5 +1,5 @@
 # coding: utf-8
-from solute.epfl.components.form.util import FormInputBase
+from solute.epfl.components.form.inputbase import FormInputBase
 
 
 class PlainHtml(FormInputBase):
