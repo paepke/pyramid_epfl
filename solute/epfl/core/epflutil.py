@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 import urllib
@@ -12,6 +11,7 @@ from pyramid import path
 import solute.epfl
 from solute.epfl import core
 import threading
+import functools
 
 
 class Lifecycle(object):
@@ -34,6 +34,7 @@ class Lifecycle(object):
                                                                                                          self.state))
 
     def __call__(self, cb):
+        @functools.wraps(cb)
         def _cb(*args, **kwargs):
             try:
                 self.checkin()

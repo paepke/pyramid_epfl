@@ -20,7 +20,7 @@ class LinkListLayout(PaginatedListLayout):
 
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
 
-    compo_state = PaginatedListLayout.compo_state + ['links']
+    compo_state = PaginatedListLayout.compo_state
 
     #: Add the specific list type for the link list layout. see :attr:`ListLayout.list_type`
     list_type = PaginatedListLayout.list_type + ['link']

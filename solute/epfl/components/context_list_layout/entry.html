@@ -7,7 +7,7 @@
     {{ compo.data }}
 </div>
 {% if menu is defined %}
-    <button class='btn btn-default btn-xs'><i class='fa fa-bars'></i></button>
+    <button class='btn btn-default btn-xs' type='button'><i class='fa fa-bars'></i></button>
     <ul class="context-dropdown-menu">
         {% for entry in menu %}
             {% if entry.type == "link" %}

@@ -33,6 +33,7 @@ div.epfl-colorpicker-colors {
     left:60px;
     top:0;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    cursor:pointer;
 }
 
 div.epfl-colorpicker-colors p {

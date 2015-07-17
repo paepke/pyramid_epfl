@@ -17,3 +17,4 @@ Unless specified otherwise all code examples belong in the epfl_pyramid_barebone
 
     routing/index
     layout/index
+    async_data_preparation

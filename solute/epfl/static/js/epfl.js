@@ -153,12 +153,17 @@ epfl_module = function() {
           $("[epflid='" + cid + "']").replaceWith("<div epflid='" + cid + "'></div>");
     };
 
+    epfl.switch_component = function(cid) {
+        $('[epflid=' + cid + ']').remove();
+    };
+
     epfl.destroy_component = function(cid) {
-        if (epfl.components[cid]) {
-            epfl.components[cid].destroy();
+        var compo = epfl.components[cid];
+        if (compo) {
+            compo.destroy();
             delete epfl.components[cid];
         }
-        $("[epflid='" + cid + "']").remove();
+        $('[epflid=' + cid + ']').remove();
     };
 
     epfl.unload_page = function() {
