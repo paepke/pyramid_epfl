@@ -58,7 +58,7 @@ epfl.PaginatedListLayout = function (cid, params) {
                 event.preventDefault();
                 return false;
             }
-        }
+        };
         search_elm.keyup(function (event) {
             if (search_timeout) {
                 clearTimeout(search_timeout);
@@ -70,12 +70,8 @@ epfl.PaginatedListLayout = function (cid, params) {
                 search_timeout = setTimeout(submit, 500);
             }
         });
-        search_elm.keypress(function (event) {
-            return preventSubmit(event);
-        });
-        search_elm.keydown(function (event) {
-            return preventSubmit(event);
-        });
+        search_elm.keypress(preventSubmit);
+        search_elm.keydown(preventSubmit);
 
         if (params.search_focus) {
             // Bugfix: focus fails if triggered without this timeout.
