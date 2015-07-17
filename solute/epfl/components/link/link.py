@@ -22,7 +22,8 @@ class Link(ComponentBase):
     list_element = False  #: Display the link as a bootstrap style list element.
     selection = None  #: Tuple of integers: (selection_start, selection_end). MARK-Tag will be applied there.
     event_name = None  #: Name of an event to be triggered on click, prevents url and route from taking effect.
-    active = False #: Sets the active class in html
+    btn_link = False  #: Set to true of link should be displayed as a button.
+    active = False  #: Sets the active class in html
 
     new_style_compo = True
     compo_js_params = ['event_name']
@@ -30,7 +31,7 @@ class Link(ComponentBase):
     compo_js_extras = ['handle_click']
 
     def __init__(self, page, cid, url=None, route=None, name=None, text=None, icon=None, breadcrumb=None, tile=None,
-                 list_element=None, event_name=None, selection=None, **extra_params):
+                 list_element=None, btn_link=None, event_name=None, selection=None, **extra_params):
         """Simple Link component.
 
         Usage:
@@ -50,11 +51,12 @@ class Link(ComponentBase):
         :param breadcrumb: Display the link as a breadcrumb.
         :param tile: Display the link as a rectangular tile.
         :param list_element: Display the link as a bootstrap style list element.
+        :param btn_link: Display the link as a bootstrap style button.
         :param event_name: Name of an event to be triggered on click, prevents url and route from taking effect.
         """
         super(Link, self).__init__(page, cid, url=url, route=route, name=name, text=text, icon=icon,
-                                   breadcrumb=breadcrumb, tile=tile, list_element=list_element, event_name=event_name,
-                                   **extra_params)
+                                   breadcrumb=breadcrumb, tile=tile, list_element=list_element,
+                                   btn_link=btn_link, event_name=event_name, **extra_params)
 
     @property
     def _url(self):
