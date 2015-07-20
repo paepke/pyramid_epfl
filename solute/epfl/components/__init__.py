@@ -33,6 +33,7 @@ from upload.upload import Upload
 from download.download import Download
 from colorpicker.colorpicker import ColorPicker
 from colorthief.colorthief import ColorThief
+from datetime_input.datetime_input import DatetimeInput
 
 #: Special
 from sidebar.sidebar import Sidebar
@@ -145,6 +146,7 @@ def add_routes(config):
     Download.add_pyramid_routes(config)
     ColorPicker.add_pyramid_routes(config)
     ColorThief.add_pyramid_routes(config)
+    DatetimeInput.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
