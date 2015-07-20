@@ -22,7 +22,7 @@ epfl.Upload.prototype.after_response = function (data) {
 
     //if not remove icon is shown and the value is not null the dragover dragleave and drop event
     //should do nothing except prevent default
-    if(obj.params["show_remove_icon"] === true && obj.params["value"] != null) {
+    if (obj.params["show_remove_icon"] === true && obj.params["value"] != null) {
         obj.elm.off("dragover").off("dragleave").off("drop");
         obj.elm.on('dragover', function (event) {
             event.preventDefault();
@@ -89,19 +89,20 @@ epfl.Upload.prototype.validate_file = function (file) {
                 }
             }
             if (!type_is_allowed) {
-                alert("Unknown File Type");
+                alert(this.params["error_message_file_type"]);
                 return false;
             }
         }
     }
     if (file.size > parseInt(this.params.maximum_file_size)) {
-        alert("File size to big");
+        alert(this.params["error_message_file_size"]);
         return false;
     } else if (file.size > 200 * 1024 * 1024) {
         //200 MB is hard limit of upload compo
-        alert("File size to big");
+        alert(this.params["error_message_file_size"]);
         return false;
     }
+
     return true;
 };
 
@@ -112,6 +113,7 @@ epfl.Upload.prototype.read_file = function (file, callback) {
     var reader = new FileReader();
     reader.onload = callback;
     reader.readAsDataURL(file);
+
 
     return true;
 };
@@ -132,7 +134,41 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
     var file_size = file.size;
     var file_name = file.name;
     var file_type = file.name.split('.').pop();
-    this.send_event('file_info', {file_size: file_size, file_type: file_type, file_name: file_name});
+    var file_image_width = null;
+    var file_image_height = null;
+
+    var img = new Image();
+    img.src = reader.result;
+
+    if (img.width > 0) {
+        if (this.params["maximum_image_width"] !== null) {
+            if (img.width > this.params["maximum_image_width"]) {
+                alert(this.params["error_message_image_size"]);
+                $(this.elm).find(".epfl-dropzone").show();
+                return false;
+            }
+        }
+        file_image_width = img.width;
+    }
+
+    if (img.height > 0) {
+        if (this.params["maximum_image_height"] !== null) {
+            if (img.height > this.params["maximum_image_height"]) {
+                alert(this.params["error_message_image_size"]);
+                $(this.elm).find(".epfl-dropzone").show();
+                return false;
+            }
+        }
+        file_image_height = img.height;
+    }
+
+    this.send_event('file_info', {
+        file_size: file_size,
+        file_type: file_type,
+        file_name: file_name,
+        file_image_width: file_image_width,
+        file_image_height: file_image_height,
+    });
 
     if (obj.params.store_async) {
         if (!file.name) {
