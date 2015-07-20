@@ -11,6 +11,8 @@ class SelectableList(LinkListLayout):
 
     compo_state = LinkListLayout.compo_state + ["search_text"]
 
+    list_type = LinkListLayout.list_type + ['selectable']
+
     search_text = None  #: search text for custom search text handling
 
     scroll_pos = None  #: Scrollbar position this is used to jump back to the last scroll pos after redraw
