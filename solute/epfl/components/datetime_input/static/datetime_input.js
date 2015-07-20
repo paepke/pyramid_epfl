@@ -11,10 +11,11 @@ Object.defineProperty(epfl.DatetimeInput.prototype, 'input', {
 
 epfl.DatetimeInput.prototype.after_response = function (data) {
     epfl.FormInputBase.prototype.after_response.call(this, data);
+
     this.input.datetimepicker({
-        locale:'de',
-        format:this.params["date_format"],
-         icons: {
+        locale: 'de',
+        format: this.params["date_format"],
+        icons: {
             time: 'fa fa-clock-o',
             date: 'fa fa-calendar',
             up: 'fa fa-angle-up',
@@ -25,8 +26,14 @@ epfl.DatetimeInput.prototype.after_response = function (data) {
             clear: 'fa fa-trash',
             close: 'fa fa-times'
         },
+        useCurrent:false
 
     }).blur(this.change.bind(this)).change(this.change.bind(this));
+
+    if (this.params["value"] != null) {
+        this.input.val(moment(this.params["value"]).locale("de").format(this.params["date_format"]));
+    }
+
 };
 
 epfl.DatetimeInput.prototype.change = function (event) {
@@ -48,9 +55,9 @@ epfl.DatetimeInput.prototype.change = function (event) {
         }
     }
     if (enqueue_event) {
-        this.repeat_enqueue('change', {value: value}, this.cid + "_change");
+        this.repeat_enqueue('change', {value: moment(value).format()}, this.cid + "_change");
     } else {
-        this.send_event('change', {value: value});
+        this.send_event('change', {value: moment(value).format()});
     }
 };
 

@@ -17,7 +17,6 @@ class DatetimeInput(FormInputBase):
 
     date_format = "LLL"  #: This is the date format from moment.js http://momentjs.com/
 
-
     label = None  #: Optional label describing the input field.
     name = None  #: An element without a name cannot have a value.
     value = None  #: The actual value of the input element that is posted upon form submission.
@@ -43,7 +42,7 @@ class DatetimeInput(FormInputBase):
 
 
     new_style_compo = True
-    compo_js_params = ['fire_change_immediately', 'date_format']
+    compo_js_params = ['fire_change_immediately', 'date_format', "value"]
     compo_js_name = 'DatetimeInput'
 
     def __init__(self, page, cid,
