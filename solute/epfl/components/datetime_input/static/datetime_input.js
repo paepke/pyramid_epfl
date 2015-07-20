@@ -38,6 +38,9 @@ epfl.DatetimeInput.prototype.after_response = function (data) {
 
 epfl.DatetimeInput.prototype.change = function (event) {
     var value = this.input.val();
+    if(!value){
+        return;
+    }
     var enqueue_event = true;
     if (this.params.fire_change_immediately) {
         enqueue_event = false;
@@ -54,6 +57,7 @@ epfl.DatetimeInput.prototype.change = function (event) {
             this.repeat_enqueue('set_dirty', {}, this.cid + "_set_dirty");
         }
     }
+
     if (enqueue_event) {
         this.repeat_enqueue('change', {value: moment(value).format()}, this.cid + "_change");
     } else {
