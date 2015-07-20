@@ -89,17 +89,17 @@ epfl.Upload.prototype.validate_file = function (file) {
                 }
             }
             if (!type_is_allowed) {
-                alert(this.params["error_message_file_type"]);
+                epfl.show_message({msg: this.params["error_message_file_type"], type: "alert"});
                 return false;
             }
         }
     }
     if (file.size > parseInt(this.params.maximum_file_size)) {
-        alert(this.params["error_message_file_size"]);
+        epfl.show_message({msg: this.params["error_message_file_size"], type: "alert"});
         return false;
     } else if (file.size > 200 * 1024 * 1024) {
         //200 MB is hard limit of upload compo
-        alert(this.params["error_message_file_size"]);
+        epfl.show_message({msg: this.params["error_message_file_size"], type: "alert"});
         return false;
     }
 
@@ -140,24 +140,20 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
     var img = new Image();
     img.src = reader.result;
 
-    if (img.width > 0) {
-        if (this.params["maximum_image_width"] !== null) {
-            if (img.width > this.params["maximum_image_width"]) {
-                alert(this.params["error_message_image_size"]);
-                $(this.elm).find(".epfl-dropzone").show();
-                return false;
-            }
+    if (this.params["maximum_image_width"] && img.width > 0) {
+        if (img.width > this.params["maximum_image_width"]) {
+            epfl.show_message({msg: this.params["error_message_image_size"], type: "alert"});
+            $(this.elm).find(".epfl-dropzone").show();
+            return false;
         }
         file_image_width = img.width;
     }
 
-    if (img.height > 0) {
-        if (this.params["maximum_image_height"] !== null) {
-            if (img.height > this.params["maximum_image_height"]) {
-                alert(this.params["error_message_image_size"]);
-                $(this.elm).find(".epfl-dropzone").show();
-                return false;
-            }
+    if (this.params["maximum_image_height"] && img.height > 0) {
+        if (img.height > this.params["maximum_image_height"]) {
+            epfl.show_message({msg: this.params["error_message_image_size"], type: "alert"});
+            $(this.elm).find(".epfl-dropzone").show();
+            return false;
         }
         file_image_height = img.height;
     }
