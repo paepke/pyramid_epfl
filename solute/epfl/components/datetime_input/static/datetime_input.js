@@ -13,7 +13,19 @@ epfl.DatetimeInput.prototype.after_response = function (data) {
     epfl.FormInputBase.prototype.after_response.call(this, data);
     this.input.datetimepicker({
         locale:'de',
-        format:this.params["date_format"]
+        format:this.params["date_format"],
+         icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-angle-up',
+            down: 'fa fa-angle-down',
+            previous: 'fa fa-angle-left',
+            next: 'fa fa-angle-right',
+            today: 'fa fa-crosshairs',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        },
+
     }).blur(this.change.bind(this)).change(this.change.bind(this));
 };
 
