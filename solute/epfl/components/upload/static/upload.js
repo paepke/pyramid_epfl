@@ -89,17 +89,17 @@ epfl.Upload.prototype.validate_file = function (file) {
                 }
             }
             if (!type_is_allowed) {
-                epfl.show_message({msg: this.params["error_message_file_type"], type: "alert"});
+                epfl.show_message({msg: this.params["error_message_file_type"], typ: "alert"});
                 return false;
             }
         }
     }
     if (file.size > parseInt(this.params.maximum_file_size)) {
-        epfl.show_message({msg: this.params["error_message_file_size"], type: "alert"});
+        epfl.show_message({msg: this.params["error_message_file_size"], typ: "alert"});
         return false;
     } else if (file.size > 200 * 1024 * 1024) {
         //200 MB is hard limit of upload compo
-        epfl.show_message({msg: this.params["error_message_file_size"], type: "alert"});
+        epfl.show_message({msg: this.params["error_message_file_size"], typ: "alert"});
         return false;
     }
 
@@ -142,7 +142,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["maximum_image_width"] && img.width > 0) {
         if (img.width > this.params["maximum_image_width"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], type: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
             $(this.elm).find(".epfl-dropzone").show();
             return false;
         }
@@ -151,7 +151,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["maximum_image_height"] && img.height > 0) {
         if (img.height > this.params["maximum_image_height"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], type: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
             $(this.elm).find(".epfl-dropzone").show();
             return false;
         }
