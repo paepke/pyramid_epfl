@@ -17,6 +17,31 @@ class DatetimeInput(FormInputBase):
 
     date_format = "LLL"  #: This is the date format from moment.js http://momentjs.com/
 
+
+    label = None  #: Optional label describing the input field.
+    name = None  #: An element without a name cannot have a value.
+    value = None  #: The actual value of the input element that is posted upon form submission.
+    default = None  #: Default value that may be pre-set or pre-selected
+    placeholder = None  #: Placeholder text that can be displayed if supported by the input.
+    readonly = False  #: Set to true if input cannot be changed and is displayed in readonly mode
+    #: Set during call of :func:`validate` with an error message if validation fails.
+    validation_error = ''
+    validation_type = None  #: Form validation selector.
+    #: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
+    validation_helper = []
+    #: Set to true if value has to be provided for this element in order to yield a valid form.
+    mandatory = False
+    input_focus = False  #: Set focus on this input when component is displayed
+    #: Set to true if input change events should be fired immediately to the server.
+    #: Otherwise, change events are fired upon the next immediate epfl event.
+    fire_change_immediately = False
+    compo_col = 12  #: Set the width of the complete input component (default: max: 12)
+    label_col = 2  #: Set the width of the complete input component (default: 2)
+    layout_vertical = False  #: Set to true if label should be displayed on top of the input and not on the left before it
+    label_style = None  #: Can be used to add additional css styles for the label
+    input_style = None  #: Can be used to add additional css styles for the input
+
+
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'date_format']
     compo_js_name = 'DatetimeInput'
@@ -51,7 +76,7 @@ class DatetimeInput(FormInputBase):
         :param validation_error: Set during call of :func:`validate` with an error message if validation fails
         :param validation_type: Form validation selector.
         :param validation_helper: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
-        :param mandatory: Set to true if value has to be provided for this element in order to yield a valid form
+        :param mandetory: Set to true if value has to be provided for this element in order to yield a valid form
         :param input_focus: Set focus on this input when component is displayed
         :param fire_change_immediately: Set to true if input change events should be fired immediately to the server. Otherwise, change events are fired upon the next immediate epfl event
         :param compo_col: Set the width of the complete input component (default: max: 12)

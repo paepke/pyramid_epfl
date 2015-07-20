@@ -5,7 +5,10 @@
         {% if compo.layout_vertical == True %}
             <div class="row">
                 <div class="col-sm-{{ compo_col }}">
-                    <label for="{{ compo.cid }}_input" class="control-label">{{ compo.label }}</label>
+                    <label for="{{ compo.cid }}_input"
+                           class="control-label"
+                            {{ 'style="'|safe + compo.label_style + '"'|safe if compo.label_style else '' }}
+                            >{{ compo.label }}</label>
                 </div>
             </div>
         {% else %}
@@ -26,7 +29,8 @@
                    value="{{ compo.value if compo.value is not none else '' }}"
                    data-initial-value="{{ compo.value if compo.value is not none else '' }}"
                    placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
-                   {% if compo.readonly is defined and compo.readonly %}disabled{% endif %}/>
+                   {% if compo.readonly is defined and compo.readonly %}disabled="disabled"{% endif %}
+                   {{ 'style="'|safe + compo.input_style + '"'|safe if compo.input_style else '' }}/>
         {% if compo.validation_error %}
             <small class="help-block">{{ compo.validation_error }}</small>
         {% endif %}
