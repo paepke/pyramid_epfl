@@ -28,7 +28,7 @@ class Upload(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
                                                "handle_click", "store_async", "height", "width", "file_info_size",
-                                               "file_info_type","file_info_name"]
+                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height"]
 
     height = None #: Compo height in px if none nothing is set
 
@@ -54,6 +54,12 @@ class Upload(FormInputBase):
     #: maximum file size in byte this is checked in javascript, the hard limit is 200 MB
     maximum_file_size = 5 * 1024 * 1024
 
+    #: maximum width ( resolution ) of an uploaded image if the file is no image this check does nothing
+    maximum_image_width = None
+
+    #: maximum height ( resolution ) of an uploaded image if the file is no image this check does nothing
+    maximum_image_height = None
+
     #: Shows the file input
     show_file_upload_input = True
 
@@ -76,10 +82,21 @@ class Upload(FormInputBase):
     file_info_size = None  #: File Size of the current uploaded file
     file_info_type = None  #: File Type of the current uploaded file
     file_info_name = None  #: File Name of the current uploaded file
+    file_info_image_width = None  #: If file is an image this is the width of the image
+    file_info_image_height = None  #: If file is an image this is the height of the image
+
+    #: This error is shown via javascript if image size is not correct
+    error_message_image_size = "Image Size is too big"
+    #: This error is shown via javascript if file size is not correct
+    error_message_file_size = "File size to big"
+    #: This error is shown via javascript if file type is not allowed
+    error_message_file_type = "This File Type is not allowed"
 
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
-                       'value', 'handle_click', 'store_async','show_file_upload_input','show_drop_zone']
+                       'value', 'handle_click', 'store_async', 'show_file_upload_input', 'show_drop_zone',
+                       "maximum_image_width", "maximum_image_height", "error_message_image_size",
+                       "error_message_file_size", "error_message_file_type"]
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 
@@ -129,8 +146,10 @@ class Upload(FormInputBase):
     def handle_drop_accepts(self, cid, moved_cid):
         self.add_ajax_response('true')
 
-    def handle_file_info(self, file_size, file_type, file_name):
+    def handle_file_info(self, file_size, file_type, file_name, file_image_width, file_image_height):
         self.file_info_size = file_size
         self.file_info_type = file_type
         self.file_info_name = file_name
+        self.file_info_image_width = file_image_width
+        self.file_info_image_height = file_image_height
 
