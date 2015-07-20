@@ -21,7 +21,7 @@ div.epfl-colorpicker-colorfield i {
 }
 
 div.epfl-colorpicker-colors {
-    position: absolute;
+    position: relative;
     background-color: white;
     z-index: 5;
     border: 1px solid #DDD;
@@ -30,10 +30,10 @@ div.epfl-colorpicker-colors {
     padding-left: 15px;
     padding-bottom: 10px;
     width:450px;
-    left:60px;
-    top:0;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
     cursor:pointer;
+    height:400px;
+    overflow-y: auto;
 }
 
 div.epfl-colorpicker-colors p {
