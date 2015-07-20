@@ -4,7 +4,7 @@
     {% if compo.title is defined %}
         <div class="panel-heading">{{ compo.title }}</div>
     {% endif %}
-    <div id="{{ compo.cid }}_container" style="overflow: hidden; {% if compo.height %}height: {{ compo.height - 80 }}px;{% endif %}">
+    <div id="{{ compo.cid }}_container"  class="epfl-table-layout-container" {{ 'style="height: '|safe + (compo.height - 80)|string + 'px;"'|safe if compo.height else ''}}>
         <table id="table_{{ compo.cid }}" class="table table-condensed table-hover epfl-table-layout"
             {% if compo.style is defined %}
                 style="{{ compo.style }}"
@@ -15,7 +15,7 @@
                         {% for header in compo.headings %}
                             {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
                             <th style="width: 20px;">
-                            <i class="show-column-icon fa fa-angle-double-right"></i>
+                                <i class="show-column-icon fa fa-angle-double-right"></i>
                             </th>
                             {% else %}
                             <th {% if header.width is defined %}style="width: {{ header.width }}px;"{% endif %}><span>{{ header.title }}</span>
