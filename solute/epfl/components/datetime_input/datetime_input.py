@@ -15,7 +15,12 @@ class DatetimeInput(FormInputBase):
     compo_state = FormInputBase.compo_state + ["date_format"]
     js_parts = []
 
-    date_format = "LLL"  #: This is the date format from moment.js http://momentjs.com/
+    DATE_FORMAT_LOCALE = "LL"  #: Constant for locale format example: 18. Juli 2015
+    DATE_FORMAT_MONTH_YEAR = "MM[/]YYYY"  #: Constant for month year format example: 08/2015
+    DATE_FORMAT_YEAR = "YYYY"  #: Constant for year format example: 2015
+    DATE_FORMAT_LOCALE_WITH_TIME = "LLL"  #: Constant for locale format with time example: 18. Juli 2015 00:00
+
+    date_format = DATE_FORMAT_LOCALE_WITH_TIME  #: This is the date format from moment.js http://momentjs.com/
 
     label = None  #: Optional label describing the input field.
     name = None  #: An element without a name cannot have a value.
