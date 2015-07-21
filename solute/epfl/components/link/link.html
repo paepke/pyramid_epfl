@@ -16,6 +16,9 @@
    {% if compo._url %}
    href="{{ compo._url }}"
    {% endif %}
+   {% if compo.new_window %}
+       target="_blank"
+   {% endif %}
    >
     {% if compo.icon %}
         <i class="fa fa-{{ compo.icon }}"></i>
