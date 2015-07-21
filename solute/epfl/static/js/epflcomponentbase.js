@@ -137,10 +137,16 @@ epfl.ComponentBase.prototype.handle_local_click = function (event) {
      * directly on this components html element or on any html element that has no more direct containing component. */
 };
 
+epfl.ComponentBase.prototype.is_closest = function (event) {
+    /* Check if event target is bound to this components html element or to any
+     * html element that has no more direct containing component. */
+    var cid = this.closest_cid(event.target);
+    return (cid == this.cid);
+};
+
 epfl.ComponentBase.prototype.handle_click = function (event) {
     /* Executed on click events if extras_handle_click is set to true. */
-    var cid = this.closest_cid(event.target);
-    if (cid == this.cid) {
+    if (this.is_closest(event)) {
         this.handle_local_click(event);
     }
 };
