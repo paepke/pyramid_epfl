@@ -9,7 +9,60 @@ Object.defineProperty(epfl.DatetimeInput.prototype, 'input', {
     }
 });
 
-epfl.DatetimeInput.prototype.DATE_FORMAT_LOCALE = "de";
+epfl.DatetimeInput.prototype.DATE_FORMAT_LOCALE = "LL";
+epfl.DatetimeInput.prototype.DATE_FORMAT_MONTH_YEAR = "MM[/]YYYY";
+epfl.DatetimeInput.prototype.DATE_FORMAT_YEAR = "YYYY";
+epfl.DatetimeInput.prototype.DATE_FORMAT_LOCALE_WITH_TIME = "LLL";
+
+epfl.DatetimeInput.prototype.GERMAN_MONTHS = [
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "Semptember",
+    "Oktober",
+    "November",
+    "Dezember"];
+
+epfl.DatetimeInput.prototype.to_utc = function(date){
+    //Converts a string to a date, this is the fallback for all formats which momentjs cant handle
+    var date_format = this.params["date_format"];
+    if(date_format == epfl.DatetimeInput.prototype.DATE_FORMAT_LOCALE_WITH_TIME ){
+        //example: 12. Juli 2015 00:00
+        var parts = date.split(" ");
+        var day = parts[0].slice(0,-1);
+        var month = parts[1];
+        month = this.GERMAN_MONTHS.indexOf(month);
+        var year = parts[2];
+        var time = parts[3].split(":");
+        var hour = time[0];
+        var min = time[1];
+        date = new Date(year,month,day,hour,min,0,0);
+    }else if(date_format == epfl.DatetimeInput.prototype.DATE_FORMAT_MONTH_YEAR){
+        //example: 08/2015
+        var parts = date.split("/");
+        date = new Date(parts[1],parseInt(parts[0])-1,1,0,0,0,0);
+    }else if(date_format == epfl.DatetimeInput.prototype.DATE_FORMAT_LOCALE){
+        //example: 12. Juli 2015
+        var parts = date.split(" ");
+        var day = parts[0].slice(0,-1);
+        var month = parts[1];
+        month = this.GERMAN_MONTHS.indexOf(month);
+        var year = parts[2];
+        date = new Date(year,month,day,0,0,0,0);
+    }
+
+    return moment(date).locale("de").format();
+};
+
+epfl.DatetimeInput.prototype.from_utc = function(date){
+    return moment(date).locale("de").format(this.params["date_format"]);
+};
+
 
 epfl.DatetimeInput.prototype.after_response = function (data) {
     epfl.FormInputBase.prototype.after_response.call(this, data);
@@ -33,7 +86,7 @@ epfl.DatetimeInput.prototype.after_response = function (data) {
     }).blur(this.change.bind(this)).change(this.change.bind(this));
 
     if (this.params["value"] != null) {
-        this.input.val(moment(this.params["value"]).locale(this.DATE_FORMAT_LOCALE).format(this.params["date_format"]));
+        this.input.val(this.from_utc(this.params["value"]));
     }
 
 };
@@ -44,7 +97,7 @@ epfl.DatetimeInput.prototype.change = function (event) {
         return;
     }
 
-    value = moment(value).locale(this.DATE_FORMAT_LOCALE).format();
+    value = this.to_utc(value);
 
     var enqueue_event = true;
     if (this.params.fire_change_immediately) {
