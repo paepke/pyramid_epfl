@@ -233,3 +233,15 @@ def test_selection(page):
         assert result in compo.render(), \
             'selection set around foobar, but mark tag is missing or malformed in html.'
         compo.render_cache = None
+
+def test_new_window(page):
+    page.root_node = components.Link(
+        text='foobar',
+        new_window=True,
+        tile=True
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+
+    assert 'target="_blank"' in compo.render(), 'new_window set to True but target="_blank" is missing or malformed in html.'
