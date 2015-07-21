@@ -14,3 +14,7 @@ table.fht-table, .fht-table {
 .epfl-table-layout .show-column-icon, .epfl-table-layout .hide-column-icon {
     cursor: pointer;
 }
+
+.epfl-table-layout-container {
+    overflow: hidden;
+}

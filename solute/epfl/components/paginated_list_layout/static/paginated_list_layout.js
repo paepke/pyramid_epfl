@@ -70,8 +70,8 @@ epfl.PaginatedListLayout = function (cid, params) {
                 search_timeout = setTimeout(submit, 500);
             }
         });
-        search_elm.keypress(preventSubmit);
-        search_elm.keydown(preventSubmit);
+        //search_elm.keypress(preventSubmit);
+        //search_elm.keydown(preventSubmit);
 
         if (params.search_focus) {
             // Bugfix: focus fails if triggered without this timeout.

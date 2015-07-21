@@ -19,14 +19,14 @@
     {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
-    	{% if compo.layover_icon is not none %}
-    	<div class="epfl-input-addon"><i class="fa {{ compo.layover_icon }}"></i>
-    	{% endif %}		
-        	<input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
+        {% if compo.layover_icon is not none %}
+        <div class="epfl-input-addon"><i class="fa {{ compo.layover_icon }}"></i>
+        {% endif %}
+            <input class="form-control" type="{% if compo.password %}password{% else %}text{% endif %}" id="{{ compo.cid }}_input" name="{{ compo.name }}"
                value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                data-initial-value="{{ compo.value if compo.password == False and compo.value is not none else '' }}"
                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
-               {% if compo.typeahead == True %}
+               {% if compo.typeahead == True or compo.date == True %}
                    autocomplete="off"
                {% endif %}
                {% if compo.max_length is not none %}
