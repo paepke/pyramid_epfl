@@ -23,7 +23,7 @@ epfl.DatetimeInput.prototype.GERMAN_MONTHS = [
     "Juni",
     "Juli",
     "August",
-    "Semptember",
+    "September",
     "Oktober",
     "November",
     "Dezember"];
