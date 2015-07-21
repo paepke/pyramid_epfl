@@ -1,5 +1,9 @@
 # * encoding: utf-8
 
+from dateutil import parser as dateutil_parser
+from datetime import datetime
+import pytz
+
 from solute.epfl.components.form.form import FormInputBase
 
 
@@ -109,3 +113,15 @@ class DatetimeInput(FormInputBase):
                                             input_style=input_style,
                                             **extra_params)
 
+    def to_utc_value(self):
+        # remove timezone if date_format is in year, month or day granularity.
+        # In this case, we can just drop the timezone (1 Jul 2012 GMT == 1 Jul 2012 UTC).
+        # Otherwise, convert to UTC (1 Jul 2012 00:00 GMT == 30 Jun 2011 22:00 UTC)
+        if self.value is None:
+            return None
+        datetime_object  = dateutil_parser.parse(self.value)
+        if self.date_format in [self.DATE_FORMAT_LOCALE, self.DATE_FORMAT_MONTH_YEAR, self.DATE_FORMAT_YEAR]:
+            datetime_object = datetime_object.replace(tzinfo=None)
+        else:
+            datetime_object = datetime_object.astimezone(pytz.timezone("UTC"))
+        return datetime.isoformat(datetime_object)
