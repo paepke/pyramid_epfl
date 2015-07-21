@@ -22,12 +22,13 @@
     {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
-        	<input class="form-control"
+            <input class="form-control"
                    type="text"
                    id="{{ compo.cid }}_input"
                    name="{{ compo.name }}"
                    value="{{ compo.value if compo.value is not none else '' }}"
                    data-initial-value="{{ compo.value if compo.value is not none else '' }}"
+                   autocomplete="off"
                    placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
                    {% if compo.readonly is defined and compo.readonly %}disabled="disabled"{% endif %}
                    {{ 'style="'|safe + compo.input_style + '"'|safe if compo.input_style else '' }}/>
