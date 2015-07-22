@@ -10,13 +10,21 @@ Object.defineProperty(epfl.Upload.prototype, 'remove_icon', {
     }
 });
 
+Object.defineProperty(epfl.Upload.prototype, 'dropzone', {
+    get: function () {
+        return this.elm.find(".epfl-dropzone");
+    }
+});
+
+
+
 epfl.Upload.prototype.after_response = function (data) {
     epfl.ComponentBase.prototype.after_response.call(this, data);
     var obj = this;
     if (obj.params['show_file_upload_input']) {
         obj.elm.find("input").fileupload({
             add: obj.file_input_add.bind(obj),
-            dropZone: obj.elm.find("div.epfl-upload-input-zone")
+            dropZone: null //drag and drop is handled by epfl, this must be null to prevent double events
         });
     }
 
@@ -108,6 +116,7 @@ epfl.Upload.prototype.validate_file = function (file) {
 
 epfl.Upload.prototype.read_file = function (file, callback) {
     if (!this.validate_file(file)) {
+        this.dropzone.show();
         return false;
     }
     var reader = new FileReader();
@@ -122,7 +131,7 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
     var obj = this;
 
     // Currently only single files supported, although that's really only a question of implementing a backend.
-    $(this.elm).find(".epfl-dropzone").hide();
+    this.dropzone.hide();
     this.read_file(files[0], function () {
         obj.upload_file(this, files[0])
     });
@@ -143,7 +152,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
     if (this.params["maximum_image_width"] && img.width > 0) {
         if (img.width > this.params["maximum_image_width"]) {
             epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
-            $(this.elm).find(".epfl-dropzone").show();
+            this.dropzone.show();
             return false;
         }
         file_image_width = img.width;
@@ -152,7 +161,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
     if (this.params["maximum_image_height"] && img.height > 0) {
         if (img.height > this.params["maximum_image_height"]) {
             epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
-            $(this.elm).find(".epfl-dropzone").show();
+            this.dropzone.show();
             return false;
         }
         file_image_height = img.height;
