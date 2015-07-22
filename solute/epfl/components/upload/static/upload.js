@@ -16,7 +16,7 @@ epfl.Upload.prototype.after_response = function (data) {
     if (obj.params['show_file_upload_input']) {
         obj.elm.find("input").fileupload({
             add: obj.file_input_add.bind(obj),
-            dropZone: obj.elm.find("div.epfl-upload-input-zone")
+            dropZone: null //drag and drop is handled by epfl, this must be null to prevent double events
         });
     }
 
