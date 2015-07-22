@@ -6,7 +6,7 @@
     <img class="epfl-colorthief-image" data-cid="{{ compo.cid }}" {% if compo.image_src is not none %}src="{{ compo.image_src }}"{% endif %}/>
     {% if compo.image_src == none %}
     <div class="epfl-colorthief-dropzone text-center" style="height:100%;width:100%;">
-            <i class="fa fa-image fa-5x epfl-dropzone-colorthief-addicon"></i>
+            <i class="fa fa-image fa-{{ compo.add_icon_size }} epfl-dropzone-colorthief-addicon"></i>
     </div>
 {% endif %}
     {%if compo.value is not none %}

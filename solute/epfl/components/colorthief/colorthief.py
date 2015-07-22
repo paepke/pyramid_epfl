@@ -14,7 +14,7 @@ class ColorThief(FormInputBase):
     css_name = FormInputBase.css_name + [("solute.epfl.components:colorthief/static", "colorthief.css")]
     template_name = "colorthief/colorthief.html"
     js_parts = []
-    compo_state = FormInputBase.compo_state + ["image_src", "dominat_colors_count"]
+    compo_state = FormInputBase.compo_state + ["image_src", "dominat_colors_count","color_count","add_icon_size"]
 
     height = None  #: Compo height in px if none nothing is set
 
@@ -24,22 +24,25 @@ class ColorThief(FormInputBase):
 
     color_count = 7  #: Count of colors which got extracted from the image
 
+    add_icon_size = "5x"  #: The add icon size use font awesome sizes
+
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'color_count']
     compo_js_name = 'ColorThief'
     compo_js_extras = ['handle_click', 'handle_drop']
 
-    def __init__(self, page, cid, height=None, width=None, image_src=None, color_count=None, **extra_params):
+    def __init__(self, page, cid, height=None, width=None, image_src=None, color_count=None,add_icon_size=None, **extra_params):
         """ColorThief Compo: A Drop Area where images can be dropped and their colors get extracted
 
         :param height: Compo height in px if none nothing is set
         :param width: Compo width in px if none nothing is set
         :param image_src: image src if set the drop zone is hidden
         :param color_count: Count of colors which got extracted from the image
+        :param add_icon_size: The add icon size use font awesome sizes
         :return:
         """
         super(ColorThief, self).__init__(page=page, cid=cid, height=height, width=width, image_src=image_src,
-                                         color_count=color_count, **extra_params)
+                                         color_count=color_count,add_icon_size=add_icon_size, **extra_params)
 
     def __new__(cls, *args, **config):
         try:
