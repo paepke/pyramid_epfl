@@ -970,27 +970,41 @@ class ComponentBase(object):
     # Stop here
 
     def handle_change(self, value):
+        """Default handle method to update a value. Will bubble if the current component is not a valid carrier for a
+        value.
+        """
         self.value = value
 
     def register_field(self, field):
+        """Recursive lookup to find a component that considers itself a valid field registration target and register
+        with it.
+        """
         if self.container_compo:
             self.container_compo.register_field(field)
 
     def unregister_field(self, field):
+        """Recursive lookup to find a component that considers itself a valid field unregistration target and unregister
+        from there.
+        """
         if self.container_compo:
             self.container_compo.unregister_field(field)
 
     def get_parent_form(self):
+        """Recursive lookup to find a component that considers it self a form, courtesy of having a get_parent_form
+        method that stops the bubbling by returning itself or a form instance.
+        """
         if self.container_compo:
             return self.container_compo.get_parent_form()
 
     @staticmethod
     def reset():
+        """Originally was used to reset the value of a FormInputBase element. Deprecated in favor of reset_value for
+        clearer naming.
+        """
         raise DeprecationWarning("Reset function is deprecated use reset_value instead.")
 
     def reset_value(self):
-        """
-        Initialize the field with its default value and clear all validation messages.
+        """Initialize the field with its default value and clear all validation error messages.
         """
         if self.default is not None:
             self.value = self.default
@@ -1003,7 +1017,7 @@ class ComponentBase(object):
         if hasattr(self, 'components'):
             for compo in self.components:
                 validation_result &= compo.validate()
-        if self.name is not None and self.value is not None:
+        if self.name is not None:
             validation_result &= self._validate()
 
         return validation_result
@@ -1024,10 +1038,10 @@ class ComponentBase(object):
         # /Deprecated!
 
         for validator in self.validators:
-            if not validator(self):
+            if validator(self) is False:
                 result, text = False, validator.error_message
 
-        if not result and self.validation_error:
+        if result is False and text:
             self.redraw()
             self.validation_error = text
             return False

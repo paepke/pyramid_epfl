@@ -111,6 +111,8 @@ class TextValidator(ValidatorBase):
             self.error_message = error_message
             return False
 
+        return True
+
 
 class NumberValidator(ValidatorBase):
     float = False  #: Treat value as a float.
