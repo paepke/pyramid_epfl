@@ -72,6 +72,38 @@ If a file named <lowercase component name>.js exists in the components static di
 
          epfl.<camelcase component name>.prototype.<fn name> = function() {};
 
+Jinja2 Templates
+----------------
+A component **may** contain a custom template. It **must** be named like the main python file but **must** end with
+".html". A component also **may** contain a folder called "theme". This folder **may** contain any subset of the following
+files: "container.html", "before.html", "inner_container.html", "row.html" or "after.html".
+
+Any template **may** contain jinja2 if-then-else and for directives. Any such directive **should not** access more than
+one attribute. Any such directive **should** export logic exceeding these bounds into their respective python base class
+in an appropriately named function or property.
+If directives **should** always be the topmost form achievable on the following list:
+
+.. code-block:: python
+
+    {{ some_object.attr }}
+
+    {{ some_object.attr if some_object.attr else "" }}
+
+    {% if some_object.attr %}
+        some_object.attr
+    {% endif %}
+
+If forced to use the last variant the directive **must not** be squeezed into a single line.
+
+All attributes of a component accessed in its template **must** have a defined default value in the python base class.
+All other attributes accessed in a template **must** be either:
+ 1. always be guaranteed to be present
+ 2. checked with jinja2 is defined before usage in the template:
+
+    .. code-block:: python
+
+        {{ obj.attr if obj.attr is defined else '' }}
+
 
 Python Code
 -----------
