@@ -331,7 +331,7 @@ class ComponentBase(object):
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
     #: These are the compo_state-names for this ComponentBase-Class
-    base_compo_state = ['visible', 'name', 'value', 'mandatory', 'validation_error']
+    base_compo_state = ['visible', 'name', 'value', 'mandatory', 'validation_error', 'validators']
 
     is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
@@ -440,7 +440,7 @@ class ComponentBase(object):
                 hash(value)
             except TypeError:
                 # Only the immutable builtins are hashable, mutable builtins are not and cause a TypeError.
-                setattr(self, key, value)
+                setattr(self, key, copy.deepcopy(value))
                 return getattr(self, key, value)
             return value
 
@@ -646,6 +646,9 @@ class ComponentBase(object):
         if self.name:
             self.reset_value()
             self.register_field(self)
+
+            if self.validation_type in ['email', 'text', 'number', 'float']:
+                self.validators.insert(0, epflvalidators.ValidatorBase.by_name(self.validation_type)())
 
     @Lifecycle(name=('component', 'setup_component'))
     def setup_component(self):
@@ -1026,24 +1029,24 @@ class ComponentBase(object):
         """
         Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
         """
-        result, text = True, ''
-        if self.validation_type in ['text', 'number', 'float']:
-            self.validators.insert(0, epflvalidators.ValidatorBase.by_name(self.validation_type)())
+        result, text = True, []
 
         # Deprecated!
         for helper in self.validation_helper:
             if not result:
                 break
-            result, text = helper[0](self), helper[1]
+            result = helper[0](self)
+            text.append(helper[1])
         # /Deprecated!
 
         for validator in self.validators:
             if validator(self) is False:
-                result, text = False, validator.error_message
+                text.append(validator.error_message)
+                result = False
 
         if result is False and text:
             self.redraw()
-            self.validation_error = text
+            self.validation_error = '\n'.join(text)
             return False
 
         # If a previous validation failed the existing validation error needs to be erased from both the rendered html

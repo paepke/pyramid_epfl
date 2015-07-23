@@ -98,7 +98,7 @@ class ValidatorBase(dict):
 
 
 class TextValidator(ValidatorBase):
-    def __init__(self, value='value', error_message='Value is required', *args, **kwargs):
+    def __init__(self, value='value', error_message='Value is required!', *args, **kwargs):
         """Validate a related Input field as a text.
 
         :param value: Where to get the value to be evaluated.
@@ -117,7 +117,7 @@ class TextValidator(ValidatorBase):
 
 class EmailValidator(TextValidator):
     def __init__(self, value='value', error_message='E-Mail is required!', domain=None,
-                 error_message_domain='Invalid domain', *args, **kwargs):
+                 error_message_domain='Invalid domain!', *args, **kwargs):
         """Validate a related Input field as a text.
 
         :param value: Where to get the value to be evaluated.
@@ -153,7 +153,7 @@ class EmailValidator(TextValidator):
 class NumberValidator(ValidatorBase):
     float = False  #: Treat value as a float.
 
-    def __init__(self, value='value', min_value=None, max_value=None, error_message='Value is required', *args,
+    def __init__(self, value='value', min_value=None, max_value=None, error_message='Value is required!', *args,
                  **kwargs):
         """Validate a related Input field as a number.
 
@@ -163,8 +163,8 @@ class NumberValidator(ValidatorBase):
         :param error_message: Error message to be displayed upon failed validation. If left to default with either
                               min_value or max_value present this will default to 'Value is outside of limit' instead.
         """
-        if (min_value or max_value) and error_message == 'Value is required':
-            error_message = 'Value is outside of limit'
+        if (min_value or max_value) and error_message == 'Value is required!':
+            error_message = 'Value is outside of limit!'
         super(NumberValidator, self).__init__(value=value, error_message=error_message, *args, **kwargs)
 
     def validate(self, value=None, min_value=None, max_value=None, error_message=None, **kwargs):
@@ -174,7 +174,7 @@ class NumberValidator(ValidatorBase):
             return False
 
         # Not mandatory and not set passes muster.
-        if value is None or value != "":
+        if value is None or value == "":
             return True
 
         # Can value be cast to float or int respectively.
