@@ -8,9 +8,9 @@ from collections import MutableSequence, MutableMapping
 import types, copy, string, inspect, uuid
 
 from pyramid import security
-from pyramid import threadlocal
 
-from solute.epfl.core import epflclient, epflutil, epflacl
+from solute.epfl.core import epflclient, epflutil, epflacl, epflvalidators
+from solute.epfl import validators
 from solute.epfl.core.epflutil import Lifecycle
 
 import ujson as json
@@ -331,7 +331,8 @@ class ComponentBase(object):
 
     epfl_event_trace = None  #: Contains a list of CIDs an event bubbled through. Only available in handle\_ methods
 
-    base_compo_state = ["visible"]  #: These are the compo_state-names for this ComponentBase-Class
+    #: These are the compo_state-names for this ComponentBase-Class
+    base_compo_state = ['visible', 'name', 'value', 'mandatory', 'validation_error', 'validators']
 
     is_template_element = True  #: Needed for template-reflection: this makes me a template-element (like a form-field)
 
@@ -356,6 +357,21 @@ class ComponentBase(object):
     compo_js_name = 'ComponentBase'  #: Name of the JS Class.
 
     render_cache = None  #: If the component has been rendered this request the cache is filled.
+
+    # Input Helper:
+    value = None  #: The actual value of the input element that is posted upon form submission.
+
+    validation_error = ''  #: Set during call of :func:`validate` with an error message if validation fails.
+    validation_type = None  #: Form validation selector.
+    validation_helper = []  #: Deprecated! Use proper Validators via :attr:`validators`.
+    validators = []  #: List of :class:`~solute.epfl.core.epflvalidators.ValidatorBase` instances.
+
+    #: Set to true if value has to be provided for this element in order to yield a valid form.
+    mandatory = False
+
+    name = None  #: An element without a name cannot have a value.
+    default = None  #: The default value to be applied to the component upon initialisation or reset.
+
 
     @classmethod
     def add_pyramid_routes(cls, config):
@@ -425,7 +441,7 @@ class ComponentBase(object):
                 hash(value)
             except TypeError:
                 # Only the immutable builtins are hashable, mutable builtins are not and cause a TypeError.
-                setattr(self, key, value)
+                setattr(self, key, copy.deepcopy(value))
                 return getattr(self, key, value)
             return value
 
@@ -519,6 +535,9 @@ class ComponentBase(object):
         you can not use this component any longer in the layout. """
         if not self.container_compo:
             raise ValueError("Only dynamically created components can be deleted")
+
+        if self.name:
+            self.unregister_field(self)
 
         for compo in list(getattr(self, 'components', [])):
             compo.delete_component()
@@ -621,18 +640,21 @@ class ComponentBase(object):
         You can overwrite this method to manipulate the initial state once.
         Use this to load data-objects you want to manipulate within this transaction.
 
-        Nothing is done here, so the component does not need to call the super-function!
+        Input initialisation is handled here.
 
         [request-processing-flow]
         """
-        pass
+        if self.name:
+            self.reset_value()
+            self.register_field(self)
+
+            if self.validation_type in ['email', 'text', 'number', 'float']:
+                self.validators.insert(0, epflvalidators.ValidatorBase.by_name(self.validation_type)())
 
     @Lifecycle(name=('component', 'setup_component'))
     def setup_component(self):
-        """ Called from the system every request when the component-state of all
-        components in the page is setup.
-        Here component-individual additional setup can be made.
-        This is called after a potential call to "init_transaction".
+        """ Called from the system every request when the component-state of all components in the page is setup. Here
+        component-individual additional setup can be made. This is called after a potential call to "init_transaction".
         So no events have been handled so far.
 
         [request-processing-flow]
@@ -648,12 +670,6 @@ class ComponentBase(object):
         [request-processing-flow]
         """
         pass
-
-    def _get_compo_state_attribute(self, attr_name):
-        transaction = self.page.transaction
-        compo_info = transaction.get_component(self.cid)
-
-        return (compo_info or {}).get('compo_state', {}).get(attr_name, copy.deepcopy(getattr(self, attr_name)))
 
     def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
@@ -948,6 +964,122 @@ class ComponentBase(object):
         self.container_compo.add_component(self.__unbound_component__())
         self.container_compo.redraw()
         self.delete_component()
+
+    ###########################
+    # Start of value handling #
+    ###########################
+
+    def handle_change(self, value):
+        """Default handle method to update a value. Will rebubble if the current component is not a valid carrier for a
+        value.
+        """
+        if self.name is None:
+            raise MissingEventHandlerException
+        self.value = value
+
+    def register_field(self, field):
+        """Recursive lookup to find a component that considers itself a valid field registration target and register
+        with it.
+        """
+        if self.container_compo:
+            self.container_compo.register_field(field)
+
+    def unregister_field(self, field):
+        """Recursive lookup to find a component that considers itself a valid field unregistration target and unregister
+        from there.
+        """
+        if self.container_compo:
+            self.container_compo.unregister_field(field)
+
+    def get_parent_form(self):
+        """Recursive lookup to find a component that considers it self a form, courtesy of having a get_parent_form
+        method that stops the bubbling by returning itself or a form instance.
+        """
+        if self.container_compo:
+            return self.container_compo.get_parent_form()
+
+    @staticmethod
+    def reset():
+        """Originally was used to reset the value of a FormInputBase element. Deprecated in favor of reset_value for
+        clearer naming.
+        """
+        raise DeprecationWarning("Reset function is deprecated use reset_value instead.")
+
+    def reset_value(self):
+        """Initialize the field with its default value and clear all validation error messages.
+        """
+        if self.default is not None:
+            self.value = self.default
+        else:
+            self.value = None
+        self.validation_error = ""
+
+    def validate(self):
+        """Recursive validation of components starting from this component and continuing over all child components.
+        """
+        validation_result = True
+        if hasattr(self, 'components'):
+            for compo in self.components:
+                validation_result &= compo.validate()
+        if self.name is not None:
+            validation_result &= self._validate()
+
+        return validation_result
+
+    def _validate(self):
+        """
+        Validate the value and return True if it is correct or False if not. Set error messages to self.validation_error
+        """
+        result, text = True, []
+
+        # Deprecated!
+        for helper in self.validation_helper:
+            if not result:
+                break
+            result = helper[0](self)
+            text.append(helper[1])
+        # /Deprecated!
+
+        for validator in self.validators:
+            if validator(self) is False:
+                text.append(validator.error_message)
+                result = False
+
+        if result is False and text:
+            self.redraw()
+            self.validation_error = '\n'.join(text)
+            return False
+
+        # If a previous validation failed the existing validation error needs to be erased from both the rendered html
+        # and the compo_state.
+        if self.validation_error:
+            self.redraw()
+        self.validation_error = ''
+
+        return True
+
+    def get_values(self):
+        """Recursive lookup to find all values including this components value and all component values below.
+        """
+        out = {}
+        if hasattr(self, 'components'):
+            for compo in self.components:
+                out.update(compo.get_values())
+
+        if self.name is not None:
+            out[self.name] = self.get_value()
+
+        return out
+
+    def get_value(self):
+        """
+        Return the field value without conversions.
+        """
+        return self.value
+
+    #########################
+    # End of value handling #
+    #########################
 
 
 class ComponentContainerBase(ComponentBase):

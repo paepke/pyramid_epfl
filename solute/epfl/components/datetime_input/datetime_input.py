@@ -4,7 +4,7 @@ from dateutil import parser as dateutil_parser
 from datetime import datetime
 import pytz
 
-from solute.epfl.components.form.form import FormInputBase
+from solute.epfl.components.form.inputbase import FormInputBase
 
 
 class DatetimeInput(FormInputBase):

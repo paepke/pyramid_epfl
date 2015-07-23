@@ -1,4 +1,4 @@
-from solute.epfl.components.form.form import FormInputBase
+from solute.epfl.components.form.inputbase import FormInputBase
 
 
 class SimpleToggle(FormInputBase):
