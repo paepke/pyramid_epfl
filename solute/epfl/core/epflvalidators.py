@@ -7,6 +7,12 @@ class ValidatorBase(dict):
 
     errors = None
 
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+        """Overwrite this method to provide the interface for a custom validator.
+        """
+        super(ValidatorBase, self).__init__(*args, **kwargs)
+
     def __call__(self, caller, *args, **kwargs):
         """Lookup parameters, run validation, return result.
         """
@@ -101,7 +107,7 @@ class TextValidator(ValidatorBase):
 
     def validate(self, value=None, error_message=None, **kwargs):
         # Check if mandatory and present.
-        if self.caller.mandatory and (value is None or value == ""):
+        if self.caller.mandatory and (value is None or value in ["", u'']):
             self.error_message = error_message
             return False
 
