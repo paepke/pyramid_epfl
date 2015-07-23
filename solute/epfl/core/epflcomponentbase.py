@@ -10,6 +10,7 @@ import types, copy, string, inspect, uuid
 from pyramid import security
 
 from solute.epfl.core import epflclient, epflutil, epflacl, epflvalidators
+from solute.epfl import validators
 from solute.epfl.core.epflutil import Lifecycle
 
 import ujson as json
