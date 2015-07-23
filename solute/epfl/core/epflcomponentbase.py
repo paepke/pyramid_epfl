@@ -640,7 +640,7 @@ class ComponentBase(object):
         You can overwrite this method to manipulate the initial state once.
         Use this to load data-objects you want to manipulate within this transaction.
 
-        Nothing is done here, so the component does not need to call the super-function!
+        Input initialisation is handled here.
 
         [request-processing-flow]
         """
@@ -655,7 +655,7 @@ class ComponentBase(object):
     def setup_component(self):
         """ Called from the system every request when the component-state of all components in the page is setup. Here
         component-individual additional setup can be made. This is called after a potential call to "init_transaction".
-        So no events have been handled so far. Input initialisation is handled here.
+        So no events have been handled so far.
 
         [request-processing-flow]
         """
