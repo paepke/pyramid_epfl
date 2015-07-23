@@ -670,12 +670,6 @@ class ComponentBase(object):
         """
         pass
 
-    def _get_compo_state_attribute(self, attr_name):
-        transaction = self.page.transaction
-        compo_info = transaction.get_component(self.cid)
-
-        return (compo_info or {}).get('compo_state', {}).get(attr_name, copy.deepcopy(getattr(self, attr_name)))
-
     def show_fading_message(self, msg, typ="ok"):
         """ Shortcut to epflpage.show_fading_message(msg, typ).
         typ = "info" | "ok" | "error"
@@ -970,12 +964,16 @@ class ComponentBase(object):
         self.container_compo.redraw()
         self.delete_component()
 
-    # Stop here
+    ###########################
+    # Start of value handling #
+    ###########################
 
     def handle_change(self, value):
-        """Default handle method to update a value. Will bubble if the current component is not a valid carrier for a
+        """Default handle method to update a value. Will rebubble if the current component is not a valid carrier for a
         value.
         """
+        if self.name is None:
+            raise MissingEventHandlerException
         self.value = value
 
     def register_field(self, field):
@@ -1073,6 +1071,10 @@ class ComponentBase(object):
         Return the field value without conversions.
         """
         return self.value
+
+    #########################
+    # End of value handling #
+    #########################
 
 
 class ComponentContainerBase(ComponentBase):
