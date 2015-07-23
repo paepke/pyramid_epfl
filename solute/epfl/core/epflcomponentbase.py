@@ -1015,6 +1015,8 @@ class ComponentBase(object):
         self.validation_error = ""
 
     def validate(self):
+        """Recursive validation of components starting from this component and continuing over all child components.
+        """
         validation_result = True
         if hasattr(self, 'components'):
             for compo in self.components:
@@ -1057,6 +1059,8 @@ class ComponentBase(object):
         return True
 
     def get_values(self):
+        """Recursive lookup to find all values including this components value and all component values below.
+        """
         out = {}
         if hasattr(self, 'components'):
             for compo in self.components:
