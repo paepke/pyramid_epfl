@@ -226,7 +226,7 @@ All components **may** provide event handling methods. Any event handling method
 component in the inheritance chain any such implementation **should** call its respective super method at the
 appropriate time. Any such method **may** raise a
 :class:`~solute.epfl.core.epflcomponentbase.MissingEventHandlerException` in order to reject handling the event and
-returning to the EPFL event bubbling.
+return to the EPFL event bubbling.
 
 All components **should not** provide post event handling methods. These methods **must** be prefixed with "on\_". Any
 such method **should** contain a doc string in the style of the __init__ method. If provided by a component in the
