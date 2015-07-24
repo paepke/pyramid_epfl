@@ -51,7 +51,7 @@ class Button(ComponentBase):
     disable_on_click = False
 
     new_style_compo = True
-    compo_js_params = ['event_target', 'event_name', 'confirm_first', 'confirm_message']
+    compo_js_params = ['event_target', 'event_name', 'confirm_first', 'confirm_message', 'disable_on_click']
     compo_js_name = 'Button'
     compo_js_extras = ['handle_click']
 
