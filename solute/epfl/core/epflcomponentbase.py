@@ -645,7 +645,11 @@ class ComponentBase(object):
         [request-processing-flow]
         """
         if self.name:
+            # TODO: This is working, but technically in violation of the api contract. Clean up the value/default mess.
+            value = self.value
             self.reset_value()
+            if value is not None and self.default is None:
+                self.value = value
             self.register_field(self)
 
             if self.validation_type in ['email', 'text', 'number', 'float']:
