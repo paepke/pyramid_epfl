@@ -645,11 +645,8 @@ class ComponentBase(object):
         [request-processing-flow]
         """
         if self.name:
-            # TODO: This is working, but technically in violation of the api contract. Clean up the value/default mess.
-            value = self.value
-            self.reset_value()
-            if value is not None and self.default is None:
-                self.value = value
+            if self.value is None and self.default is not None:
+                self.value = self.default
             self.register_field(self)
 
             if self.validation_type in ['email', 'text', 'number', 'float']:
@@ -1004,12 +1001,12 @@ class ComponentBase(object):
 
     @staticmethod
     def reset():
-        """Originally was used to reset the value of a FormInputBase element. Deprecated in favor of reset_value for
+        """Originally was used to reset the value of a FormInputBase element. Deprecated in favor of set_to_default for
         clearer naming.
         """
-        raise DeprecationWarning("Reset function is deprecated use reset_value instead.")
+        raise DeprecationWarning("Reset function is deprecated use set_to_default instead.")
 
-    def reset_value(self):
+    def set_to_default(self):
         """Initialize the field with its default value and clear all validation error messages.
         """
         if self.default is not None:

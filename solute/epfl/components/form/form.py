@@ -71,5 +71,5 @@ class Form(epflcomponentbase.ComponentContainerBase):
         Initialize all registered form fields with its default value and clear all validation messages.
         """
         for field in self.registered_fields:
-            field.reset()
+            field.set_to_default()
         self.redraw()
