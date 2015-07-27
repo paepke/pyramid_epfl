@@ -5,6 +5,7 @@
                  style="background-color: {{ val["data"] }}"
                  data-toggle="tooltip"
                  data-placement="top"
+                 data-container="body"
                  title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
                  data-value="{{ val["data"] }}">
                 {% if compo.value and val in compo.value %}
@@ -20,6 +21,7 @@
              <div class="epfl-colorpicker-specialfield pull-left text-center"
                  data-toggle="tooltip"
                  data-placement="top"
+                  data-container="body"
                  title="{{ val["data"] }} {{ val["text"] if val["text"] is defined else "" }}"
                  data-value="{{ val["data"] }}">
                 {% if compo.value and val in compo.value %}
