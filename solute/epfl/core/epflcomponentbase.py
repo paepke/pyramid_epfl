@@ -1016,11 +1016,13 @@ class ComponentBase(object):
         self.validation_error = ""
 
     def validate(self):
-        """Recursive validation of components starting from this component and continuing over all child components.
+        """Recursive validation of components starting from this component and continuing over all visible child components.
         """
         validation_result = True
         if hasattr(self, 'components'):
             for compo in self.components:
+                if not compo.is_visible(check_parents=False):
+                    continue
                 validation_result &= compo.validate()
         if self.name is not None:
             validation_result &= self._validate()
