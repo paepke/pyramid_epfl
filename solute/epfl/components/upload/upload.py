@@ -28,7 +28,8 @@ class Upload(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
                                                "handle_click", "store_async", "height", "width", "file_info_size",
-                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height"]
+                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height",
+                                               "file_upload_input_preview"]
 
     height = None #: Compo height in px if none nothing is set
 
@@ -38,6 +39,9 @@ class Upload(FormInputBase):
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
+
+    #: Set to true to show the file name instead of the input field if value is set
+    file_upload_input_preview = True
 
     #: The type of validator that will be used for this field.
     validation_type = 'text'
@@ -51,7 +55,8 @@ class Upload(FormInputBase):
     #: show a remove icon which removes the current uploaded file see: handle_remove_icon
     show_remove_icon = False
 
-    #: maximum file size in byte this is checked in javascript, the hard limit is 200 MB
+    #: maximum file size in byte this is checked in javascript,
+    #: the hard technical browser limit is 100 MB so if a file bigger than 100 mb is dropped the browser crashes
     maximum_file_size = 5 * 1024 * 1024
 
     #: maximum width ( resolution ) of an uploaded image if the file is no image this check does nothing
