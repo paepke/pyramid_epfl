@@ -182,7 +182,6 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
         spinner.appendTo(this.elm);
         obj.is_async_uploading = true;
         obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
-            console.log("async ende");
             obj.is_async_uploading = false;
             spinner.remove();
             obj.handle_drop_url(data);
@@ -221,7 +220,6 @@ epfl.Upload.prototype.change = function (value) {
 };
 
 epfl.Upload.prototype.handle_click = function (event) {
-    console.log("click",this.is_async_uploading);
     if(this.is_async_uploading){
         return;
     }
