@@ -35,6 +35,7 @@ from colorpicker.colorpicker import ColorPicker
 from colorthief.colorthief import ColorThief
 from datetime_input.datetime_input import DatetimeInput
 from autocomplete_input.autocomplete_input import AutoCompleteInput
+from password_input.password_input import PasswordInput
 
 #: Special
 from sidebar.sidebar import Sidebar
@@ -149,6 +150,7 @@ def add_routes(config):
     ColorThief.add_pyramid_routes(config)
     DatetimeInput.add_pyramid_routes(config)
     AutoCompleteInput.add_pyramid_routes(config)
+    PasswordInput.add_pyramid_routes(config)
 
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
