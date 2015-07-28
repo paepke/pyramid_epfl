@@ -37,7 +37,7 @@ def test_render_with_options(page):
     compo = page.root_node
     compo_html = etree.fromstring(compo.render())
     assert compo_html.attrib.get("style", None) == "height:250px; width:150px;", "Height and Width not set"
-    remove_icon = compo_html.find("i[@class='fa fa-times fa-lg color-danger epfl-colorthief-remove-icon']")
+    remove_icon = compo_html.find("i[@class='fa fa-times fa-lg text-danger epfl-colorthief-remove-icon']")
     assert remove_icon is not None, "No remove icon found"
 
     img = compo_html.find("img[@class='epfl-colorthief-image']")

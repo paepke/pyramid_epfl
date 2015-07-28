@@ -15,7 +15,10 @@
             data-container="body" data-html="{{ compo_html }}" data-toggle="popover"
             data-placement="{{ compo.position }}"
             data-content="{{ compo_text|safe }}"
-            {{ 'data-trigger="' + compo.trigger + '"' if compo.trigger else '' }}>
+            {% if compo.trigger %}
+                data-trigger="{{ compo.trigger }}"
+            {% endif %}
+            tabindex="0">
   	{% if compo.icon is not none %}
   	<i class="fa {{ compo.icon }}"></i>
   	{% endif %}{{ compo.label if compo.label is not none else '' }}

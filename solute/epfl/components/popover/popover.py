@@ -39,7 +39,7 @@ class Popover(epflcomponentbase.ComponentBase):
     #: The color class to be used for the button. Possible values are: default, primary, warning, danger, success.
     color = "default"
     small_button = False  #: Set to true if a small button should be rendered.
-    trigger = None  #: Set how the popover is triggerd. possible values: click (default), hover, focus
+    trigger = "focus"  #: Set how the popover is triggerd. possible values: click (default), hover, focus
 
     def __init__(self, page, cid,
                  label=None,
