@@ -16,7 +16,7 @@ Object.defineProperty(epfl.Upload.prototype, 'dropzone', {
     }
 });
 
-
+epfl.Upload.prototype.is_async_uploading = false;
 
 epfl.Upload.prototype.after_response = function (data) {
     epfl.ComponentBase.prototype.after_response.call(this, data);
@@ -123,7 +123,6 @@ epfl.Upload.prototype.read_file = function (file, callback) {
     reader.onload = callback;
     reader.readAsDataURL(file);
 
-
     return true;
 };
 
@@ -200,7 +199,9 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
         }
         var spinner = $("<div class='text-center text-primary'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
         spinner.appendTo(this.elm);
+        obj.is_async_uploading = true;
         obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
+            obj.is_async_uploading = false;
             spinner.remove();
             obj.handle_drop_url(data);
         });
@@ -238,6 +239,9 @@ epfl.Upload.prototype.change = function (value) {
 };
 
 epfl.Upload.prototype.handle_click = function (event) {
+    if(this.is_async_uploading){
+        return;
+    }
     epfl.ComponentBase.prototype.handle_click.call(this, event);
 
     if (this.remove_icon.is(event.target)) {
