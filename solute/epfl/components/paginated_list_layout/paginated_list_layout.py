@@ -22,6 +22,7 @@ class PaginatedListLayout(PrettyListLayout):
 
     show_pagination = True  #: Set to true to show the pagination bar.
     show_search = True  #: Set to true to enable the search field.
+    search_placeholder = "Search..."  #: Placeholder text for the search input.
 
     search_focus = False  #: Set to true if the search field should receive focus on load.
 
@@ -36,13 +37,19 @@ class PaginatedListLayout(PrettyListLayout):
     #: Add the specific list type for the paginated list layout. see :attr:`ListLayout.list_type`
     list_type = PrettyListLayout.list_type + ['paginated']
 
-    def __init__(self, page, cid, show_search=None, height=None, **kwargs):
+    def __init__(self, page, cid, show_search=None, show_pagination=None, search_placeholder=None,
+                 search_focus=None, height=None, **kwargs):
         """Paginated list using the PrettyListLayout based on bootstrap. Offers searchbar above and pagination below
         using the EPFL theming mechanism.
 
-        :param height: Set the list to the given height in pixels.
         :param show_search: Toggle weather the search field is shown or not.
         :param show_pagination: Toggle weather the pagination is shown or not.
+        :param search_placeholder: The placeholder text for the search input.
         :param search_focus: Toggle weather the search field receives focus on load or not.
+        :param height: Set the list to the given height in pixels.
         """
-        super(PaginatedListLayout, self).__init__(page, cid, show_search=None, height=height, **kwargs)
+        super(PaginatedListLayout, self).__init__(page, cid, show_search=show_search,
+                                                  show_pagination=show_pagination,
+                                                  search_placeholder=search_placeholder,
+                                                  search_focus=search_focus,
+                                                  height=height, **kwargs)
