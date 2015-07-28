@@ -23,6 +23,7 @@ class StreamingVideoUrlValidator(TextValidator):
             return False
 
         if not video_services:
+            self.error_message = error_message
             return False
         if value:
             if "youtube" in video_services:
