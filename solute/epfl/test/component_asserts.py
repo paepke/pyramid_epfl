@@ -4,7 +4,9 @@ import inspect
 import re
 from textwrap import wrap
 
-test_dir = os.path.dirname(inspect.getsourcefile(epfl.test))  #: The directory where all EPFL tests reside.
+import solute.epfl.test
+
+test_dir = os.path.dirname(inspect.getsourcefile(solute.epfl.test))  #: The directory where all EPFL tests reside.
 
 
 class AssertBase(object):
