@@ -3,7 +3,6 @@ import re
 from solute.epfl.validators.text import TextValidator
 
 
-
 class YoutubeUrlValidator(TextValidator):
     def __init__(self, value='value', error_message='Youtube Url is invalid', *args, **kwargs):
         """Validate a related Input field as a valid youtube url.
@@ -22,10 +21,15 @@ class YoutubeUrlValidator(TextValidator):
             return False
 
         if value is not None and value not in ["", u'']:
-            youtube_match = re.compile(ur'(?:http(?:s)?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user)\/))([^\?&\"\'>]+)')
+            youtube_match = re.compile(
+                ur'(?:http(?:s)?:\/\/)?(?:www\.)?'
+                ur'(?:m\.)?(?:youtu\.be\/|youtube\.com\/'
+                ur'(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user)\/))([^\?&\"\'>]+)')
+
             match = re.search(youtube_match, value)
             if not match:
                 self.error_message = error_message
                 return False
 
         return True
+
