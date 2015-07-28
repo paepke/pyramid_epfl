@@ -1,7 +1,7 @@
 {% set compo_col = compo.compo_col %}
 <div id="{{ compo.cid }}" epflid="{{ compo.cid }}"
      class="row epfl-text-input epfl-upload {{ 'mandatory' if compo.mandatory else '' }}"
-        style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
+     style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
     {% if compo.label %}
         {% if compo.layout_vertical == True %}
             <div class="row">
@@ -26,9 +26,9 @@
         {% if compo.readonly is defined and compo.readonly %}
             <p class="form-control-static">{{ compo.value if compo.value is not none else '' }}</p>
         {% else %}
-        {# 'Real' Compo Area #}
+            {# 'Real' Compo Area #}
 
-             {# Image #}
+            {# Image #}
             <div id="{{ compo.cid }}_img">
                 {% if compo.value and not compo.no_preview %}
                     {% if compo.show_remove_icon %}
@@ -39,22 +39,30 @@
             </div>
 
             {# Dropzone #}
-            {% if compo.show_drop_zone and not compo.value%}
+            {% if compo.show_drop_zone and not compo.value %}
                 <div class="epfl-dropzone text-center">
                     <div style="position:relative; top: {{ "35" if compo.drop_zone_add_position_top is none else compo.drop_zone_add_position_top }}%">
-                    <i class="fa fa-plus fa-{{ compo.plus_icon_size }}"></i>
-                    {% if compo.drop_zone_add_text %}
-                    <div class="small">{{ compo.drop_zone_add_text }}</div>
-                    {% endif %}
+                        <i class="fa fa-plus fa-{{ compo.plus_icon_size }}"></i>
+                        {% if compo.drop_zone_add_text %}
+                            <div class="small">{{ compo.drop_zone_add_text }}</div>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}
             {# File Input #}
             {% if compo.show_file_upload_input %}
                 <div class="epfl-upload-input-zone">
-                    <input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"
-                           value="{{ compo.value if compo.value is not none else '' }}"
-                           placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+                    {% if compo.value is none or compo.file_upload_input_preview == False %}
+                        <input class="form-control" type="file" id="{{ compo.cid }}_input" name="{{ compo.name }}"
+                               value="{{ compo.value if compo.value is not none else '' }}"
+                               placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
+                    {% else %}
+                        <p>{{ compo.file_info_name }}
+                            {% if compo.no_preview or not compo.show_remove_icon %}
+                                <i class="fa fa-times fa-lg color-danger epfl-upload-remove-icon"></i>
+                            {% endif %}
+                        </p>
+                    {% endif %}
                 </div>
             {% endif %}
 
