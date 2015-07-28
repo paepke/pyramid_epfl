@@ -1,6 +1,5 @@
+#* coding: utf-8
 from solute.epfl.core.epflvalidators import ValidatorBase
-
-__author__ = 'juw'
 
 
 class TextValidator(ValidatorBase):

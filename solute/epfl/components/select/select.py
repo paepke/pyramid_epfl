@@ -17,17 +17,19 @@ class Select(FormInputBase):
     """
 
     template_name = "select/select.html"
-    
+
     options = None #: A list if options for the select input.
-    
+
     compo_state = FormInputBase.compo_state + ['options']
 
     validation_type = 'text'
     layout_vertical = False
 
-    js_parts = FormInputBase.js_parts[:]
-    js_parts.extend(['select/select.js'])
     js_name = FormInputBase.js_name + [("solute.epfl.components:select/static", "select.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:select/static", "select.css")]
 
     validation_type = 'text'
+
+    new_style_compo = True
+    compo_js_params = ['fire_change_immediately', 'submit_form_on_enter']
+    compo_js_name = 'Select'
