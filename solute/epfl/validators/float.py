@@ -1,6 +1,5 @@
+#* coding: utf-8
 from solute.epfl.validators.number import NumberValidator
-
-__author__ = 'juw'
 
 
 class FloatValidator(NumberValidator):

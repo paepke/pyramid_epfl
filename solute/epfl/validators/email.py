@@ -1,6 +1,5 @@
+#* coding: utf-8
 from solute.epfl.validators.text import TextValidator
-
-__author__ = 'juw'
 
 
 class EmailValidator(TextValidator):
