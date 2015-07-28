@@ -4,7 +4,7 @@ from solute.epfl.validators.text import TextValidator
 
 
 class StreamingVideoUrlValidator(TextValidator):
-    def __init__(self, value='value', error_message='Video Url is invalid',
+    def __init__(self, value='value', error_message='Video Url is invalid!',
                  video_services=["youtube", "vimeo"], *args, **kwargs):
         """Validate a related Input field as a valid url of a streaming video service.
         Services to be regarded during validation can be passed in the video_services parameter.
