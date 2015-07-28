@@ -68,7 +68,11 @@ class ValidatorBase(dict):
         # Split param_name and lookup actual target if required.
         target, original_name = None, param_name
         if '.' in param_name:
-            target, param_name = self.get_dotted(param_name)
+            try:
+                target, param_name = self.get_dotted(param_name)
+            except TypeError:
+                # In case of a dot inside a message or similar legitimate strings get_dotted will return None.
+                return param_name
 
         if param_name == '':
             return target
