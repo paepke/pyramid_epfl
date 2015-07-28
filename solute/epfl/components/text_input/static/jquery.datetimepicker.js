@@ -685,7 +685,7 @@
 		});
 	};
 
-	$.fn.datetimepicker = function (opt) {
+	$.fn.jqDatetimepicker = function (opt) {
 		var KEY0 = 48,
 			KEY9 = 57,
 			_KEY0 = 96,
@@ -1902,7 +1902,7 @@
 			}
 		});
 	};
-	$.fn.datetimepicker.defaults = default_options;
+	$.fn.jqDatetimepicker.defaults = default_options;
 }(jQuery));
 (function () {
 

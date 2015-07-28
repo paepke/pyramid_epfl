@@ -34,7 +34,7 @@ epfl.TextInput = function (cid, params) {
                                autoSelect: false});
     }
     if(date){
-        $(selector).datetimepicker({
+        $(selector).jqDatetimepicker({
             format:'d.m.Y H:i',
             closeOnTimeSelect: true,
             lang: 'de'
