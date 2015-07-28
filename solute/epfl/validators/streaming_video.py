@@ -24,8 +24,7 @@ class StreamingVideoUrlValidator(TextValidator):
 
         if not video_services:
             return False
-        print "CHECK: %r" % value
-        if value is not None and value not in ["", u'']:
+        if value:
             if "youtube" in video_services:
                 youtube_match = re.compile(
                     ur'(?:http(?:s)?:\/\/)?(?:www\.)?'
@@ -35,10 +34,11 @@ class StreamingVideoUrlValidator(TextValidator):
                 match = re.search(youtube_match, value)
                 if match:
                     return True
-            elif "vimeo" in video_services:
+            if "vimeo" in video_services:
                 vimeo_match = re.compile(
                     ur'(?:http(?:s)?:\/\/)?(?:www\.)?'
                     ur'vimeo.com\/(.*)')
+                match = re.search(vimeo_match, value)
                 if match:
                     return True
             self.error_message = error_message

@@ -13,7 +13,7 @@ class TextValidator(ValidatorBase):
 
     def validate(self, value=None, error_message=None, **kwargs):
         # Check if mandatory and present.
-        if self.caller.mandatory and (value is None or value in ["", u'']):
+        if self.caller.mandatory and (not value):
             self.error_message = error_message
             return False
 
