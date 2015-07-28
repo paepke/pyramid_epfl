@@ -13,7 +13,7 @@ def is_container_compo(compo_name):
         return False
     if compo_name == 'ComponentContainerBase':
         return True
-    return issubclass(getattr(components, compo_name, None), ComponentContainerBase)
+    return issubclass(getattr(components, compo_name, ComponentBase), ComponentContainerBase)
 
 
 def pytest_cmdline_preparse(args):
