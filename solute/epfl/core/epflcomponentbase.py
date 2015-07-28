@@ -1024,7 +1024,7 @@ class ComponentBase(object):
                 if not compo.is_visible(check_parents=False):
                     continue
                 validation_result &= compo.validate()
-        if self.name is not None:
+        if self.name is not None and self.is_visible():
             validation_result &= self._validate()
 
         return validation_result
