@@ -28,7 +28,8 @@ class Upload(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
                                                "handle_click", "store_async", "height", "width", "file_info_size",
-                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height"]
+                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height",
+                                               "minimum_image_width","minimum_image_height"]
 
     height = None #: Compo height in px if none nothing is set
 
@@ -59,6 +60,12 @@ class Upload(FormInputBase):
 
     #: maximum height ( resolution ) of an uploaded image if the file is no image this check does nothing
     maximum_image_height = None
+
+    #: minimum width ( resolution ) of an uploaded image if the file is no image this check does nothing
+    minimum_image_width = None
+
+    #: minimum height ( resolution ) of an uploaded image if the file is no image this check does nothing
+    minimum_image_height = None
 
     #: Shows the file input
     show_file_upload_input = True
@@ -96,7 +103,7 @@ class Upload(FormInputBase):
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
                        'value', 'handle_click', 'store_async', 'show_file_upload_input', 'show_drop_zone',
                        "maximum_image_width", "maximum_image_height", "error_message_image_size",
-                       "error_message_file_size", "error_message_file_type"]
+                       "error_message_file_size", "error_message_file_type","minimum_image_width", "minimum_image_height",]
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 

@@ -167,6 +167,25 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
         file_image_height = img.height;
     }
 
+    if (this.params["minimum_image_width"] && img.width > 0) {
+        if (img.width < this.params["minimum_image_width"]) {
+            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            this.dropzone.show();
+            return false;
+        }
+        file_image_width = img.width;
+    }
+
+    if (this.params["minimum_image_height"] && img.height > 0) {
+        if (img.height < this.params["minimum_image_height"]) {
+            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            this.dropzone.show();
+            return false;
+        }
+        file_image_height = img.height;
+    }
+
+
     this.send_event('file_info', {
         file_size: file_size,
         file_type: file_type,
