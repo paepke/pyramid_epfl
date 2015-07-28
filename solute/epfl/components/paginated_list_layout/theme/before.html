@@ -5,7 +5,7 @@
     <i class="fa fa-search"></i>
     <input class="form-control epfl-search-input"
            type="text"
-           placeholder="Suchen..."
+           placeholder="{{ compo.search_placeholder }}"
            id="{{ compo.cid }}_search"
            value="{{ compo.row_data['search'] if compo.row_data is defined
                                                 and compo.row_data is mapping
