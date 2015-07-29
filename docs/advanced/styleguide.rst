@@ -35,7 +35,7 @@ If a file named <lowercase component name>.js exists in the components static di
 
      .. code-block:: javascript
 
-         epfl.<camelcase component name> = function(cid, params)
+         epfl.<camelcase component name> = function (cid, params)
 
  2. **Must** contain a call to its base component from which it inherited (normally ComponentBase):
 
