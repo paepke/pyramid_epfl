@@ -126,8 +126,11 @@ def add_routes(config):
     Image.add_pyramid_routes(config)
     Text.add_pyramid_routes(config)
     Placeholder.add_pyramid_routes(config)
+    Popover.add_pyramid_routes(config)
     PlainHtml.add_pyramid_routes(config)
+    Breadcrumb.add_pyramid_routes(config)
 
+    TextList.add_pyramid_routes(config)
     Dropdown.add_pyramid_routes(config)
 
     EmbeddedVideo.add_pyramid_routes(config)
