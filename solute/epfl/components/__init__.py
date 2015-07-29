@@ -19,7 +19,6 @@ from checkbox.checkbox import Checkbox
 from textarea.textarea import Textarea
 from texteditor.texteditor import TextEditor
 from select.select import Select
-from selectize.selectize import Selectize
 from radio.radio import Radio
 from buttonradio.buttonradio import ButtonRadio
 from simpletoggle.simpletoggle import SimpleToggle
@@ -119,7 +118,6 @@ def add_routes(config):
     SimpleToggle.add_pyramid_routes(config)
     Checkbox.add_pyramid_routes(config)
     Select.add_pyramid_routes(config)
-    Selectize.add_pyramid_routes(config)
     Upload.add_pyramid_routes(config)
     Download.add_pyramid_routes(config)
     ColorPicker.add_pyramid_routes(config)
