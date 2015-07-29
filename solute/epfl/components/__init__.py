@@ -54,7 +54,6 @@ from paginated_list_layout.paginated_list_layout import PaginatedListLayout
 from link_list_layout.link_list_layout import LinkListLayout
 from grouped_link_list_layout.grouped_link_list_layout import GroupedLinkListLayout
 from hover_link_list_layout.hover_link_list_layout import HoverLinkListLayout
-from table_list_layout.table_list_layout import TableListLayout
 from context_list_layout.context_list_layout import ContextListLayout, ContextListEntry
 from table_layout.table_layout import TableLayout
 from flexible_text_list.flexible_text_list import FlexibleTextList
@@ -96,7 +95,6 @@ def add_routes(config):
     LinkListLayout.add_pyramid_routes(config)
     GroupedLinkListLayout.add_pyramid_routes(config)
     HoverLinkListLayout.add_pyramid_routes(config)
-    TableListLayout.add_pyramid_routes(config)
     ContextListLayout.add_pyramid_routes(config)
     TableLayout.add_pyramid_routes(config)
     FlexibleTextList.add_pyramid_routes(config)
