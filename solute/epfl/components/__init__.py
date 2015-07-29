@@ -62,8 +62,6 @@ from text_list.text_list import TextList
 
 from typeahead.typeahead import TypeAhead
 
-from multiselect.multiselect import MultiSelect, MultiSelectTransfer
-
 from dropdown.dropdown import Dropdown
 
 from embedded_video.embedded_video import EmbeddedVideo
@@ -101,8 +99,6 @@ def add_routes(config):
     SelectableList.add_pyramid_routes(config)
 
     TypeAhead.add_pyramid_routes(config)
-
-    MultiSelect.add_pyramid_routes(config)
 
     Form.add_pyramid_routes(config)
     Button.add_pyramid_routes(config)
