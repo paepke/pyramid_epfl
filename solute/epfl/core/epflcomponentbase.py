@@ -962,9 +962,9 @@ class ComponentBase(object):
         """
         if not self.container_compo:
             raise Exception('Tried using handle_reinitialize on a component without a container component.')
-        position, cid, ubc = self.position, self.cid, self.__unbound_component__
+        position, slot, cid, ubc = self.position, self.slot, self.cid, self.__unbound_component__
         self.delete_component()
-        self.container_compo.add_component(ubc(cid=cid), position=position)
+        self.container_compo.add_component(ubc(cid=cid, slot=slot), position=position)
         self.container_compo.redraw()
 
     ###########################
