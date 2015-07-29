@@ -7,6 +7,7 @@ from textwrap import wrap
 import solute.epfl.test
 
 test_dir = os.path.dirname(inspect.getsourcefile(solute.epfl.test))  #: The directory where all EPFL tests reside.
+ignore_tests = True
 
 
 class AssertBase(object):
@@ -192,6 +193,9 @@ class AssertStyleStructure(AssertBase):
             return
 
         file_name = 'test_' + os.path.basename(self.file_path)
+
+        if ignore_tests:
+            return
 
         if not os.path.exists('/'.join([test_dir, 'components', file_name])):
             self.errors.append(
