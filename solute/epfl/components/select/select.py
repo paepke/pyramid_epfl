@@ -30,6 +30,7 @@ class Select(FormInputBase):
 
     validation_type = 'text'
 
+    js_parts = []
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'submit_form_on_enter']
     compo_js_name = 'Select'
