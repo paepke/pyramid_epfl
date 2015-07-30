@@ -97,7 +97,9 @@ class Upload(FormInputBase):
     file_info_image_height = None  #: If file is an image this is the height of the image
 
     #: This error is shown via javascript if image size is not correct
-    error_message_image_size = "Image Size is too big"
+    error_message_image_size_to_big = "Image Size is too big "
+    #: This error is shown via javascript if image size is not correct
+    error_message_image_size_to_small = "Image Size is too small"
     #: This error is shown via javascript if file size is not correct
     error_message_file_size = "File size to big"
     #: This error is shown via javascript if file type is not allowed
@@ -106,7 +108,7 @@ class Upload(FormInputBase):
     new_style_compo = True
     compo_js_params = ['fire_change_immediately', 'allowed_file_types', 'show_remove_icon', 'maximum_file_size',
                        'value', 'handle_click', 'store_async', 'show_file_upload_input', 'show_drop_zone',
-                       "maximum_image_width", "maximum_image_height", "error_message_image_size",
+                       "maximum_image_width", "maximum_image_height", "error_message_image_size_to_big","error_message_image_size_to_small",
                        "error_message_file_size", "error_message_file_type","minimum_image_width", "minimum_image_height",]
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
