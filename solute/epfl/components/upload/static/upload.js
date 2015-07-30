@@ -150,7 +150,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["maximum_image_width"] && img.width > 0) {
         if (img.width > this.params["maximum_image_width"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size_to_big"], typ: "alert"});
             this.dropzone.show();
             return false;
         }
@@ -159,7 +159,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["maximum_image_height"] && img.height > 0) {
         if (img.height > this.params["maximum_image_height"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size_to_big"], typ: "alert"});
             this.dropzone.show();
             return false;
         }
@@ -168,7 +168,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["minimum_image_width"] && img.width > 0) {
         if (img.width < this.params["minimum_image_width"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size_to_small"], typ: "alert"});
             this.dropzone.show();
             return false;
         }
@@ -177,7 +177,7 @@ epfl.Upload.prototype.upload_file = function (reader, file) {
 
     if (this.params["minimum_image_height"] && img.height > 0) {
         if (img.height < this.params["minimum_image_height"]) {
-            epfl.show_message({msg: this.params["error_message_image_size"], typ: "alert"});
+            epfl.show_message({msg: this.params["error_message_image_size_to_small"], typ: "alert"});
             this.dropzone.show();
             return false;
         }
