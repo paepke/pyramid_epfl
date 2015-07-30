@@ -3,6 +3,8 @@
 from solute.epfl.components.form.inputbase import FormInputBase
 from urllib2 import urlopen
 import io
+from urlparse import urlparse
+import base64
 
 try:
     from solute.epfl.components.colorthief.mmcq import get_palette
@@ -64,7 +66,12 @@ class ColorThief(FormInputBase):
 
     def handle_change(self, value, image_src=None):
         if image_src is not None:
-            dominant_colors = set(self.get_dominant_colors_from_url(image_src, color_count=self.color_count))
+            url_result = urlparse(image_src)
+            dominant_colors = None
+            if url_result.scheme == u"data":
+                dominant_colors = set(self.get_dominant_colors_from_binary(image_src, color_count=self.color_count))
+            else:
+                dominant_colors = set(self.get_dominant_colors_from_url(image_src, color_count=self.color_count))
             self.value = [{"rgb": "#%x%x%x" % (val[0], val[1], val[2]), "selected": False} for val in dominant_colors]
         else:
             self.value = None
@@ -91,3 +98,15 @@ class ColorThief(FormInputBase):
         bytes = io.BytesIO(urlopen(url).read())
         with get_palette(blob=bytes, color_count=color_count, compress_image=self.compress_image) as palette:
             return palette
+
+    def get_dominant_colors_from_binary(self, binary, color_count=8):
+        """Get image from javascript filereader and extract dominant colors
+
+        :param binary: javascript filereader result
+        :param color_count: count of dominant colors
+        """
+        info, coded_string = str.split(str(binary), ',')
+        bytes = io.BytesIO(base64.b64decode(coded_string))
+        with get_palette(blob=bytes, color_count=color_count, compress_image=self.compress_image) as palette:
+            return palette
+
