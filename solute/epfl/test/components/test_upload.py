@@ -5,30 +5,6 @@ from lxml import etree
 from solute.epfl import components
 import base64
 
-"""
-    label=None,
-    name=None,
-    default=None,
-    height=None,
-    width=None,
-    plus_icon_size=None,
-
-    show_remove_icon=None,
-    show_file_upload_input=None,
-    show_drop_zone=None,
-    drop_zone_add_position_top=None,
-    drop_zone_add_text=None,
-
-    no_preview=None,
-    file_upload_input_preview=None,
-
-    mandetory
-    label_col
-    validation_error
-    readonly
-    layout_vertical
-"""
-
 
 # Fixtures
 ###############################################################################
@@ -39,16 +15,21 @@ IMAGE_BASE_64_SERVER = "iVBORw0KGgoAAAANSUhEUgAAAG4AAABuCAYAAADGWyb7AAAABHNCSVQI
 
 # Assert Helper
 ###############################################################################
-def check_outer_div(compo, height=None, width=None):
+def check_outer_div(compo, height=None, width=None, mandatory=None):
     compo_html = etree.fromstring(compo.render())
 
     assert compo_html.attrib.get('epflid', None) == "%s" % compo.cid, "epflid not found"
     assert compo_html.attrib.get('id', None) == "%s" % compo.cid, "id not found or wrong"
+    assert "epfl-upload" in compo_html.attrib.get('class', None), "mandatory class not found"
+
     assert "epfl-upload" in compo_html.attrib.get('class', None), "class not found or wrong"
     if height is not None:
         assert "height:%spx;" % height in compo_html.attrib.get('style', None), "height not set correct"
     if width is not None:
         assert "width:%spx;" % width in compo_html.attrib.get('style', None), "width not set correct"
+
+    if mandatory:
+        assert "mandatory" in compo_html.attrib.get('class', None), "mandatory class not found"
 
 
 def check_for_file_input(compo, expected=True, name=None):
@@ -80,13 +61,16 @@ def check_for_dropzone(compo, expected=True, drop_zone_add_position_top=None, dr
         assert dropzone is None, "dropzone found but dropzone was not expected"
 
 
-def check_for_label(compo, expected=True, label_text=None, label_for=None):
+def check_for_label(compo, expected=True, label_text=None, label_for=None, label_col=None):
     compo_html = etree.fromstring(compo.render())
     label = compo_html.find(".//label")
     if expected:
         assert label is not None, "label not found"
         assert label.text == label_text, "label text not correct"
         assert label.attrib.get("for", None) == label_for, "label for not correct"
+        assert "control-label" in label.attrib.get("class", None), "label class control-label missing"
+        if label_col is not None:
+            assert "col-sm-%s" % label_col in label.attrib.get("class", None), "label_col class not correct"
     else:
         assert label is None, "label found bot no label was expeted"
 
@@ -101,13 +85,15 @@ def check_for_image(compo, expected=True, src=None):
     else:
         assert image is None, "find preview image but no image is expceted"
 
-def check_for_remove_icon(compo,expected=True):
+
+def check_for_remove_icon(compo, expected=True):
     compo_html = etree.fromstring(compo.render())
     remove_icon = compo_html.find(".//i[@class='fa fa-times fa-lg color-danger epfl-upload-remove-icon']")
     if expected:
         assert remove_icon is not None, "could not find remove icon"
     else:
         assert remove_icon is None, "found remove icon but no one was expected"
+
 
 # Tests
 ###############################################################################
@@ -130,15 +116,69 @@ def test_simple_options(page):
         label="test_upload_label",
         height="250",
         width="250",
+        mandatory=True,
+        label_col=4,
     )
     page.handle_transaction()
 
     compo = page.root_node
+    check_outer_div(compo, height="250", width="250", mandatory=True)
+    check_for_file_input(compo, name="test_upload")
+    check_for_dropzone(compo, expected=False)
+    check_for_label(compo, label_text="test_upload_label", label_for="root_node_input", label_col=4)
 
-    check_outer_div(compo, height="250", width="250")
+
+def test_validation_error(page):
+    page.root_node = components.Upload(
+        name="test_upload",
+        label="test_upload_label",
+        height="250",
+        width="250",
+        mandatory=True,
+        validation_error="AAHHH SOMETHING IS WRONG !!!"
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+    check_outer_div(compo, height="250", width="250", mandatory=True)
     check_for_file_input(compo, name="test_upload")
     check_for_dropzone(compo, expected=False)
     check_for_label(compo, label_text="test_upload_label", label_for="root_node_input")
+
+    compo_html = etree.fromstring(compo.render())
+    error_div = compo_html.find("div")
+    assert "has-error" in error_div.attrib.get("class", None), "error class not set correct"
+
+    error_text = compo_html.find(".//small")
+    assert error_text.text == "AAHHH SOMETHING IS WRONG !!!", "error text is not correct"
+    assert "help-block" in error_text.get("class", None), "wrong class in error text"
+
+
+def test_layout_vertical(page):
+    page.root_node = components.Upload(
+        name="test_upload",
+        label="test_upload_label",
+        height="250",
+        width="250",
+        mandatory=True,
+        layout_vertical=True,
+    )
+    page.handle_transaction()
+
+    compo = page.root_node
+    check_outer_div(compo, height="250", width="250", mandatory=True)
+    check_for_file_input(compo, name="test_upload")
+    check_for_dropzone(compo, expected=False)
+    check_for_label(compo, label_text="test_upload_label", label_for="root_node_input")
+
+    compo_html = etree.fromstring(compo.render())
+    row_divs = compo_html.findall("div[@class='row']")
+    assert len(row_divs) == 2, "not all row divs found in layout vertical"
+
+    for row_div in row_divs:
+        cols = row_div.findall("div")
+        assert len(cols) == 1, "not all row divs have correct col divs"
+        assert "col-sm-12" in cols[0].attrib.get("class", None), "col divs wrong size"
 
 
 def test_dropzone_simple(page):
@@ -220,7 +260,7 @@ def test_change_dropzone_fileinput_no_preview(page):
     compo.handle_change(IMAGE_BASE_64_BROWSER)
     compo.render_cache = None
 
-    check_for_image(compo,expected=False)
+    check_for_image(compo, expected=False)
     assert compo.get_value() == IMAGE_BASE_64_BROWSER, "Wrong Value"
     assert base64.b64encode(compo.get_as_binary()) == IMAGE_BASE_64_SERVER, "get as binary wrong result"
 
@@ -253,7 +293,7 @@ def test_change_dropzone_fileinput(page):
     compo.handle_change(IMAGE_BASE_64_BROWSER)
     compo.render_cache = None
 
-    check_for_image(compo,src=IMAGE_BASE_64_BROWSER)
+    check_for_image(compo, src=IMAGE_BASE_64_BROWSER)
     assert compo.get_value() == IMAGE_BASE_64_BROWSER, "Wrong Value"
     assert base64.b64encode(compo.get_as_binary()) == IMAGE_BASE_64_SERVER, "get as binary wrong result"
 
@@ -262,8 +302,8 @@ def test_change_dropzone_fileinput(page):
     compo.handle_remove_icon()
     compo.render_cache = None
 
-    check_for_remove_icon(compo,expected=False)
-    check_for_image(compo,expected=False)
+    check_for_remove_icon(compo, expected=False)
+    check_for_image(compo, expected=False)
 
     assert compo.get_value() == None, "value not correct reseted"
     assert compo.get_as_binary() == None, "get as binary not correct reseted"
