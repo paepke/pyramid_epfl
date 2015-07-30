@@ -62,8 +62,9 @@ def result():
 
 
 class DummyRoute(object):
-    def __init__(self, name='dummy_route'):
+    def __init__(self, name='dummy_route', path='/'):
         self.name = name
+        self.path = path
 
 
 @pytest.fixture(scope='function')
