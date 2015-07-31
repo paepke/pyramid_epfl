@@ -936,12 +936,27 @@ class ComponentBase(object):
             self.add_js_response('epfl.switch_component("{cid}");'.format(cid=cid))
         self.page.transaction.switch_component(cid, target, position=position)
 
+    @classmethod
+    def check_new_style_js_parts(cls):
+        if not cls.js_parts:
+            return
+
+        inherited_cls = cls.__bases__[0]
+        if inherited_cls.new_style_compo == cls.new_style_compo:
+            return inherited_cls.check_new_style_js_parts()
+
+        if inherited_cls.js_parts is cls.js_parts:
+            raise Exception(
+                'CompatibilityError: You have inherited a non empty js_parts attribute on a new style component %s. '
+                'Set your own new_style_compo compliant js_parts attribute or set new_style_compo to False.'
+                % cls
+            )
+
     def get_compo_init_js(self):
         if not self.new_style_compo:
             return ''
-        #if self.js_parts:
-        #    raise Exception('CompatibilityError: You have set a non empty js_parts attribute on a new style component %s. '
-        #                    'Check the inheritance chain of your component or set new_style_compo to False.' % type(self))
+
+        self.check_new_style_js_parts()
 
         params = {}
         for param_name in self.compo_js_params:

@@ -19,6 +19,7 @@ class LinkListLayout(PaginatedListLayout):
                   'row': ['link_list_layout/theme']}
 
     js_name = PaginatedListLayout.js_name + [('solute.epfl.components:link_list_layout/static', 'link_list_layout.js')]
+    js_parts = []
 
     compo_state = PaginatedListLayout.compo_state
 
@@ -32,6 +33,8 @@ class LinkListLayout(PaginatedListLayout):
 
     new_style_compo = True
     compo_js_name = 'LinkListLayout'
+    compo_js_params = ['row_offset', 'row_limit', 'row_count', 'row_data', 'show_pagination', 'show_search',
+                       'search_focus']
 
     def __init__(self, page, cid, links=None, event_name=None, show_search=None, height=None, **kwargs):
         """Paginated list using the PrettyListLayout based on bootstrap. Offers search bar above and pagination below

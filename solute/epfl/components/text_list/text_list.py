@@ -17,15 +17,14 @@ class TextList(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ["search_text"]
 
-    search_text = None
+    search_text = None  #: The search string written by the user.
 
-
-    def __init__(self,page,cid, data_interface=None, *args, **extra_params):
+    def __init__(self, page, cid, data_interface=None, *args, **extra_params):
         """
         Text List is simple list which displays text
         :param data_interface: data interface for child class needs id and text
         """
-        super(TextList, self).__init__(page,cid,data_interface=data_interface, *args, **extra_params)
+        super(TextList, self).__init__(page, cid, data_interface=data_interface, *args, **extra_params)
 
     def handle_set_row(self, row_offset, row_limit, row_data=None):
         if row_data is not None:

@@ -47,11 +47,19 @@ epfl.ColorThief.prototype.handle_click = function (event) {
 };
 
 epfl.ColorThief.prototype.handle_drop = function (event) {
-    epfl.ComponentBase.prototype.handle_drop.call(this, event);
+    var obj = this;
     var imageSrc = $(event.dataTransfer.getData('text/html')).attr("src");
     if (imageSrc) {
-        this.drop_zone.hide();
-        this.image.attr("src", imageSrc);
-        this.send_event("change", {"value": null, "image_src": imageSrc})
+        obj.drop_zone.hide();
+        obj.image.attr("src", imageSrc);
+        obj.send_event("change", {"value": null, "image_src": imageSrc});
+    }else{
+        var files = event.dataTransfer.files;
+        var reader = new FileReader();
+        reader.onload = function(){
+            obj.send_event("change", {"value": null, "image_src": this.result});
+        };
+        reader.readAsDataURL(files[0]);
     }
+    this.handle_drop_leave();
 };

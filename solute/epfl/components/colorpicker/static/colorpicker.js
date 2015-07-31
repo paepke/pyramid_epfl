@@ -37,6 +37,7 @@ Object.defineProperty(epfl.ColorPicker.prototype, 'toggle_button_icon', {
 
 epfl.ColorPicker.prototype.after_response = function (data) {
     epfl.FormInputBase.prototype.after_response.call(this, data);
+    $("div.tooltip.fade.top.in").remove(); //Bugfix for hiding tooltips after redraw
     this.elm.find('[data-toggle="tooltip"]').tooltip();
 };
 

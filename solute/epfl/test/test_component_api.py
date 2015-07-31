@@ -43,7 +43,11 @@ def container_type(request, page, component_container_type_class):
     """
     # The child_cls to be used if one is required. If possible the components own default_child_cls is used for better
     # compatibility.
-    child_cls = getattr(component_container_type_class, 'default_child_cls', ComponentBase)
+    child_cls = getattr(component_container_type_class, 'default_child_cls', None)
+    if child_cls is None:
+        child_cls = ComponentBase
+
+    default_args = getattr(component_container_type_class, 'data_interface', {})
 
     # For dynamic tests the Component will be added dynamically to a ComponentContainerBase root_node.
     root_node = ComponentContainerBase
@@ -56,7 +60,7 @@ def container_type(request, page, component_container_type_class):
     # its node_list.
     elif request.param == 'static_with_child':
         root_node = component_container_type_class(
-            node_list=[child_cls(cid='child_compo')]
+            node_list=[child_cls(cid='child_compo', **default_args)]
         )
 
     # For static as child tests the Component will be added as child component in the node_list of a
@@ -83,7 +87,7 @@ def container_type(request, page, component_container_type_class):
         page.root_node.add_component(
             component_container_type_class(
                 cid='tested_component',
-                node_list=[child_cls()]
+                node_list=[child_cls(**default_args)]
             ))
 
     # Return the appropriate set of test objects. If injected as root_node the cid is forced to be root_node.

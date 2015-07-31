@@ -5,9 +5,9 @@ from solute.epfl.components.form.inputbase import FormInputBase
 class PlainHtml(FormInputBase):
     template_name = "plain_html/plain_html.html"
     js_name = [("solute.epfl.components:plain_html/static", "plain_html.js")]
+    js_parts = []
 
     compo_state = ["value"]
-
     value = ''  #: The HTML this component displays
     new_style_compo = True
     compo_js_name = 'PlainHtml'
