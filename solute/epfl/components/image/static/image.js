@@ -1,7 +1,16 @@
-epfl.Image = function(cid, params) {
+epfl.Image = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    
-	if ((params["show_dominant_color"]) || (params["show_additional_colors"])) {
+};
+epfl.Image.inherits_from(epfl.ComponentBase);
+
+Object.defineProperty(epfl.Image.prototype, 'img', {
+    get: function () {
+        return this.elm.find('img');
+    }
+});
+
+epfl.Image.prototype.after_response = function() {
+	if (this.params["show_dominant_color"] || this.params["show_additional_colors"]) {
 		$('#'+cid).find('.epfl-img-component-image').imagesLoaded( function(instance) {
 			var my_image = instance["images"][0].img;
 			var colorThief = new ColorThief();
@@ -21,7 +30,6 @@ epfl.Image = function(cid, params) {
 		});
 	}
 };
-epfl.Image.inherits_from(epfl.ComponentBase);
 
 $(".epfl-img-component-color").mouseover(function() {
 	$(this).css({"border-width":"2px", "border-style":"solid"});
