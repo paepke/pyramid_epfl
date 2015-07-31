@@ -28,14 +28,15 @@ class Upload(FormInputBase):
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
                                                "handle_click", "store_async", "height", "width", "file_info_size",
-                                               "file_info_type","file_info_name","maximum_image_width","maximum_image_height",
-                                               "minimum_image_width","minimum_image_height"]
+                                               "file_info_type", "file_info_name", "maximum_image_width",
+                                               "maximum_image_height",
+                                               "minimum_image_width", "minimum_image_height"]
 
-    height = None #: Compo height in px if none nothing is set
+    height = None  #: Compo height in px if none nothing is set
 
-    width = None #: Compo width in px if none nothing is set
+    width = None  #: Compo width in px if none nothing is set
 
-    plus_icon_size = "5x" #: The plus icon in dropzone, use the font awesome sizes 1x - 5x or lg
+    plus_icon_size = "5x"  #: The plus icon in dropzone, use the font awesome sizes 1x - 5x or lg
 
     #: Set true to hide the preview image for the uploaded file.
     no_preview = False
@@ -113,8 +114,35 @@ class Upload(FormInputBase):
     compo_js_extras = ['handle_drop', 'handle_click']
     compo_js_name = 'Upload'
 
-    def __init__(self, page, cid, label=None, name=None, default=None, validation_type=None, handle_click=None,
-                 store_async=None, **extra_params):
+    def __init__(self, page, cid,
+                 label=None,
+                 name=None,
+                 default=None,
+                 validation_type=None,
+                 handle_click=None,
+                 store_async=None,
+                 height=None,
+                 width=None,
+                 plus_icon_size=None,
+                 no_preview=None,
+                 file_upload_input_preview=None,
+                 fire_change_immediately=None,
+                 allowed_file_types=None,
+                 show_remove_icon=None,
+                 maximum_file_size=None,
+                 maximum_image_width=None,
+                 maximum_image_height=None,
+                 minimum_image_width=None,
+                 minimum_image_height=None,
+                 show_file_upload_input=None,
+                 show_drop_zone=None,
+                 drop_zone_add_position_top=None,
+                 drop_zone_add_text=None,
+                 error_message_image_size_to_big=None,
+                 error_message_image_size_to_small=None,
+                 error_message_file_size=None,
+                 error_message_file_type=None,
+                 **extra_params):
         """Download component.
 
         :param label: Optional label describing the input field.
@@ -124,8 +152,66 @@ class Upload(FormInputBase):
         :param handle_click: Generate a handle_click event if the component is clicked on by the user.
         :param store_async: Upload the image immediately via handle_store, store has to return a URI that will be used
                             as value.
+        :param height: Compo height in px if none nothing is set
+        :param width: Compo width in px if none nothing is set
+        :param plus_icon_size: The plus icon in dropzone, use the font awesome sizes 1x - 5x or lg
+        :param no_preview: Set true to hide the preview image for the uploaded file.
+        :param file_upload_input_preview: Set to true to show the file name instead of the input field if value is set
+        :param fire_change_immediately: Sends changes immediately
+        :param allowed_file_types: Allowed file types if not allowed nothing happens: give a list with file type
+                                   endings example: ["png","gif","jpg"]
+        :param show_remove_icon: show a remove icon which removes the current uploaded file see: handle_remove_icon
+        :param maximum_file_size: maximum file size in byte this is checked in javascript,
+                                  the hard technical browser limit is 100 MB so if a file bigger than 100 mb is dropped
+                                  the browser crashes
+        :param maximum_image_width: maximum width ( resolution ) of an uploaded image if the file is no image this check
+                                    does nothing
+        :param maximum_image_height: maximum height ( resolution ) of an uploaded image if the file is no image this
+                                     check does nothing
+        :param minimum_image_width: minimum width ( resolution ) of an uploaded image if the file is no image this
+                                    check does nothing
+        :param minimum_image_height: minimum height ( resolution ) of an uploaded image if the file is no image this
+                                     check does nothing
+        :param show_file_upload_input: shows the file input
+        :param show_drop_zone: shows the dropzone
+        :param drop_zone_add_position_top:  Margin of drop zone icon and label in percentage from the upper drop zone
+                                            border. Can be adapted in order to yield reasonable layout based on
+                                            different drop zone icon sizes
+        :param drop_zone_add_text: Additional label text shown in the drop zone, if set
+        :param error_message_image_size_to_big: This error is shown via javascript if image size is not correct
+        :param error_message_image_size_to_small: This error is shown via javascript if image size is not correct
+        :param error_message_file_size: This error is shown via javascript if file size is not correct
+        :param error_message_file_type: This error is shown via javascript if file type is not allowed
         """
-        super(Upload, self).__init__(page, cid, label, name, default, validation_type)
+        super(Upload, self).__init__(page, cid,
+                                     label=label,
+                                     name=name,
+                                     default=default,
+                                     validation_type=validation_type,
+                                     handle_click=handle_click,
+                                     store_async=store_async,
+                                     height=height,
+                                     width=width,
+                                     plus_icon_size=plus_icon_size,
+                                     no_preview=no_preview,
+                                     file_upload_input_preview=file_upload_input_preview,
+                                     fire_change_immediately=fire_change_immediately,
+                                     allowed_file_types=allowed_file_types,
+                                     show_remove_icon=show_remove_icon,
+                                     maximum_file_size=maximum_file_size,
+                                     maximum_image_width=maximum_image_width,
+                                     maximum_image_height=maximum_image_height,
+                                     minimum_image_width=minimum_image_width,
+                                     minimum_image_height=minimum_image_height,
+                                     show_file_upload_input=show_file_upload_input,
+                                     show_drop_zone=show_drop_zone,
+                                     drop_zone_add_position_top=drop_zone_add_position_top,
+                                     drop_zone_add_text=drop_zone_add_text,
+                                     error_message_image_size_to_big=error_message_image_size_to_big,
+                                     error_message_image_size_to_small=error_message_image_size_to_small,
+                                     error_message_file_size=error_message_file_size,
+                                     error_message_file_type=error_message_file_type,
+                                     **extra_params)
 
     def handle_change(self, value):
         """
@@ -144,6 +230,8 @@ class Upload(FormInputBase):
 
     def get_as_binary(self):
         value = self.value
+        if value is None:
+            return value
         if str(value).startswith('http') is True:
             # Upload data is from another url, so we have to parse it first
             binary = requests.get(value).content
@@ -165,4 +253,3 @@ class Upload(FormInputBase):
         self.file_info_name = file_name
         self.file_info_image_width = file_image_width
         self.file_info_image_height = file_image_height
-
