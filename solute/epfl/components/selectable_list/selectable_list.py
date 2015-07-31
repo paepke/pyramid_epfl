@@ -11,6 +11,7 @@ class SelectableList(LinkListLayout):
 
     compo_state = LinkListLayout.compo_state + ["search_text"]
 
+    #: List type extension, see :attr:`ListLayout.list_type` for details.
     list_type = LinkListLayout.list_type + ['selectable']
 
     search_text = None  #: search text for custom search text handling
