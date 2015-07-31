@@ -17,20 +17,24 @@ class Select(FormInputBase):
     """
 
     template_name = "select/select.html"
-
-    options = None #: A list if options for the select input.
-
+    js_name = FormInputBase.js_name + [("solute.epfl.components:select/static", "select.js")]
+    js_parts = []
+    css_name = FormInputBase.css_name + [("solute.epfl.components:select/static", "select.css")]
     compo_state = FormInputBase.compo_state + ['options']
 
-    validation_type = 'text'
-    layout_vertical = False
+    options = None  #: A list if options for the select input.
 
-    js_name = FormInputBase.js_name + [("solute.epfl.components:select/static", "select.js")]
-    css_name = FormInputBase.css_name + [("solute.epfl.components:select/static", "select.css")]
+    validation_type = 'text'  #: Validate input as text.
+    layout_vertical = False  #: Use the vertical layout instead of the default horizontal.
 
-    validation_type = 'text'
-
-    js_parts = []
     new_style_compo = True
-    compo_js_params = ['fire_change_immediately', 'submit_form_on_enter']
     compo_js_name = 'Select'
+    compo_js_params = ['fire_change_immediately', 'submit_form_on_enter']
+
+    def __init__(self, page, cid, options=None, layout_vertical=None, **extra_params):
+        """Select form element that gives the selected option as its value.
+
+        :param options: A list if options for the select input.
+        :param layout_vertical: Use the vertical layout instead of the default horizontal.
+        """
+        super(Select, self).__init__(page, cid, options=options, layout_vertical=layout_vertical, **extra_params)
