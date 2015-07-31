@@ -1,17 +1,21 @@
 from solute.epfl.core import epflcomponentbase
 
-class TabsLayout(epflcomponentbase.ComponentContainerBase):
-    template_name = "tabs_layout/tabs_layout.html"
-    
-    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["tabs_layout/tabs_layout.js"]
-    
-    asset_spec = "solute.epfl.components:tabs_layout/static"
 
-    js_name = ["tabs_layout.js"]
+class TabsLayout(epflcomponentbase.ComponentContainerBase):
+    asset_spec = "solute.epfl.components:tabs_layout/static"
+    template_name = "tabs_layout/tabs_layout.html"
 
     compo_state = ["active_tab_cid"]
 
-    active_tab_cid = ""
+    js_parts = epflcomponentbase.ComponentContainerBase.js_parts + ["tabs_layout/tabs_layout.js"]
+    js_name = ["tabs_layout.js"]
+
+    active_tab_cid = ""  #: CID of the currently active tab.
+
+    def __init__(self, page, cid, **extra_params):
+        """A Layouting component displaying its children inside separate tabs.
+        """
+        super(TabsLayout, self).__init__(page, cid, **extra_params)
 
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid
