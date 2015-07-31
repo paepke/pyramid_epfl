@@ -21,6 +21,7 @@ class TypeAhead(GroupedLinkListLayout):
     theme_path = GroupedLinkListLayout.theme_path.copy()
     theme_path['before'] = ['pretty_list_layout/theme', '>paginated_list_layout/theme', '>typeahead/theme']
 
+    #: List type extension, see :attr:`ListLayout.list_type` for details.
     list_type = GroupedLinkListLayout.list_type + ['typeahead']
 
     data_interface = {
