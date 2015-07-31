@@ -4,7 +4,6 @@ from solute.epfl.core import epflcomponentbase
 
 
 class ColLayout(epflcomponentbase.ComponentContainerBase):
-
     """
 
     A layout component that renders child components as cols (using Bootstrap's col layout).
@@ -48,7 +47,7 @@ class ColLayout(epflcomponentbase.ComponentContainerBase):
     new_style_compo = True
     compo_js_name = 'ColLayout'
 
-    def __init__(self, page, cid, vertical_center=False,css_cls=None, **extra_params):
+    def __init__(self, page, cid, vertical_center=False, css_cls=None, **extra_params):
         """
         A layout component that renders child components as cols (using Bootstrap's col layout).
 

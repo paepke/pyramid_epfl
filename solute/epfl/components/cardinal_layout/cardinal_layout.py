@@ -27,7 +27,8 @@ class CardinalLayout(epflcomponentbase.ComponentContainerBase):
                                          'south': [],
                                          'west': []}
             for compo in self.components:
-                self._cardinal_components.setdefault(getattr(compo, 'container_slot', None) or 'center', []).append(compo)
+                self._cardinal_components.setdefault(getattr(compo, 'container_slot', None) or 'center', []).append(
+                    compo)
 
         return self._cardinal_components.get(direction, [])
 
