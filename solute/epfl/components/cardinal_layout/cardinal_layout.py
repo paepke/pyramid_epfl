@@ -17,6 +17,7 @@ class CardinalLayout(epflcomponentbase.ComponentContainerBase):
 
     constrained = None
     plain = []  #: List of slots to be rendered as plain divs.
+    css_cls = None  #: Add the value of css_cls to the css class of the outermost div
 
     def cardinal_components(self, direction='center'):
         if self._cardinal_components is None:
@@ -26,7 +27,8 @@ class CardinalLayout(epflcomponentbase.ComponentContainerBase):
                                          'south': [],
                                          'west': []}
             for compo in self.components:
-                self._cardinal_components.setdefault(getattr(compo, 'container_slot', None) or 'center', []).append(compo)
+                self._cardinal_components.setdefault(getattr(compo, 'container_slot', None) or 'center', []).append(
+                    compo)
 
         return self._cardinal_components.get(direction, [])
 

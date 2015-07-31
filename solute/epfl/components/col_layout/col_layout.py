@@ -4,7 +4,6 @@ from solute.epfl.core import epflcomponentbase
 
 
 class ColLayout(epflcomponentbase.ComponentContainerBase):
-
     """
 
     A layout component that renders child components as cols (using Bootstrap's col layout).
@@ -40,12 +39,15 @@ class ColLayout(epflcomponentbase.ComponentContainerBase):
     js_parts = []
 
     template_name = "col_layout/col_layout.html"
+
     vertical_center = False  #: If set to true, child components are centered vertically.
+
+    css_cls = None  #: Add the value of css_cls to the css class of the outermost div
 
     new_style_compo = True
     compo_js_name = 'ColLayout'
 
-    def __init__(self, page, cid, vertical_center=False, **extra_params):
+    def __init__(self, page, cid, vertical_center=False, css_cls=None, **extra_params):
         """
         A layout component that renders child components as cols (using Bootstrap's col layout).
 
@@ -55,8 +57,10 @@ class ColLayout(epflcomponentbase.ComponentContainerBase):
         that it should be centered horizontally.
 
         :param vertical_center: If set to true, child components are centered vertically
+        :param css_cls: Add the value of css_cls to the css class of the outermost div
         """
         super(ColLayout, self).__init__(
             page=page, cid=cid,
             vertical_center=vertical_center,
+            css_cls=css_cls,
             **extra_params)
