@@ -15,6 +15,9 @@ class NavLayout(epflcomponentbase.ComponentContainerBase):
     title = None  #: Title to be displayed on the top left.
 
     def __init__(self, page, cid, title=None, img=None, **extra_params):
-        """
+        """Topnav with optional title and image.
+
+         :param img: Logo to be used on the top left.
+         :param title: Title to be displayed on the top left.
         """
         super(NavLayout, self).__init__()
