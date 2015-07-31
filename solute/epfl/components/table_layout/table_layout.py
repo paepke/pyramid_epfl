@@ -15,6 +15,7 @@ class TableLayout(PaginatedListLayout):
 
     compo_state = PaginatedListLayout.compo_state + ['column_visibility']
 
+    #: Used to map specific fields to child classes.
     map_child_cls = {}
     fixed_header = True  #: Set to False if header should not be fixed.
     #: Can be set to a tuple where each entry contains True/False denoting the visibility of the corresponding column
