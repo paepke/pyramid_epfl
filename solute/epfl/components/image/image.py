@@ -17,7 +17,7 @@ import json
 
 class Image(epflcomponentbase.ComponentBase):
     template_name = "image/image.html"
-    js_parts = []  # epflcomponentbase.ComponentBase.js_parts + ["image/image.js"]
+    js_parts = []
     asset_spec = "solute.epfl.components:image/static"
 
     css_name = ["image.css"]
