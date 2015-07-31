@@ -234,6 +234,7 @@ def test_selection(page):
             'selection set around foobar, but mark tag is missing or malformed in html.'
         compo.render_cache = None
 
+
 def test_new_window(page):
     page.root_node = components.Link(
         text='foobar',
