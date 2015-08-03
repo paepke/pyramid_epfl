@@ -94,10 +94,12 @@ epfl.DatetimeInput.prototype.after_response = function (data) {
 epfl.DatetimeInput.prototype.change = function (event) {
     var value = this.input.val();
     if(!value){
-        return;
+        value = null;
+    } else {
+        value = this.to_utc(value);
     }
 
-    value = this.to_utc(value);
+
 
     var enqueue_event = true;
     if (this.params.fire_change_immediately) {
