@@ -40,6 +40,7 @@ class DatetimeInput(FormInputBase):
     #: Set to true if value has to be provided for this element in order to yield a valid form.
     mandatory = False
     input_focus = False  #: Set focus on this input when component is displayed
+    calendar_icon = True  #: Set to true if calendar overlay icon should be displayed
     #: Set to true if input change events should be fired immediately to the server.
     #: Otherwise, change events are fired upon the next immediate epfl event.
     fire_change_immediately = False
@@ -64,8 +65,9 @@ class DatetimeInput(FormInputBase):
                  validation_error=None,
                  validation_type=None,
                  validation_helper=None,
-                 mandetory=None,
+                 mandatory=None,
                  input_focus=None,
+                 calendar_icon=None,
                  fire_change_immediately=None,
                  compo_col=None,
                  label_col=None,
@@ -84,8 +86,9 @@ class DatetimeInput(FormInputBase):
         :param validation_error: Set during call of :func:`validate` with an error message if validation fails
         :param validation_type: Form validation selector.
         :param validation_helper: Subclasses can add their own validation helper lamdbas in order to extend validation logic.
-        :param mandetory: Set to true if value has to be provided for this element in order to yield a valid form
+        :param mandatory: Set to true if value has to be provided for this element in order to yield a valid form
         :param input_focus: Set focus on this input when component is displayed
+        :param calendar_icon: Set to true if calendar overlay icon should be displayed
         :param fire_change_immediately: Set to true if input change events should be fired immediately to the server. Otherwise, change events are fired upon the next immediate epfl event
         :param compo_col: Set the width of the complete input component (default: max: 12)
         :param label_col: Set the width of the complete input component (default: 2)
@@ -103,8 +106,9 @@ class DatetimeInput(FormInputBase):
                                             validation_error=validation_error,
                                             validation_type=validation_type,
                                             validation_helper=validation_helper,
-                                            mandetory=mandetory,
+                                            mandatory=mandatory,
                                             input_focus=input_focus,
+                                            calendar_icon=calendar_icon,
                                             fire_change_immediately=fire_change_immediately,
                                             compo_col=compo_col,
                                             label_col=label_col,
