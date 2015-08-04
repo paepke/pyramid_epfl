@@ -94,3 +94,22 @@ def test_render_with_options_and_vertical(page):
     assert input.attrib.get("name", None) == "datetime_input"
     assert input.attrib.get("style", None) == "test_input_style"
     assert input.attrib.get("disabled", None) == "disabled"
+
+
+def test_calendar_icon(page):
+    page.root_node = components.DatetimeInput(
+        label="datetime_input",
+        name="datetime_input",
+        placeholder="datetime",
+        compo_col=8,
+        label_col=4,
+        value="2015.07.10",
+        label_style="test_label_style",
+        input_style="test_input_style",
+        calendar_icon=True
+    )
+
+    page.handle_transaction()
+
+    compo = page.root_node
+    assert '<i class="fa fa-calendar"></i>' in compo.render(), "Calendar icon not found"
