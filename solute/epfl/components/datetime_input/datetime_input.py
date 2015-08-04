@@ -40,7 +40,7 @@ class DatetimeInput(FormInputBase):
     #: Set to true if value has to be provided for this element in order to yield a valid form.
     mandatory = False
     input_focus = False  #: Set focus on this input when component is displayed
-    calendar_icon = False  #: Set to true if calendar overlay icon should be displayed
+    calendar_icon = True  #: Set to true if calendar overlay icon should be displayed
     #: Set to true if input change events should be fired immediately to the server.
     #: Otherwise, change events are fired upon the next immediate epfl event.
     fire_change_immediately = False
