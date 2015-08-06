@@ -32,7 +32,7 @@
 .epfl-input-addon {
     position: relative;
 }
-.epfl-input-addon > i.fa {
+.epfl-input-addon > i.fa, .epfl-input-addon > span.fa {
   position: absolute;
   right:  0px;
   padding: 10px;
