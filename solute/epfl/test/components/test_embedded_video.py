@@ -20,7 +20,8 @@ def test_render_with_no_options(page):
 def test_render_youtube(page):
     page.root_node = components.EmbeddedVideo(
         video_type= components.EmbeddedVideo.VIDEO_TYPE_YOUTUBE,
-        video_id = "this_id_dont_exits"
+        video_id = "this_id_dont_exits",
+        force_youtube_html5=False
     )
     page.handle_transaction()
 
@@ -48,7 +49,8 @@ def test_render_width_height(page):
         video_type= components.EmbeddedVideo.VIDEO_TYPE_YOUTUBE,
         video_id = "this_id_dont_exits",
         width="250px",
-        height="150px"
+        height="150px",
+        force_youtube_html5=False
     )
     page.handle_transaction()
 
