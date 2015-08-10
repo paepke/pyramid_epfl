@@ -128,87 +128,179 @@ epfl.Upload.prototype.read_file = function (file, callback) {
 
 epfl.Upload.prototype.handle_drop_file = function (files, event) {
     var obj = this;
+    var file_data = [];
+    var files_read = 0;
 
     // Currently only single files supported, although that's really only a question of implementing a backend.
     this.dropzone.hide();
-    this.read_file(files[0], function () {
-        obj.upload_file(this, files[0])
-    });
-};
 
-epfl.Upload.prototype.upload_file = function (reader, file) {
-    var obj = this;
+    var validate_files = function () {
+        //validate all files in file_data
+        for (var i = 0; i < file_data.length; i++) {
 
-    var file_size = file.size;
-    var file_name = file.name;
-    var file_type = file.name.split('.').pop();
-    var file_image_width = null;
-    var file_image_height = null;
+            //check file type
+            if (obj.params.allowed_file_types) {
+                var type_is_allowed = false;
+                for (var j = 0; j < obj.params.allowed_file_types.length; j++) {
+                    if (file_data[i].name.endsWith(obj.params.allowed_file_types[j])) {
+                        type_is_allowed = true;
+                    }
+                }
+                if (!type_is_allowed) {
+                    epfl.show_message({
+                        msg: file_data[i].name + ": " + obj.params["error_message_file_type"],
+                        "typ": "error", "fading": true
+                    });
+                    file_data[i].valid = false;
+                    continue;
+                }
+            }
 
-    var img = new Image();
-    img.src = reader.result;
+            //check file size
+            if (file_data[i].file_size > parseInt(obj.params.maximum_file_size)) {
+                epfl.show_message({
+                    msg: file_data[i].name + ": " + obj.params["error_message_file_size"],
+                    "typ": "error", "fading": true
+                });
+                file_data[i].valid = false;
+                continue;
+            } else if (file_data[i].file_size > 200 * 1024 * 1024) {
+                //200 MB is hard limit of upload compo
+                epfl.show_message({
+                    msg: file_data[i].name + ": " + obj.params["error_message_file_size"],
+                    "typ": "error", "fading": true
+                });
+                file_data[i].valid = false;
+                continue;
+            }
 
-    if (this.params["maximum_image_width"] && img.width > 0) {
-        if (img.width > this.params["maximum_image_width"]) {
-            epfl.show_message({msg: this.params["error_message_image_size_to_big"], typ: "alert"});
-            this.dropzone.show();
-            return false;
+            //check image max width
+            if (obj.params["maximum_image_width"] && file_data[i].file_is_img) {
+                if (file_data[i].file_img_width > obj.params["maximum_image_width"]) {
+                    epfl.show_message({
+                        msg: file_data[i].name + ": " + obj.params["error_message_image_size_to_big"],
+                        "typ": "error", "fading": true
+                    });
+                    file_data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image max height
+            if (obj.params["maximum_image_height"] && file_data[i].file_is_img) {
+                if (file_data[i].file_img_height > obj.params["maximum_image_height"]) {
+                    epfl.show_message({
+                        msg: file_data[i].name + ": " + obj.params["error_message_image_size_to_big"],
+                        "typ": "error", "fading": true
+                    });
+                    file_data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image min width
+            if (obj.params["minimum_image_width"] && file_data[i].file_is_img) {
+                if (file_data[i].file_img_width < obj.params["minimum_image_width"]) {
+                    epfl.show_message({
+                        msg: file_data[i].name + ": " + obj.params["error_message_image_size_to_small"],
+                        "typ": "error", "fading": true
+                    });
+                    file_data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image min height
+            if (obj.params["minimum_image_height"] && file_data[i].file_is_img) {
+                if (file_data[i].file_img_height < obj.params["minimum_image_height"]) {
+                    epfl.show_message({
+                        msg: file_data[i].name + ": " + obj.params["error_message_image_size_to_small"],
+                        "typ": "error", "fading": true
+                    });
+                    file_data[i].valid = false;
+                    continue;
+                }
+            }
+            file_data[i].valid = true;
         }
-        file_image_width = img.width;
-    }
+    };
 
-    if (this.params["maximum_image_height"] && img.height > 0) {
-        if (img.height > this.params["maximum_image_height"]) {
-            epfl.show_message({msg: this.params["error_message_image_size_to_big"], typ: "alert"});
-            this.dropzone.show();
-            return false;
+    var send_file_infos = function () {
+        //send the file info of all valid files
+        var file_infos = [];
+        for (var i = 0; i < file_data.length; i++) {
+            if (!file_data[i].valid) {
+                continue;
+            }
+            file_infos.push({
+                size: file_data[i].file_size,
+                type: file_data[i].file_type,
+                name: file_data[i].file_name,
+                is_image: file_data[i].file_is_img,
+                image_width: file_data[i].file_img_width,
+                image_height: file_data[i].file_img_height,
+
+            })
         }
-        file_image_height = img.height;
-    }
 
-    if (this.params["minimum_image_width"] && img.width > 0) {
-        if (img.width < this.params["minimum_image_width"]) {
-            epfl.show_message({msg: this.params["error_message_image_size_to_small"], typ: "alert"});
-            this.dropzone.show();
-            return false;
-        }
-        file_image_width = img.width;
-    }
+        obj.send_event('file_info', {file_infos: file_infos});
+    };
 
-    if (this.params["minimum_image_height"] && img.height > 0) {
-        if (img.height < this.params["minimum_image_height"]) {
-            epfl.show_message({msg: this.params["error_message_image_size_to_small"], typ: "alert"});
-            this.dropzone.show();
-            return false;
-        }
-        file_image_height = img.height;
-    }
-
-
-    this.send_event('file_info', {
-        file_size: file_size,
-        file_type: file_type,
-        file_name: file_name,
-        file_image_width: file_image_width,
-        file_image_height: file_image_height,
-    });
-
-    if (obj.params.store_async) {
-        if (!file.name) {
-            file.name = "external"
-        }
+    var upload_files_async = function () {
+        //upload all valid files async
         var spinner = $("<div class='text-center text-primary'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
         spinner.appendTo(this.elm);
         obj.is_async_uploading = true;
-        obj.send_async_event('store', {data: reader.result, file_name: file.name}, function (data) {
+        var raw_files = [];
+        for (var i = 0; i < file_data.length; i++) {
+            if (!file_data[i].valid) {
+                continue;
+            }
+            raw_files.push({data: file_data[i].reader_result, name: file_data[i].file_name});
+        }
+
+        obj.send_async_event('store', {files:raw_files}, function (data) {
             obj.is_async_uploading = false;
             spinner.remove();
+            //TODO: make result visible
             obj.handle_drop_url(data);
         });
-    } else {
-        obj.change(reader.result);
+    };
+
+    //read all filesm extract their data and call next functions
+    for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
+        reader.onload = (function (file) {
+            return function () {
+                var img = new Image();
+                img.src = this.result;
+
+                file_data.push({
+                    name: file.name,
+                    reader_result: this.result,
+                    file_size: file.size,
+                    file_name: file.name,
+                    file_type: file.name.split('.').pop(),
+                    file_is_img: img.width > 0,
+                    file_img_width: img.width,
+                    file_img_height: img.height,
+                    valid: false
+                });
+                files_read += 1;
+
+                //if all files are successfull read and their data are extracted go on
+                if (files_read === files.length) {
+                    validate_files();
+                    send_file_infos();
+                    upload_files_async();
+                }
+            }
+        })(files[i]);
+
+        reader.readAsDataURL(files[i]);
     }
 };
+
 
 epfl.Upload.prototype.handle_drop_url = function (url, event) {
     this.change(url);
@@ -239,7 +331,7 @@ epfl.Upload.prototype.change = function (value) {
 };
 
 epfl.Upload.prototype.handle_click = function (event) {
-    if(this.is_async_uploading){
+    if (this.is_async_uploading) {
         return;
     }
     epfl.ComponentBase.prototype.handle_click.call(this, event);
