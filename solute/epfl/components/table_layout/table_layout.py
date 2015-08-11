@@ -20,13 +20,16 @@ class TableLayout(PaginatedListLayout):
     #: Can be set to a tuple where each entry contains True/False denoting the visibility of the corresponding column
     column_visibility = None
 
+    orderby = None
+    ordertype = None
+
     new_style_compo = True
     compo_js_name = 'TableLayout'
     compo_js_params = ['row_offset', 'row_limit', 'row_count', 'row_data',
                        'show_pagination', 'show_search', 'search_focus', 'fixed_header']
     compo_js_extras = ['handle_click']
 
-    def __init__(self, page, cid, show_search=None, height=None, column_visibility=None, **kwargs):
+    def __init__(self, page, cid, show_search=None, height=None, column_visibility=None, orderby=None, ordertype=None, **kwargs):
         """Table based on a paginated list. Offers searchbar above and pagination below using the EPFL theming
         mechanism.
 
@@ -56,6 +59,8 @@ class TableLayout(PaginatedListLayout):
         :param show_pagination: Toggle weather the pagination is shown or not.
         :param search_focus: Toggle weather the search field receives focus on load or not.
         :param column_visibility: An optional tuple denoting which columns should be initially displayed or not.
+        :param orderby: An optional string denoting which column should be initially used for sorting.
+        :param ordertype: An optional string denoting the initial sort order.
          If set, its length has to match the length of table columns.
         """
         super(PaginatedListLayout, self).__init__(
