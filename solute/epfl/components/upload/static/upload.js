@@ -137,7 +137,6 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
     var validate_files = function () {
         //validate all files in file_data
         for (var i = 0; i < file_data.length; i++) {
-
             //check file type
             if (obj.params.allowed_file_types) {
                 var type_is_allowed = false;
@@ -238,9 +237,8 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
                 name: file_data[i].file_name,
                 is_image: file_data[i].file_is_img,
                 image_width: file_data[i].file_img_width,
-                image_height: file_data[i].file_img_height,
-
-            })
+                image_height: file_data[i].file_img_height
+            });
         }
 
         obj.send_event('file_info', {file_infos: file_infos});
@@ -267,7 +265,7 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
         });
     };
 
-    //read all filesm extract their data and call next functions
+    //read all files extract their data and call next functions
     for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
         reader.onload = (function (file) {
@@ -296,7 +294,6 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
                 }
             }
         })(files[i]);
-
         reader.readAsDataURL(files[i]);
     }
 };
