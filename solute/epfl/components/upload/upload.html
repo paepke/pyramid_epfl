@@ -63,11 +63,16 @@
                                value="{{ compo.value if compo.value is not none else '' }}"
                                placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"/>
                     {% else %}
-                        <p style='min-height: 20px;'>{{ compo.file_info_name if compo.file_info_name is not none else '' }}
-                            {% if compo.no_preview or not compo.show_remove_icon %}
-                                <i class="fa fa-times fa-lg color-danger epfl-upload-remove-icon"></i>
-                            {% endif %}
-                        </p>
+                        {% if compo.file_infos %}
+                            {% for file_info in compo.file_infos %}
+                                <p style='min-height: 20px;'>
+                                    {{ file_info["name"] if file_info["name"] is not none else '' }}
+                                    {% if compo.no_preview or not compo.show_remove_icon %}
+                                        <i class="fa fa-times fa-lg color-danger epfl-upload-remove-icon"></i>
+                                    {% endif %}
+                                </p>
+                            {% endfor %}
+                        {% endif %}
                     {% endif %}
                 </div>
             {% endif %}
