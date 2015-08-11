@@ -13,7 +13,7 @@ class TableLayout(PaginatedListLayout):
 
     template_name = 'table_layout/table_layout.html'
 
-    compo_state = PaginatedListLayout.compo_state + ['column_visibility']
+    compo_state = PaginatedListLayout.compo_state + ['column_visibility', 'orderby', 'ordertype']
 
     map_child_cls = {}
     fixed_header = True  #: Set to False if header should not be fixed.
@@ -119,4 +119,20 @@ class TableLayout(PaginatedListLayout):
         col_visibility = col_visibility[:column_index] + \
             (False,) + col_visibility[column_index + 1:]
         self.column_visibility = col_visibility
+        self.redraw()
+
+    def handle_adjust_sorting(self, column_index):
+        if self.orderby == self.headings[column_index]['name']:
+            # Change sorting
+            if self.ordertype == 'asc':
+                self.ordertype = 'desc'
+            elif self.ordertype == 'desc':
+                self.ordertype = None
+            else:
+                self.ordertype = 'asc'
+        else:
+            self.orderby = self.headings[column_index]['name']
+            self.ordertype = 'asc'
+        self.row_data.update({'orderby': self.orderby})
+        self.row_data.update({'ordertype': self.ordertype})
         self.redraw()
