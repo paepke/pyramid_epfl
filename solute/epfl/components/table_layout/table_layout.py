@@ -35,7 +35,7 @@ class TableLayout(PaginatedListLayout):
             show_search=False,
             headings=[
                 {'title': 'Name'},
-                {'title': 'Wert'},
+                {'title': 'Wert', 'name': 'value', 'sortable': True},
                 {'title': 'Einheit', 'toggle_visibility_supported': True },
             ],
             map_child_cls=[
