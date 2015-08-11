@@ -34,7 +34,13 @@
                     {% if compo.show_remove_icon %}
                         <i class="fa fa-times fa-lg color-danger epfl-upload-remove-icon"></i>
                     {% endif %}
-                    <img src="{{ compo.value }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
+                  {% if compo.value is string %}
+                      <img src="{{ compo.value }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
+                  {% else %}
+                        {% for file in compo.value %}
+                            {{ file["name"] }} <img src="{{ file["data"] }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
+                        {% endfor %}
+                  {% endif %}
                 {% endif %}
             </div>
 

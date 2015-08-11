@@ -27,10 +27,9 @@ class Upload(FormInputBase):
     template_name = "upload/upload.html"
 
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
-                                               "handle_click", "store_async", "height", "width", "file_info_size",
-                                               "file_info_type", "file_info_name", "maximum_image_width",
-                                               "maximum_image_height",
-                                               "minimum_image_width", "minimum_image_height"]
+                                               "handle_click", "store_async", "height", "width", "file_infos",
+                                               "maximum_image_width",  "maximum_image_height", "minimum_image_width",
+                                               "minimum_image_height"]
 
     height = None  #: Compo height in px if none nothing is set
 
@@ -91,11 +90,7 @@ class Upload(FormInputBase):
     #: Upload the image immediately via handle_store, store has to return a URI that will be used as value.
     store_async = False
 
-    file_info_size = None  #: File Size of the current uploaded file
-    file_info_type = None  #: File Type of the current uploaded file
-    file_info_name = None  #: File Name of the current uploaded file
-    file_info_image_width = None  #: If file is an image this is the width of the image
-    file_info_image_height = None  #: If file is an image this is the height of the image
+    file_infos = None  #: infos about the uploaded files
 
     #: This error is shown via javascript if image size is not correct
     error_message_image_size_to_big = "Image Size is too big "
@@ -222,11 +217,11 @@ class Upload(FormInputBase):
         if self.no_preview is False:
             self.redraw()
 
-    def handle_store(self, data, file_name):
-        self.add_ajax_response(json.encode(self.store(data, file_name)))
+    def handle_store(self, files):
+        self.add_ajax_response(json.encode(self.store(files)))
 
-    def store(self, data, file_name):
-        return data
+    def store(self, files):
+        return files
 
     def get_as_binary(self):
         value = self.value
@@ -247,9 +242,6 @@ class Upload(FormInputBase):
     def handle_drop_accepts(self, cid, moved_cid):
         self.add_ajax_response('true')
 
-    def handle_file_info(self, file_size, file_type, file_name, file_image_width, file_image_height):
-        self.file_info_size = file_size
-        self.file_info_type = file_type
-        self.file_info_name = file_name
-        self.file_info_image_width = file_image_width
-        self.file_info_image_height = file_image_height
+
+    def handle_file_info(self,file_infos):
+        self.file_infos = file_infos
