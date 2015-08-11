@@ -211,7 +211,12 @@ class Upload(FormInputBase):
     def handle_change(self, value):
         """
         When an image gets dropped over the dropzone or an image is choosen in file input
-        :param url: image url if the image's source is desktop or epfl image compo url is a byte string
+        :param value: image url if the image's source is desktop or epfl image compo url is a byte string
+
+        If upload component is synchronous, value is a base_64 encoded file or an url,
+        if upload component is asynchronous, value is the returned list from store()
+
+
         """
         self.value = value
         if self.no_preview is False:
@@ -221,6 +226,11 @@ class Upload(FormInputBase):
         self.add_ajax_response(json.encode(self.store(files)))
 
     def store(self, files):
+        """
+        :param files: list of dicts in the format [{'name': 'ABC': 'data': <url or base_64 encoded file>}, ... ]
+        :return A list in the format [{'name': 'ABC': 'data': <any return value, e.g. an uploaded URL>,
+                                       'xy': <arbirtrary additional values are possible>}, ... ]
+        """
         return files
 
     def get_as_binary(self):
@@ -244,4 +254,8 @@ class Upload(FormInputBase):
 
 
     def handle_file_info(self,file_infos):
+        """
+        Called before the actual upload to set file information
+        @param file_infos: list of dicts. Each dicts holds information for one selected file
+        """
         self.file_infos = file_infos
