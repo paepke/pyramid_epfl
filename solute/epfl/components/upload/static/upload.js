@@ -127,6 +127,7 @@ epfl.Upload.prototype.read_file = function (file, callback) {
 };
 
 epfl.Upload.prototype.handle_drop_file = function (files, event) {
+    console.log("drop file");
     var obj = this;
     var file_data = [];
     var files_read = 0;
@@ -265,6 +266,18 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
         });
     };
 
+    var upload_files_sync = function(){
+      //normal sync upload
+        var raw_files = [];
+        for (var i = 0; i < file_data.length; i++) {
+            if (!file_data[i].valid) {
+                continue;
+            }
+            raw_files.push({data: file_data[i].reader_result, name: file_data[i].file_name});
+        }
+        this.change(raw_files)
+    };
+
     //read all files extract their data and call next functions
     for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
@@ -290,7 +303,11 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
                 if (files_read === files.length) {
                     validate_files();
                     send_file_infos();
-                    upload_files_async();
+                    if(obj.params["store_async"]) {
+                        upload_files_async();
+                    }else {
+                         upload_files_sync();
+                    }
                 }
             }
         })(files[i]);
