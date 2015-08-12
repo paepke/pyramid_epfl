@@ -46,7 +46,8 @@
 
             {# Dropzone #}
             {% if compo.show_drop_zone and not compo.value %}
-                <div class="epfl-dropzone text-center">
+                <div class="epfl-dropzone text-center"
+                     style="{% if compo.height != None %}height:{{ compo.height }}px;{% endif %} {% if compo.width != None %}width:{{ compo.width }}px;{% endif %}">
                     <div style="position:relative; top: {{ "35" if compo.drop_zone_add_position_top is none else compo.drop_zone_add_position_top }}%">
                         <i class="fa fa-plus fa-{{ compo.plus_icon_size }}"></i>
                         {% if compo.drop_zone_add_text %}
