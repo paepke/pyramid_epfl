@@ -101,7 +101,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             if (!type_is_allowed) {
                 epfl.show_message({
                     msg: data[i].name + ": " + obj.params["error_message_file_type"],
-                    typ: "error", "fading": true
+                    typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
@@ -112,7 +112,7 @@ epfl.Upload.prototype.validate_files = function (data) {
         if (data[i].file_size > parseInt(obj.params.maximum_file_size)) {
             epfl.show_message({
                 msg: data[i].name + ": " + obj.params["error_message_file_size"],
-                typ: "error", "fading": true
+                typ: "warning", "fading": true
             });
             data[i].valid = false;
             continue;
@@ -120,7 +120,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             //200 MB is hard limit of upload compo
             epfl.show_message({
                 msg: data[i].name + ": " + obj.params["error_message_file_size"],
-                typ: "error", "fading": true
+                typ: "warning", "fading": true
             });
             data[i].valid = false;
             continue;
@@ -131,7 +131,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             if (data[i].file_img_width > obj.params["maximum_image_width"]) {
                 epfl.show_message({
                     msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
-                    typ: "error", "fading": true
+                    typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
@@ -143,7 +143,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             if (data[i].file_img_height > obj.params["maximum_image_height"]) {
                 epfl.show_message({
                     msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
-                    typ: "error", "fading": true
+                    typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
@@ -155,7 +155,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             if (data[i].file_img_width < obj.params["minimum_image_width"]) {
                 epfl.show_message({
                     msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
-                    typ: "error", "fading": true
+                    typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
@@ -167,7 +167,7 @@ epfl.Upload.prototype.validate_files = function (data) {
             if (data[i].file_img_height < obj.params["minimum_image_height"]) {
                 epfl.show_message({
                     msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
-                    typ: "error", "fading": true
+                    typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
