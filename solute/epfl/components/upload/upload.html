@@ -38,7 +38,7 @@
                       <img src="{{ compo.value }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
                   {% else %}
                         {% for file in compo.value %}
-                            {{ file["name"] }} <img src="{{ file["data"] }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
+                            <img src="{{ file["data"] }}" class="epfl-upload-image" data-cid="{{ compo.cid }}"/>
                         {% endfor %}
                   {% endif %}
                 {% endif %}

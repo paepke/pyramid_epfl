@@ -29,7 +29,7 @@ class Upload(FormInputBase):
     compo_state = FormInputBase.compo_state + ["allowed_file_types", "show_remove_icon", "maximum_file_size",
                                                "handle_click", "store_async", "height", "width", "file_infos",
                                                "maximum_image_width",  "maximum_image_height", "minimum_image_width",
-                                               "minimum_image_height"]
+                                               "minimum_image_height","use_old_value_format"]
 
     height = None  #: Compo height in px if none nothing is set
 
@@ -53,7 +53,7 @@ class Upload(FormInputBase):
     allowed_file_types = None
 
     #: show a remove icon which removes the current uploaded file see: handle_remove_icon
-    show_remove_icon = False
+    show_remove_icon = True
 
     #: maximum file size in byte this is checked in javascript,
     #: the hard technical browser limit is 100 MB so if a file bigger than 100 mb is dropped the browser crashes
@@ -91,6 +91,10 @@ class Upload(FormInputBase):
     store_async = False
 
     file_infos = None  #: infos about the uploaded files
+
+    #: This is required for backward compatibilty in older versions only the base64 string or url was in data in new
+    #: version its always a list
+    use_old_value_format = True
 
     #: This error is shown via javascript if image size is not correct
     error_message_image_size_to_big = "Image Size is too big "
@@ -133,6 +137,7 @@ class Upload(FormInputBase):
                  show_drop_zone=None,
                  drop_zone_add_position_top=None,
                  drop_zone_add_text=None,
+                 use_old_value_format=None,
                  error_message_image_size_to_big=None,
                  error_message_image_size_to_small=None,
                  error_message_file_size=None,
@@ -173,6 +178,8 @@ class Upload(FormInputBase):
                                             border. Can be adapted in order to yield reasonable layout based on
                                             different drop zone icon sizes
         :param drop_zone_add_text: Additional label text shown in the drop zone, if set
+        :param use_old_value_format: This is required for backward compatibilty in older versions only the base64 string
+                                     or url was in data in new version its always a list
         :param error_message_image_size_to_big: This error is shown via javascript if image size is not correct
         :param error_message_image_size_to_small: This error is shown via javascript if image size is not correct
         :param error_message_file_size: This error is shown via javascript if file size is not correct
@@ -202,6 +209,7 @@ class Upload(FormInputBase):
                                      show_drop_zone=show_drop_zone,
                                      drop_zone_add_position_top=drop_zone_add_position_top,
                                      drop_zone_add_text=drop_zone_add_text,
+                                     use_old_value_format=use_old_value_format,
                                      error_message_image_size_to_big=error_message_image_size_to_big,
                                      error_message_image_size_to_small=error_message_image_size_to_small,
                                      error_message_file_size=error_message_file_size,
@@ -211,14 +219,19 @@ class Upload(FormInputBase):
     def handle_change(self, value):
         """
         When an image gets dropped over the dropzone or an image is choosen in file input
-        :param value: image url if the image's source is desktop or epfl image compo url is a byte string
-
-        If upload component is synchronous, value is a base_64 encoded file or an url,
-        if upload component is asynchronous, value is the returned list from store()
-
-
+        :param value: a list in format [{"name":filename or url, "data":base64 string or url"}...]
         """
-        self.value = value
+
+        # This check is needed for backward compatibility in older versions only the base64 string or url was in data
+
+        if self.use_old_value_format:
+            if value and len(value) == 1:
+                self.value = value[0]["data"]
+            else:
+                self.value = value
+        else:
+            self.value = value
+
         if self.no_preview is False:
             self.redraw()
 
@@ -233,17 +246,36 @@ class Upload(FormInputBase):
         """
         return files
 
-    def get_as_binary(self):
-        value = self.value
-        if value is None:
-            return value
+    def _extract_binary(self,value):
+        """extracts binary data from base64 string or url
+        :param value: base64 string from browser or url
+        :return: binary data
+        """
+        binary = None
         if str(value).startswith('http') is True:
             # Upload data is from another url, so we have to parse it first
             binary = requests.get(value).content
         else:
             info, coded_string = str.split(str(value), ',')
             binary = base64.b64decode(coded_string)
+
         return binary
+
+    def get_as_binary(self):
+        """
+        :return: self.value as binary if self.value is a list then a list of binary and meta infos will be returned
+        """
+        value = self.value
+        if value is None:
+            return value
+
+        if type(value) == list:
+            result = []
+            for val in self.value:
+                result.append({"name":val["name"],"data":val["data"],"binary":self._extract_binary(val["data"])})
+            return result
+        else:
+            return self._extract_binary(value)
 
     def handle_remove_icon(self):
         self.value = None
