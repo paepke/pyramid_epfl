@@ -64,7 +64,7 @@ class TableLayout(PaginatedListLayout):
          If set, its length has to match the length of table columns.
         """
         super(PaginatedListLayout, self).__init__(
-            page, cid, show_search=None, height=height, column_visibility=column_visibility, **kwargs)
+            page, cid, show_search=None, height=height, column_visibility=column_visibility, orderby=orderby, ordertype=ordertype, **kwargs)
 
     def setup_component(self):
         PaginatedListLayout.setup_component(self)
@@ -131,8 +131,6 @@ class TableLayout(PaginatedListLayout):
             # Change sorting
             if self.ordertype == 'asc':
                 self.ordertype = 'desc'
-            elif self.ordertype == 'desc':
-                self.ordertype = None
             else:
                 self.ordertype = 'asc'
         else:
