@@ -53,7 +53,7 @@ class Upload(FormInputBase):
     allowed_file_types = None
 
     #: show a remove icon which removes the current uploaded file see: handle_remove_icon
-    show_remove_icon = False
+    show_remove_icon = True
 
     #: maximum file size in byte this is checked in javascript,
     #: the hard technical browser limit is 100 MB so if a file bigger than 100 mb is dropped the browser crashes
