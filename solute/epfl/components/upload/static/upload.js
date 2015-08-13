@@ -91,87 +91,93 @@ epfl.Upload.prototype.validate_files = function (data) {
 
     for (var i = 0; i < data.length; i++) {
         //check file type
-        if (obj.params.allowed_file_types) {
-            var type_is_allowed = false;
-            for (var j = 0; j < obj.params.allowed_file_types.length; j++) {
-                if (data[i].name.endsWith(obj.params.allowed_file_types[j])) {
-                    type_is_allowed = true;
+        try {
+            if (obj.params.allowed_file_types) {
+                var type_is_allowed = false;
+                for (var j = 0; j < obj.params.allowed_file_types.length; j++) {
+                    if (data[i].name.endsWith(obj.params.allowed_file_types[j])) {
+                        type_is_allowed = true;
+                    }
+                }
+                if (!type_is_allowed) {
+                    epfl.show_message({
+                        msg: data[i].name + ": " + obj.params["error_message_file_type"],
+                        typ: "warning", "fading": true
+                    });
+                    data[i].valid = false;
+                    continue;
                 }
             }
-            if (!type_is_allowed) {
+
+            //check file size
+            if (data[i].file_size > parseInt(obj.params.maximum_file_size)) {
                 epfl.show_message({
-                    msg: data[i].name + ": " + obj.params["error_message_file_type"],
+                    msg: data[i].name + ": " + obj.params["error_message_file_size"],
+                    typ: "warning", "fading": true
+                });
+                data[i].valid = false;
+                continue;
+            } else if (data[i].file_size > 200 * 1024 * 1024) {
+                //200 MB is hard limit of upload compo
+                epfl.show_message({
+                    msg: data[i].name + ": " + obj.params["error_message_file_size"],
                     typ: "warning", "fading": true
                 });
                 data[i].valid = false;
                 continue;
             }
-        }
 
-        //check file size
-        if (data[i].file_size > parseInt(obj.params.maximum_file_size)) {
-            epfl.show_message({
-                msg: data[i].name + ": " + obj.params["error_message_file_size"],
-                typ: "warning", "fading": true
-            });
+            //check image max width
+            if (obj.params["maximum_image_width"] && data[i].file_is_img) {
+                if (data[i].file_img_width > obj.params["maximum_image_width"]) {
+                    epfl.show_message({
+                        msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
+                        typ: "warning", "fading": true
+                    });
+                    data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image max height
+            if (obj.params["maximum_image_height"] && data[i].file_is_img) {
+                if (data[i].file_img_height > obj.params["maximum_image_height"]) {
+                    epfl.show_message({
+                        msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
+                        typ: "warning", "fading": true
+                    });
+                    data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image min width
+            if (obj.params["minimum_image_width"] && data[i].file_is_img) {
+                if (data[i].file_img_width < obj.params["minimum_image_width"]) {
+                    epfl.show_message({
+                        msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
+                        typ: "warning", "fading": true
+                    });
+                    data[i].valid = false;
+                    continue;
+                }
+            }
+
+            //check image min height
+            if (obj.params["minimum_image_height"] && data[i].file_is_img) {
+                if (data[i].file_img_height < obj.params["minimum_image_height"]) {
+                    epfl.show_message({
+                        msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
+                        typ: "warning", "fading": true
+                    });
+                    data[i].valid = false;
+                    continue;
+                }
+            }
+        } catch (e) {
+            console.log("Exception while validation", e);
             data[i].valid = false;
             continue;
-        } else if (data[i].file_size > 200 * 1024 * 1024) {
-            //200 MB is hard limit of upload compo
-            epfl.show_message({
-                msg: data[i].name + ": " + obj.params["error_message_file_size"],
-                typ: "warning", "fading": true
-            });
-            data[i].valid = false;
-            continue;
-        }
-
-        //check image max width
-        if (obj.params["maximum_image_width"] && data[i].file_is_img) {
-            if (data[i].file_img_width > obj.params["maximum_image_width"]) {
-                epfl.show_message({
-                    msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
-                    typ: "warning", "fading": true
-                });
-                data[i].valid = false;
-                continue;
-            }
-        }
-
-        //check image max height
-        if (obj.params["maximum_image_height"] && data[i].file_is_img) {
-            if (data[i].file_img_height > obj.params["maximum_image_height"]) {
-                epfl.show_message({
-                    msg: data[i].name + ": " + obj.params["error_message_image_size_to_big"],
-                    typ: "warning", "fading": true
-                });
-                data[i].valid = false;
-                continue;
-            }
-        }
-
-        //check image min width
-        if (obj.params["minimum_image_width"] && data[i].file_is_img) {
-            if (data[i].file_img_width < obj.params["minimum_image_width"]) {
-                epfl.show_message({
-                    msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
-                    typ: "warning", "fading": true
-                });
-                data[i].valid = false;
-                continue;
-            }
-        }
-
-        //check image min height
-        if (obj.params["minimum_image_height"] && data[i].file_is_img) {
-            if (data[i].file_img_height < obj.params["minimum_image_height"]) {
-                epfl.show_message({
-                    msg: data[i].name + ": " + obj.params["error_message_image_size_to_small"],
-                    typ: "warning", "fading": true
-                });
-                data[i].valid = false;
-                continue;
-            }
         }
         data[i].valid = true;
     }
