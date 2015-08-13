@@ -184,11 +184,21 @@ epfl.Upload.prototype.validate_files = function (data) {
     return data;
 };
 
+
+epfl.Upload.prototype.addSpinner = function () {
+    var spinner = $("<div class='text-center text-primary epfl-upload-loading-indicator'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
+    spinner.appendTo(this.elm);
+};
+
+epfl.Upload.prototype.removeSpinner = function () {
+    var spinner = this.elm.find(".epfl-upload-loading-indicator");
+    spinner.remove();
+};
+
+
 epfl.Upload.prototype.upload_files_async = function (data) {
     //upload all valid files in data async, data need the format from epfl.Upload.prototype.extract_file_data
     var obj = this;
-    var spinner = $("<div class='text-center text-primary epfl-upload-loading-indicator'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
-    spinner.appendTo(this.elm);
     obj.is_async_uploading = true;
     var raw_files = [];
     for (var i = 0; i < data.length; i++) {
@@ -200,7 +210,6 @@ epfl.Upload.prototype.upload_files_async = function (data) {
 
     obj.send_async_event('store', {files: raw_files}, function (data) {
         obj.is_async_uploading = false;
-        spinner.remove();
         //TODO: make result visible
         obj.handle_drop_url(data);
     });
@@ -257,12 +266,14 @@ epfl.Upload.prototype.handle_drop_file = function (files, event) {
 
     // Currently only single files supported, although that's really only a question of implementing a backend.
     obj.dropzone.hide();
+    obj.addSpinner();
 
     obj.extract_file_data(files, function (file_data) {
         file_data = obj.validate_files(file_data);
         if (!obj.check_for_valid_files(file_data)) {
             //no valid files
             obj.dropzone.show();
+            obj.removeSpinner();
             return;
         }
 
@@ -327,6 +338,7 @@ epfl.Upload.prototype.handle_drop_url = function (url, event) {
 };
 
 epfl.Upload.prototype.change = function (value) {
+    this.removeSpinner();
     var enqueue_event = true;
     if (this.params.fire_change_immediately) {
         enqueue_event = false;
