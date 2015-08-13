@@ -175,7 +175,7 @@ epfl.Upload.prototype.validate_files = function (data) {
                 }
             }
         } catch (e) {
-            console.log("Exception while validation", e);
+            console.log("Upload: Exception while validation", e);
             data[i].valid = false;
             continue;
         }
@@ -287,23 +287,27 @@ epfl.Upload.prototype.extract_file_data = function (files, callback) {
                 var img = new Image();
                 img.src = this.result;
 
-                file_data.push({
-                    name: file.name,
-                    reader_result: this.result,
-                    file_size: file.size,
-                    file_name: file.name,
-                    file_type: file.name.split('.').pop(),
-                    file_is_img: img.width > 0,
-                    file_img_width: img.width,
-                    file_img_height: img.height,
-                    valid: false
-                });
-                files_read += 1;
+                img.onload = function () {
+                    file_data.push({
+                        name: file.name,
+                        reader_result: this.result,
+                        file_size: file.size,
+                        file_name: file.name,
+                        file_type: file.name.split('.').pop(),
+                        file_is_img: img.width > 0,
+                        file_img_width: img.width,
+                        file_img_height: img.height,
+                        valid: false
+                    });
+                    files_read += 1;
 
-                //if all files are successfull read and their data are extracted go on
-                if (files_read === files.length) {
-                    callback(file_data);
-                }
+                    //if all files are successfull read and their data are extracted go on
+                    if (files_read === files.length) {
+                        callback(file_data);
+                    }
+                };
+
+
             }
         })(files[i]);
         reader.readAsDataURL(files[i]);
