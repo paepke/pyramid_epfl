@@ -10,3 +10,11 @@ epfl.Link.prototype.handle_local_click = function (event) {
         event.originalEvent.preventDefault();
     }
 };
+
+epfl.Link.prototype.handle_double_click = function (event) {
+    epfl.ComponentBase.prototype.handle_double_click.call(this, event);
+    if (this.params.double_click_event_name) {
+        this.send_event(this.params.double_click_event_name);
+        event.originalEvent.preventDefault();
+    }
+};

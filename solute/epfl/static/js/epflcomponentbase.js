@@ -117,6 +117,12 @@ epfl.ComponentBase.prototype.after_response = function (data) {
                 obj.handle_drag_start(event);
             });
     }
+
+    if (this.params && this.params.extras_handle_double_click) {
+        obj.elm.dblclick(function (event) {
+            obj.handle_double_click(event);
+        });
+    }
 };
 
 epfl.ComponentBase.prototype.before_response = function (data) {
@@ -149,6 +155,10 @@ epfl.ComponentBase.prototype.handle_click = function (event) {
     if (this.is_closest(event.target)) {
         this.handle_local_click(event);
     }
+};
+
+epfl.ComponentBase.prototype.handle_double_click = function (event) {
+    /* Executed on double click events if extras_handle_double_click is set to true. */
 };
 
 epfl.ComponentBase.prototype.handle_drop_accepts = function (event) {
