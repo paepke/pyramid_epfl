@@ -284,13 +284,14 @@ epfl.Upload.prototype.extract_file_data = function (files, callback) {
         var reader = new FileReader();
         reader.onload = (function (file) {
             return function () {
+                var that = this;
                 var img = new Image();
                 img.src = this.result;
 
                 img.onload = function () {
                     file_data.push({
                         name: file.name,
-                        reader_result: this.result,
+                        reader_result: that.result,
                         file_size: file.size,
                         file_name: file.name,
                         file_type: file.name.split('.').pop(),
