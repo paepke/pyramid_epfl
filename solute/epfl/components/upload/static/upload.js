@@ -187,7 +187,7 @@ epfl.Upload.prototype.validate_files = function (data) {
 epfl.Upload.prototype.upload_files_async = function (data) {
     //upload all valid files in data async, data need the format from epfl.Upload.prototype.extract_file_data
     var obj = this;
-    var spinner = $("<div class='text-center text-primary'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
+    var spinner = $("<div class='text-center text-primary epfl-upload-loading-indicator'><i class='fa fa-cog fa-5x fa-spin'></i></div>");
     spinner.appendTo(this.elm);
     obj.is_async_uploading = true;
     var raw_files = [];
