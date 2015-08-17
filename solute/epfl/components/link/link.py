@@ -22,17 +22,19 @@ class Link(ComponentBase):
     list_element = False  #: Display the link as a bootstrap style list element.
     selection = None  #: Tuple of integers: (selection_start, selection_end). MARK-Tag will be applied there.
     event_name = None  #: Name of an event to be triggered on click, prevents url and route from taking effect.
+    double_click_event_name = None  #: Name of an event to be triggered on double click, prevents url and route from taking effect.
     btn_link = False  #: Set to true if link should be displayed as a button.
     new_window = False  #: Set to true if link should be opened in new window or tab
     active = False  #: Sets the active class in html
 
     new_style_compo = True
-    compo_js_params = ['event_name']
+    compo_js_params = ['event_name', 'double_click_event_name']
     compo_js_name = 'Link'
-    compo_js_extras = ['handle_click']
+    compo_js_extras = ['handle_click', 'handle_double_click']
 
     def __init__(self, page, cid, url=None, route=None, name=None, text=None, icon=None, breadcrumb=None, tile=None,
-                 list_element=None, btn_link=None, new_window=None, event_name=None, selection=None, **extra_params):
+                 list_element=None, btn_link=None, new_window=None, event_name=None,double_click_event_name=None,
+                 selection=None, **extra_params):
         """Simple Link component.
 
         Usage:
@@ -55,11 +57,12 @@ class Link(ComponentBase):
         :param btn_link: Display the link as a bootstrap style button.
         :param new_window: Open link in new window or tab
         :param event_name: Name of an event to be triggered on click, prevents url and route from taking effect.
+        :param double_click_event_name: Name of an event to be triggered on double click, prevents url and route from taking effect.
         """
         super(Link, self).__init__(page, cid, url=url, route=route, name=name, text=text, icon=icon,
                                    breadcrumb=breadcrumb, tile=tile, list_element=list_element,
                                    btn_link=btn_link, new_window=new_window, event_name=event_name,
-                                   **extra_params)
+                                   double_click_event_name=double_click_event_name, **extra_params)
 
     @property
     def _url(self):
