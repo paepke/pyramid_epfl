@@ -13,7 +13,7 @@ class TableLayout(PaginatedListLayout):
 
     template_name = 'table_layout/table_layout.html'
 
-    compo_state = PaginatedListLayout.compo_state + ['column_visibility', 'orderby', 'ordertype']
+    compo_state = PaginatedListLayout.compo_state + ['column_visibility', 'orderby', 'ordertype','row_colors']
 
     map_child_cls = {}
     fixed_header = True  #: Set to False if header should not be fixed.
@@ -23,13 +23,22 @@ class TableLayout(PaginatedListLayout):
     orderby = None
     ordertype = None
 
+    row_colors = None  #: This is a simple row_id to row color mapping example: {1:ROW_DANGER,2:ROW_SUCCESS}
+
+    ROW_DEFAULT = "row-default"  #: Row color constant
+    ROW_PRIMARY = "row-primary"  #: Row color constant
+    ROW_SUCCESS = "row-success"  #: Row color constant
+    ROW_INFO = "row-info"  #: Row color constant
+    ROW_WARNING = "row-warning"  #: Row color constant
+    ROW_DANGER = "row-danger"  #: Row color constant
+
     new_style_compo = True
     compo_js_name = 'TableLayout'
     compo_js_params = ['row_offset', 'row_limit', 'row_count', 'row_data',
                        'show_pagination', 'show_search', 'search_focus', 'fixed_header']
     compo_js_extras = ['handle_click']
 
-    def __init__(self, page, cid, show_search=None, height=None, column_visibility=None, orderby=None, ordertype=None, **kwargs):
+    def __init__(self, page, cid, show_search=None, height=None, column_visibility=None, orderby=None, ordertype=None,row_colors=None, **kwargs):
         """Table based on a paginated list. Offers searchbar above and pagination below using the EPFL theming
         mechanism.
 
@@ -61,10 +70,11 @@ class TableLayout(PaginatedListLayout):
         :param column_visibility: An optional tuple denoting which columns should be initially displayed or not.
         :param orderby: An optional string denoting which column should be initially used for sorting.
         :param ordertype: An optional string denoting the initial sort order.
+        :param row_colors: This is a simple row_id to row color mapping example: {1:ROW_DANGER,2:ROW_SUCCESS} 
          If set, its length has to match the length of table columns.
         """
         super(PaginatedListLayout, self).__init__(
-            page, cid, show_search=None, height=height, column_visibility=column_visibility, orderby=orderby, ordertype=ordertype, **kwargs)
+            page, cid, show_search=None, height=height, column_visibility=column_visibility,row_colors=row_colors, orderby=orderby, ordertype=ordertype, **kwargs)
 
     def setup_component(self):
         PaginatedListLayout.setup_component(self)
