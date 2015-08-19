@@ -40,7 +40,7 @@
             {% endif %}
             <tbody>
             {% for slot_name, slot_content in compo.slotted_components.items() %}
-                <tr {% if compo.row_colors and slot_name in compo.row_colors %}class="epfl-table-layout {{ compo.row_colors[slot_name] }}" {% endif %}>
+                <tr {% if compo.row_colors and slot_name in compo.row_colors %}class="epfl-table-layout {{ compo.row_colors[slot_name] }}"{% endif %}>
                 {% for compo_obj in slot_content %}
                     {% if compo.column_visibility is not none and compo.column_visibility[loop.index0] == False %}
                     <td style="width:20px;">
