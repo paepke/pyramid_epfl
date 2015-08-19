@@ -1,4 +1,5 @@
-<div class="{{ 'col-sm-12' if compo.container_compo else ('container' if (not compo.constrained is defined and compo.constrained) else 'container-fluid') }}" id="{{compo.cid}}" epflid="{{ compo.cid }}">
+<div class="{{ 'col-sm-12' if compo.container_compo else ('container' if (not compo.constrained is defined and compo.constrained) else 'container-fluid') }}{{ " "+compo.css_cls if compo.css_cls else "" }}"
+     id="{{compo.cid}}" epflid="{{ compo.cid }}">
     {% if compo.cardinal_components('north') and 'north' in compo.plain %}
     <div class="row">
         {% for compo_obj in compo.cardinal_components('north') %}

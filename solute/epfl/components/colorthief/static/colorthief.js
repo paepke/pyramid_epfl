@@ -33,6 +33,10 @@ Object.defineProperty(epfl.ColorThief.prototype, 'image', {
     }
 });
 
+epfl.ColorThief.prototype.after_response = function (data) {
+    epfl.ComponentBase.prototype.after_response.call(this, data);
+    this.image.on('dragstart', function(event) { event.preventDefault(); });
+}
 
 epfl.ColorThief.prototype.handle_click = function (event) {
     epfl.ComponentBase.prototype.handle_click.call(this, event);
