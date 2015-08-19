@@ -28,6 +28,7 @@ class SelectableList(LinkListLayout):
     @staticmethod
     def default_child_cls(*args, **kwargs):
         kwargs["event_name"] = "select"
+        kwargs["double_click_event_name"] = "double_click"
         return LinkListLayout.default_child_cls(*args, **kwargs)
 
     def handle_select(self):
@@ -35,7 +36,7 @@ class SelectableList(LinkListLayout):
         self.page.components[cid].active = not self.page.components[cid].active
         self.page.components[cid].redraw()
 
-    def handle_double_click(self, cid):
+    def handle_double_click(self):
         # Overwrite me for doubleclick handling
         pass
 

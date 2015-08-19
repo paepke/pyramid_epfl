@@ -30,14 +30,22 @@ Object.defineProperty(epfl.TableLayout.prototype, 'show_column_icon', {
     }
 });
 
+Object.defineProperty(epfl.TableLayout.prototype, 'header_sortable', {
+    get: function () {
+        return this.elm.find('.header-sortable');
+    }
+});
+
 epfl.TableLayout.prototype.handle_click = function (event) {
     epfl.PaginatedListLayout.prototype.handle_click.call(this, event);
-    if (this.hide_column_icon.is(event.target) ) {
+    if (this.hide_column_icon.is(event.target)) {
         var parent_col = event.target.closest("th");
         this.send_event("hide_column", {column_index: $(parent_col).index()});
     } else if (this.show_column_icon.is(event.target)) {
         var parent_col = event.target.closest("th");
         this.send_event("show_column", {column_index: $(parent_col).index()});
+    } else if (this.header_sortable.is(event.target)) {
+        var parent_col = event.target.closest("th");
+        this.send_event("adjust_sorting", {column_index: $(parent_col).index()});
     }
-
 };

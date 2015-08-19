@@ -22,6 +22,9 @@
     {% endif %}
     {% if compo.layout_vertical == True %}<div class="row">{% endif %}
     <div class="col-sm-{{ compo_col }}{{ ' has-error' if compo.validation_error else '' }}">
+        {% if compo.calendar_icon %}
+        <div class="epfl-input-addon"><i class="fa fa-calendar"></i>
+        {% endif %}
             <input class="form-control"
                    type="text"
                    id="{{ compo.cid }}_input"
@@ -32,6 +35,9 @@
                    placeholder="{{ compo.placeholder if compo.placeholder is not none else '' }}"
                    {% if compo.readonly is defined and compo.readonly %}disabled="disabled"{% endif %}
                    {{ 'style="'|safe + compo.input_style + '"'|safe if compo.input_style else '' }}/>
+        {% if compo.calendar_icon %}
+            </div>
+        {% endif %}
         {% if compo.validation_error %}
             <small class="help-block">{{ compo.validation_error }}</small>
         {% endif %}

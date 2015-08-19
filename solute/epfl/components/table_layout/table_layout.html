@@ -19,7 +19,19 @@
                             </th>
                             {% else %}
                             <th {% if header.width is defined %}style="width: {{ header.width }}px;"{% endif %}><span>{{ header.title }}</span>
-                            {% if header.toggle_visibility_supported is defined and header.toggle_visibility_supported %}<i class="hide-column-icon fa fa-angle-double-left"></i>{% endif %}
+
+                            {% if header.toggle_visibility_supported is defined and header.toggle_visibility_supported %}
+                                <i class="hide-column-icon fa fa-angle-double-left"></i>
+                            {% elif header.sortable is defined and header.sortable %}
+                                {% if compo.orderby != header.name or compo.ordertype is none %}
+                                    <i class="header-sortable fa fa-sort"></i>
+                                {% elif compo.orderby == header.name and compo.ordertype == "asc" %}
+                                    <i class="header-sortable fa fa-sort-asc"></i>
+                                {% elif compo.orderby == header.name and compo.ordertype == "desc" %}
+                                    <i class="header-sortable fa fa-sort-desc"></i>
+                                {% endif %}
+                            {% endif %}
+                            
                             </th>
                             {% endif %}
                         {% endfor %}

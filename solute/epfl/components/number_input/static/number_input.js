@@ -6,7 +6,7 @@ epfl.NumberInput = function (cid, params) {
     compo.shiftKey = false;
     var enqueue_event = !params["fire_change_immediately"];
     var validation_type = $(selector).data('validation-type');
-    var allowed_keys = [46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40, 189, 109, 173];
+    var allowed_keys = [46, 8, 9, 27, 13, 110, 35, 36, 37, 38, 39, 40, 189, 109, 171, 173];
     if (validation_type === "float") {
         allowed_keys.push(190);
         allowed_keys.push(188);
