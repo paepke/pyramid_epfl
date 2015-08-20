@@ -45,7 +45,7 @@ from simpletree.simpletree import Simpletree
 #: Visual
 from badge.badge import Badge
 from diagram.diagram import Diagram
-from progress.progress import Progress
+from progress.progress import Progress, StackedProgress
 from image.image import Image, ImageList
 from text.text import Text
 from placeholder.placeholder import Placeholder
