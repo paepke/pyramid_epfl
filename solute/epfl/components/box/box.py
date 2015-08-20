@@ -98,29 +98,3 @@ class Box(epflcomponentbase.ComponentContainerBase):
     def handle_hide(self):
         self.set_hidden()
         self.redraw()
-
-
-class ModalBox(Box):
-    hover_box = True  #: see :attr:`Box.hover_box`
-    visible = False  #: see :attr:`Box.hover_box`
-    auto_visibility = False  #: see :attr:`Box.hover_box`
-    is_removable = True  #: see :attr:`Box.hover_box`
-    hover_box_remove_on_close = False  #: see :attr:`Box.hover_box`
-    #: Used to specify the width of the modal. The width is given in percentage of the full page width.
-    hover_box_width = 50
-
-    def open(self):
-        """
-        Open and display the modal box.
-        """
-        self.set_visible()
-        self.redraw()
-        self.add_ajax_response("$('body').css({ overflow: 'hidden' });")
-
-    def handle_hide(self):
-        """
-        Called when modal box is closed.
-        """
-        Box.handle_hide(self)
-        self.redraw()
-        self.add_ajax_response("$('body').css({ overflow: 'inherit' });")
