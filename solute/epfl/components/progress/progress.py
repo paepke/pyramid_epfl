@@ -2,7 +2,6 @@
 from solute.epfl.core import epflcomponentbase
 
 class Progress(epflcomponentbase.ComponentBase):
-
     """
     This component display a progress bar.
 
@@ -38,7 +37,6 @@ class Progress(epflcomponentbase.ComponentBase):
 
 
 class StackedProgress(epflcomponentbase.ComponentBase):
-
     """
     This component display a stacked progress bar. Each progress bar has to be defined as a tuple (width, color), where
     width is a percentage width (full width is 100%)
@@ -50,12 +48,10 @@ class StackedProgress(epflcomponentbase.ComponentBase):
 
         progress = StackedProgress(value=[(20, "progress-bar-success"), (30, "progress-bar-warning progress-bar-striped")])
 
-   """
-
+    """
     template_name = "progress/stacked_progress.html"
 
     compo_state = ["value"]
-
 
     value = []  #: A list if tuples defining the stacked progress bars
 
@@ -64,6 +60,4 @@ class StackedProgress(epflcomponentbase.ComponentBase):
 
         :param value: The value of the progress bar
         """
-        super(StackedProgress, self).__init__(page, cid,
-                                              value=value,
-                                              **extra_params)
+        super(StackedProgress, self).__init__(page, cid, value=value, **extra_params)
