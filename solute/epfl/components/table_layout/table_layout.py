@@ -21,8 +21,8 @@ class TableLayout(PaginatedListLayout):
     #: Can be set to a tuple where each entry contains True/False denoting the visibility of the corresponding column
     column_visibility = None
 
-    orderby = None
-    ordertype = None
+    orderby = None  #: An optional string denoting which column should be initially used for sorting.
+    ordertype = None  #: An optional string denoting the initial sort order.
 
     row_colors = None  #: This is a simple row_id to row color mapping example: {1:ROW_DANGER,2:ROW_SUCCESS}
 
