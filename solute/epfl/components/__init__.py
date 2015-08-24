@@ -45,7 +45,8 @@ from simpletree.simpletree import Simpletree
 #: Visual
 from badge.badge import Badge
 from diagram.diagram import Diagram
-from progress.progress import Progress, StackedProgress
+from progress.progress import Progress
+from stacked_progress.stacked_progress import StackedProgress
 from image.image import Image, ImageList
 from text.text import Text
 from placeholder.placeholder import Placeholder
@@ -155,6 +156,7 @@ def add_routes(config):
     Badge.add_pyramid_routes(config)
     Diagram.add_pyramid_routes(config)
     Progress.add_pyramid_routes(config)
+    StackedProgress.add_pyramid_routes(config)
     Image.add_pyramid_routes(config)
     Text.add_pyramid_routes(config)
     Sidebar.add_pyramid_routes(config)
