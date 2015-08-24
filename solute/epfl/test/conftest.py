@@ -123,10 +123,12 @@ def page(pyramid_req):
     return epflpage.Page(pyramid_req)
 
 
-blocked_classes = ["Loading", "PopoverContainer", "Selectize", "ToggleListLayout", "Dragable", "DragBox", "Dropable",
-                   "Headbar", "InputLabel", "Modal", "MultiSelect", "MultiSelectTransfer", "Sidebar", "SimpleTable",
-                   "SimpleTree", "TableListLayout", "TreeLayout", "ModelBox", "SimpleDroppable", "Simpletree",
-                   "TreeLeafEntry", "DroppableTreeLayout", "Droppable", "DraggableTreeLeafEntry", "ImageList"]
+ignored_classes = [
+    # "Loading", "PopoverContainer", "Selectize", "ToggleListLayout", "Dragable", "DragBox", "Dropable",
+    # "Headbar", "InputLabel", "Modal", "MultiSelect", "MultiSelectTransfer", "Sidebar", "SimpleTable",
+    # "SimpleTree", "TableListLayout", "TreeLayout", "ModelBox", "SimpleDroppable", "Simpletree",
+    # "TreeLeafEntry", "DroppableTreeLayout", "Droppable", "DraggableTreeLeafEntry", "ImageList"
+]
 
 
 def component_base_type_predicate(cls):
@@ -134,7 +136,7 @@ def component_base_type_predicate(cls):
 
     :param cls: Object to be inspected, must not necessarily be a class.
     """
-    return getattr(cls, '__name__', None) not in blocked_classes \
+    return getattr(cls, '__name__', None) not in ignored_classes \
            and inspect.isclass(cls) and issubclass(cls, ComponentBase) and not issubclass(cls, ComponentContainerBase)
 
 
@@ -143,7 +145,7 @@ def component_container_type_predicate(cls):
 
     :param cls: Object to be inspected, must not necessarily be a class.
     """
-    return getattr(cls, '__name__', None) not in blocked_classes \
+    return getattr(cls, '__name__', None) not in ignored_classes \
             and inspect.isclass(cls) and issubclass(cls, ComponentContainerBase)
 
 
