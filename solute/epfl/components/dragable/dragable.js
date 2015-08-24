@@ -1,1 +1,0 @@
-epfl.init_component("{{ compo.cid }}", "Dragable", {type: "{{compo.type}}"});

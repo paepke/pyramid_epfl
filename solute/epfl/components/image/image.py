@@ -3,16 +3,9 @@
 """
 
 """
-
-import types
-import copy
-
 from pyramid import security
 
 from solute.epfl.core import epflcomponentbase
-from solute.epfl.core import epflutil
-from solute.epfl.components import Droppable
-import json
 
 
 class Image(epflcomponentbase.ComponentBase):
@@ -54,30 +47,3 @@ class Image(epflcomponentbase.ComponentBase):
 
     def set_image_path(self, path):
         self.image_path = path
-
-
-class ImageList(Droppable):
-    template_name = "image/image_list.html"
-    
-    js_parts = Droppable.js_parts + ["image/image_list.js"]
-
-    show_borders=False
-    
-    def handle_add_dragable(self, cid, position):
-        """
-        Insert a copy of the dragable image in the image list and leave the original dragable as is 
-        """
-        origin_comp = self.page.components[cid].components[0]
-        origin_comp_box = self.page.components[cid].container_compo
-        
-        new_image = self.add_component(Image())
-        new_image.image_path = origin_comp.image_path
-        origin_comp_box.redraw()
-        self.redraw()
-
-    def __init__(self, page, cid, *args, **extra_params):
-        super(ImageList, self).__init__(*args, **extra_params)
-        if "show_borders" in extra_params:
-            self.show_borders = extra_params["show_borders"]
-        else:
-            self.show_borders = False
