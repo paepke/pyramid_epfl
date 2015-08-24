@@ -34,3 +34,4 @@ class Progress(epflcomponentbase.ComponentBase):
         :param hide_value_label: Set to True if value label should not be printed
         """
         super(Progress, self).__init__()
+
