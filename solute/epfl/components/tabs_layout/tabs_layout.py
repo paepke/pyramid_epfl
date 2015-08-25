@@ -35,13 +35,10 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         self.add_js_response("$('#%s_tabmenuentry').tab('show');" % self.active_tab_cid)
 
     def del_component(self, cid, slot=None):
-        position = None
-        if cid.cid == self.active_tab_cid:
-            position = self.components.index(cid)
+        # In case the deleted component was the active tab the active_tab_cid attribute is reset to an empty string.
+        if cid == self.active_tab_cid:
+            self.active_tab_cid = ''
         super(TabsLayout, self).del_component(cid, slot)
-        if position > 0:
-            self.handle_toggle_tab(self.components[position-1].cid)
-            self.redraw()
 
     def is_active_tab(self, loop, compo_obj):
         """Check whether the component is the currently active tab or the first tab if no cid has been set as active.
