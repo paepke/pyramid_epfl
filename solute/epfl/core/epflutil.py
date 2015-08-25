@@ -95,8 +95,8 @@ class Lifecycle(object):
             route_name=route_name,
         )
 
-        c = statsd.StatsClient(server, port)
-        c.timing(key, self.end_time - self.start_time)
+        client = statsd.StatsClient(server, port)
+        client.timing(key, int((self.end_time - self.start_time) * 1000))
 
 
 class DictTransformer(object):
