@@ -21,7 +21,7 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         """Just before the normal rendering the visibility of all child components needs to be updated.
         """
         for i, compo in enumerate(self.components):
-            if self.is_active_tab(i, compo):
+            if self.is_active_tab(i + 1, compo):
                 compo.set_visible()
             else:
                 compo.set_hidden()
