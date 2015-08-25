@@ -17,6 +17,17 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         """
         super(TabsLayout, self).__init__(page, cid, **extra_params)
 
+    def render(self, target='main'):
+        """Just before the normal rendering the visibility of all child components needs to be updated.
+        """
+        for i, compo in enumerate(self.components):
+            if self.is_active_tab(i, compo):
+                compo.set_visible()
+            else:
+                compo.set_hidden()
+
+        return super(TabsLayout, self).render(target=target)
+
     def handle_toggle_tab(self, selected_compo_cid):
         self.active_tab_cid = selected_compo_cid
         self.add_js_response("$('#%s_tabmenuentry').tab('show');" % self.active_tab_cid)
@@ -31,4 +42,8 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
             self.redraw()
 
     def is_active_tab(self, loop, compo_obj):
-        return (self.active_tab_cid == "" and loop.index == 1) or (self.active_tab_cid == compo_obj.cid)
+        """Check whether the component is the currently active tab or the first tab if no cid has been set as active.
+        """
+        if type(loop) is not int:
+            loop = loop.index
+        return (self.active_tab_cid == "" and loop == 1) or (self.active_tab_cid == compo_obj.cid)
