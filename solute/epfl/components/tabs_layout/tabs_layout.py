@@ -29,6 +29,8 @@ class TabsLayout(epflcomponentbase.ComponentContainerBase):
         return super(TabsLayout, self).render(target=target)
 
     def handle_toggle_tab(self, selected_compo_cid):
+        if self.active_tab_cid != selected_compo_cid:
+            self.redraw()
         self.active_tab_cid = selected_compo_cid
         self.add_js_response("$('#%s_tabmenuentry').tab('show');" % self.active_tab_cid)
 
