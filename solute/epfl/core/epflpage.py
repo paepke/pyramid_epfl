@@ -114,7 +114,7 @@ class Page(object):
                 self.transaction = epfltransaction.Transaction(request)
                 self.transaction.set_page_obj(self)
 
-    @Lifecycle(name=('page', 'main'))
+    @Lifecycle(name=('page', 'main'), log_time=True)
     def __call__(self):
         """
         The page is called by pyramid as view, it returns a rendered page for every request. Uses :meth:`call_ajax`,

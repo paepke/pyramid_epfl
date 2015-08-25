@@ -4,9 +4,13 @@ import urllib
 import urlparse
 from os.path import exists
 import logging
+import time
+import statsd
+import socket
 
 from pyramid import security
 from pyramid import path
+from pyramid import threadlocal
 
 import solute.epfl
 from solute.epfl import core
@@ -17,14 +21,20 @@ import functools
 class Lifecycle(object):
     _state = {}
 
-    def __init__(self, name):
+    start_time = None
+    end_time = None
+
+    def __init__(self, name, log_time=False):
         self.name = name
+        self.log_time = log_time
 
     @property
     def state(self):
         return self.get_state()
 
     def checkin(self):
+        if self.log_time:
+            self.start_time = time.time()
         self.state.append(self.name)
 
     def checkout(self):
@@ -32,6 +42,9 @@ class Lifecycle(object):
         assert state == self.name, Exception("Checkout failed, potential threading problem! %r %r %r" % (state,
                                                                                                          self.name,
                                                                                                          self.state))
+        if self.log_time:
+            self.end_time = time.time()
+            self.log_run_time()
 
     def __call__(self, cb):
         @functools.wraps(cb)
@@ -58,6 +71,32 @@ class Lifecycle(object):
     @staticmethod
     def depth():
         return len(Lifecycle.get_state())
+
+    def log_run_time(self):
+        """Log the time this state was active (between checkin and checkout) to the configured graphite server.
+        """
+        request = threadlocal.get_current_request()
+        registry = request.registry
+        settings = registry.settings
+
+        if settings.get('epfl.performance_log.enabled') != 'True':
+            return
+
+        server, port = settings.get('epfl.performance_log.server'), int(settings.get('epfl.performance_log.port'))
+
+        route_name = request.matched_route.name
+
+        key = settings.get(
+            'epfl.performance_log.prefix',
+            'epfl.performance.{route_name}'
+        ).format(
+            host=socket.gethostname().replace('.', '_'),
+            fqdn=socket.getfqdn().replace('.', '_'),
+            route_name=route_name,
+        )
+
+        c = statsd.StatsClient(server, port)
+        c.timing(key, self.end_time - self.start_time)
 
 
 class DictTransformer(object):
