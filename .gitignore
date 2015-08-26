@@ -48,3 +48,10 @@ test.py.prof
 test.sh
 test.txt
 transactiondump.txt
+*.lprof
+deprecated.txt
+deprecated.ods
+*.prof
+kernprof_helper.py
+statsd_test.py
+*.ods#
