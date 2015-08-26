@@ -16,6 +16,19 @@ import solute.epfl
 from solute.epfl import core
 import threading
 import functools
+import itertools
+
+
+COMPONENT_COUNTER = itertools.count()
+DYNAMIC_CLASS_COUNTER = itertools.count()
+
+
+def generate_cid():
+    return "{0:08x}".format(COMPONENT_COUNTER.next())
+
+
+def generate_dynamic_class_id():
+    return "{0:08x}".format(DYNAMIC_CLASS_COUNTER.next())
 
 
 class Lifecycle(object):

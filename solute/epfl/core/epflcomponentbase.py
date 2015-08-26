@@ -1,11 +1,9 @@
 # coding: utf-8
-from random import randint
-
 from pprint import pprint
 from collections2 import OrderedDict as odict
 from collections import MutableSequence, MutableMapping
 
-import types, copy, string, inspect, uuid
+import types, copy, string, inspect
 
 from pyramid import security
 
@@ -160,8 +158,10 @@ class UnboundComponent(object):
         self.__unbound_config__ = config.copy()
 
         # Copy config and create a cid if none exists.
-        self.position = (self.__unbound_config__.pop('cid', None) or "{0:08x}".format(randint(0, 0xffffffff)),
-                         self.__unbound_config__.pop('slot', None))
+        self.position = (
+            self.__unbound_config__.pop('cid', None) or epflutil.generate_cid(),
+            self.__unbound_config__.pop('slot', None)
+        )
 
     def __call__(self, *args, **kwargs):
         """
@@ -205,7 +205,7 @@ class UnboundComponent(object):
             except KeyError:
                 pass
 
-            dynamic_class_id = "{0:08x}".format(randint(0, 0xffffffff))
+            dynamic_class_id = epflutil.generate_dynamic_class_id()
             name = '{name}_auto_{dynamic_class_id}'.format(
                 name=self.__unbound_cls__.__name__,
                 dynamic_class_id=dynamic_class_id
@@ -1345,7 +1345,7 @@ class ComponentContainerBase(ComponentBase):
         else:
             # Generate UUID if no cid has been set previously.
             if not cid:
-                cid = str(uuid.uuid4())
+                cid = epflutil.generate_cid()
             compo_obj.register_in_transaction(self, slot, position=position)
 
         # the transaction-setup has to be redone because the component can be displayed directly in this request.
