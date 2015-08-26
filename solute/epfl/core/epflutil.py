@@ -85,14 +85,18 @@ class Lifecycle(object):
         server, port = settings.get('epfl.performance_log.server'), int(settings.get('epfl.performance_log.port'))
 
         route_name = request.matched_route.name
+        lifecycle_name = self.name
+        if type(lifecycle_name) is tuple:
+            lifecycle_name = '_'.join(lifecycle_name)
 
         key = settings.get(
             'epfl.performance_log.prefix',
-            'epfl.performance.{route_name}'
+            'epfl.performance.{route_name}.{lifecycle_name}'
         ).format(
             host=socket.gethostname().replace('.', '_'),
             fqdn=socket.getfqdn().replace('.', '_'),
             route_name=route_name,
+            lifecycle_name=lifecycle_name,
         )
 
         client = statsd.StatsClient(server, port)
