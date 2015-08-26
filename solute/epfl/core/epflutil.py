@@ -95,8 +95,8 @@ class Lifecycle(object):
         ).format(
             host=socket.gethostname().replace('.', '_'),
             fqdn=socket.getfqdn().replace('.', '_'),
-            route_name=route_name,
-            lifecycle_name=lifecycle_name,
+            route_name=route_name.replace('.', '_'),
+            lifecycle_name=lifecycle_name.replace('.', '_'),
         )
 
         client = statsd.StatsClient(server, port)
