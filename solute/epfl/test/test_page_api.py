@@ -108,7 +108,7 @@ def test_component_regeneration_performance(pyramid_req):
     # There still is a non linear scaling factor in EPFLs rendering process.The non linear part is strongly depth
     # dependent so this test reflects what happens in 2 layers with 5050 child components total.
     compo_depth = 50
-    compo_width = 100
+    compo_width = 1000
 
     # Store time for beginning, then start adding the components into the transaction.
     steps = [time.time()]
@@ -136,8 +136,16 @@ def test_component_regeneration_performance(pyramid_req):
     # tends to be quite speedy nowadays, but it used to be a major bottleneck.
     page.handle_transaction()
     steps.append(time.time())
+    output = page.render()
+    steps.append(time.time())
 
-    assert (steps[-1] - steps[-2]) * 1. / compo_depth / compo_width < 1. / 5000  # 0.0002s per component are OK.
+    assert (steps[2] - steps[1]) * 1. / compo_depth / compo_width < 1. / 10000, \
+        'Component transaction handling exceeded limits. (%r >= %r)' % (
+            (steps[2] - steps[1]) * 1. / compo_depth / compo_width, 1. / 10000)  # 0.0001s per component are OK.
+
+    assert (steps[3] - steps[2]) * 1. / compo_depth / compo_width < 1. / 100, \
+        'Component transaction handling exceeded limits. (%r >= %r)' % (
+            (steps[3] - steps[2]) * 1. / compo_depth / compo_width, 1. / 1000)  # .01s for rendering a component are ok.
 
 
 def test_component_rendering_ajax(pyramid_req):
