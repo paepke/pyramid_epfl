@@ -24,10 +24,14 @@ DYNAMIC_CLASS_COUNTER = itertools.count()
 
 
 def generate_cid():
+    """Generates a CID using next(), which is an atomic operation on itertools.count() generators.
+    """
     return "{0:08x}".format(COMPONENT_COUNTER.next())
 
 
 def generate_dynamic_class_id():
+    """Generates a dynamic class id using next(), which is an atomic operation on itertools.count() generators.
+    """
     return "{0:08x}".format(DYNAMIC_CLASS_COUNTER.next())
 
 
