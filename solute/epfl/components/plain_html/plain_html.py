@@ -7,11 +7,12 @@ class PlainHtml(FormInputBase):
     js_name = [("solute.epfl.components:plain_html/static", "plain_html.js")]
     js_parts = []
 
-    compo_state = ["value"]
     value = ''  #: The HTML this component displays
+
+    validation_type = 'text'  #: Validate this component as text.
+
     new_style_compo = True
     compo_js_name = 'PlainHtml'
-    validation_type = 'text'
 
     def __init__(self, page, cid, value='', **extra_params):
         """ Simple component to display plain html

@@ -1,4 +1,5 @@
 epfl.Dropdown = function (cid, params) {
+    epfl.ComponentBase.call(this, cid, params);
     $('#' + cid+ ' > .dropdown-toggle').click(function(event) {
     	event.stopImmediatePropagation();
         event.preventDefault();

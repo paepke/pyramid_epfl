@@ -19,8 +19,13 @@ class ButtonRadio(FormInputBase):
     js_name = FormInputBase.js_name + [("solute.epfl.components:buttonradio/static", "buttonradio.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:buttonradio/static", "buttonradio.css")]
 
-    options = ""
+    options = ""  #: List of strings or key, value tuples presented as options.
 
-    validation_type = 'text'
-    center=False
+    validation_type = 'text'  #: Evaluate this component as text.
 
+    def __init__(self, page, cid, options=None, **extra_params):
+        """A component displaying a radio form input with buttons.
+
+        :param options: List of strings or key, value tuples presented as options.
+        """
+        super(ButtonRadio, self).__init__(page, cid, options=options, **extra_params)

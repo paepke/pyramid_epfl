@@ -13,21 +13,21 @@ class RecursiveTree(epflcomponentbase.ComponentContainerBase):
     compo_state = epflcomponentbase.ComponentContainerBase.compo_state + [
         'icon_open', 'icon_close', 'label', 'get_data', 'show_children', 'data_interface','scroll_position'
     ]
-    icon_open = None
-    icon_close = None
-    label = None
+    icon_open = None  #: Icon displayed when children are shown.
+    icon_close = None  #: Icon displayed when children are hidden.
+    label = None  #: Text to be shown as label of this node.
 
+    #: Normally set by the get_data/update_children mechanism this is present to make a safe None check against it.
     id = None
 
     data_interface = {'id': None, 'label': None, 'icon_open': None, 'icon_close': None}
 
-    show_children = False
+    show_children = False  #: Toggle whether the child components are currently visible or not.
 
-    scroll_position = None
+    scroll_position = None  #: Position in pixels the component will scroll to on loading.
 
     new_style_compo = True
     compo_js_params = ['scroll_position']
-    compo_js_extras = []
     compo_js_name = 'RecursiveTree'
 
     def __init__(self, page, cid, show_children=False, get_data=None, default_child_cls=None, data_interface=None,

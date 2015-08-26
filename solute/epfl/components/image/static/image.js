@@ -1,6 +1,6 @@
-epfl.Image = function(cid, params) {
+epfl.Image = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
-    
+
 	if ((params["show_dominant_color"]) || (params["show_additional_colors"])) {
 		$('#'+cid).find('.epfl-img-component-image').imagesLoaded( function(instance) {
 			var my_image = instance["images"][0].img;

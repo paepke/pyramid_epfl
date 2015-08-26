@@ -12,16 +12,15 @@ class Textarea(FormInputBase):
         form = Form(node_list=[Textarea(label="Provide a description:", name="description")])
 
     """
-
     template_name = "textarea/textarea.html"
-
-    validation_type = 'text'
-
-    js_parts = FormInputBase.js_parts[:]
-    js_parts.extend(['textarea/textarea.js'])
 
     js_name = FormInputBase.js_name + [("solute.epfl.components:textarea/static", "textarea.js")]
     css_name = FormInputBase.css_name + [("solute.epfl.components:textarea/static", "textarea.css")]
+    js_parts = FormInputBase.js_parts + ['textarea/textarea.js']
 
+    validation_type = 'text'  #: Validate component as text.
 
-    template_name = "textarea/textarea.html"
+    def __init__(self, page, cid, **extra_params):
+        """Simple Textarea form input.
+        """
+        super(Textarea, self).__init__(page, cid, **extra_params)

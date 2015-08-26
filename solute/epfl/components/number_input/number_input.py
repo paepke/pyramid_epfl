@@ -20,10 +20,11 @@ class NumberInput(FormInputBase):
     template_name = "number_input/number_input.html"
     compo_state = FormInputBase.compo_state + ['min_value', 'max_value']
 
-    #: Possible values are 'float' and 'number' (which is default). If set to 'float' a text-input will be displayed that takes only numbers and a '.' or ',' seperator
+    #: Possible values are 'float' and 'number' (which is default). If set to 'float' a text-input will be displayed
+    #: that takes only numbers and a '.' or ',' as a separator.
     validation_type = 'number'
 
-    layout_vertical = False
+    layout_vertical = False  #: Display vertical instead of horizontal layout.
     min_value = None  #: If set, the minimum value to be supported by the control.
     max_value = None  #: If set, the maximum value to be supported by the control.
     input_pattern = None  #: If set, used as HTML 5 pattern for immediate validation of the input field

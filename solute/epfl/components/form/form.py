@@ -11,15 +11,19 @@ class Form(epflcomponentbase.ComponentContainerBase):
 
     compo_state = ["_registered_fields", "is_dirty"]
 
-    fields = []
-    _registered_fields = None
-    validation_errors = []
+    _registered_fields = None  #: Private cache of the fields registered with this form.
 
-    validate_hidden_fields = False
-    is_dirty = False
+    validate_hidden_fields = False  #: Flag to determine whether hidden fields will be validated. TODO: DEFECTIVE!
+    is_dirty = False  #: Flag whether the form has had any change of value since initialisation.
 
     def __init__(self, page, cid, node_list=None, validate_hidden_fields=False, **extra_params):
-        super(Form, self).__init__()
+        """Generates a form container with some convenience handling for child components with name and value.
+
+        :param node_list: List of child components.
+        :param validate_hidden_fields: Flag to determine whether hidden fields will be validated.
+        """
+        super(Form, self).__init__(page, cid, node_list=node_list, validate_hidden_fields=validate_hidden_fields,
+                                   **extra_params)
 
     def handle_submit(self):
         pass
@@ -56,9 +60,9 @@ class Form(epflcomponentbase.ComponentContainerBase):
     def registered_names(self):
         if self._registered_fields is None:
             self._registered_fields = set()
-        return dict([[self.page.components[cid].name, self.page.components[cid]]
-                     for cid in self._registered_fields
-                     if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
+        return dict([
+            (self.page.components[cid].name, self.page.components[cid]) for cid in self._registered_fields
+            if hasattr(self.page.components[cid], 'name') and self.page.components[cid].name is not None])
 
     def set_value(self, key, value):
         for field in self.registered_fields:

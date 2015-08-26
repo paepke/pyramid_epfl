@@ -1,4 +1,4 @@
-epfl.Diagram = function(cid, params) {
+epfl.Diagram = function (cid, params) {
     epfl.ComponentBase.call(this, cid, params);
     $('#'+cid).highcharts(
         params

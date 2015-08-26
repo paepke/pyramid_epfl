@@ -1352,7 +1352,7 @@ class ComponentContainerBase(ComponentBase):
         compo_obj.init_transaction()
         self.page.transaction['__initialized_components__'].add(cid)
         if ('page', 'handle_transaction') not in Lifecycle.get_state():
-            self.page.handle_transaction()
+            compo_obj.setup_component()
 
         return compo_obj
 

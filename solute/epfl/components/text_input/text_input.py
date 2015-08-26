@@ -33,12 +33,12 @@ class TextInput(FormInputBase):
 
     template_name = "text_input/text_input.html"
 
-    validation_type = 'text'
+    validation_type = 'text'  #: Validate as text.
 
-    # : Set to true if typeahead should be provided by the input (if supported)
+    #: Set to true if typeahead should be provided by the input (if supported)
     typeahead = False
 
-    # : Set the name of the function that is used to generate the typeahead values
+    #: Set the name of the function that is used to generate the typeahead values
     type_func = 'typeahead'
 
     #: Set to true if input field should be used as a password field
@@ -50,8 +50,7 @@ class TextInput(FormInputBase):
     #: Set to true if input field should be a datetime picker (using jquery-datetimepicker plugin)
     date = False
 
-    #: A text input always submits the form if enter is pressed. Hence, this field is not needed and
-    #  False by default
+    #: A text input always submits the form if enter is pressed. Hence, this field is not needed and False by default
     submit_form_on_enter = False
 
 
