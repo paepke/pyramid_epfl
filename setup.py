@@ -38,7 +38,7 @@ setuptools.setup(
         "pytz >= 2014.4",
         "python-dateutil",
         "redis",
-        "statsd",
+        "pystatsd",
         "collections2"
     ],
     setup_requires=[
