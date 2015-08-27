@@ -5,7 +5,6 @@ import urlparse
 from os.path import exists
 import logging
 import time
-import pystatsd
 import socket
 
 from pyramid import security
@@ -17,6 +16,14 @@ from solute.epfl import core
 import threading
 import functools
 import itertools
+
+# statsd is preferred over pystatsd since the latter is apparently not maintained any longer.
+use_statsd = True
+try:
+    import statsd
+except ImportError:
+    use_statsd = False
+    import pystatsd
 
 
 COMPONENT_COUNTER = itertools.count()
@@ -116,7 +123,11 @@ class Lifecycle(object):
             lifecycle_name=lifecycle_name.replace('.', '_'),
         )
 
-        client = pystatsd.Client(server, port)
+        if use_statsd:
+            client = statsd.StatsClient(server, port)
+        else:
+            client = pystatsd.Client(server, port)
+
         client.timing(key, int((self.end_time - self.start_time) * 1000))
 
 
