@@ -5,7 +5,7 @@ import urlparse
 from os.path import exists
 import logging
 import time
-import statsd
+import pystatsd
 import socket
 
 from pyramid import security
@@ -99,7 +99,7 @@ class Lifecycle(object):
             lifecycle_name=lifecycle_name.replace('.', '_'),
         )
 
-        client = statsd.StatsClient(server, port)
+        client = pystatsd.Client(server, port)
         client.timing(key, int((self.end_time - self.start_time) * 1000))
 
 
