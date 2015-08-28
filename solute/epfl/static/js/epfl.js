@@ -53,6 +53,7 @@ epfl_module = function() {
 
         epfl.new_tid(opts["tid"], true);
         epfl.ptid = opts["ptid"];
+        epfl.log_time = opts["log_time"];
         $(document).attr("data:tid", epfl.tid);
         epfl.init_struct();
         epfl.after_response();
@@ -234,7 +235,17 @@ epfl_module = function() {
                     }
                     try {
                         epfl.before_response();
+                        var start;
+                        try {
+                            start = window.performance.now();
+                        } catch(e) {}
                         $.globalEval(data);
+                        try {
+                            if (epfl.log_time && start && !unqueued) {
+                                var time_used = window.performance.now() - start;
+                                epfl.send_async(epfl.make_page_event("log_time", {time_used: time_used}));
+                            }
+                        } catch (e) {}
                     } catch(e) {
                         epfl.show_message({"msg": "Error (" + e.name + ") when running Server response: " + e.message, "typ": "error", "fading": true});
                     }
