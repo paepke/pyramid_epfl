@@ -1,7 +1,7 @@
-ModalBox
-========
+Box
+===
 
-.. autoclass:: solute.epfl.components.box.box.ModalBox
+.. autoclass:: solute.epfl.components.box.box.Box
     :members:
     :private-members:
     :special-members:

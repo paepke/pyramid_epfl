@@ -1,6 +1,13 @@
 solute.epfl.components.colorthief package
 =========================================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    solute.epfl.components.colorthief.mmcq
+
 Submodules
 ----------
 

@@ -1,7 +1,9 @@
-solute.epfl.components.form.inputbase module
-============================================
+FormInputBase
+=============
 
-.. automodule:: solute.epfl.components.form.inputbase
+.. autoclass:: solute.epfl.components.form.inputbase.FormInputBase
     :members:
-    :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+

@@ -46,3 +46,35 @@ def test_deleting_active_tab(page):
     root_node.del_component(root_node.components[1].cid)
 
     assert root_node.active_tab_cid == ''
+
+
+def test_is_active_tab(page):
+    page.root_node = components.TabsLayout(
+        node_list=[
+            components.Text(value='Text value 1'),
+            components.Text(value='Text value 2'),
+            components.Text(value='Text value 3'),
+        ]
+    )
+
+    page.handle_transaction()
+    root_node = page.root_node
+
+    assert not root_node.is_active_tab(2, root_node.components[0])
+    assert not root_node.is_active_tab(2, root_node.components[1])
+    assert not root_node.is_active_tab(2, root_node.components[2])
+
+    assert root_node.is_active_tab(1, root_node.components[0])
+    assert root_node.is_active_tab(1, root_node.components[1])
+    assert root_node.is_active_tab(1, root_node.components[2])
+
+    root_node.handle_toggle_tab(root_node.components[0].cid)
+    assert root_node.is_active_tab(2, root_node.components[0])
+
+
+    root_node.handle_toggle_tab(root_node.components[1].cid)
+    assert root_node.is_active_tab(2, root_node.components[1])
+
+
+    root_node.handle_toggle_tab(root_node.components[2].cid)
+    assert root_node.is_active_tab(2, root_node.components[2])

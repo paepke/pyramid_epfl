@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    solute.epfl.components.form.form
+   solute.epfl.components.form.inputbase
 
 Module contents
 ---------------

@@ -18,6 +18,7 @@ Submodules
    solute.epfl.core.epfltempdata
    solute.epfl.core.epfltransaction
    solute.epfl.core.epflutil
+   solute.epfl.core.epflvalidators
 
 Module contents
 ---------------

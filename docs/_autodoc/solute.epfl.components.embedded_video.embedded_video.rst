@@ -1,7 +1,9 @@
-solute.epfl.components.embedded_video.embedded_video module
-===========================================================
+EmbeddedVideo
+=============
 
-.. automodule:: solute.epfl.components.embedded_video.embedded_video
+.. autoclass:: solute.epfl.components.embedded_video.embedded_video.EmbeddedVideo
     :members:
-    :undoc-members:
+    :private-members:
+    :special-members:
     :show-inheritance:
+
